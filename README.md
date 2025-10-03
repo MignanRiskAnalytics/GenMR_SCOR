@@ -13,11 +13,7 @@ Other modules are also planned:
 
 This work is being developed as part of the 2025–2027 project "A Generic Multi-Risk (GenMR) Open-Source Platform to Model Compound Catastrophes", funded by the <a href="https://foundation.scor.com/funded-projects/generic-multi-risk-genmr-open-source-platform-model-compound-catastrophes" target="_blank">SCOR Foundation for Science</a>.
 
-```{image} figures/SCOR_Foundation_for_Science_Logo_Blue.png
-:width: 50%
-:align: center
-:target: https://foundation.scor.com
-```
+<a href="https://foundation.scor.com"><img src="docs/source/figures/SCOR_Foundation_for_Science_Logo_Blue.png" width="50%"></a>
 
 The primary objective of this project is to advance our understanding of compound events through the development of the GenMR platform. By compound events, we refer to domino effects, cascading processes, and other amplification mechanisms that can escalate into super-catastrophes. GenMR is designed to help users address fundamental research and risk management questions, such as:
 - What are the dominant patterns of event chains that drive large losses?
@@ -26,12 +22,10 @@ The primary objective of this project is to advance our understanding of compoun
 
 The GenMR framework and digital template are designed to be generic by construction. To capture the fundamentals of multi-risk, they employ the simplest possible models, offering a parsimonious yet effective representation of complex Earth system dynamics. At the same time, GenMR aims to be comprehensive in scope, enabling the exploration of potential interactions both within and across natural, technological, and socio-economic systems.
 
-```{figure} notebooks/figs_notebooks/digitaltemplate_env_rayshader.jpg
-:width: 90%
-:align: center
+
+<img src="docs/source/notebooks/figs_notebooks/digitaltemplate_env_rayshader.jpg" width="90%">
 
 *Example of a virtual environmental in the GenMR digital template - Rendered with <a href = "https://www.rayshader.com/" target = "_blank">Rayshader</a> (by T. Morgan-Wall). In version 1.1.1, the digital template is identical to that developed for the <a href = "https://github.com/amignan/Intro2CATriskModelling/blob/main/CATRiskModellingSandbox_tutorial.ipynb" target = "_blank">CAT Risk Modelling Sandbox</a>, part of the Cambridge University Press textbook <a href="https://www.cambridge.org/highereducation/books/introduction-to-catastrophe-risk-modelling/A3A5B5FB990921422BFEBB07734BF869#overview" target = "_blank">Introduction to Catastrophe Risk Modelling - A Physics-based Approach</a> (Mignan, 2024).*
-```
 
 
 **GenMR_SCOR Project Timeline**
