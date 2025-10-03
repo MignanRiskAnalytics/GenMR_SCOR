@@ -1,0 +1,6 @@
+Metadata-Version: 2.4
+Name: GenMR
+Version: 1.1.1
+Author-email: Arnaud Mignan <arnaud@mignanriskanalytics.com>
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
