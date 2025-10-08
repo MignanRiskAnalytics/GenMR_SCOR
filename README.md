@@ -9,8 +9,8 @@ Other modules are also planned:
 - `GenMR.utils.py` - general-purpose utilities
 - `GenMR.assess.py` - risk assessment tools
 
-[!NOTE]
-📚 **Documentation:** Visit our [online documentation](https://mignanriskanalytics.github.io/GenMR_SCOR/) for the project rationale, tutorials, and the GenMR manual.
+> [!NOTE]
+> 📚 **Documentation:** Visit our [online documentation](https://mignanriskanalytics.github.io/GenMR_SCOR/) for the project rationale, tutorials, and the GenMR manual.
 
 ---
 
