@@ -42,6 +42,7 @@ source_suffix = {
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'sphinx_rtd_theme'
+html_theme_options = {"collapse_navigation": False,}
 html_static_path = ['_static']
 
 bibtex_bibfiles = ['refs.bib']
@@ -52,8 +53,3 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('../..'))
 
-# -------------------------------------------------------------------
-# Fix paths for GitHub Pages
-# -------------------------------------------------------------------
-html_baseurl = "https://mignanriskanalytics.github.io/GenMR_SCOR/"
-html_static_path = ['_static']
