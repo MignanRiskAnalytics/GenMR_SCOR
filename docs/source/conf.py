@@ -20,6 +20,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
     'sphinxcontrib.bibtex',
+    'sphinx.ext.githubpages',
 ]
 
 myst_enable_extensions = [
