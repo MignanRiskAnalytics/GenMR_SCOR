@@ -9,6 +9,9 @@ Other modules are also planned:
 - `GenMR.utils.py` - general-purpose utilities
 - `GenMR.assess.py` - risk assessment tools
 
+[!NOTE]
+📚 **Documentation:** Visit our [online documentation](https://mignanriskanalytics.github.io/GenMR_SCOR/) for the project rationale, tutorials, and the GenMR manual.
+
 ---
 
 This work is being developed as part of the 2025–2027 project "A Generic Multi-Risk (GenMR) Open-Source Platform to Model Compound Catastrophes", funded by the <a href="https://foundation.scor.com/funded-projects/generic-multi-risk-genmr-open-source-platform-model-compound-catastrophes" target="_blank">SCOR Foundation for Science</a>.
