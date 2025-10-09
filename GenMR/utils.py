@@ -6,10 +6,10 @@ This module provides miscellaneous utility functions for input/output management
 computing, and plotting within the GenMR_Basic package. These functions support 
 core GenMR workflows by streamlining data handling, computation, and visualisation tasks.
 
-Author: Arnaud Mignan, Mignan Risk Analytics GmbH
-Version: 0.1
-Date: 2025-10-08  
-License: AGPL-3
+:Author: Arnaud Mignan, Mignan Risk Analytics GmbH
+:Version: 0.1
+:Date: 2025-10-09
+:License: AGPL-3
 """
 
 

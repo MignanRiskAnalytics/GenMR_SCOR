@@ -61,6 +61,7 @@ COMING LATER
 :maxdepth: 2
 
 rationale
+manual
 Tutorial 1: Environment creation (in construction)<notebooks/Tutorial1_DigitalTemplate_environment>
 ```
 

@@ -1,0 +1,525 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reference manual &mdash; GenMR 1.1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=58fbf978"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tutorial 1: Generating a virtual environment for the GenMR digital template" href="notebooks/Tutorial1_DigitalTemplate_environment.html" />
+    <link rel="prev" title="Rationale" href="rationale.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            GenMR
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="rationale.html">Rationale</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rationale.html#compound-events">Compound events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rationale.html#generic-multi-risk-genmr-framework">Generic Multi-Risk (GenMR) framework</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rationale.html#past-developments">Past developments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rationale.html#new-developments">New developments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rationale.html#digital-template">Digital Template</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rationale.html#id18">Past developments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rationale.html#id26">New developments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rationale.html#tutorials">Tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rationale.html#how-to-guides">How-to guides</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rationale.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Reference manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-GenMR.environment">GenMR.environment module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#genmr-virtual-environment-generator">GenMR Virtual Environment Generator</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#layers-and-related-objects-v1-1-1">Layers and Related Objects (v1.1.1)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#planned-additions-v1-1-2">Planned Additions (v1.1.2)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.RasterGrid"><code class="docutils literal notranslate"><span class="pre">RasterGrid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.Src"><code class="docutils literal notranslate"><span class="pre">Src</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.Src.EQ_char"><code class="docutils literal notranslate"><span class="pre">Src.EQ_char</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.Src.get_char_srcLine"><code class="docutils literal notranslate"><span class="pre">Src.get_char_srcLine()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.calc_coord_river_dampedsine"><code class="docutils literal notranslate"><span class="pre">calc_coord_river_dampedsine()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.downscale_RasterGrid"><code class="docutils literal notranslate"><span class="pre">downscale_RasterGrid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.plot_src"><code class="docutils literal notranslate"><span class="pre">plot_src()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-GenMR.utils">GenMR.utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#genmr-utility-functions">GenMR Utility Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.add0s_iter"><code class="docutils literal notranslate"><span class="pre">add0s_iter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.cmap_peril"><code class="docutils literal notranslate"><span class="pre">cmap_peril()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.col_peril"><code class="docutils literal notranslate"><span class="pre">col_peril()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.col_state_h"><code class="docutils literal notranslate"><span class="pre">col_state_h()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.flatten_list"><code class="docutils literal notranslate"><span class="pre">flatten_list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_data"><code class="docutils literal notranslate"><span class="pre">get_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_neighborhood_ind"><code class="docutils literal notranslate"><span class="pre">get_neighborhood_ind()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.incrementing"><code class="docutils literal notranslate"><span class="pre">incrementing()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.init_io"><code class="docutils literal notranslate"><span class="pre">init_io()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.load_json2dict"><code class="docutils literal notranslate"><span class="pre">load_json2dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.load_pickle2class"><code class="docutils literal notranslate"><span class="pre">load_pickle2class()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.marker_peril"><code class="docutils literal notranslate"><span class="pre">marker_peril()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.norm_z"><code class="docutils literal notranslate"><span class="pre">norm_z</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.partitioning"><code class="docutils literal notranslate"><span class="pre">partitioning()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.pooling"><code class="docutils literal notranslate"><span class="pre">pooling()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.save_class2pickle"><code class="docutils literal notranslate"><span class="pre">save_class2pickle()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.save_dict2json"><code class="docutils literal notranslate"><span class="pre">save_dict2json()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html">Tutorial 1: Environment creation (in construction)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#natural-environment-generation">1. Natural environment generation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#grid-definition">1.1. Grid definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#natural-peril-definition-for-environmental-objects">1.2. Natural peril definition (for environmental objects)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#topography-soil-and-land-layer-generation">1.3. Topography, soil, and land layer generation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GenMR</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Reference manual</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/manual.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="reference-manual">
+<h1>Reference manual<a class="headerlink" href="#reference-manual" title="Link to this heading"></a></h1>
+<section id="module-GenMR.environment">
+<span id="genmr-environment-module"></span><h2>GenMR.environment module<a class="headerlink" href="#module-GenMR.environment" title="Link to this heading"></a></h2>
+<section id="genmr-virtual-environment-generator">
+<h3>GenMR Virtual Environment Generator<a class="headerlink" href="#genmr-virtual-environment-generator" title="Link to this heading"></a></h3>
+<p>This module defines the environmental layers and objects used in the GenMR digital template.
+Environmental layers are implemented as classes, and associated environmental objects are
+defined as classes or methods.</p>
+<section id="layers-and-related-objects-v1-1-1">
+<h4>Layers and Related Objects (v1.1.1)<a class="headerlink" href="#layers-and-related-objects-v1-1-1" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><strong>Topography</strong> — includes tectonic hills, river valleys, and volcanic edifices
+→ properties: slope, aspect</p></li>
+<li><p><strong>Soil</strong> — includes factor of safety</p></li>
+<li><p><strong>Natural land</strong></p></li>
+<li><p><strong>Urban land</strong> — includes road network
+→ properties: asset value</p></li>
+</ul>
+</section>
+<section id="planned-additions-v1-1-2">
+<h4>Planned Additions (v1.1.2)<a class="headerlink" href="#planned-additions-v1-1-2" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Atmosphere</p></li>
+<li><p>Power grid</p></li>
+<li><p>Population</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Author<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Arnaud Mignan, Mignan Risk Analytics GmbH</p>
+</dd>
+<dt class="field-even">Version<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.1</p>
+</dd>
+<dt class="field-odd">Date<span class="colon">:</span></dt>
+<dd class="field-odd"><p>2025-10-09</p>
+</dd>
+<dt class="field-even">License<span class="colon">:</span></dt>
+<dd class="field-even"><p>AGPL-3</p>
+</dd>
+</dl>
+</section>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="GenMR.environment.RasterGrid">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">RasterGrid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.RasterGrid" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Define the coordinates (x,y) of the square-pixels of a 2D raster grid.</p>
+<p class="rubric">Notes</p>
+<p>If x0, xbuffer, ybuffer and/or lat_deg are not provided by the user,
+they are fixed to xmin, 0, 0 and 45, respectively.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>par</strong> (<em>dict</em>) – Input, dictionary with keys [‘w’, ‘xmin’, ‘x0’ (opt.),
+‘xmax’, ‘ymin’, ‘ymax’, ‘xbuffer’ (opt.), ‘ybuffer’ (opt.)]</p></li>
+<li><p><strong>w</strong> (<em>float</em>) – Pixel width in km</p></li>
+<li><p><strong>xmin</strong> (<em>float</em>) – Minimum abcissa of buffer box</p></li>
+<li><p><strong>xmax</strong> (<em>float</em>) – Maximum abcissa of buffer box</p></li>
+<li><p><strong>ymin</strong> (<em>float</em>) – Minimum ordinate of buffer box</p></li>
+<li><p><strong>ymax</strong> (<em>float</em>) – Maximum ordinate of buffer box</p></li>
+<li><p><strong>xbuffer</strong> (<em>float</em>) – Buffer width in the x direction (default is 0.)</p></li>
+<li><p><strong>ybuffer</strong> (<em>float</em>) – Buffer width in the y direction (default is 0.)</p></li>
+<li><p><strong>lat_deg</strong> (<em>float</em>) – Latitude at center of the grid (default is 45.)</p></li>
+<li><p><strong>x0</strong> (<em>float</em>) – Abscissa of reference N-S coastline (default is xmin)</p></li>
+<li><p><strong>x</strong> (<em>ndarray</em><em>(</em><em>dtype=float</em><em>, </em><em>ndim=1</em><em>)</em>) – 1D array of unique abscissas</p></li>
+<li><p><strong>y</strong> (<em>ndarray</em><em>(</em><em>dtype=float</em><em>, </em><em>ndim=1</em><em>)</em>) – 1D array of unique ordinates</p></li>
+<li><p><strong>xx</strong> (<em>ndarray</em><em>(</em><em>dtype=float</em><em>, </em><em>ndim=2</em><em>)</em>) – 2D array of grid abscissas</p></li>
+<li><p><strong>yy</strong> (<em>ndarray</em><em>(</em><em>dtype=float</em><em>, </em><em>ndim=2</em><em>)</em>) – 2D array of grid ordinates</p></li>
+<li><p><strong>nx</strong> (<em>int</em>) – Length of x</p></li>
+<li><p><strong>ny</strong> (<em>int</em>) – Length of y</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new instance of class RasterGrid</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>class instance</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>Create a grid</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">grid</span> <span class="o">=</span> <span class="n">RasterGrid</span><span class="p">({</span><span class="s1">&#39;w&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;xmin&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;xmax&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;ymin&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;ymax&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">grid</span><span class="o">.</span><span class="n">x</span>
+<span class="go">array([0., 1., 2.])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">grid</span><span class="o">.</span><span class="n">y</span>
+<span class="go">array([0., 1., 2., 3.])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span>
+<span class="go">array([[0., 0., 0., 0.],</span>
+<span class="go">   [1., 1., 1., 1.],</span>
+<span class="go">   [2., 2., 2., 2.]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">grid</span><span class="o">.</span><span class="n">yy</span>
+<span class="go">array([[0., 1., 2., 3.],</span>
+<span class="go">   [0., 1., 2., 3.],</span>
+<span class="go">   [0., 1., 2., 3.]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="GenMR.environment.Src">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">Src</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">par</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.Src" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Define the characteristics of the peril sources.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>par</strong> (<em>dict</em>) – A dictionary with nested keys [‘perils’,
+‘EQ’[‘x’, ‘y’, ‘w_km’, ‘dip_deg’, ‘z_km’, ‘mec’, ‘bin_km’],
+‘FF’[‘riv_A_km’, ‘riv_lbd’, ‘riv_ome’, ‘riv_y0’, ‘Q_m3/s’, ‘A_km2’],
+‘VE’[‘x’, ‘y’]]</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="GenMR.environment.Src.EQ_char">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">EQ_char</span></span><a class="headerlink" href="#GenMR.environment.Src.EQ_char" title="Link to this definition"></a></dt>
+<dd><p>Calls the function get_char_srcLine(self, par) if EQ source provided, otherwise
+returns error message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>self</strong></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>list of arrays (if EQ source defined)</dt><dd><p>[0] (ndarray(dtype=float, ndim=1)): 1D array of src_xi (for all points)
+[1] (ndarray(dtype=float, ndim=1)): 1D array of src_yi (for all points)
+[2] (ndarray(dtype=float, ndim=1)): 1D array of src_id (for all points)
+[3] (ndarray(dtype=float, ndim=1)): 1D array of src_L (for all faults)
+[4] (ndarray(dtype=float, ndim=1)): 1D array of seg_id (for all points)
+[5] (ndarray(dtype=float, ndim=1)): 1D array of seg_strike (for all fault segments)
+[6] (ndarray(dtype=float, ndim=1)): 1D array of seg_L (for all fault segments)</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.Src.get_char_srcLine">
+<span class="sig-name descname"><span class="pre">get_char_srcLine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.Src.get_char_srcLine" title="Link to this definition"></a></dt>
+<dd><p>Calculate the coordinates of fault sources based on their extrema and the provided
+resolution , as well as lenghts and strikes of faults and fault segments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>par</strong> (<em>dict</em>) – A dictionary with keys [‘x’, ‘y’, ‘w_km’, ‘dip_deg’, ‘z_km’, ‘mec’, ‘bin_km’]</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>1D array of src_xi (for all points)
+ndarray(dtype=float, ndim=1): 1D array of src_yi (for all points)
+ndarray(dtype=float, ndim=1): 1D array of src_id (for all points)
+ndarray(dtype=float, ndim=1): 1D array of src_L (for all faults)
+ndarray(dtype=float, ndim=1): 1D array of seg_id (for all points)
+ndarray(dtype=float, ndim=1): 1D array of seg_strike (for all fault segments)
+ndarray(dtype=float, ndim=1): 1D array of seg_L (for all fault segments)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray(dtype=float, ndim=1)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.environment.calc_coord_river_dampedsine">
+<span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">calc_coord_river_dampedsine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.calc_coord_river_dampedsine" title="Link to this definition"></a></dt>
+<dd><p>Calculate the (x,y,z) coordinates of the river(s) defined from a damped sine wave.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.environment.downscale_RasterGrid">
+<span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">downscale_RasterGrid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">appl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pooling'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.downscale_RasterGrid" title="Link to this definition"></a></dt>
+<dd><p>Reduce the resolution of a RasterGrid grid for specific applications.
+appl = topo for topography generation (with outer layer) for later upscaling</p>
+<blockquote>
+<div><p>= pooling for max- or mean-pooling</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>xxx</strong></p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.environment.plot_src">
+<span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">plot_src</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.plot_src" title="Link to this definition"></a></dt>
+<dd><p>Plot peril sources in the spatial grid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>grid</strong> (<em>class</em>) – An instance of class RasterGrid</p></li>
+<li><p><strong>par</strong> (<em>dict</em>) – A dictionary with nested keys [‘perils’,
+‘EQ’[‘x’, ‘y’, ‘w_km’, ‘dip_deg’, ‘z_km’, ‘mec’, ‘bin_km’],
+‘FF’[‘riv_A_km’, ‘riv_lbd’, ‘riv_ome’, ‘riv_y0’, ‘Q_m3/s’, ‘A_km2’],
+‘VE’[‘x’, ‘y’]]</p></li>
+<li><p><strong>file_ext</strong> (<em>str</em><em>, </em><em>optional</em>) – String representing the figure format (‘jpg’, ‘pdf’, etc., ‘-’ by default)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A plot (saved in file if file_ext not ‘-‘)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-GenMR.utils">
+<span id="genmr-utils-module"></span><h2>GenMR.utils module<a class="headerlink" href="#module-GenMR.utils" title="Link to this heading"></a></h2>
+<section id="genmr-utility-functions">
+<h3>GenMR Utility Functions<a class="headerlink" href="#genmr-utility-functions" title="Link to this heading"></a></h3>
+<p>This module provides miscellaneous utility functions for input/output management,
+computing, and plotting within the GenMR_Basic package. These functions support
+core GenMR workflows by streamlining data handling, computation, and visualisation tasks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Author<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Arnaud Mignan, Mignan Risk Analytics GmbH</p>
+</dd>
+<dt class="field-even">Version<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.1</p>
+</dd>
+<dt class="field-odd">Date<span class="colon">:</span></dt>
+<dd class="field-odd"><p>2025-10-09</p>
+</dd>
+<dt class="field-even">License<span class="colon">:</span></dt>
+<dd class="field-even"><p>AGPL-3</p>
+</dd>
+</dl>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.add0s_iter">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">add0s_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.add0s_iter" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.cmap_peril">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">cmap_peril</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peril</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.cmap_peril" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.col_peril">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">col_peril</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peril</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.col_peril" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.col_state_h">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">col_state_h</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">h</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.col_state_h" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.flatten_list">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">flatten_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nestedlist</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.flatten_list" title="Link to this definition"></a></dt>
+<dd><p>Return a flatten list from a nested list.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.get_data">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.get_data" title="Link to this definition"></a></dt>
+<dd><p>Return path to package data file.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.get_neighborhood_ind">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">get_neighborhood_ind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Moore'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.get_neighborhood_ind" title="Link to this definition"></a></dt>
+<dd><p>Get the indices of the neighboring cells, depending on method and radius of vision</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.incrementing">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">incrementing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xbin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.incrementing" title="Link to this definition"></a></dt>
+<dd><p>Return evenly spaced values within a given interval in linear
+or log space, or repeat xmax xbin times if method = ‘rep’.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.init_io">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">init_io</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.init_io" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.load_json2dict">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">load_json2dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.load_json2dict" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.load_pickle2class">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">load_pickle2class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.load_pickle2class" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.marker_peril">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">marker_peril</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peril</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.marker_peril" title="Link to this definition"></a></dt>
+<dd><p>Return marker for given point source peril.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="GenMR.utils.norm_z">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">norm_z</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sealevel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.norm_z" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Normalize</span></code></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.partitioning">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">partitioning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">IDs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.partitioning" title="Link to this definition"></a></dt>
+<dd><p>Return a 1D array of length n of IDs based on their weights w</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.pooling">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">pooling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'max'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.pooling" title="Link to this definition"></a></dt>
+<dd><p>Return a downscaled matrix by applying pooling (min, mean or max) on a matrix.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.save_class2pickle">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">save_class2pickle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'envLayer_tmpsave'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.save_class2pickle" title="Link to this definition"></a></dt>
+<dd><p>Save a class instance in a pickle file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>class</em>) – A class instance</p></li>
+<li><p><strong>filename</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the pickle file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pickle file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.save_dict2json">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">save_dict2json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'par_tmpsave'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.save_dict2json" title="Link to this definition"></a></dt>
+<dd><p>Save a dictionary in a json file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em>) – A dictionary</p></li>
+<li><p><strong>filename</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the json file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A json file</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="rationale.html" class="btn btn-neutral float-left" title="Rationale" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="notebooks/Tutorial1_DigitalTemplate_environment.html" class="btn btn-neutral float-right" title="Tutorial 1: Generating a virtual environment for the GenMR digital template" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Arnaud Mignan.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

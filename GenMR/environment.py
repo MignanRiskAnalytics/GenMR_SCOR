@@ -21,10 +21,10 @@ Planned Additions (v1.1.2)
 * Power grid
 * Population
 
-Author: Arnaud Mignan, Mignan Risk Analytics GmbH
-Version: 0.1
-Date: 2025-10-09
-License: AGPL-3
+:Author: Arnaud Mignan, Mignan Risk Analytics GmbH
+:Version: 0.1
+:Date: 2025-10-09
+:License: AGPL-3
 """
 
 
@@ -50,7 +50,7 @@ class RasterGrid:
         If x0, xbuffer, ybuffer and/or lat_deg are not provided by the user, 
         they are fixed to xmin, 0, 0 and 45, respectively.
 
-    Attributes:
+    Args:
         par (dict): Input, dictionary with keys ['w', 'xmin', 'x0' (opt.),
                     'xmax', 'ymin', 'ymax', 'xbuffer' (opt.), 'ybuffer' (opt.)]
         w (float): Pixel width in km
@@ -172,7 +172,7 @@ class Src:
     '''
     Define the characteristics of the peril sources.
     
-    Attributes:
+    Args:
         par (dict): A dictionary with nested keys ['perils',
                         'EQ'['x', 'y', 'w_km', 'dip_deg', 'z_km', 'mec', 'bin_km'],
                         'FF'['riv_A_km', 'riv_lbd', 'riv_ome', 'riv_y0', 'Q_m3/s', 'A_km2'],
