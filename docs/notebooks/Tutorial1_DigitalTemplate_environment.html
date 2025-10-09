@@ -9,7 +9,7 @@
   <title>Tutorial 1: Generating a virtual environment for the GenMR digital template &mdash; GenMR 1.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
@@ -63,7 +63,15 @@
 <li class="toctree-l2"><a class="reference internal" href="../rationale.html#references">References</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial 1: Environment creation (in construction)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial 1: Environment creation (in construction)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#natural-environment-generation">1. Natural environment generation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#grid-definition">1.1. Grid definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#natural-peril-definition-for-environmental-objects">1.2. Natural peril definition (for environmental objects)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#topography-soil-and-land-layer-generation">1.3. Topography, soil, and land layer generation</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -92,8 +100,176 @@
              
   <section class="tex2jax_ignore mathjax_ignore" id="tutorial-1-generating-a-virtual-environment-for-the-genmr-digital-template">
 <h1>Tutorial 1: Generating a virtual environment for the GenMR digital template<a class="headerlink" href="#tutorial-1-generating-a-virtual-environment-for-the-genmr-digital-template" title="Link to this heading"></a></h1>
-<p>The <em>digital template</em>, first described in <a class="reference external" href="https://www.mdpi.com/1660-4601/19/23/16097">Mignan (2022b)</a> and used in the CAT Risk Modelling Sandbox <a class="reference external" href="https://github.com/amignan/Intro2CATriskModelling/blob/main/CATRiskModellingSandbox_tutorial.ipynb">Mignan (2024)</a>, is a microcosm simulation of the complex Earth system for catastrophe dynamics R&amp;D, multi-risk prototyping in the Generic Multi-Risk (GenMR) framework, and catastrophe risk eduction. It is defined as a virtual environment populated by loss-generating events that interact with each other and with the environment. The virtual environment, to be built in this tutorial, is composed of <em>environmental layers</em> that consist of sets of variables <span class="math notranslate nohighlight">\(\theta(x,y)\)</span> defined in a spatial grid of coordinates <span class="math notranslate nohighlight">\((x,y)\)</span>. Each layer may be altered by <em>environmental objects</em> located within the layer. The parsimonious complex Earth system finally consists of a stack of interacting environmental layers defined in the natural, technological and socio-economic systems. The loss-generating events that populate the virtual environment will be defined in the next tutorial, and their occurrence rates and interactions in a third and final tutorial.</p>
-<p>TO DEVELOP…</p>
+<p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
+<strong>Version:</strong> 0.1<br />
+<strong>Last Updated:</strong> 2025-10-08<br />
+<strong>License:</strong> AGPL-3</p>
+<p>The <em>digital template</em>, first described in <a class="reference external" href="https://www.mdpi.com/1660-4601/19/23/16097">Mignan (2022)</a> and used in the CAT Risk Modelling Sandbox <a class="reference external" href="https://github.com/amignan/Intro2CATriskModelling/blob/main/CATRiskModellingSandbox_tutorial.ipynb">Mignan (2024)</a>, is a microcosm simulation of the complex Earth system for catastrophe dynamics R&amp;D, multi-risk prototyping in the Generic Multi-Risk (GenMR) framework, and catastrophe risk eduction. It is defined as a virtual environment populated by loss-generating events that interact with each other and with the environment. The virtual environment, to be built in this tutorial, is composed of <em>environmental layers</em> that consist of sets of variables <span class="math notranslate nohighlight">\(\theta(x,y)\)</span> defined in a spatial grid of coordinates <span class="math notranslate nohighlight">\((x,y)\)</span>. Each layer may be altered by <em>environmental objects</em> located within the layer. The parsimonious complex Earth system finally consists of a stack of interacting environmental layers defined in the natural, technological and socio-economic systems. The loss-generating events that populate the virtual environment will be defined in the next tutorial, and their occurrence rates and interactions in a third and final tutorial.</p>
+<p>Currently, a limited number of environmental layers and objects are available (Fig. 1, Table 1). This notebook provides a concise overview of these layers using a default parameterisation, with alternative scenarios to be introduced later in the How-To Guides. The outputs generated here will serve as input for hazard and risk assessments in the subsequent tutorials.</p>
+<p><img alt="" src="../_images/digitaltemplate_env_rayshader.jpg" /></p>
+<center><small><b>Fig. 1.</b> Example of the GenMR digital template (default parameterisation) showing the topography and land use layers, with water in blue, built areas in grey, and the road network in white. A soil layer is also included but not displayed. Simulation rendered using <a href='https://www.rayshader.com/' target='_blank'>Rayshader</a> (Morgan-Wall, 2022).</small></center>
+<br>
+<center><small><b>Tab. 1.</b> List of available environmental layers <code>EnvLayer_ID</code> (Python classes).</small></center>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Environment</p></th>
+<th class="head text-left"><p>ID</p></th>
+<th class="head text-left"><p>Layer</p></th>
+<th class="head text-left"><p>Variables</p></th>
+<th class="head text-left"><p>Properties (examples)</p></th>
+<th class="head text-left"><p>Object dependencies<span class="math notranslate nohighlight">\(^*\)</span></p></th>
+<th class="head text-left"><p>References</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>Natural</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">topoLayer</span></code></p></td>
+<td class="text-left"><p>Topography</p></td>
+<td class="text-left"><p>Elevation <span class="math notranslate nohighlight">\(z\)</span></p></td>
+<td class="text-left"><p>Slope, aspect</p></td>
+<td class="text-left"><p>Geological &amp; hydrological objects</p></td>
+<td class="text-left"><p>Mignan (2022)</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Natural</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">soilLayer</span></code></p></td>
+<td class="text-left"><p>Soil</p></td>
+<td class="text-left"><p>Depth <span class="math notranslate nohighlight">\(h\)</span></p></td>
+<td class="text-left"><p>Factor of safety</p></td>
+<td class="text-left"><p>-</p></td>
+<td class="text-left"><p>Mignan (2022)</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Natural</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">natLandLayer</span></code></p></td>
+<td class="text-left"><p>Natural land</p></td>
+<td class="text-left"><p>State <span class="math notranslate nohighlight">\(S\)</span></p></td>
+<td class="text-left"><p>-</p></td>
+<td class="text-left"><p>-</p></td>
+<td class="text-left"><p>Mignan (2024)</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Technological</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">urbLandLayer</span></code></p></td>
+<td class="text-left"><p>Urban land</p></td>
+<td class="text-left"><p>State <span class="math notranslate nohighlight">\(S\)</span></p></td>
+<td class="text-left"><p>Exposure value, year built</p></td>
+<td class="text-left"><p>Road network</p></td>
+<td class="text-left"><p>Mignan (2024)</p></td>
+</tr>
+</tbody>
+</table>
+<center><small>* Each layer additionally depends on the previous ones.</small></center>
+<br>
+The environmental layers are generated as follows:
+<ul class="simple">
+<li><p><strong>Topography</strong>: Represented as elevation, <span class="math notranslate nohighlight">\(z\)</span> (m), the generic topography is defined by a west-dipping slope and a fractal dimension between 2 and 3. Environmental objects associated with peril sources modify the topography through intrusion and extrusion rules. The overall process, illustrated in Figure 2, combines methods from solid geometry and morphometry. Further details can be found in <a class="reference external" href="https://www.mdpi.com/1660-4601/19/23/16097">Mignan (2022)</a>. The main properties of the topography layer include terrain slope [<span class="math notranslate nohighlight">\(^\circ\)</span>] and aspect [<span class="math notranslate nohighlight">\(^\circ\)</span>].</p></li>
+</ul>
+<p><img alt="" src="../_images/ref_Mignan_IJERPH2022_fig2.jpg" /></p>
+<center><small><b>Fig. 2.</b> Construction of the topography layer following rules of solid geometry and morphometry, illustrating the combination of geometric primitives and terrain metrics. Redrawn from <a href='https://www.mdpi.com/1660-4601/19/23/16097' target='_blank'>Mignan (2022:fig.2)</a>.</small></center>
+<br>
+<ul class="simple">
+<li><p><strong>Soil</strong>: Characterised by the soil thickness, <span class="math notranslate nohighlight">\(h\)</span> (m), which is initially spatially uniform. It can later vary through mass movement processes (using the landslide cellular automaton (CA) introduced in the next tutorial) or by a simpler rule applied here: <span class="math notranslate nohighlight">\(h = 0\)</span> if the soil is unstable at <span class="math notranslate nohighlight">\((x,y)\)</span>. Other soil properties remain fixed parameters at this stage. A key property of the soil layer is the factor of safety, <span class="math notranslate nohighlight">\(F_S\)</span>, which indicates whether the soil is stable, critical, or unstable.</p></li>
+<li><p><strong>Natural land</strong>: Defined by the state <span class="math notranslate nohighlight">\(S\)</span>, with <span class="math notranslate nohighlight">\(S=-1\)</span> for water, <span class="math notranslate nohighlight">\(S=0\)</span> for grassland, and <span class="math notranslate nohighlight">\(S=1\)</span> for forest. These classes represent the pre-urbanised land cover. All grid locations <span class="math notranslate nohighlight">\((x,y)\)</span> are considered forested except those above an elevation-dependent tree line (grassland), or below sea level (<span class="math notranslate nohighlight">\(z = 0\)</span>) and along river channels (water).</p></li>
+<li><p><strong>Urban land</strong>: Represents the built environment, where the state <span class="math notranslate nohighlight">\(S\)</span> overwrites the natural land classification: <span class="math notranslate nohighlight">\(S = 2\)</span> for housing, <span class="math notranslate nohighlight">\(S = 3\)</span> for industrial, and <span class="math notranslate nohighlight">\(S = 4\)</span> for commercial areas. The city is generated using a hybrid model that combines the SLEUTH city growth CA (ref), a road network CA (ref), and a land-use transformation function (ref) (see <a class="reference external" href="https://www.cambridge.org/highereducation/books/introduction-to-catastrophe-risk-modelling/A3A5B5FB990921422BFEBB07734BF869#overview">Mignan, 2024</a>, for details; Fig. 3). A key property of the urban-land layer is the asset value per pixel, which serves as the exposure component in the subsequent loss assessment tutorial.</p></li>
+</ul>
+<p>ADD Fig. 3 - from Mignan (2024)…</p>
+<p>Sections 1 and 2 detail the simulation of the virtual natural and technological environments, respectively (v1.1.1). A future Section 3, to be released in v1.1.2, will describe the socio-economic environment of the digital template.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## libraries ##</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">GenMR</span><span class="w"> </span><span class="kn">import</span> <span class="n">environment</span> <span class="k">as</span> <span class="n">GenMR_env</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="natural-environment-generation">
+<h2>1. Natural environment generation<a class="headerlink" href="#natural-environment-generation" title="Link to this heading"></a></h2>
+<p>The generic natural environment is constrained by a predominant west–east orientation, with a coastline located at <code class="docutils literal notranslate"><span class="pre">x0</span></code>. This configuration ensures that any water mass, when present, is systematically positioned on the western side of the grid (Fig. 1). By convention, rivers flow exclusively from east to west. This directional constraint simplifies the natural environment generator while still allowing it to represent a wide range of regional configurations.</p>
+<section id="grid-definition">
+<h3>1.1. Grid definition<a class="headerlink" href="#grid-definition" title="Link to this heading"></a></h3>
+<p>All environmental layers are defined on the raster grid <code class="docutils literal notranslate"><span class="pre">RasterGrid(par)</span></code>. The default grid parameterisation <code class="docutils literal notranslate"><span class="pre">gridPar</span></code> (a dictionary) specifies an active domain of 100 × 100 km, with a reference north-south coastline fixed at <code class="docutils literal notranslate"><span class="pre">x0</span> <span class="pre">=</span> <span class="pre">0</span></code> (i.e., <span class="math notranslate nohighlight">\(z(x_0) = 0\)</span>). A larger computational domain, bounded by (<code class="docutils literal notranslate"><span class="pre">xmin</span></code>, <code class="docutils literal notranslate"><span class="pre">xmax</span></code>, <code class="docutils literal notranslate"><span class="pre">ymin</span></code>, <code class="docutils literal notranslate"><span class="pre">ymax</span></code>), is included to account for potential boundary effects. The active box is thus defined as (<code class="docutils literal notranslate"><span class="pre">xmin+xbuffer</span></code>, <code class="docutils literal notranslate"><span class="pre">xmax-xbuffer</span></code>, <code class="docutils literal notranslate"><span class="pre">ymin+ybuffer</span></code>, <code class="docutils literal notranslate"><span class="pre">ymax-ybuffer</span></code>). The spatial resolution is determined by the pixel width <code class="docutils literal notranslate"><span class="pre">w=0.1</span></code> km. Lower-resolution grids may be defined later for specific environmental processes. In the current version, the parameter <code class="docutils literal notranslate"><span class="pre">lat_deg</span></code> specifies the latitude at <span class="math notranslate nohighlight">\((x = 0, y = 0)\)</span>, which is used in hurricane size modelling. A <code class="docutils literal notranslate"><span class="pre">lon_deg</span></code> parameter will be added in a future release when a longitude reference becomes necessary for additional environmental processes.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gridPar</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;w&#39;</span><span class="p">:</span> <span class="mf">.1</span><span class="p">,</span>
+           <span class="s1">&#39;xmin&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;x0&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;xmax&#39;</span><span class="p">:</span> <span class="mi">120</span><span class="p">,</span> <span class="s1">&#39;ymin&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;ymax&#39;</span><span class="p">:</span> <span class="mi">110</span><span class="p">,</span>
+           <span class="s1">&#39;xbuffer&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;ybuffer&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+           <span class="s1">&#39;lat_deg&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">}</span>
+
+<span class="n">grid</span> <span class="o">=</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">RasterGrid</span><span class="p">(</span><span class="n">gridPar</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="natural-peril-definition-for-environmental-objects">
+<h3>1.2. Natural peril definition (for environmental objects)<a class="headerlink" href="#natural-peril-definition-for-environmental-objects" title="Link to this heading"></a></h3>
+<p>Environmental layers can be influenced by specific environmental objects; this is notably the case for the first layer to be generated, the topography. In the context of a generic and parsimonious model, only essential objects are implemented. Consequently, the environmental objects included are restricted to those associated with the perils to be modelled in later stages.</p>
+<br>
+<center><small><b>Tab. 2.</b> Characteristics of peril sources that generate environmental objects affecting the topography.</small></center>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Peril</p></th>
+<th class="head text-left"><p>ID</p></th>
+<th class="head text-left"><p>Source</p></th>
+<th class="head text-left"><p>Environmental object</p></th>
+<th class="head text-left"><p>References</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>Earthquake</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EQ</span></code></p></td>
+<td class="text-left"><p>Fault of coordinates (<code class="docutils literal notranslate"><span class="pre">x</span></code>,<code class="docutils literal notranslate"><span class="pre">y</span></code>), width <code class="docutils literal notranslate"><span class="pre">w_km</span></code>, dip <code class="docutils literal notranslate"><span class="pre">dig_deg</span></code>, depth <code class="docutils literal notranslate"><span class="pre">z_km</span></code></p></td>
+<td class="text-left"><p>Tectonic hill</p></td>
+<td class="text-left"><p>Mignan (2022)</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Fluvial flood</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">FF</span></code></p></td>
+<td class="text-left"><p>River modelled as damped sine (<code class="docutils literal notranslate"><span class="pre">riv_A_km</span></code>, <code class="docutils literal notranslate"><span class="pre">riv_lbd</span></code>, <code class="docutils literal notranslate"><span class="pre">riv_ome</span></code>, <code class="docutils literal notranslate"><span class="pre">riv_y0</span></code>), with discharge <code class="docutils literal notranslate"><span class="pre">Q_m3/s</span></code> and implicit upstream catchment area <code class="docutils literal notranslate"><span class="pre">A_km2</span></code></p></td>
+<td class="text-left"><p>River valley</p></td>
+<td class="text-left"><p>Mignan (2022)</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Volcanic eruption</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">VE</span></code></p></td>
+<td class="text-left"><p>Volcano of coordinates (<code class="docutils literal notranslate"><span class="pre">x</span></code>,<code class="docutils literal notranslate"><span class="pre">y</span></code>)</p></td>
+<td class="text-left"><p>Conic volcanic edifice</p></td>
+<td class="text-left"><p>Mignan (2022)</p></td>
+</tr>
+</tbody>
+</table>
+<p>This configuration is parameterised using the dictionary <code class="docutils literal notranslate"><span class="pre">srcPar</span></code>. In this example, two faults, one river, and one volcano are defined. Additional perils will be introduced in the next tutorial. At this stage, only perils that can modify environmental layers are included.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">srcPar</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;perils&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;EQ&#39;</span><span class="p">,</span> <span class="s1">&#39;FF&#39;</span><span class="p">,</span> <span class="s1">&#39;VE&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;EQ&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;fault&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="p">[[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">70</span><span class="p">],</span> <span class="p">[</span><span class="mi">40</span><span class="p">,</span> <span class="mi">60</span><span class="p">]],</span>                                        <span class="c1"># 2 faults (2 segments, 1 segment)</span>
+        <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="p">[[</span><span class="mi">60</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">80</span><span class="p">],</span> <span class="p">[</span><span class="mi">25</span><span class="p">,</span> <span class="mi">30</span><span class="p">]],</span>
+        <span class="s1">&#39;w_km&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="s1">&#39;dip_deg&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">45</span><span class="p">,</span> <span class="mi">45</span><span class="p">],</span>
+        <span class="s1">&#39;z_km&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;mec&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;R&#39;</span><span class="p">,</span> <span class="s1">&#39;R&#39;</span><span class="p">],</span>                                    <span class="c1"># only reverse R mechanism for now</span>
+        <span class="s1">&#39;bin_km&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>                                                         <span class="c1"># fault spatial resolution</span>
+    <span class="s1">&#39;FF&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;river&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;riv_A_km&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="s1">&#39;riv_lbd&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">.03</span><span class="p">],</span> <span class="s1">&#39;riv_ome&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">.1</span><span class="p">],</span> <span class="s1">&#39;riv_y0&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">20</span><span class="p">],</span>  <span class="c1"># y = A*exp(-lbd*x)*cos(ome*x)+y0</span>
+        <span class="s1">&#39;Q_m3/s&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">100e3</span><span class="p">],</span> <span class="s1">&#39;A_km2&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="o">*</span><span class="mi">100</span><span class="p">},</span>
+    <span class="s1">&#39;VE&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;volcano&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">90</span><span class="p">],</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">90</span><span class="p">]},</span>
+<span class="p">}</span>
+
+<span class="n">src</span> <span class="o">=</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">Src</span><span class="p">(</span><span class="n">srcPar</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
+
+<span class="n">GenMR_env</span><span class="o">.</span><span class="n">plot_src</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/224d92b451075364d51cf50a0b79a4af6afbb15e25f667de97c69c3297e97e2a.png" src="../_images/224d92b451075364d51cf50a0b79a4af6afbb15e25f667de97c69c3297e97e2a.png" />
+</div>
+</div>
+</section>
+<section id="topography-soil-and-land-layer-generation">
+<h3>1.3. Topography, soil, and land layer generation<a class="headerlink" href="#topography-soil-and-land-layer-generation" title="Link to this heading"></a></h3>
+<p>TO WRITE…</p>
+</section>
+</section>
 </section>
 
 

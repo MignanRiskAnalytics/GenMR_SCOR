@@ -28,7 +28,7 @@ The primary objective of this project is to advance our understanding of compoun
 The GenMR framework and digital template are designed to be generic by construction. To capture the fundamentals of multi-risk, they employ the simplest possible models, offering a parsimonious yet effective representation of complex Earth system dynamics. At the same time, GenMR aims to be comprehensive in scope, enabling the exploration of potential interactions both within and across natural, technological, and socio-economic systems.
 
 <p align="center">
-<img src="docs/source/notebooks/figs_notebooks/digitaltemplate_env_rayshader.jpg" width="90%">
+<img src="docs/source/figures/digitaltemplate_env_rayshader.jpg" width="90%">
 </p>
 
 <p align="center">

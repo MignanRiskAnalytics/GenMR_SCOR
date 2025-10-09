@@ -25,6 +25,7 @@ extensions = [
 
 myst_enable_extensions = [
     "colon_fence",
+    "attrs_inline",
     "deflist",
     "dollarmath",
     "amsmath",
@@ -45,6 +46,7 @@ source_suffix = {
 html_theme = 'sphinx_rtd_theme'
 html_theme_options = {"collapse_navigation": False,}
 html_static_path = ['_static']
+html_extra_path = ['figures']
 
 bibtex_bibfiles = ['refs.bib']
 bibtex_reference_style = 'author_year'
