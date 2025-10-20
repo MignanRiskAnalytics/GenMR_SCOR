@@ -69,13 +69,35 @@
 <li class="toctree-l4"><a class="reference internal" href="#planned-additions-v1-1-2">Planned Additions (v1.1.2)</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.EnvLayer_natLand"><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.EnvLayer_soil"><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_soil.FS_state"><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil.FS_state</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_soil.FS_value"><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil.FS_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_soil.wetness"><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil.wetness</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.EnvLayer_topo"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_topo.algo_diamondsquare"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.algo_diamondsquare()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_topo.aspect"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.aspect</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_topo.coastline_coord"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.coastline_coord</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_topo.model_cs_compoundbevel"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.model_cs_compoundbevel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_topo.model_fr_diamondsquare"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.model_fr_diamondsquare()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_topo.model_rv_dampedsine"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.model_rv_dampedsine()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_topo.model_th_ellipsoid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.model_th_ellipsoid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_topo.model_vo_cone"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.model_vo_cone()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_topo.river_coord"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.river_coord</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_topo.slope"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.slope</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.RasterGrid"><code class="docutils literal notranslate"><span class="pre">RasterGrid</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.Src"><code class="docutils literal notranslate"><span class="pre">Src</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.Src.EQ_char"><code class="docutils literal notranslate"><span class="pre">Src.EQ_char</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.Src.get_char_srcLine"><code class="docutils literal notranslate"><span class="pre">Src.get_char_srcLine()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.calc_FS"><code class="docutils literal notranslate"><span class="pre">calc_FS()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.calc_coord_river_dampedsine"><code class="docutils literal notranslate"><span class="pre">calc_coord_river_dampedsine()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.calc_topo_attributes"><code class="docutils literal notranslate"><span class="pre">calc_topo_attributes()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.downscale_RasterGrid"><code class="docutils literal notranslate"><span class="pre">downscale_RasterGrid()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.plot_src"><code class="docutils literal notranslate"><span class="pre">plot_src()</span></code></a></li>
 </ul>
@@ -107,7 +129,8 @@
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#natural-environment-generation">1. Natural environment generation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#grid-definition">1.1. Grid definition</a></li>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#natural-peril-definition-for-environmental-objects">1.2. Natural peril definition (for environmental objects)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#topography-soil-and-land-layer-generation">1.3. Topography, soil, and land layer generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#generating-the-topography-soil-and-land-layers">1.3. Generating the topography, soil, and land layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#environmental-layer-properties-and-attribute-plotting">1.4. Environmental layer properties (and attribute plotting)</a></li>
 </ul>
 </li>
 </ul>
@@ -181,6 +204,116 @@ defined as classes or methods.</p>
 </dl>
 </section>
 </section>
+<dl class="py class">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_natLand">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">EnvLayer_natLand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">soil</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_natLand" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Defines an environmental layer for the (natural) land classification: water, forest, grassland</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_soil">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">EnvLayer_soil</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">topo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_soil" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Defines an environmental layer for the soil</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_soil.FS_state">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FS_state</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_soil.FS_state" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_soil.FS_value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FS_value</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_soil.FS_value" title="Link to this definition"></a></dt>
+<dd><p>Return the factor of safety</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_soil.wetness">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wetness</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_soil.wetness" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_topo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">EnvLayer_topo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_topo" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Defines an environmental layer for the topography on a coarser grid before interpolating back to default.
+The state variable is the altitude z(x,y).
+Derived variables include slope and aspect.
+Other characteristics include the coastline coordinates</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>… default resolution [m]</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_topo.algo_diamondsquare">
+<span class="sig-name descname"><span class="pre">algo_diamondsquare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roughness</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_topo.algo_diamondsquare" title="Link to this definition"></a></dt>
+<dd><p>Generate a fractal topography following the Diamond-Square algorithm</p>
+<p>i: iteration integer, determines size of final matrix
+roughness: 0 &lt; &lt; 1, equivalent to 1-H with H: Hurst exponent with Dfractal = 3-H
+m: initial square matrix of size 2^i+1
+sig: standard deviation for random deviations</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_topo.aspect">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">aspect</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_topo.aspect" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_topo.coastline_coord">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">coastline_coord</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_topo.coastline_coord" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_topo.model_cs_compoundbevel">
+<span class="sig-name descname"><span class="pre">model_cs_compoundbevel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_topo.model_cs_compoundbevel" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_topo.model_fr_diamondsquare">
+<span class="sig-name descname"><span class="pre">model_fr_diamondsquare</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_topo.model_fr_diamondsquare" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_topo.model_rv_dampedsine">
+<span class="sig-name descname"><span class="pre">model_rv_dampedsine</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_topo.model_rv_dampedsine" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_topo.model_th_ellipsoid">
+<span class="sig-name descname"><span class="pre">model_th_ellipsoid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_topo.model_th_ellipsoid" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_topo.model_vo_cone">
+<span class="sig-name descname"><span class="pre">model_vo_cone</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_topo.model_vo_cone" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_topo.river_coord">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">river_coord</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_topo.river_coord" title="Link to this definition"></a></dt>
+<dd><p>Call the function calc_coord_river_dampedsine()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Self</strong></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>…</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_topo.slope">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">slope</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_topo.slope" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="GenMR.environment.RasterGrid">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">RasterGrid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.RasterGrid" title="Link to this definition"></a></dt>
@@ -305,10 +438,27 @@ ndarray(dtype=float, ndim=1): 1D array of seg_L (for all fault segments)</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="GenMR.environment.calc_FS">
+<span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">calc_FS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.calc_FS" title="Link to this definition"></a></dt>
+<dd><p>Calculates the factor of safety using Eq. 3 of Pack et al. (1998).</p>
+<dl class="simple">
+<dt>Reference:</dt><dd><p>Pack RT, Tarboton DG, Goodwin CN (1998), The SINMAP Approach to Terrain Stability Mapping.
+Proceedings of the 8th Congress of the International Association of Engineering Geology, Vancouver, BC,
+Canada, 21 September 1998</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="GenMR.environment.calc_coord_river_dampedsine">
 <span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">calc_coord_river_dampedsine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.calc_coord_river_dampedsine" title="Link to this definition"></a></dt>
 <dd><p>Calculate the (x,y,z) coordinates of the river(s) defined from a damped sine wave.</p>
 </dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.environment.calc_topo_attributes">
+<span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">calc_topo_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.calc_topo_attributes" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="GenMR.environment.downscale_RasterGrid">
@@ -418,7 +568,17 @@ or log space, or repeat xmax xbin times if method = ‘rep’.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="GenMR.utils.init_io">
 <span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">init_io</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.init_io" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Initialise required I/O directories for GenMR.
+Creates the following directories if they do not already exist:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>io/</p></li>
+<li><p>figs/</p></li>
+<li><p>figs/CellAut_steps/</p></li>
+<li><p>movs/</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="GenMR.utils.load_json2dict">

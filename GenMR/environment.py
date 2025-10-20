@@ -23,18 +23,20 @@ Planned Additions (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 0.1
-:Date: 2025-10-09
+:Date: 2025-10-20
 :License: AGPL-3
 """
 
+import numpy as np
+import pandas as pd
 
 import copy
+
 import matplotlib.pyplot as plt
 import matplotlib.colors as plt_col
 ls = plt_col.LightSource(azdeg=45, altdeg=45)
 
-import numpy as np
-import pandas as pd
+from scipy.interpolate import RegularGridInterpolator
 
 import GenMR.utils as GenMR_utils
 
@@ -280,6 +282,367 @@ class Src:
 ##############################
 # NATURAL ENVIRONMENT LAYERS #
 ##############################
+class EnvLayer_topo:
+    '''
+    Defines an environmental layer for the topography on a coarser grid before interpolating back to default.
+    The state variable is the altitude z(x,y).
+    Derived variables include slope and aspect.
+    Other characteristics include the coastline coordinates
+    
+    Returns:
+        ... default resolution [m]
+    '''
+    def __init__(self, src, par):
+        self.ID = 'topo'
+        self.src = copy.copy(src)
+        self.grid = self.src.grid
+        self.par = par
+        # downscaling
+        self.gridlow = downscale_RasterGrid(self.grid, self.par['lores_f'], appl = 'topo')
+        # topo construction by intrusion/extrusion
+        zx = (self.gridlow.x - self.grid.x0) * self.par['bg_tan(phi)']
+        self.z = np.repeat(zx, self.gridlow.ny).reshape(self.gridlow.nx, self.gridlow.ny)
+        if self.par['th'] and 'EQ' in self.src.par['perils']:
+            self.z += self.model_th_ellipsoid()
+        if self.par['vo'] and 'VE' in self.src.par['perils']:
+            self.z += self.model_vo_cone()
+        if self.par['fr']:
+            zfr = self.model_fr_diamondsquare()
+            zfr = zfr / np.max(np.abs(zfr)) * np.max(self.z) * self.par['fr_eta']
+            self.z += zfr
+        if self.par['rv'] and 'FF' in self.src.par['perils']:
+            self.z = self.model_rv_dampedsine()
+        if self.par['cs']:
+            self.z = self.model_cs_compoundbevel()
+        # upscaling
+        interp = RegularGridInterpolator((self.gridlow.x, self.gridlow.y), self.z)
+        self.z = interp((self.grid.xx, self.grid.yy)) * 1e3
+        delattr(self, 'gridlow')
+        # intrude river channel
+        nriv = len(self.src.par['FF']['riv_y0'])
+        river_xi, river_yi, river_zi, river_id = self.river_coord
+        for riv in range(nriv):
+            Q = self.src.par['FF']['Q_m3/s'][riv]
+            river_h = Q / (2 * (self.grid.w * 1e3)**2)                       # 2 N-S pixels to facilitate CA flow
+            indriv = np.where(river_id == riv)
+            river_x = river_xi[indriv]
+            river_y = river_yi[indriv]
+            for i in range(len(river_x)):
+                indx0 = np.where(self.grid.x > river_x[i] - 1e-6)[0]
+                y0 = self.grid.y[self.grid.y > river_y[i] - 1e-6][0]
+                indy0 = np.where(self.grid.y == y0)[0]
+                self.z[indx0[0],indy0] = self.z[indx0[0],indy0] - river_h * 2       # river ordinate
+                self.z[indx0[0],indy0-1] = self.z[indx0[0],indy0-1] - river_h * 2   # pixel below river ordinate
+
+    def __repr__(self):
+        return 'EnvLayer_topo({},{},{})'.format(repr(self.grid), self.par, self.src)
+    
+    @property
+    def coastline_coord(self):
+        if len(self.z) == self.grid.nx:
+            xc = [self.grid.x[self.z[:,j] <= 0][-1] for j in range(self.grid.ny)]
+            yc = self.grid.y
+        else:
+            xc = [self.gridlow.x[self.z[:,j] <= 0][-1] for j in range(self.gridlow.ny)]
+            yc = self.gridlow.y
+        return xc, yc
+
+    @property
+    def river_coord(self):
+        '''
+        Call the function calc_coord_river_dampedsine()
+        
+        Args:
+            Self
+            
+        Returns:
+            ...
+        '''
+        return calc_coord_river_dampedsine(self.grid, self.src.par['FF'], z = self.z)
+
+    @property
+    def slope(self):
+        tan_slope, _ = calc_topo_attributes(self.z, self.grid.w)
+        slope = np.arctan(tan_slope) * 180 / np.pi
+        return slope
+
+    @property
+    def aspect(self):
+        _, aspect = calc_topo_attributes(self.z, self.grid.w)
+        return aspect
+
+    ###############################################
+    # layer modifiers, incl. peril source objects #
+    ###############################################
+
+    def algo_diamondsquare(self, i, roughness, sig, rng):
+        '''
+        Generate a fractal topography following the Diamond-Square algorithm
+        
+        i: iteration integer, determines size of final matrix
+        roughness: 0 < < 1, equivalent to 1-H with H: Hurst exponent with Dfractal = 3-H
+        m: initial square matrix of size 2^i+1
+        sig: standard deviation for random deviations
+        '''
+        size = 2**i+1
+        m = np.zeros((size, size))
+        # main loop
+        for side_length in 2**np.flip(np.arange(1,i+1)):
+            half_side = int(side_length/2)
+            #square step
+            for col in np.arange(1, size, side_length):
+                for row in np.arange(1,size, side_length):
+                    avg = np.mean([m[row-1, col-1],                          #upper left
+                                   m[row+side_length-1, col-1],              #lower left
+                                   m[row-1, col+side_length-1],              #upper right
+                                   m[row+side_length-1, col+side_length-1]]) #lower right
+
+                    m[row+half_side-1, col+half_side-1] = avg + rng.normal(0, sig, 1)
+            #diamond step
+            for row in np.arange(1, size, half_side):
+                for col in np.arange((col+half_side)%side_length, size, side_length):
+                    avg = np.mean([m[(row-half_side+size) % size-1, col-1],  #above
+                                   m[(row+half_side) % size-1, col-1],       #below
+                                   m[row-1, (col+half_side) % size-1],       #right
+                                   m[row-1, (col-half_side) % size-1]])      #left
+
+                    m[row-1, col-1] = avg + rng.normal(0, sig, 1)
+                    #handle the edges by wrapping around to the other side of the array
+                    if row == 0:
+                        m[size-1-1, col-1] = avg
+                    if col == 0: 
+                        m[row-1, size-1-1] = avg
+            #reduce standard deviation of random deviation by roughness factor
+            sig = sig*roughness
+        return m
+
+    def model_th_ellipsoid(self):
+        zth = np.zeros((self.gridlow.nx, self.gridlow.ny))
+        flt_x, flt_y, flt_id, _, seg_id, seg_strike, seg_L = self.src.EQ_char
+        n_seg = len(np.unique(seg_id))
+        xc, yc, zc = [np.zeros(n_seg), np.zeros(n_seg), np.zeros(n_seg)]
+        for seg in range(n_seg):
+            indseg = seg_id == seg
+            indflt = int(flt_id[indseg][0])
+            xi = flt_x[indseg]
+            yi = flt_y[indseg]
+            z_toptrace = self.src.par['EQ']['z_km'][indflt]
+            W = self.src.par['EQ']['w_km'][indflt]
+            dip = self.src.par['EQ']['dip_deg'][indflt] * np.pi / 180
+            mec = self.src.par['EQ']['mec'][indflt]
+            L = seg_L[seg]
+            strike = seg_strike[seg] * np.pi / 180
+            # ellipsoid axes
+            Le = L/np.sqrt(2) # / 2
+            We = W/np.sqrt(2) # / 2
+            Pe = We/2
+            # ellipsoid centroid
+            xc_toptrace = np.median(xi)
+            yc_toptrace = np.median(yi)
+            W_toptrace = W * np.cos(dip)
+            W_vert = W * np.sin(dip)
+            sign = (xi[1] - xi[0]) / np.abs(xi[1] - xi[0])
+            sign2 = strike/np.abs(strike)
+            xc[seg] = xc_toptrace + sign*sign2 * np.cos(strike) * W_toptrace / 2
+            yc[seg] = yc_toptrace - sign * np.sin(strike) * W_toptrace / 2            
+            zc[seg] = z_toptrace - W_vert / 2 + self.par['th_Dz_km']
+            # ellipsoid
+            for i in range(self.gridlow.nx):
+                for j in range(self.gridlow.ny):                
+                    # rotate xi, yi, xc, yc
+                    x_rot = self.gridlow.x[i] * np.sin(strike) + self.gridlow.y[j] * np.cos(strike)
+                    y_rot = -self.gridlow.x[i] * np.cos(strike) + self.gridlow.y[j] * np.sin(strike)
+                    xc_rot = xc[seg] * np.sin(strike) + yc[seg] * np.cos(strike)
+                    yc_rot = -xc[seg] * np.cos(strike) + yc[seg] * np.sin(strike)  
+                    zth_tmp = Pe * np.sqrt(1 - (x_rot-xc_rot)**2/Le**2 - (y_rot-yc_rot)**2/We**2) +zc[seg]
+                    if not np.isnan(zth_tmp):
+                        if zth[i,j] < zth_tmp:
+                            zth[i,j] = zth_tmp
+        return zth
+
+    def model_vo_cone(self):
+        zvo = np.zeros((self.gridlow.nx, self.gridlow.ny))
+        for src_i in range(len(self.src.par['VE']['x'])):
+            r = np.sqrt((self.gridlow.xx - self.src.par['VE']['x'][src_i])**2 + \
+                        (self.gridlow.yy - self.src.par['VE']['y'][src_i])**2).reshape(self.gridlow.nx, \
+                                                                                       self.gridlow.ny)
+            indr = np.where(r <= .5 * self.par['vo_w_km'][src_i])
+            zvo[indr] = zvo[indr] + (.5 * self.par['vo_w_km'][src_i] - r[indr]) * \
+                        self.par['vo_h_km'][src_i] / (.5 * self.par['vo_w_km'][src_i])
+        return zvo
+    
+    def model_fr_diamondsquare(self):
+        # topography parameters
+        H = 3 - self.par['fr_Df']         # Hurst exponent = roughness max at H = 0
+        itr_i = np.arange(3,15)
+        nfrac_i = 2**itr_i + 1
+        nmax = max([self.gridlow.nx, self.gridlow.ny])
+        itr = itr_i[nfrac_i >= nmax][0]   # true fractal -> iter=Inf. Here gives resolution of system    
+        l = 2**itr + 1
+        rng = np.random.RandomState(self.par['fr_seed'])
+        zfr = self.algo_diamondsquare(itr, 1 - H, 1, rng)
+        zfr_cropped = zfr[0:self.gridlow.nx, 0:self.gridlow.ny]
+        return zfr_cropped
+
+    def model_rv_dampedsine(self):
+        nriv = len(self.src.par['FF']['riv_y0'])
+        for riv in range(nriv):
+            zrv = np.zeros((self.gridlow.nx, self.gridlow.ny))
+            # river valley contour            
+            expdecay = self.src.par['FF']['riv_A_km'][riv] * \
+                        np.exp(-self.src.par['FF']['riv_lbd'][riv] * self.gridlow.x)
+            yrv_0 = expdecay * np.cos(self.src.par['FF']['riv_ome'][riv] * self.gridlow.x) \
+                        + self.src.par['FF']['riv_y0'][riv]
+            yrv_N = self.src.par['FF']['riv_y0'][riv] + (expdecay + self.gridlow.w/2)
+            yrv_S = self.src.par['FF']['riv_y0'][riv] - (expdecay + self.gridlow.w/2)
+            yrv_N[yrv_N > self.gridlow.ymax] = self.gridlow.ymax
+            yrv_S[yrv_S < self.gridlow.ymin] = self.gridlow.ymin
+            # river valley z(W-E profile)
+            ind = np.where(self.gridlow.y >= self.src.par['FF']['riv_y0'][riv] - 1e-6)[0][0]
+            indtmp = self.z[:,ind] >= 0
+            x_coastline = self.gridlow.x[indtmp][0]
+            zrv_0 = (self.gridlow.x - x_coastline) * self.par['rv_tan(phiWE)']
+            # river valley z(x,y)
+            for i in range(self.gridlow.nx):
+                yS = self.gridlow.y[self.gridlow.y <= yrv_S[i]][-1]
+                y0 = self.gridlow.y[self.gridlow.y >= yrv_0[i]][0]
+                yN = self.gridlow.y[self.gridlow.y >= yrv_N[i]][0]
+                indy0 = np.where(self.gridlow.y == y0)[0]
+                zrv[i,indy0] = zrv_0[i]
+                zrv[i,indy0-1] = zrv_0[i]
+                zrv[i,np.logical_and(self.gridlow.y >= yS, self.gridlow.y < y0)] = zrv_0[i]
+                zrv[i,np.logical_and(self.gridlow.y <= yN, self.gridlow.y > y0)] = zrv_0[i]
+                zrv[i,self.gridlow.y < yS] = zrv_0[i] + \
+                        np.abs(self.gridlow.y[self.gridlow.y < yS] - yS) * self.par['rv_tan(phiNS)']
+                zrv[i,self.gridlow.y > yN] = zrv_0[i] + \
+                        np.abs(self.gridlow.y[self.gridlow.y > yN] - yN) * self.par['rv_tan(phiNS)']
+            for i in range(self.gridlow.nx):
+                for j in range(self.gridlow.ny):
+                    if zrv[i,j] >= self.z[i,j]:
+                        zrv[i,j] = self.z[i,j]
+                    else:
+                        zrv[i,j] = zrv[i,j] + self.par['rv_eta'] * self.z[i,j]
+        return zrv
+
+    def model_cs_compoundbevel(self):
+        xc, _ = self.coastline_coord
+        zcs = np.copy(self.z)
+        for j in range(self.gridlow.ny):
+            indcs = np.logical_and(self.gridlow.x >= xc[j], self.gridlow.x < xc[j] + self.par['cs_w_km'])
+            indinland = self.gridlow.x >= xc[j] + self.par['cs_w_km']
+            zcs_max = np.min([self.par['cs_tan(phi)'] * self.par['cs_w_km'], self.z[indinland, j][0]])
+            zcs[indcs,j] = np.linspace(0, zcs_max, np.sum(indcs)) + self.par['cs_eta'] * self.z[indcs,j]
+        return zcs
+
+
+def calc_topo_attributes(z, w):
+    z = np.pad(z*1e-3, 1, 'edge')   # from m to km
+    # 3x3 kernel method to get dz/dx, dz/dy
+    dz_dy, dz_dx = np.gradient(z)
+    dz_dx = dz_dx[1:-1,1:-1] / w
+    dz_dy = (dz_dy[1:-1,1:-1] / w) * (-1)
+    tan_slope = np.sqrt(dz_dx**2 + dz_dy**2)
+    slope = np.arctan(tan_slope) * 180 / np.pi
+    aspect = 180 - np.arctan(dz_dy/dz_dx)*180/np.pi + 90 * (dz_dx + 1e-6) / (np.abs(dz_dx) + 1e-6)
+    return tan_slope, aspect
+
+    
+class EnvLayer_soil:
+    '''
+    Defines an environmental layer for the soil
+    '''
+    def __init__(self, topo, par):
+        self.ID = 'soil'
+        self.topo = copy.copy(topo)
+        self.par = par
+        self.grid = self.topo.grid
+        self.h = np.repeat(self.par['h0_m'], self.grid.nx * self.grid.ny).reshape(self.grid.nx, self.grid.ny)
+        self.hw = self.par['wat_h_m']
+        if self.par['corr'] == 'remove_unstable':
+            # fix h = 0 (scarp) for unstable soil FS<1
+            self.h[self.FS_value <= 1] = 0
+
+    @property
+    def FS_value(self):
+        '''
+        Return the factor of safety
+        '''
+        val = calc_FS(self.topo.slope, self.h, self.wetness, self.par)
+        return val
+    
+    @property
+    def FS_state(self):
+        FS = np.copy(self.FS_value)
+        FS_code = np.zeros((self.grid.nx, self.grid.ny))
+        FS_code[FS > 1.5] = 0                                 # stable
+        FS_code[np.logical_and(FS > 1, FS <= 1.5)] = 1        # critical
+        FS_code[FS <= 1] = 2                                  # unstable
+        return FS_code
+
+    @property
+    def wetness(self):
+        '''
+        '''
+        wetness = np.ones((self.grid.nx, self.grid.ny))
+        indno0 = np.where(self.h != 0)
+        wetness[indno0] = self.hw / self.h[indno0]            # hw a scalar for now, possible grid in future
+        wetness[wetness > 1] = 1                              # max saturation
+        return wetness
+
+        
+def calc_FS(slope, h, w, par):
+    '''
+    Calculates the factor of safety using Eq. 3 of Pack et al. (1998).
+        
+    Reference:
+        Pack RT, Tarboton DG, Goodwin CN (1998), The SINMAP Approach to Terrain Stability Mapping. 
+        Proceedings of the 8th Congress of the International Association of Engineering Geology, Vancouver, BC, 
+        Canada, 21 September 1998
+    '''
+    FS = (par['Ceff_Pa'] / (par['rho_kg/m3'] * GenMR_utils.g_earth * h) + np.cos(slope * np.pi/180) * \
+         (1 - w * GenMR_utils.rho_wat / par['rho_kg/m3']) * np.tan(par['phieff_deg'] * np.pi/180)) / \
+         np.sin(slope * np.pi/180)
+    return FS
+
+
+class EnvLayer_natLand:
+    '''
+    Defines an environmental layer for the (natural) land classification: water, forest, grassland
+    '''
+    def __init__(self, soil, par):
+        self.ID = 'natLand'
+        self.soil = copy.copy(soil)
+        self.grid = self.soil.grid
+        self.topo = self.soil.topo
+        self.src = self.soil.topo.src
+        self.par = par
+        # class: -1 = water mask, 0 = grassland, 1 = forest, ...
+        self.S = np.zeros((self.grid.nx, self.grid.ny))
+        self.hW = np.zeros((self.grid.nx, self.grid.ny))
+        # define vegetation
+        indforest = np.logical_and(self.soil.h >= 0, \
+                                   np.logical_and(self.topo.z >= 0, self.topo.z < par['ve_treeline_m']))
+        self.S[indforest] = 1
+        self.S[self.topo.z < 0] = -1
+        # make river channel as 2 N-S bins for smooth flow
+        if 'FF' in self.src.par['perils']:
+            nriv = len(self.src.par['FF']['riv_y0'])
+            river_xi, river_yi, river_zi, river_id = self.topo.river_coord
+            for riv in range(nriv):
+                indriv = np.where(river_id == riv)
+                river_x = river_xi[indriv]
+                river_y = river_yi[indriv]
+                Q = self.src.par['FF']['Q_m3/s'][riv]
+                river_h = Q / (2 * (self.grid.w * 1e3)**2)
+                for i in range(len(river_x)):
+                    indx0 = np.where(self.grid.x > river_x[i] - 1e-6)[0]
+                    y0 = self.grid.y[self.grid.y > river_y[i] - 1e-6][0]
+                    indy0 = np.where(self.grid.y == y0)[0]
+                    self.S[indx0[0],indy0] = -1
+                    self.S[indx0[0],indy0-1] = -1
+                    self.hW[indx0[0],indy0] = river_h                      # fill river channel
+                    self.hW[indx0[0],indy0-1] = river_h                    # fill river channel
+
 
 def calc_coord_river_dampedsine(grid, par, z = ''):
     '''

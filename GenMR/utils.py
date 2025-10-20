@@ -8,7 +8,7 @@ core GenMR workflows by streamlining data handling, computation, and visualisati
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 0.1
-:Date: 2025-10-09
+:Date: 2025-10-20
 :License: AGPL-3
 """
 
@@ -26,15 +26,17 @@ import matplotlib.colors as plt_col
 ## INPUT/OUTPUT ##
 ##################
 def init_io():
-    wd = os.getcwd()
-    if not os.path.exists(wd + '/io'):
-        os.mkdir('io')
-    if not os.path.exists('figs'):
-        os.mkdir('figs')
-    if not os.path.exists('figs/CellAut_steps'):
-        os.mkdir('figs/CellAut_steps')
-    if not os.path.exists('movs'):
-        os.mkdir('movs')
+    '''
+    Initialise required I/O directories for GenMR.
+    Creates the following directories if they do not already exist:
+      - io/
+      - figs/
+      - figs/CellAut_steps/
+      - movs/
+    '''
+    os.makedirs('io', exist_ok=True)
+    os.makedirs('figs/CellAut_steps', exist_ok=True)
+    os.makedirs('movs', exist_ok=True)
 
 
 _ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -71,8 +73,8 @@ def save_class2pickle(data, filename = 'envLayer_tmpsave'):
     Returns:
         A pickle file
     '''
-    file = open('io/' + filename + '.pkl', 'wb')
-    pickle.dump(data, file)
+    with open(os.path.join('io', filename + '.pkl'), 'wb') as file:
+        pickle.dump(data, file)
 
 
 def load_json2dict(filename):
@@ -206,6 +208,17 @@ def get_neighborhood_ind(i, j, grid_shape, r_v, method = 'Moore'):
         mask_cut[rad <= r_v] = 1
         mask_cut[i0,j0] = 0
     return [np.meshgrid(ik,jk)[i].flatten()[mask_cut.flatten()] for i in range(2)]
+
+
+
+#######################
+# PHYSICAL PARAMETERS #
+#######################
+g_earth = 9.81                     # [m/s^2]
+R_earth = 6371.                    # [km]
+A_earth = 4 * np.pi * R_earth**2   # [km^2]
+rho_wat = 1000.   # [kg/m^3]
+rho_atm = 1.15    # [kg/m^3]
 
 
 
