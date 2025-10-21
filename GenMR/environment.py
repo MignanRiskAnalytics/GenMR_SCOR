@@ -34,6 +34,7 @@ import copy
 
 import matplotlib.pyplot as plt
 import matplotlib.colors as plt_col
+from matplotlib.patches import Patch
 ls = plt_col.LightSource(azdeg=45, altdeg=45)
 
 from scipy.interpolate import RegularGridInterpolator
@@ -754,3 +755,267 @@ def plot_src(src, file_ext = '-'):
 
     if file_ext != '-':
         plt.savefig('figs/DigitalTemplate_src.' + file_ext)
+
+
+def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
+    '''
+    Plot the attribute of an environmental layer.
+    
+    Note:
+        The attr argument should be the string version of the variable name, 
+        e.g., z becomes 'z', slope becomes 'slope'.
+    
+    Args:
+        envLayer (class): An instance of environmental layer class
+        attr (str): The identifier of the attribute
+        hillshading_z (ndarray(dtype=float, ndim=2), optional): The elevation grid array
+        file_ext (str, optional): String representing the figure format ('jpg', 'pdf', etc., '-' by default)
+    
+    Returns:
+        A plot
+    '''
+    fig, ax = plt.subplots(1,1)
+    alpha = 1.
+    if len(hillshading_z) != 0:
+        plt.contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(hillshading_z, vert_exag=.1), cmap='gray')
+        alpha = .5
+    if envLayer.ID == 'topo':
+        if attr == 'z':
+            z_plot = np.copy(envLayer.z)
+            z_plot[z_plot < envLayer.par['plt_zmin_m']] = envLayer.par['plt_zmin_m']
+            z_plot[z_plot > envLayer.par['plt_zmax_m']] = envLayer.par['plt_zmax_m']
+            img = plt.contourf(envLayer.grid.xx, envLayer.grid.yy, z_plot, norm = \
+                                     GenMR_utils.norm_z(sealevel = 0, vmax = envLayer.par['plt_zmax_m']), \
+                                     cmap = GenMR_utils.cmap_z, levels = np.arange(envLayer.par['plt_zmin_m'], \
+                                                            envLayer.par['plt_zmax_m']+100, 100), alpha = .8)
+            fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'z [m]')
+        elif attr == 'slope':
+            img = plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.slope, cmap = 'inferno', alpha = alpha)
+            fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'slope [$^\circ$]')
+        elif attr == 'aspect':
+            img = plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.aspect, cmap = 'coolwarm', alpha = alpha)
+            fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'aspect [$^\circ$]')
+        else:
+            return print('No match found for attribute identifier in topo layer.')
+    if envLayer.ID == 'soil':
+        if attr == 'h':
+            legend_h = [Patch(facecolor=(105/255,105/255,105/255, .5), edgecolor='black', label='h=0 (scarp)'),
+                        Patch(facecolor=(216/255,228/255,188/255, .5), edgecolor='black', label='h=$h_0$ (soil)')]
+            h_state = GenMR_utils.col_state_h(envLayer.h, envLayer.par['h0_m'])
+            plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, h_state, cmap = GenMR_utils.col_h, \
+                                         vmin=0, vmax=5, alpha = alpha)
+            plt.legend(handles=legend_h, loc='upper left')
+        elif attr == 'FS':
+            legend_FS = [Patch(facecolor=(0, 100/255., 0, .5), edgecolor='black', label='>1.5 (stable)'),
+                        Patch(facecolor=(255/255.,215/255.,0/255., .5), edgecolor='black',label='[1,1.5] (critical)'),
+                        Patch(facecolor=(178/255.,34/255.,34/255., .5), edgecolor='black', label='<1 (unstable)')]
+            plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.FS_state, cmap = GenMR_utils.col_FS, \
+                                         vmin=0, vmax=2, alpha = alpha)
+            plt.legend(handles=legend_FS, loc='upper left')
+        else:
+            return print('No match found for attribute identifier in soil layer.')
+    if envLayer.ID == 'natLand':
+        if attr == 'S':
+            legend_S = [Patch(facecolor=(0/255.,127/255.,191/255.,.5), edgecolor='black', label='Water'),
+                        Patch(facecolor=(236/255., 235/255., 189/255.,.5), edgecolor='black', label='Grassland'),
+                        Patch(facecolor=(34/255.,139/255.,34/255.,.5), edgecolor='black', label='Forest')]
+            plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.S, cmap = GenMR_utils.col_S, \
+                                         vmin=-1, vmax=4, alpha = alpha)
+            plt.legend(handles=legend_S, loc='upper left')   
+        else:
+            return print('No match found for attribute identifier in land layer.')
+    if envLayer.ID == 'urbLand':
+        if attr == 'S':
+            legend_S = [Patch(facecolor=(0/255.,127/255.,191/255.,.5), edgecolor='black', label='Water'),
+                        Patch(facecolor=(236/255., 235/255., 189/255.,.5), edgecolor='black', label='Grassland'),
+                        Patch(facecolor=(34/255.,139/255.,34/255.,.5), edgecolor='black', label='Forest'),
+                        Patch(facecolor=(131/255.,137/255.,150/255.,.5), edgecolor='black', label='Residential'),
+                        Patch(facecolor=(10/255.,10/255.,10/255.,.5), edgecolor='black', label='Industrial'),
+                        Patch(facecolor=(230/255.,230/255.,230/255.,.5), edgecolor='black', label='Commercial')]
+            plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.S, cmap = GenMR_utils.col_S, \
+                                         vmin=-1, vmax=4, alpha = alpha)
+            plt.legend(handles=legend_S, loc='upper left')
+        elif attr == 'roadNet':
+            plt.plot(envLayer.roadNet_coord[2], envLayer.roadNet_coord[3], color='darkred', lw = 1)
+        elif attr == 'bldg_value':
+            img = plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.expo_value, cmap = 'inferno_r', alpha = .5)
+            fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'Value [$]')
+        elif attr == 'built_yr':
+            img = plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.built_yr, cmap = 'inferno_r', alpha = .5,\
+                                vmin = envLayer.par['city_yr0'], vmax = np.nanmax(envLayer.built_yr))
+            fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'Year built')
+        else:
+            return print('No match found for attribute identifier in land layer.')
+    plt.xlabel('x [km]')
+    plt.ylabel('y [km]')
+    plt.title('Layer:' + envLayer.ID + ' with attribute:' + attr, size = 14)
+    ax.set_aspect(1)
+    if file_ext != '-':
+        plt.savefig('figs/DigitalTemplate_envLayer_' + envLayer.ID + '_' + attr + '.' + file_ext)
+
+
+def plot_EnvLayers(envLayers, file_ext = '-'):
+    '''
+    Plot the listed environmental layers for a maximum of 3 attributes/properties
+    per layer.
+        
+    Args:
+        envLayers (list): The list of class instances of environmental layers
+        save_as (str, optional): String representing the figure format ('jpg' or 'pdf', '-' by default)
+    
+    Returns:
+        A plot
+    '''
+    nLayers = len(envLayers)
+    fig, ax = plt.subplots(nLayers, 3, figsize=(20, 6*nLayers), squeeze = False)
+    plt.subplots_adjust(wspace = .25, hspace = .1)
+    
+    topo_bool = False
+    IDs = ''
+    for i in range(nLayers):
+        envLayer = envLayers[i]
+        ## TOPOGRAPHY LAYER ##
+        if envLayer.ID == 'topo':
+            IDs = IDs + '_topo'
+            topo_bool = True
+            topo_z = envLayer.z
+            topo_xx = envLayer.grid.xx
+            topo_yy = envLayer.grid.yy
+            z_plot = np.copy(envLayer.z)
+            z_plot[z_plot < envLayer.par['plt_zmin_m']] = envLayer.par['plt_zmin_m']
+            z_plot[z_plot > envLayer.par['plt_zmax_m']] = envLayer.par['plt_zmax_m']
+            ax[i,0].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.z, vert_exag=.1), cmap='gray')
+            img0 = ax[i,0].contourf(envLayer.grid.xx, envLayer.grid.yy, z_plot, norm = \
+                                     GenMR_utils.norm_z(sealevel = 0, vmax = envLayer.par['plt_zmax_m']), \
+                                     cmap = GenMR_utils.cmap_z, levels = np.arange(envLayer.par['plt_zmin_m'], \
+                                                            envLayer.par['plt_zmax_m']+100, 100), alpha = .8)
+            if 'EQ' in envLayer.src.par['perils']:
+                for src_i in range(len(envLayer.src.par['EQ']['x'])):
+                    ax[i,0].plot(envLayer.src.par['EQ']['x'][src_i], envLayer.src.par['EQ']['y'][src_i], \
+                                         color = 'yellow', linestyle = 'dashed')
+            if 'FF' in envLayer.src.par['perils']:
+                river_xi, river_yi, _, river_id = envLayer.river_coord
+                for src_i in range(len(envLayer.src.par['FF']['riv_y0'])):
+                            indriv = river_id == src_i
+                            ax[i,0].plot(river_xi[indriv], river_yi[indriv], color = 'yellow', linestyle = 'dashed')
+            if 'VE' in envLayer.src.par['perils']:
+                ax[i,0].scatter(envLayer.src.par['VE']['x'], envLayer.src.par['VE']['x'], \
+                                        facecolors = 'none', edgecolors = 'yellow', s=100, marker = '^')
+            if envLayer.par['cs']:
+                coast_x, coast_y = envLayer.coastline_coord
+                ax[i,0].plot(coast_x, coast_y, color = 'yellow', linestyle = 'dashed')
+            ax[i,0].set_xlabel('x [km]')
+            ax[i,0].set_ylabel('y [km]')
+            ax[i,0].set_title('TOPOGRAPHY: altitude z', size = 14)
+            ax[i,0].set_aspect(1)
+            fig.colorbar(img0, ax = ax[i,0], fraction = .04, pad = .04, label = 'z [m]')
+
+            ax[i,1].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.z, vert_exag=.1), cmap='gray')
+            img1 = ax[i,1].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.slope, cmap = 'inferno', alpha = .5)
+            ax[i,1].set_xlabel('x [km]')
+            ax[i,1].set_title('Slope', size = 14)
+            ax[i,1].set_aspect(1)
+            fig.colorbar(img1, ax = ax[i,1], fraction = .04, pad = .04, label = 'slope [$^\circ$]')
+
+            ax[i,2].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.z, vert_exag=.1), cmap='gray')
+            img2 = ax[i,2].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.aspect, cmap = 'coolwarm', alpha = .5)
+            ax[i,2].set_xlabel('x [km]')
+            ax[i,2].set_title('Aspect', size = 14)
+            ax[i,2].set_aspect(1)
+            fig.colorbar(img2, ax = ax[i,2], fraction = .04, pad = .04, label = 'aspect [$^\circ$]')
+
+        ## SOIL LAYER ##
+        if envLayer.ID == 'soil':
+            IDs = IDs + '_soil'
+            legend_h = [Patch(facecolor=(105/255,105/255,105/255, .5), edgecolor='black', label='h=0 (scarp)'),
+                        Patch(facecolor=(216/255,228/255,188/255, .5), edgecolor='black', label='h=$h_0$ (soil)')]
+            h_state = GenMR_utils.col_state_h(envLayer.h, envLayer.par['h0_m'])
+            legend_FS = [Patch(facecolor=(0, 100/255., 0, .5), edgecolor='black', label='>1.5 (stable)'),
+                        Patch(facecolor=(255/255.,215/255.,0/255., .5), edgecolor='black',label='[1,1.5] (critical)'),
+                        Patch(facecolor=(178/255.,34/255.,34/255., .5), edgecolor='black', label='<1 (unstable)')]
+            
+            if topo_bool:
+                ax[i,0].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray')
+            ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, h_state, cmap = GenMR_utils.col_h, \
+                                         vmin=0, vmax=5, alpha = .5)
+            ax[i,0].set_xlabel('x [km]')
+            ax[i,0].set_ylabel('y [km]')
+            ax[i,0].set_title('SOIL: thickness h', size = 14)
+            ax[i,0].set_aspect(1)
+            ax[i,0].legend(handles=legend_h, loc='upper left')
+                
+            if topo_bool:
+                ax[i,1].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray')
+            ax[i,1].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.FS_state, cmap = GenMR_utils.col_FS, \
+                                         vmin=0, vmax=2, alpha = .5)
+            ax[i,1].set_xlabel('x [km]')
+            ax[i,1].set_ylabel('y [km]')
+            ax[i,1].set_title('Factor of safety', size = 14)
+            ax[i,1].set_aspect(1)
+            ax[i,1].legend(handles=legend_FS, loc='upper left')
+            
+            ax[i,2].set_axis_off()
+
+        ## NATURAL LAND LAYER ##
+        if envLayer.ID == 'natLand':
+            IDs = IDs + '_natLand'
+            legend_S = [Patch(facecolor=(0/255.,127/255.,191/255.,.5), edgecolor='black', label='Water'),
+                        Patch(facecolor=(236/255., 235/255., 189/255.,.5), edgecolor='black', label='Grassland'),
+                        Patch(facecolor=(34/255.,139/255.,34/255.,.5), edgecolor='black', label='Forest')]
+            if topo_bool:
+                ax[i,0].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray')
+            ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.S, cmap = GenMR_utils.col_S, \
+                                         vmin=-1, vmax=4, alpha = .5)
+            ax[i,0].set_xlabel('x [km]')
+            ax[i,0].set_ylabel('y [km]')
+            ax[i,0].set_title('NATURAL LAND', size = 14)
+            ax[i,0].set_aspect(1)
+            ax[i,0].legend(handles=legend_S, loc='upper left')
+            
+            ax[i,1].set_axis_off()
+            ax[i,2].set_axis_off()
+
+        ## URBAN LAND LAYER ##
+        if envLayer.ID == 'urbLand':
+            IDs = IDs + '_urbLand'
+            legend_S = [Patch(facecolor=(0/255.,127/255.,191/255.,.5), edgecolor='black', label='Water'),
+                        Patch(facecolor=(236/255., 235/255., 189/255.,.5), edgecolor='black', label='Grassland'),
+                        Patch(facecolor=(34/255.,139/255.,34/255.,.5), edgecolor='black', label='Forest'),
+                        Patch(facecolor=(131/255.,137/255.,150/255.,.5), edgecolor='black', label='Residential'),
+                        Patch(facecolor=(10/255.,10/255.,10/255.,.5), edgecolor='black', label='Industrial'),
+                        Patch(facecolor=(230/255.,230/255.,230/255.,.5), edgecolor='black', label='Commercial')]
+            if topo_bool:
+                ax[i,0].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray')
+            ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.S, cmap = GenMR_utils.col_S, \
+                                         vmin=-1, vmax=4, alpha = .5)
+            ax[i,0].set_xlabel('x [km]')
+            ax[i,0].set_ylabel('y [km]')
+            ax[i,0].set_title('URBAN LAND: state S', size = 14)
+            ax[i,0].set_aspect(1)
+            ax[i,0].legend(handles=legend_S, loc='upper left')
+            
+            if topo_bool:
+                ax[i,1].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray')
+#            ax[i,1].scatter(envLayer.roadNet_coord[0], envLayer.roadNet_coord[1], color = 'white', edgecolors='black')
+#            ax[i,1].plot(envLayer.roadNet_coord[2], envLayer.roadNet_coord[3], color='white', lw = 1, \
+#                         path_effects=[pe.Stroke(linewidth = 1.5, foreground='black'), pe.Normal()])
+            ax[i,1].plot(envLayer.roadNet_coord[2], envLayer.roadNet_coord[3], color='darkred', lw = 1)
+            ax[i,1].set_xlim(envLayer.grid.xmin, envLayer.grid.xmax)
+            ax[i,1].set_ylim(envLayer.grid.ymin, envLayer.grid.ymax)
+            ax[i,1].set_xlabel('x [km]')
+            ax[i,1].set_ylabel('y [km]')
+            ax[i,1].set_title('Road network', size = 14)
+            ax[i,1].set_aspect(1)
+
+            if topo_bool:
+                ax[i,2].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray')
+            img = ax[i,2].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.bldg_value, cmap = 'inferno_r', alpha = .5)
+            ax[i,2].set_xlim(envLayer.grid.xmin, envLayer.grid.xmax)
+            ax[i,2].set_ylim(envLayer.grid.ymin, envLayer.grid.ymax)
+            ax[i,2].set_xlabel('x [km]')
+            ax[i,2].set_ylabel('y [km]')
+            ax[i,2].set_title('Building value', size = 14)
+            ax[i,2].set_aspect(1)
+            fig.colorbar(img, ax = ax[i,2], fraction = .04, pad = .04, label = 'Value [$]')
+    if file_ext != '-':
+        plt.savefig('figs/DigitalTemplate_envLayers' + IDs + '.' + file_ext)
