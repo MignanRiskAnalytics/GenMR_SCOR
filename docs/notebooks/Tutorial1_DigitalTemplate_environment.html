@@ -100,6 +100,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.calc_coord_river_dampedsine"><code class="docutils literal notranslate"><span class="pre">calc_coord_river_dampedsine()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.calc_topo_attributes"><code class="docutils literal notranslate"><span class="pre">calc_topo_attributes()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.downscale_RasterGrid"><code class="docutils literal notranslate"><span class="pre">downscale_RasterGrid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.plot_EnvLayer_attr"><code class="docutils literal notranslate"><span class="pre">plot_EnvLayer_attr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.plot_EnvLayers"><code class="docutils literal notranslate"><span class="pre">plot_EnvLayers()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.plot_src"><code class="docutils literal notranslate"><span class="pre">plot_src()</span></code></a></li>
 </ul>
 </li>
@@ -166,7 +168,7 @@
 <h1>Tutorial 1: Generating a virtual environment for the GenMR digital template<a class="headerlink" href="#tutorial-1-generating-a-virtual-environment-for-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 0.1<br />
-<strong>Last Updated:</strong> 2025-10-20<br />
+<strong>Last Updated:</strong> 2025-10-21<br />
 <strong>License:</strong> AGPL-3</p>
 <p>The <em>digital template</em>, first described in <a class="reference external" href="https://www.mdpi.com/1660-4601/19/23/16097">Mignan (2022)</a> and used in the CAT Risk Modelling Sandbox <a class="reference external" href="https://github.com/amignan/Intro2CATriskModelling/blob/main/CATRiskModellingSandbox_tutorial.ipynb">Mignan (2024)</a>, is a microcosm simulation of the complex Earth system for catastrophe dynamics R&amp;D, multi-risk prototyping in the Generic Multi-Risk (GenMR) framework, and catastrophe risk eduction. It is defined as a virtual environment populated by loss-generating events that interact with each other and with the environment. The virtual environment, to be built in this tutorial, is composed of <em>environmental layers</em> that consist of sets of variables <span class="math notranslate nohighlight">\(\theta(x,y)\)</span> defined in a spatial grid of coordinates <span class="math notranslate nohighlight">\((x,y)\)</span>. Each layer may be altered by <em>environmental objects</em> located within the layer. The parsimonious complex Earth system finally consists of a stack of interacting environmental layers defined in the natural, technological and socio-economic systems. The loss-generating events that populate the virtual environment will be defined in the next tutorial, and their occurrence rates and interactions in a third and final tutorial.</p>
 <p>Currently, a limited number of environmental layers and objects are available (Fig. 1, Table 1). This notebook provides a concise overview of these layers using a default parameterisation, with alternative scenarios to be introduced later in the How-To Guides. The outputs generated here will serve as input for hazard and risk assessments in the subsequent tutorials.</p>
@@ -382,7 +384,7 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:457: RuntimeWarning: invalid value encountered in sqrt
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:458: RuntimeWarning: invalid value encountered in sqrt
   zth_tmp = Pe * np.sqrt(1 - (x_rot-xc_rot)**2/Le**2 - (y_rot-yc_rot)**2/We**2) +zc[seg]
 </pre></div>
 </div>
@@ -402,7 +404,40 @@ The environmental layers are generated as follows:
 </section>
 <section id="environmental-layer-properties-and-attribute-plotting">
 <h3>1.4. Environmental layer properties (and attribute plotting)<a class="headerlink" href="#environmental-layer-properties-and-attribute-plotting" title="Link to this heading"></a></h3>
-<p>TO WRITE…</p>
+<p>Environmental layers can have built-in properties (Tab. 1). The function <code class="docutils literal notranslate"><span class="pre">plot_EnvLayers()</span></code> plots each environmental layer and its main properties (when the argument <code class="docutils literal notranslate"><span class="pre">file_ext</span></code> is filled with <code class="docutils literal notranslate"><span class="pre">jpg</span></code>, <code class="docutils literal notranslate"><span class="pre">pdf</span></code> or other formats accepted by <code class="docutils literal notranslate"><span class="pre">matplotlib.pyplot.savefig</span></code>, a file is created in the folder <code class="docutils literal notranslate"><span class="pre">figs/</span></code>):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">GenMR_env</span><span class="o">.</span><span class="n">plot_EnvLayers</span><span class="p">([</span><span class="n">topoLayer</span><span class="p">,</span> <span class="n">soilLayer</span><span class="p">,</span> <span class="n">natLandLayer</span><span class="p">],</span> <span class="n">file_ext</span> <span class="o">=</span> <span class="s1">&#39;jpg&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:603: RuntimeWarning: divide by zero encountered in divide
+  FS = (par[&#39;Ceff_Pa&#39;] / (par[&#39;rho_kg/m3&#39;] * GenMR_utils.g_earth * h) + np.cos(slope * np.pi/180) * \
+</pre></div>
+</div>
+<img alt="../_images/935c668d72a5e78962d13f4e25a097bb3a43ebbf52325974d80dfb7264e9dfb2.png" src="../_images/935c668d72a5e78962d13f4e25a097bb3a43ebbf52325974d80dfb7264e9dfb2.png" />
+</div>
+</div>
+<p>The function <code class="docutils literal notranslate"><span class="pre">plot_EnvLayer_attr()</span></code> plots individual attributes (incl. properties) from environmental layers. If the elevation is given in the argument <code class="docutils literal notranslate"><span class="pre">hillshading_z</span></code>, hill shading is added in the background.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">GenMR_env</span><span class="o">.</span><span class="n">plot_EnvLayer_attr</span><span class="p">(</span><span class="n">topoLayer</span><span class="p">,</span> <span class="s1">&#39;aspect&#39;</span><span class="p">,</span> <span class="n">file_ext</span> <span class="o">=</span> <span class="s1">&#39;jpg&#39;</span><span class="p">)</span>
+<span class="n">GenMR_env</span><span class="o">.</span><span class="n">plot_EnvLayer_attr</span><span class="p">(</span><span class="n">soilLayer</span><span class="p">,</span> <span class="s1">&#39;FS&#39;</span><span class="p">)</span>
+<span class="n">GenMR_env</span><span class="o">.</span><span class="n">plot_EnvLayer_attr</span><span class="p">(</span><span class="n">soilLayer</span><span class="p">,</span> <span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="n">hillshading_z</span> <span class="o">=</span> <span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:603: RuntimeWarning: divide by zero encountered in divide
+  FS = (par[&#39;Ceff_Pa&#39;] / (par[&#39;rho_kg/m3&#39;] * GenMR_utils.g_earth * h) + np.cos(slope * np.pi/180) * \
+</pre></div>
+</div>
+<img alt="../_images/dd40c7ce7cf190f53f76bd8364c9b231dfe79d4cfce8fe7d8f62004af8f18227.png" src="../_images/dd40c7ce7cf190f53f76bd8364c9b231dfe79d4cfce8fe7d8f62004af8f18227.png" />
+<img alt="../_images/a5cac0af0af32717420da484f1aad56c4205bcb1e3ea45505ec1c26b6b164eca.png" src="../_images/a5cac0af0af32717420da484f1aad56c4205bcb1e3ea45505ec1c26b6b164eca.png" />
+<img alt="../_images/94416591544298f5c2a8ff166075ed0de1a780086c7112f1a70e0a9ab47a3c08.png" src="../_images/94416591544298f5c2a8ff166075ed0de1a780086c7112f1a70e0a9ab47a3c08.png" />
+</div>
+</div>
 </section>
 </section>
 </section>
