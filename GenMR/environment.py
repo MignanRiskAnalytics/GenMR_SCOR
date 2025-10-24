@@ -716,18 +716,18 @@ def plot_src(src, file_ext = '-'):
         for src_i in range(len(src.par['EQ']['x'])):
             h_eq, = ax[0].plot(src.par['EQ']['x'][src_i], src.par['EQ']['y'][src_i], color = GenMR_utils.col_peril('EQ'))
         handles.append(h_eq)
-        labels.append('Earthquake (EQ)')
+        labels.append('Fault segment: Earthquake (EQ)')
     if 'FF' in src.par['perils']:
         river_xi, river_yi, _, river_id = calc_coord_river_dampedsine(src.grid, src.par['FF'])
         for src_i in range(len(src.par['FF']['riv_y0'])):
             indriv = river_id == src_i
             h_ff, = ax[0].plot(river_xi[indriv], river_yi[indriv], color = GenMR_utils.col_peril('FF'))
         handles.append(h_ff)
-        labels.append('Fluvial Flood (FF)')
+        labels.append('River: Fluvial Flood (FF)')
     if 'VE' in src.par['perils']:
         h_ve = ax[0].scatter(src.par['VE']['x'], src.par['VE']['x'], color = GenMR_utils.col_peril('VE'), s=100, marker='^')
         handles.append(h_ve)
-        labels.append('Volcanic Eruption (VE)')
+        labels.append('Volcano: Volcanic Eruption (VE)')
     h_box, = ax[0].plot([src.grid.xmin + src.grid.xbuffer, src.grid.xmax - src.grid.xbuffer, src.grid.xmax - src.grid.xbuffer, \
                 src.grid.xmin + src.grid.xbuffer, src.grid.xmin + src.grid.xbuffer],
                [src.grid.ymin + src.grid.ybuffer, src.grid.ymin + src.grid.ybuffer, src.grid.ymax - src.grid.ybuffer, \
@@ -788,13 +788,13 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
                                      GenMR_utils.norm_z(sealevel = 0, vmax = envLayer.par['plt_zmax_m']), \
                                      cmap = GenMR_utils.cmap_z, levels = np.arange(envLayer.par['plt_zmin_m'], \
                                                             envLayer.par['plt_zmax_m']+100, 100), alpha = .8)
-            fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'z [m]')
+            fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'z (m)')
         elif attr == 'slope':
             img = plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.slope, cmap = 'inferno', alpha = alpha)
-            fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'slope [$^\circ$]')
+            fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'slope ($^\circ$)')
         elif attr == 'aspect':
             img = plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.aspect, cmap = 'coolwarm', alpha = alpha)
-            fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'aspect [$^\circ$]')
+            fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'aspect ($^\circ$)')
         else:
             return print('No match found for attribute identifier in topo layer.')
     if envLayer.ID == 'soil':
@@ -846,8 +846,8 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
             fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'Year built')
         else:
             return print('No match found for attribute identifier in land layer.')
-    plt.xlabel('x [km]')
-    plt.ylabel('y [km]')
+    plt.xlabel('$x$ (km)')
+    plt.ylabel('$y$ (km)')
     plt.title('Layer:' + envLayer.ID + ' with attribute:' + attr, size = 14)
     ax.set_aspect(1)
     if file_ext != '-':
@@ -904,25 +904,25 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
             if envLayer.par['cs']:
                 coast_x, coast_y = envLayer.coastline_coord
                 ax[i,0].plot(coast_x, coast_y, color = 'yellow', linestyle = 'dashed')
-            ax[i,0].set_xlabel('x [km]')
-            ax[i,0].set_ylabel('y [km]')
+            ax[i,0].set_xlabel('$x$ (km)')
+            ax[i,0].set_ylabel('$y$ (km)')
             ax[i,0].set_title('TOPOGRAPHY: altitude z', size = 14)
             ax[i,0].set_aspect(1)
-            fig.colorbar(img0, ax = ax[i,0], fraction = .04, pad = .04, label = 'z [m]')
+            fig.colorbar(img0, ax = ax[i,0], fraction = .04, pad = .04, label = 'z (m)')
 
             ax[i,1].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.z, vert_exag=.1), cmap='gray')
             img1 = ax[i,1].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.slope, cmap = 'inferno', alpha = .5)
-            ax[i,1].set_xlabel('x [km]')
+            ax[i,1].set_xlabel('$x$ (km)')
             ax[i,1].set_title('Slope', size = 14)
             ax[i,1].set_aspect(1)
-            fig.colorbar(img1, ax = ax[i,1], fraction = .04, pad = .04, label = 'slope [$^\circ$]')
+            fig.colorbar(img1, ax = ax[i,1], fraction = .04, pad = .04, label = 'slope ($^\circ$)')
 
             ax[i,2].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.z, vert_exag=.1), cmap='gray')
             img2 = ax[i,2].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.aspect, cmap = 'coolwarm', alpha = .5)
-            ax[i,2].set_xlabel('x [km]')
+            ax[i,2].set_xlabel('$x$ (km)')
             ax[i,2].set_title('Aspect', size = 14)
             ax[i,2].set_aspect(1)
-            fig.colorbar(img2, ax = ax[i,2], fraction = .04, pad = .04, label = 'aspect [$^\circ$]')
+            fig.colorbar(img2, ax = ax[i,2], fraction = .04, pad = .04, label = 'aspect ($^\circ$)')
 
         ## SOIL LAYER ##
         if envLayer.ID == 'soil':
@@ -938,8 +938,8 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
                 ax[i,0].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray')
             ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, h_state, cmap = GenMR_utils.col_h, \
                                          vmin=0, vmax=5, alpha = .5)
-            ax[i,0].set_xlabel('x [km]')
-            ax[i,0].set_ylabel('y [km]')
+            ax[i,0].set_xlabel('$x$ (km)')
+            ax[i,0].set_ylabel('$y$ (km)')
             ax[i,0].set_title('SOIL: thickness h', size = 14)
             ax[i,0].set_aspect(1)
             ax[i,0].legend(handles=legend_h, loc='upper left')
@@ -948,8 +948,8 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
                 ax[i,1].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray')
             ax[i,1].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.FS_state, cmap = GenMR_utils.col_FS, \
                                          vmin=0, vmax=2, alpha = .5)
-            ax[i,1].set_xlabel('x [km]')
-            ax[i,1].set_ylabel('y [km]')
+            ax[i,1].set_xlabel('$x$ (km)')
+            ax[i,1].set_ylabel('$y$ (km)')
             ax[i,1].set_title('Factor of safety', size = 14)
             ax[i,1].set_aspect(1)
             ax[i,1].legend(handles=legend_FS, loc='upper left')
@@ -966,8 +966,8 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
                 ax[i,0].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray')
             ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.S, cmap = GenMR_utils.col_S, \
                                          vmin=-1, vmax=4, alpha = .5)
-            ax[i,0].set_xlabel('x [km]')
-            ax[i,0].set_ylabel('y [km]')
+            ax[i,0].set_xlabel('$x$ (km)')
+            ax[i,0].set_ylabel('$y$ (km)')
             ax[i,0].set_title('NATURAL LAND', size = 14)
             ax[i,0].set_aspect(1)
             ax[i,0].legend(handles=legend_S, loc='upper left')
@@ -988,8 +988,8 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
                 ax[i,0].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray')
             ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.S, cmap = GenMR_utils.col_S, \
                                          vmin=-1, vmax=4, alpha = .5)
-            ax[i,0].set_xlabel('x [km]')
-            ax[i,0].set_ylabel('y [km]')
+            ax[i,0].set_xlabel('$x$ (km)')
+            ax[i,0].set_ylabel('$y$ (km)')
             ax[i,0].set_title('URBAN LAND: state S', size = 14)
             ax[i,0].set_aspect(1)
             ax[i,0].legend(handles=legend_S, loc='upper left')
@@ -1002,8 +1002,8 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
             ax[i,1].plot(envLayer.roadNet_coord[2], envLayer.roadNet_coord[3], color='darkred', lw = 1)
             ax[i,1].set_xlim(envLayer.grid.xmin, envLayer.grid.xmax)
             ax[i,1].set_ylim(envLayer.grid.ymin, envLayer.grid.ymax)
-            ax[i,1].set_xlabel('x [km]')
-            ax[i,1].set_ylabel('y [km]')
+            ax[i,1].set_xlabel('$x$ (km)')
+            ax[i,1].set_ylabel('$y$ (km)')
             ax[i,1].set_title('Road network', size = 14)
             ax[i,1].set_aspect(1)
 
@@ -1012,10 +1012,10 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
             img = ax[i,2].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.bldg_value, cmap = 'inferno_r', alpha = .5)
             ax[i,2].set_xlim(envLayer.grid.xmin, envLayer.grid.xmax)
             ax[i,2].set_ylim(envLayer.grid.ymin, envLayer.grid.ymax)
-            ax[i,2].set_xlabel('x [km]')
-            ax[i,2].set_ylabel('y [km]')
+            ax[i,2].set_xlabel('$x$ (km)')
+            ax[i,2].set_ylabel('$y$ (km)')
             ax[i,2].set_title('Building value', size = 14)
             ax[i,2].set_aspect(1)
-            fig.colorbar(img, ax = ax[i,2], fraction = .04, pad = .04, label = 'Value [$]')
+            fig.colorbar(img, ax = ax[i,2], fraction = .04, pad = .04, label = 'Value ($)')
     if file_ext != '-':
         plt.savefig('figs/DigitalTemplate_envLayers' + IDs + '.' + file_ext)
