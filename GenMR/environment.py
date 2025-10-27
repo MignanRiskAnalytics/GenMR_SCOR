@@ -676,7 +676,378 @@ def calc_coord_river_dampedsine(grid, par, z = ''):
 # TECHNOLOGICAL ENVIRONMENT LAYERS #
 ####################################
 
-# coming soon
+class EnvObj_roadNetwork():
+    '''
+    Generate a road network based on the CA described in ...
+    '''
+    def __init__(self, topo, land, par):
+        self.topo = copy.copy(topo)
+        self.land = copy.copy(land)
+        self.par = par
+        self.net = netx.Graph()
+        self.net.add_node(0, pos = self.par['city_seed'])
+        self.grid = self.topo.grid
+        self.Rmax = self.grid.w * self.par['road_Rmax']
+        self.mask = np.zeros((self.grid.nx, self.grid.ny), dtype = bool)
+        self.S = np.zeros((self.grid.nx, self.grid.ny))     # 0: empty, 1:node, 2:node neighbor, 3:available for node
+        self.id = np.full((self.grid.nx, self.grid.ny), -1, dtype = int)
+        self.eps = np.random.random(self.grid.nx * self.grid.ny).reshape(self.grid.nx, self.grid.ny)
+        self.nodeID = 0
+        
+        self.mask[self.land.S == -1] = 1
+        self.eps[self.mask] = 0
+        self.eps[self.topo.slope > self.par['road_maxslope']] = 0
+        self.eps[np.logical_or(self.grid.x < self.grid.xmin+self.grid.xbuffer,
+                                self.grid.x > self.grid.xmax-self.grid.xbuffer),:] = 0
+        self.eps[:,np.logical_or(self.grid.y < self.grid.ymin+self.grid.ybuffer,
+                                  self.grid.y > self.grid.ymax-self.grid.ybuffer)] = 0
+        
+        indxC = np.where(self.grid.x == self.par['city_seed'][0])[0][0]
+        indyC = np.where(self.grid.y == self.par['city_seed'][1])[0][0]
+        self.S[indxC, indyC] = 1
+        self.id[indxC, indyC] = 0
+        i_neighbor, j_neighbor = GenMR_utils.get_neighborhood_ind(indxC, indyC, self.S.shape, 1)
+        self.S[i_neighbor, j_neighbor] = 2
+
+    def __iter__(self):
+        return self
+    
+    def __next__(self):
+        rng = np.random.RandomState(self.par['rdm_seed'])
+        i2, j2 = np.where(self.S == 2)
+        for k in range(len(i2)):
+            i_neighbor, j_neighbor = GenMR_utils.get_neighborhood_ind(i2[k], j2[k], self.S.shape, 1)
+            S_neighbor = self.S[i_neighbor, j_neighbor]
+            ind3 = np.where(S_neighbor == 0)[0]
+            self.S[i_neighbor[ind3], j_neighbor[ind3]] = 3
+        i3, j3 = np.where(self.S == 3)
+        i_node, j_node = np.where(np.logical_and(self.eps == np.max(self.eps[i3, j3]), self.S == 3))
+        #new node
+        self.nodeID += 1
+        self.net.add_node(self.nodeID, pos = (self.grid.x[i_node[0]], self.grid.y[j_node[0]]))
+        self.S[i_node, j_node] = 1
+        self.id[i_node, j_node] = self.nodeID
+        i_neighbor, j_neighbor = GenMR_utils.get_neighborhood_ind(i_node[0], j_node[0], self.S.shape, 1)
+        S_neighbor = self.S[i_neighbor, j_neighbor]
+        ind3 = np.where(S_neighbor == 0)[0]
+        self.S[i_neighbor, j_neighbor] = 2
+        #new edge
+        if self.nodeID == 0:
+            self.net.add_edge(0, self.nodeID)    
+        else:
+            # find nodes within Rmax
+            i1, j1 = np.where(self.S == 1)
+            d2nodes = np.sqrt((self.grid.x[i1] - self.grid.x[i_node])**2 + \
+                              (self.grid.y[j1] - self.grid.y[j_node])**2)
+            ind2test = np.where(np.logical_and(d2nodes > 1e-6, d2nodes < self.par['road_Rmax']))[0]
+            list_nodes = self.id[self.S == 1][ind2test]
+            ntest = len(ind2test)
+            Lpath = np.zeros(ntest)
+            for k in range(ntest):
+                testNet = self.net
+                testNet.add_edge(list_nodes[k], self.nodeID)
+                # get shortest path 
+                sp = netx.astar_path(testNet, source = 0, target = self.nodeID)
+                Lpath[k] = len(sp)
+            # choose path longer than X if possible
+            indX = np.where(Lpath >= self.par['road_X'])[0]
+            if len(indX) != 0:
+                indL = np.where(Lpath == np.min(Lpath[indX]))[0]
+            else:
+                indL = np.where(Lpath == np.max(Lpath))[0]
+            self.net.add_edge(list_nodes[indL[0]], self.nodeID)
+            
+
+class EnvLayer_urbLand:
+    '''
+    Generate a city for land use state classification. Model that combines the SLEUTH city growth CA, 
+    the road network growth CA of ref, and the land use state transformation method of ...
+    '''
+    def __init__(self, natLand, par):
+        self.ID = 'urbLand'
+        self.grid = copy.copy(natLand.grid)
+        self.topo = copy.copy(natLand.topo)
+        self.par = par
+        # class: -1 = water mask, 0 = grassland, 1 = forest + built: 2 = residential, 3 = industrial, 4 = commercial
+        self.S = np.copy(natLand.S)
+        self.year = self.par['city_yr0']
+        # SLEUTH parameters
+        self.urban_yes = np.logical_and(self.S == 1, self.topo.slope < self.par['SLEUTH_maxslope'])
+        self.disp_val = int((self.par['SLEUTH_disp'] * .005) * np.sqrt(self.grid.nx**2 + self.grid.ny**2))
+        roadg_val = int(self.par['SLEUTH_roadg'] / 100 * (self.grid.nx + self.grid.ny) / 16)
+        self.max_roadsearch = 4 * roadg_val * (1 + roadg_val)
+        # init road network
+        topo_low = copy.copy(self.topo)
+        topo_low.grid = downscale_RasterGrid(self.grid, self.par['lores_f'], appl = 'pooling')
+        topo_low.z = GenMR_utils.pooling(self.topo.z, self.par['lores_f'], method = 'mean')
+        natLand_low = copy.copy(natLand)
+        natLand_low.grid = downscale_RasterGrid(self.grid, self.par['lores_f'], appl = 'pooling')
+        natLand_low.S = GenMR_utils.pooling(natLand.S, self.par['lores_f'], method = 'min')
+        self.roadNet = EnvObj_roadNetwork(topo_low, natLand_low, self.par)
+        # init sublayers
+        self.built = np.zeros((self.grid.nx,self.grid.ny), dtype = int)         # 0: not built, 1: built
+        self.roads = np.zeros((self.grid.nx,self.grid.ny), dtype = int)         # 0: no road, 1: road
+        self.built_type = np.full((self.grid.nx,self.grid.ny), -1, dtype = int) # 0: commercial, 1: industry, 2: residential
+        self.built_type[natLand.S == -1] = 3                                    # 3: water (+4: roads)
+        self.built[np.where(self.grid.x > self.par['city_seed'][0]-1e-6)[0][0], 
+                   np.where(self.grid.y > self.par['city_seed'][1]-1e-6)[0][0]] = 1
+        self.built_yr = np.full((self.grid.nx,self.grid.ny), np.nan)
+        self.built_yr[self.built == 1] = self.year
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        self.year += 1
+        built_new = np.zeros((self.grid.nx,self.grid.ny))
+        slope = self.topo.slope
+        # spontaneous growth
+        for k in range(self.disp_val):
+            nroad_px = np.sum(self.roads == 1)
+            if nroad_px != 0:
+                i_road, j_road = np.where(self.roads == 1)
+                rdm = np.random.choice(np.arange(nroad_px))
+                i_rdm, j_rdm = [i_road[rdm], j_road[rdm]]
+                if self.urban_yes[i_rdm,j_rdm] and np.random.random(1) < \
+                        self.calc_Pr_urbanise(slope[i_rdm,j_rdm], self.par) \
+                        and i_rdm > 1 and i_rdm < self.grid.nx-2 and j_rdm > 1 and j_rdm < self.grid.ny-2:
+                    self.built[i_rdm,j_rdm] = 1           # step (i)
+                    # new spreading center growth
+                    if np.random.random(1) < self.par['SLEUTH_breed'] / 100:
+                        i_neighbor, j_neighbor = GenMR_utils.get_neighborhood_ind(i_rdm, j_rdm, self.built.shape, 1)
+                        urban_yes_neighbor = self.urban_yes[i_neighbor, j_neighbor]
+                        built_neighbor = self.built[i_neighbor, j_neighbor]
+                        slope_neighbor = slope[i_neighbor, j_neighbor]
+                        indbuild = np.logical_and(urban_yes_neighbor, built_neighbor != 1)
+                        nbuild = np.sum(indbuild)
+                        if nbuild > 0:
+                            for l in range(np.min([nbuild, 2])):
+                                indnew = np.random.choice(np.where(indbuild)[0], 1)[0]
+                                if np.random.random(1) < self.calc_Pr_urbanise(slope_neighbor[indnew], self.par):
+                                    i_new = i_neighbor[indnew]
+                                    j_new = j_neighbor[indnew]
+                                    self.built[i_new,j_new] = 1          # step (ii)
+                                    built_new[i_new,j_new] = 1
+        # edge growth
+        i_built, j_built = np.where(self.built == 1)
+        nbuilt = len(i_built)
+        for k in range(nbuilt):
+            if self.urban_yes[i_built[k], j_built[k]] and np.random.random(1) < self.par['SLEUTH_spread'] / 100 \
+                    and i_built[k] > 1 and i_built[k] < self.grid.nx - 2 \
+                    and j_built[k] > 1 and j_built[k] < self.grid.ny - 2:
+                i_neighbor, j_neighbor = GenMR_utils.get_neighborhood_ind(i_built[k], j_built[k], self.built.shape, 1)
+                built_neighbor = self.built[i_neighbor, j_neighbor]
+                slope_neighbor = slope[i_neighbor, j_neighbor]
+                indempty = np.where(built_neighbor == 0)[0]
+                nempty = len(indempty)
+                if nempty > 0:
+                    n_builtneighbors = np.array([np.sum(self.built[ \
+                                        GenMR_utils.get_neighborhood_ind(i_neighbor[indempty][l], \
+                                        j_neighbor[indempty][l], self.built.shape, 1)]) for l in range(nempty)])
+
+                    valid_cell = np.where(n_builtneighbors > 1)[0]
+                    for l in range(np.min([len(valid_cell), 2])):
+                        indnew = np.random.choice(valid_cell, 1)[0]
+                        if np.random.random(1) < self.calc_Pr_urbanise(slope_neighbor[indempty][indnew], self.par):
+                            self.built[i_neighbor[indempty][indnew], j_neighbor[indempty][indnew]] = 1  # step (iii)
+                            built_new[i_neighbor[indempty][indnew], j_neighbor[indempty][indnew]] = 1
+        # Insert road network growth within SLEUTH    
+        for rr in range(self.par['road_growth']):
+               next(self.roadNet)
+        # transfer road network to SLEUTH grid
+        node_x, node_y, edge_x, edge_y = GenMR_utils.get_net_coord(self.roadNet.net)
+        nedge = int(len(edge_x)/3)
+        for i in range(nedge):
+            k = i*3
+            if edge_x[k+1] - edge_x[k] < 0:
+                graph_road_x = np.arange(edge_x[k+1], edge_x[k], self.grid.w / 10)
+                graph_road_y = edge_y[k] + (graph_road_x - edge_x[k]) * \
+                                (edge_y[k+1] - edge_y[k]) / (edge_x[k+1] - edge_x[k])
+            if edge_x[k+1] - edge_x[k] == 0:
+                graph_road_x = np.repeat(edge_x[k+1], 200)
+                graph_road_y = np.linspace(edge_y[k], edge_y[k+1], 200)
+            if edge_x[k+1] - edge_x[k] > 0:
+                graph_road_x = np.arange(edge_x[k], edge_x[k+1], self.grid.w / 10)
+                graph_road_y = edge_y[k] + (graph_road_x - edge_x[k]) * \
+                                (edge_y[k+1] - edge_y[k]) / (edge_x[k+1] - edge_x[k])
+            for l in range(len(graph_road_x)):
+                ix = np.where(self.grid.x > graph_road_x[l]-1e-6)[0]
+                iy = np.where(self.grid.y > graph_road_y[l]-1e-6)[0]
+                self.roads[ix[0],iy[0]] = 1
+            if i == 0:
+                road_coords = np.array([graph_road_x, graph_road_y, np.repeat(i, len(graph_road_x))])
+            else:
+                road_coords = np.append(road_coords, [graph_road_x, graph_road_y, \
+                                                      np.repeat(i, len(graph_road_x))], axis=1)
+        self.built_type[self.roads == 1] = 4
+        # road-influenced growth
+        i_newbuilt, j_newbuilt = np.where(built_new == 1)
+        n_newbuilt = len(i_newbuilt)
+        kk = 0
+        for k in range(n_newbuilt):
+            loc_rdm = np.random.choice(np.arange(n_newbuilt), 1)[0]
+            d2road = np.sqrt((road_coords[0,:] - self.grid.x[i_newbuilt][loc_rdm])**2 + \
+                             (road_coords[1,:] - self.grid.y[j_newbuilt][loc_rdm])**2)
+            mind2road = np.min(d2road)
+            if mind2road <= self.max_roadsearch * self.grid.w and kk < self.par['SLEUTH_breed']:
+                kk += 1
+                loc_roadpixel = np.where(d2road == mind2road)[0][0]
+                loc_roadrdm = loc_roadpixel + np.random.choice([-1,1],1)[0] * \
+                                    int(np.random.random(1)* self.par['SLEUTH_disp'] * 200)
+                if loc_roadrdm < 0:
+                    loc_roadrdm = 0
+                if loc_roadrdm >= len(road_coords[0,:]):
+                    loc_roadrdm = len(road_coords[0,:])-1
+                x_road = road_coords[0,loc_roadrdm]
+                y_road = road_coords[1,loc_roadrdm]
+                i_road = np.where(self.grid.x > x_road-1e-6)[0][0]
+                j_road = np.where(self.grid.y > y_road-1e-6)[0][0]
+                i_neighbor, j_neighbor = GenMR_utils.get_neighborhood_ind(i_road, j_road, self.built.shape, 1)
+                built_neighbor = self.built[i_neighbor, j_neighbor]
+                slope_neighbor = slope[i_neighbor, j_neighbor]
+                indempty = np.where(built_neighbor == 0)[0]
+                nempty = len(indempty)
+                if nempty > 0:
+                    indnew = np.random.choice(indempty, 1)[0]
+                    if np.random.random(1) < self.calc_Pr_urbanise(slope_neighbor[indnew], self.par):
+                        self.built[i_neighbor[indnew], j_neighbor[indnew]] = 1    # step (iv)
+                        i_neighbor2, j_neighbor2 = GenMR_utils.get_neighborhood_ind(i_neighbor[indnew], \
+                                                                        j_neighbor[indnew], self.built.shape, 1)
+                        built_neighbor = self.built[i_neighbor2, j_neighbor2]
+                        slope_neighbor = slope[i_neighbor2, j_neighbor2]
+                        indempty = np.where(built_neighbor == 0)[0]
+                        nempty = len(indempty)
+                        if nempty >= 2:
+                            indnew = np.random.choice(indempty, 2)
+                            self.built[i_neighbor2[indnew], j_neighbor2[indnew]] = 1    # step (iv)
+        # remove what grew into the mask
+        self.built[~self.urban_yes] = 0
+        # urban use
+        self.built_type = self.get_S_urban(self.built, self.built_type)
+        # update final built type: change road to C,I or H
+        m_kd = self.transform_landUse()
+        indroad = np.where(np.logical_and(self.built == 1, self.built_type == 4))[0]
+        nroad = len(indroad)
+        #state0_rdm = np.random.choice([0,1,1,1,1,2,2,2,2,2,2,2], nroad)
+        state0_rdm = np.repeat(2, nroad)
+        newstate_road = np.zeros(nroad, dtype = int)
+        newstate_road[:] = -1
+        for k in range(nroad):
+            i_road, j_road = np.where(np.logical_and(self.built == 1, self.built_type == 4))
+            i_neighbor, j_neighbor = GenMR_utils.get_neighborhood_ind(i_road[k], j_road[k], \
+                                                                      self.built.shape, 6, 'White_etal1997')
+            neighbor_k = self.built_type[i_neighbor, j_neighbor]
+            neighbor_d = self.get_d4mkd(i_road[k], j_road[k], i_neighbor, j_neighbor)
+            newstate_road[k] = self.get_state_built(state0_rdm[k], neighbor_k, neighbor_d, m_kd)
+        self.built_type[np.logical_and(self.built == 1, self.built_type == 4)] = newstate_road
+        # land use state
+        self.S[self.built_type == 2] = 2  # housing
+        self.S[self.built_type == 1] = 3  # industry
+        self.S[self.built_type == 0] = 4  # commercial
+        # built attributes
+        self.built_yr[np.logical_and(self.S >= 2, np.isnan(self.built_yr))] = self.year
+
+    @property
+    def roadNet_coord(self):
+        node_x, node_y, edge_x, edge_y = GenMR_utils.get_net_coord(self.roadNet.net)
+        return node_x, node_y, edge_x, edge_y
+    
+    @property
+    def bldg_type(self):
+        val = np.full((self.grid.nx, self.grid.ny), np.nan, dtype = object)
+        val[self.S == 2] = np.where(np.random.random(np.sum(self.S == 2)) >= self.par['res_wood2brick_ratio'], 'M', 'W')
+        val[self.S == 3] = 'S'
+        val[self.S == 4] = 'RC'
+        return val
+
+    @property
+    def bldg_roofpitch(self):
+        val = np.full((self.grid.nx, self.grid.ny), np.nan, dtype = object)
+        val[self.S == 2] = 'H'
+        val[self.S == 3] = 'L'
+        val[self.S == 4] = 'M'
+        return val
+
+    @property
+    def bldg_value(self):
+        c1 = [24.1, 30.8, 33.6]
+        c2 = [.385, .325, .357]
+        val = np.full((self.grid.nx, self.grid.ny), np.nan)
+        val[self.S == 2] = c1[0] * self.par['GPD_percapita_USD'] **c2[0] * (self.grid.w*1e3)**2
+        val[self.S == 3] = c1[1] * self.par['GPD_percapita_USD'] **c2[1] * (self.grid.w*1e3)**2
+        val[self.S == 4] = c1[2] * self.par['GPD_percapita_USD'] **c2[2] * (self.grid.w*1e3)**2
+        return val
+    
+    @property
+    def infiltration(self):
+        # to add - function of built, forest, grassland -> to be used in FF model
+        return None
+
+    def calc_Pr_urbanise(self, slope, par):
+        expo = par['SLEUTH_slope'] /100 /2.
+        pr = ((par['SLEUTH_maxslope'] - np.round(slope)) / par['SLEUTH_maxslope'])**expo
+        if slope >= par['SLEUTH_maxslope']:
+            pr = 0
+        return pr
+    
+    def transform_landUse(self):
+        # White et al. 1997 functions
+        nk = 5       # state 0=C, 1=I, 2=H, 3=W, 4=R
+        nd = 18      # distances
+        m_kd = np.zeros(shape=(3,nk,nd)) # potential to transform to Commercial, Industry, Housing
+        m_kd[0,0,:] = [98,98,98,98,38,19,-20,-21,-21,-20,-20,-21,-21,-21,-21,-20,-20,-20]
+        m_kd[0,2,:] = [12,8,7,5,5,4,4,3,2,3,2,2,3,2,3,2,3,2]
+        m_kd[0,4,0:2] = [98,97]
+        m_kd[1,1,:] = [98,97,98,41,15,5,6,5,5,6,7,3,4,0,0,0,0,0]
+        m_kd[1,2,:] = [0,0,1,1,2,2,3,4,5,6,7,7,7,7,7,6,6,5]
+        m_kd[1,3,0:7] = [56,50,43,35,24,15,6]
+        m_kd[2,0,:] = [-20,0,22,21,18,18,16,15,14,13,11,10,8,7,7,5,5,5]
+        m_kd[2,1,:] = [-31,-27,-21,-8,-1,3,4,6,6,6,5,6,6,6,6,6,6,6]
+        m_kd[2,2,:] = [34,27,23,21,15,14,11,10,9,7,7,6,4,3,4,3,4,3]
+        m_kd[2,3,0:3] = [43,23,8]
+        m_kd[2,4,:] = [-5,-1,3,3,4,4,4,4,4,3,4,3,3,3,3,3,3,4]
+        return m_kd
+
+    def get_d4mkd(self, ic, jc, i_test, j_test):
+        r = np.sqrt((i_test-ic)**2 + (j_test-jc)**2)
+        d = [1, np.sqrt(2), 2, np.sqrt(5), np.sqrt(8), 3, np.sqrt(10), np.sqrt(13), 4, np.sqrt(17), \
+             np.sqrt(18), np.sqrt(20), 5, np.sqrt(26), np.sqrt(29), np.sqrt(32), np.sqrt(34), 6]
+        neighbor_d = np.concatenate([np.where(d == r[i])[0] for i in range(112)]).ravel()
+        return neighbor_d
+
+    def get_state_built(self, state0, neighbor_k, neighbor_d, m_kd):
+        alpha = 1.5
+        v = 1 + (-np.log(np.random.random(3)))**alpha
+        H = np.identity(3)
+        indnoNaN = np.where(neighbor_k != -1)[0]
+        if len(indnoNaN) != 0:
+            prC = v[0] * (1 + np.sum(m_kd[0, neighbor_k[indnoNaN], neighbor_d[indnoNaN]])) + H[state0,0]*4000
+            prI = v[1] * (1 + np.sum(m_kd[1, neighbor_k[indnoNaN], neighbor_d[indnoNaN]])) + H[state0,1]*2000  #3000
+            prH = v[2] * (1 + np.sum(m_kd[2, neighbor_k[indnoNaN], neighbor_d[indnoNaN]])) + H[state0,2]*4000
+            pr = [prC, prI, prH]
+            new_state = np.where(pr == np.max(pr))[0]
+        else:
+            new_state = state0
+        return new_state
+
+    def get_S_urban(self, built, built_type):
+        '''
+        '''
+        m_kd = self.transform_landUse()
+        i_built, j_built = np.where(built == 1)
+        indinit = np.where(built_type[i_built, j_built] == -1)[0]
+    #    built_type[i_built[indinit], j_built[indinit]] = np.random.choice([0,1,1,1,1,2,2,2,2,2,2,2], len(indinit))
+        built_type[i_built[indinit], j_built[indinit]] = np.repeat(2, len(indinit))
+        # all built environment follows White et al. 1997 distribution 
+        for k in range(len(i_built)):
+            i_neighbor, j_neighbor = GenMR_utils.get_neighborhood_ind(i_built[k], j_built[k], built.shape, \
+                                                                      6, 'White_etal1997')
+            neighbor_k = built_type[i_neighbor, j_neighbor]
+            neighbor_d = self.get_d4mkd(i_built[k], j_built[k], i_neighbor, j_neighbor)
+            state0 = built_type[i_built[k], j_built[k]]
+            if state0 < 4:   # water (3) state fixed - roads (4) too in loop
+                built_type[i_built[k], j_built[k]] = self.get_state_built(state0, neighbor_k, neighbor_d, m_kd)
+        return built_type
 
 
 
