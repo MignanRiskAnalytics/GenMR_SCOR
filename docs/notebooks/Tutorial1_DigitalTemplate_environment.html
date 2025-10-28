@@ -90,6 +90,20 @@
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.slope"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.slope</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.bldg_roofpitch"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.bldg_roofpitch</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.bldg_type"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.bldg_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.bldg_value"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.bldg_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.calc_Pr_urbanise"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.calc_Pr_urbanise()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.get_S_urban"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_S_urban()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.get_d4mkd"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_d4mkd()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.get_state_built"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_state_built()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.infiltration"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.infiltration</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.roadNet_coord"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.roadNet_coord</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.transform_landUse"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.transform_landUse()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.EnvObj_roadNetwork"><code class="docutils literal notranslate"><span class="pre">EnvObj_roadNetwork</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.RasterGrid"><code class="docutils literal notranslate"><span class="pre">RasterGrid</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.Src"><code class="docutils literal notranslate"><span class="pre">Src</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.Src.EQ_char"><code class="docutils literal notranslate"><span class="pre">Src.EQ_char</span></code></a></li>
@@ -114,6 +128,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.flatten_list"><code class="docutils literal notranslate"><span class="pre">flatten_list()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.get_data"><code class="docutils literal notranslate"><span class="pre">get_data()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.get_neighborhood_ind"><code class="docutils literal notranslate"><span class="pre">get_neighborhood_ind()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.get_net_coord"><code class="docutils literal notranslate"><span class="pre">get_net_coord()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.incrementing"><code class="docutils literal notranslate"><span class="pre">incrementing()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.init_io"><code class="docutils literal notranslate"><span class="pre">init_io()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.load_json2dict"><code class="docutils literal notranslate"><span class="pre">load_json2dict()</span></code></a></li>
@@ -137,7 +152,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#a-note-on-environmental-layer-downscaling">1.5. A note on environmental layer downscaling</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#technological-environment-generation">2. Technological environment generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#technological-environment-generation">2. Technological environment generation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#generating-the-urban-land-layer-and-road-network-object">2.1. Generating the urban land layer (and road network object)</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -170,7 +188,7 @@
 <h1>Tutorial 1: Generating a virtual environment for the GenMR digital template<a class="headerlink" href="#tutorial-1-generating-a-virtual-environment-for-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 0.1<br />
-<strong>Last Updated:</strong> 2025-10-23<br />
+<strong>Last Updated:</strong> 2025-10-27<br />
 <strong>License:</strong> AGPL-3</p>
 <p>The <em>digital template</em>, first described in <a class="reference external" href="https://www.mdpi.com/1660-4601/19/23/16097">Mignan (2022)</a> and used in the CAT Risk Modelling Sandbox <a class="reference external" href="https://github.com/amignan/Intro2CATriskModelling/blob/main/CATRiskModellingSandbox_tutorial.ipynb">Mignan (2024)</a>, is a microcosm simulation of the complex Earth system for catastrophe dynamics R&amp;D, multi-risk prototyping in the Generic Multi-Risk (GenMR) framework, and catastrophe risk eduction. It is defined as a virtual environment populated by loss-generating events that interact with each other and with the environment. The virtual environment, to be built in this tutorial, is composed of <em>environmental layers</em> that consist of sets of variables <span class="math notranslate nohighlight">\(\theta(x,y)\)</span> defined in a spatial grid of coordinates <span class="math notranslate nohighlight">\((x,y)\)</span>. Each layer may be altered by <em>environmental objects</em> located within the layer. The parsimonious complex Earth system finally consists of a stack of interacting environmental layers defined in the natural, technological and socio-economic systems. The loss-generating events that populate the virtual environment will be defined in the next tutorial, and their occurrence rates and interactions in a third and final tutorial.</p>
 <p>Currently, a limited number of environmental layers and objects are available (Fig. 1, Table 1). This notebook provides a concise overview of these layers using a default parameterisation, with alternative scenarios to be introduced later in the How-To Guides. The outputs generated here will serve as input for hazard and risk assessments in the subsequent tutorials.</p>
@@ -336,7 +354,7 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/224d92b451075364d51cf50a0b79a4af6afbb15e25f667de97c69c3297e97e2a.png" src="../_images/224d92b451075364d51cf50a0b79a4af6afbb15e25f667de97c69c3297e97e2a.png" />
+<img alt="../_images/53ee9b998c7b2b5f65767d733eaed37ac23cdf5139ffbc2f95d73c6c3bdc49ff.png" src="../_images/53ee9b998c7b2b5f65767d733eaed37ac23cdf5139ffbc2f95d73c6c3bdc49ff.png" />
 </div>
 </div>
 </section>
@@ -387,7 +405,7 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:458: RuntimeWarning: invalid value encountered in sqrt
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:460: RuntimeWarning: invalid value encountered in sqrt
   zth_tmp = Pe * np.sqrt(1 - (x_rot-xc_rot)**2/Le**2 - (y_rot-yc_rot)**2/We**2) +zc[seg]
 </pre></div>
 </div>
@@ -415,11 +433,11 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:603: RuntimeWarning: divide by zero encountered in divide
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:605: RuntimeWarning: divide by zero encountered in divide
   FS = (par[&#39;Ceff_Pa&#39;] / (par[&#39;rho_kg/m3&#39;] * GenMR_utils.g_earth * h) + np.cos(slope * np.pi/180) * \
 </pre></div>
 </div>
-<img alt="../_images/935c668d72a5e78962d13f4e25a097bb3a43ebbf52325974d80dfb7264e9dfb2.png" src="../_images/935c668d72a5e78962d13f4e25a097bb3a43ebbf52325974d80dfb7264e9dfb2.png" />
+<img alt="../_images/b4afed5ae0ce10e1c70156ba5e055885973d1ff62a881d596f49408a732a8ff6.png" src="../_images/b4afed5ae0ce10e1c70156ba5e055885973d1ff62a881d596f49408a732a8ff6.png" />
 </div>
 </div>
 <p>The function <code class="docutils literal notranslate"><span class="pre">plot_EnvLayer_attr()</span></code> plots individual attributes (incl. properties) from environmental layers. If the elevation is given in the argument <code class="docutils literal notranslate"><span class="pre">hillshading_z</span></code>, hill shading is added in the background.</p>
@@ -432,13 +450,13 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:603: RuntimeWarning: divide by zero encountered in divide
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:605: RuntimeWarning: divide by zero encountered in divide
   FS = (par[&#39;Ceff_Pa&#39;] / (par[&#39;rho_kg/m3&#39;] * GenMR_utils.g_earth * h) + np.cos(slope * np.pi/180) * \
 </pre></div>
 </div>
-<img alt="../_images/dd40c7ce7cf190f53f76bd8364c9b231dfe79d4cfce8fe7d8f62004af8f18227.png" src="../_images/dd40c7ce7cf190f53f76bd8364c9b231dfe79d4cfce8fe7d8f62004af8f18227.png" />
-<img alt="../_images/a5cac0af0af32717420da484f1aad56c4205bcb1e3ea45505ec1c26b6b164eca.png" src="../_images/a5cac0af0af32717420da484f1aad56c4205bcb1e3ea45505ec1c26b6b164eca.png" />
-<img alt="../_images/94416591544298f5c2a8ff166075ed0de1a780086c7112f1a70e0a9ab47a3c08.png" src="../_images/94416591544298f5c2a8ff166075ed0de1a780086c7112f1a70e0a9ab47a3c08.png" />
+<img alt="../_images/70464cb38d9485ae80f0f6fcfb4cf7558ffcfac11a3f55e06464a4332b9f1867.png" src="../_images/70464cb38d9485ae80f0f6fcfb4cf7558ffcfac11a3f55e06464a4332b9f1867.png" />
+<img alt="../_images/aec82bf6a793f3ca958a31564ab42ba6ae23df9d44045b6d5f33e8d564916437.png" src="../_images/aec82bf6a793f3ca958a31564ab42ba6ae23df9d44045b6d5f33e8d564916437.png" />
+<img alt="../_images/763ae87923a87fd37faeeb07be528d589300d2b8823f3f0122ddb868e1b30350.png" src="../_images/763ae87923a87fd37faeeb07be528d589300d2b8823f3f0122ddb868e1b30350.png" />
 </div>
 </div>
 </section>
@@ -458,7 +476,7 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/d231c99344b8d959187644449c448bc6a89ee741babafe5a09ae0d69ba10efa7.png" src="../_images/d231c99344b8d959187644449c448bc6a89ee741babafe5a09ae0d69ba10efa7.png" />
+<img alt="../_images/0fce340264863da8766c12047e6dd41227a0a85ac2c939cf7c349c3c77c2fb91.png" src="../_images/0fce340264863da8766c12047e6dd41227a0a85ac2c939cf7c349c3c77c2fb91.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -472,7 +490,7 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/92d323574777cc603d558f9d238a89b5f0549cab665ce289e76fe9c32cc71138.png" src="../_images/92d323574777cc603d558f9d238a89b5f0549cab665ce289e76fe9c32cc71138.png" />
+<img alt="../_images/663f3b3dd16c3f05a62781c0a304e5c2a24d09beda7acfecace5fd222d0b80f0.png" src="../_images/663f3b3dd16c3f05a62781c0a304e5c2a24d09beda7acfecace5fd222d0b80f0.png" />
 </div>
 </div>
 </section>
@@ -480,7 +498,98 @@ The environmental layers are generated as follows:
 <section id="technological-environment-generation">
 <h2>2. Technological environment generation<a class="headerlink" href="#technological-environment-generation" title="Link to this heading"></a></h2>
 <p>The technological system refers to all things produced by humans. This includes the built environment and critical infrastructures (transportation network, energy production and distribution). Goods and services (via businesses) will be defined in the socio-economic system.</p>
-<p>TO DEVELOP…</p>
+<section id="generating-the-urban-land-layer-and-road-network-object">
+<h3>2.1. Generating the urban land layer (and road network object)<a class="headerlink" href="#generating-the-urban-land-layer-and-road-network-object" title="Link to this heading"></a></h3>
+<p>The <em>urban land layer</em> (parameterized in <code class="docutils literal notranslate"><span class="pre">urbLandPar</span></code>) updates the natural land layer by urbanising grid pixels with new states <span class="math notranslate nohighlight">\(S = 2\)</span> for residential, <span class="math notranslate nohighlight">\(S = 3\)</span> for industrial and <span class="math notranslate nohighlight">\(S = 4\)</span> for commercial. The city nucleates at <code class="docutils literal notranslate"><span class="pre">city_seed</span></code><span class="math notranslate nohighlight">\((x,y)\)</span> and grows for a period <code class="docutils literal notranslate"><span class="pre">city_yrs</span></code> by following the main rules of the SLEUTH CA (Clarke et al., 1997; Candau et al., 2002; Candau, 2002) parameterized by <code class="docutils literal notranslate"><span class="pre">SLEUTH_*</span></code>. Each year, the city develops constrained on the road network configuration (an environmental object in the digital template) that grows in parallel to the city, and which is also based on a CA (Koenig &amp; Bauriedel, 2009) with parameters <code class="docutils literal notranslate"><span class="pre">road_*</span></code>. After each built per simulation-year, built grid pixels get their state <span class="math notranslate nohighlight">\(S\)</span> following the land-use transformation function of White et al. (1997:tab.1). The full description of this hybrid city-generator will be given in a future article (Mignan, in prep. - See also Mignan, 2024:boxes 3.1-3.3).</p>
+<div class="alert alert-block alert-info"> <b>On the SLEUTH model</b><br>
+Please note that the SLEUTH algorithm used for <code>GenMR</code> was developed from the modelling instructions provided in Clarke et al. (1997), Candau et al. (2002) and Candau (2002) to gain knowledge on the general process of city growth. It is therefore likely that the code differs in many ways from the official SLEUTH urban growth model. Consider using <code><a href="https://pypi.org/project/sleuth-automation/" target="_blank">sleuth-automation</a></code> for any dedicated SLEUTH model use. The class <code>GenMR.environment.EnvLayer_landUrb()</code> includes a road network CA within the SLEUTH loop and adds the land use transformation function of White et al. (1997) instead of the SLEUTH Deltatron at the end of each year-run.</div>
+<p>Depending on the parameterization (especially on the value of <code class="docutils literal notranslate"><span class="pre">city_yrs</span></code>), the city generation may take more than a few minutes! (possibly half an hour for a 100-year built). To expedite the process, the user could directly load the saved default <code class="docutils literal notranslate"><span class="pre">urbLandLayer</span></code> class instance by fixing <code class="docutils literal notranslate"><span class="pre">file_urbLandLayer</span> <span class="pre">=</span> <span class="pre">'envLayer_natLand_default.pkl'</span></code> below.</p>
+<p>For economic loss assessment in the next notebooks, additional attributes are defined per building block, function of the occupancy class. Four generic building materials <code class="docutils literal notranslate"><span class="pre">bldg_type</span></code> are considered: Wood (W), masonry (M), reinforced concrete (RC) and steel (S). Building value <code class="docutils literal notranslate"><span class="pre">bldg_value</span></code> is estimated as a function of GDP per capita (see parameter <code class="docutils literal notranslate"><span class="pre">GPD_percapita_USD</span></code>) following the power-law</p>
+<p><span class="math notranslate nohighlight">\(C = c_1 V^{c_2}\)</span></p>
+<p>where <span class="math notranslate nohighlight">\(C\)</span> is the building construction cost and <span class="math notranslate nohighlight">\(V\)</span> the GDP per capita (assuming parity between USD and EUR). Empirical parameters <span class="math notranslate nohighlight">\(c_1\)</span> and <span class="math notranslate nohighlight">\(c_2\)</span> are obtained from Huizinga et al. (2017). For different occupancy classes, we have:</p>
+<ul class="simple">
+<li><p>Residential: Wood (W) or masonry (M) depending on the ratio <code class="docutils literal notranslate"><span class="pre">bldg_res_wood2brick</span></code>, <span class="math notranslate nohighlight">\(c_1 = 24.1\)</span> and <span class="math notranslate nohighlight">\(c_2 = 0.385\)</span>;</p></li>
+<li><p>Commercial: Reinforced concrete (RC), <span class="math notranslate nohighlight">\(c_1 = 33.6\)</span> and <span class="math notranslate nohighlight">\(c_2 = 0.357\)</span>;</p></li>
+<li><p>Industrial: Steel (S), <span class="math notranslate nohighlight">\(c_1 = 30.8\)</span> and <span class="math notranslate nohighlight">\(c_2 = 0.325\)</span>.</p></li>
+</ul>
+<p>-&gt; ADD a modifying factor with distance from city center (or built year)…</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">file_urbLandLayer</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>           <span class="c1"># run the city growth model if &#39;&#39; provided</span>
+<span class="c1">#file_urbLandLayer = &#39;envLayer_urbLand.pkl&#39;</span>
+
+<span class="n">urbLandPar</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;lores_f&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;rdm_seed&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="c1"># seed does not work -&gt; find where to put it...</span>
+    <span class="s1">&#39;city_seed&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">40.5</span><span class="p">,</span><span class="mf">20.5</span><span class="p">],</span>     <span class="c1"># coordinates of city seed centre (put near river as historical centre)</span>
+    <span class="s1">&#39;city_yr0&#39;</span><span class="p">:</span> <span class="mi">1900</span><span class="p">,</span>             <span class="c1"># year of settlement creation</span>
+    <span class="s1">&#39;city_yrs&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>              <span class="c1"># number of years for urban growth from seed</span>
+    <span class="s1">&#39;SLEUTH_maxslope&#39;</span><span class="p">:</span> <span class="mi">22</span><span class="p">,</span>        <span class="c1"># cannot build above (degree) - Candau &amp; Rasmussen (2000:2)</span>
+    <span class="s1">&#39;SLEUTH_disp&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>            <span class="c1"># dispersion coefficient</span>
+    <span class="s1">&#39;SLEUTH_breed&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>           <span class="c1"># breed coefficient</span>
+    <span class="s1">&#39;SLEUTH_spread&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>          <span class="c1"># spread coefficient</span>
+    <span class="s1">&#39;SLEUTH_slope&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span>
+    <span class="s1">&#39;SLEUTH_roadg&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>            <span class="c1"># road gravity</span>
+    <span class="s1">&#39;road_growth&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>             <span class="c1"># number of road network nodes generated per year</span>
+    <span class="s1">&#39;road_Rmax&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>               <span class="c1"># max. radius in terms of number of perpendicular cells</span>
+    <span class="s1">&#39;road_maxslope&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>          <span class="c1"># cannot build above (degree)</span>
+    <span class="s1">&#39;road_X&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>                  <span class="c1"># </span>
+    <span class="s1">&#39;bldg_res_wood2brick&#39;</span><span class="p">:</span> <span class="mf">.5</span><span class="p">,</span>    <span class="c1"># ratio of number of res. blocks made of wood relative to bricks (masonry)</span>
+    <span class="s1">&#39;GPD_percapita_USD&#39;</span><span class="p">:</span> <span class="mf">40e3</span>     <span class="c1"># GDP per capita (USD) used to estimate construction cost for res, com, ind.</span>
+<span class="p">}</span>
+<span class="n">GenMR_utils</span><span class="o">.</span><span class="n">save_dict2json</span><span class="p">(</span><span class="n">urbLandPar</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;par_urbLand&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">file_urbLandLayer</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">urbLandLayer</span> <span class="o">=</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">load_pickle2class</span><span class="p">(</span><span class="s1">&#39;/io/&#39;</span> <span class="o">+</span> <span class="n">file_urbLandLayer</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;... urbLandLayer class instance loaded&#39;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">urbLandLayer</span> <span class="o">=</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">EnvLayer_urbLand</span><span class="p">(</span><span class="n">natLandLayer</span><span class="p">,</span> <span class="n">urbLandPar</span><span class="p">)</span>   <span class="c1"># init city instance</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">urbLandPar</span><span class="p">[</span><span class="s1">&#39;city_yrs&#39;</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="n">t</span> <span class="o">%</span> <span class="mi">10</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">urbLandLayer</span><span class="o">.</span><span class="n">built</span> <span class="o">==</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="nb">next</span><span class="p">(</span><span class="n">urbLandLayer</span><span class="p">)</span>   
+    <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">save_class2pickle</span><span class="p">(</span><span class="n">urbLandLayer</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;envLayer_urbLand&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0 1
+10 2716
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:990: RuntimeWarning: invalid value encountered in scalar power
+  pr = ((par[&#39;SLEUTH_maxslope&#39;] - np.round(slope)) / par[&#39;SLEUTH_maxslope&#39;])**expo
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>20 7785
+30 15216
+40 24844
+50 36578
+60 49865
+70 62504
+80 73050
+90 82763
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">urbLandLayer</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;GenMR.environment.EnvLayer_urbLand at 0x16dcc7390&gt;
+</pre></div>
+</div>
+</div>
+</div>
+</section>
 </section>
 </section>
 

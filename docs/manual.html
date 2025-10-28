@@ -89,6 +89,20 @@
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_topo.slope"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.slope</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.bldg_roofpitch"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.bldg_roofpitch</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.bldg_type"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.bldg_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.bldg_value"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.bldg_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.calc_Pr_urbanise"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.calc_Pr_urbanise()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.get_S_urban"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_S_urban()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.get_d4mkd"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_d4mkd()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.get_state_built"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_state_built()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.infiltration"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.infiltration</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.roadNet_coord"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.roadNet_coord</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.transform_landUse"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.transform_landUse()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.EnvObj_roadNetwork"><code class="docutils literal notranslate"><span class="pre">EnvObj_roadNetwork</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.RasterGrid"><code class="docutils literal notranslate"><span class="pre">RasterGrid</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.Src"><code class="docutils literal notranslate"><span class="pre">Src</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.Src.EQ_char"><code class="docutils literal notranslate"><span class="pre">Src.EQ_char</span></code></a></li>
@@ -113,6 +127,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.flatten_list"><code class="docutils literal notranslate"><span class="pre">flatten_list()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_data"><code class="docutils literal notranslate"><span class="pre">get_data()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_neighborhood_ind"><code class="docutils literal notranslate"><span class="pre">get_neighborhood_ind()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_net_coord"><code class="docutils literal notranslate"><span class="pre">get_net_coord()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.incrementing"><code class="docutils literal notranslate"><span class="pre">incrementing()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.init_io"><code class="docutils literal notranslate"><span class="pre">init_io()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.load_json2dict"><code class="docutils literal notranslate"><span class="pre">load_json2dict()</span></code></a></li>
@@ -133,6 +148,11 @@
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#natural-peril-definition-for-environmental-objects">1.2. Natural peril definition (for environmental objects)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#generating-the-topography-soil-and-land-layers">1.3. Generating the topography, soil, and land layers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#environmental-layer-properties-and-attribute-plotting">1.4. Environmental layer properties (and attribute plotting)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#a-note-on-environmental-layer-downscaling">1.5. A note on environmental layer downscaling</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#technological-environment-generation">2. Technological environment generation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#generating-the-urban-land-layer-and-road-network-object">2.1. Generating the urban land layer (and road network object)</a></li>
 </ul>
 </li>
 </ul>
@@ -198,7 +218,7 @@ defined as classes or methods.</p>
 <dd class="field-even"><p>0.1</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2025-10-20</p>
+<dd class="field-odd"><p>2025-10-27</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -314,6 +334,71 @@ sig: standard deviation for random deviations</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">slope</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_topo.slope" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">EnvLayer_urbLand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">natLand</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Generate a city for land use state classification. Model that combines the SLEUTH city growth CA,
+the road network growth CA of ref, and the land use state transformation method of …</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.bldg_roofpitch">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bldg_roofpitch</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand.bldg_roofpitch" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.bldg_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bldg_type</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand.bldg_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.bldg_value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bldg_value</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand.bldg_value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.calc_Pr_urbanise">
+<span class="sig-name descname"><span class="pre">calc_Pr_urbanise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand.calc_Pr_urbanise" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.get_S_urban">
+<span class="sig-name descname"><span class="pre">get_S_urban</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">built</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">built_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand.get_S_urban" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.get_d4mkd">
+<span class="sig-name descname"><span class="pre">get_d4mkd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i_test</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j_test</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand.get_d4mkd" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.get_state_built">
+<span class="sig-name descname"><span class="pre">get_state_built</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbor_k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbor_d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_kd</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand.get_state_built" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.infiltration">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">infiltration</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand.infiltration" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.roadNet_coord">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">roadNet_coord</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand.roadNet_coord" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.transform_landUse">
+<span class="sig-name descname"><span class="pre">transform_landUse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand.transform_landUse" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="GenMR.environment.EnvObj_roadNetwork">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">EnvObj_roadNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">topo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">land</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvObj_roadNetwork" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Generate a road network based on the CA described in …</p>
 </dd></dl>
 
 <dl class="py class">
@@ -557,7 +642,7 @@ core GenMR workflows by streamlining data handling, computation, and visualisati
 <dd class="field-even"><p>0.1</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2025-10-20</p>
+<dd class="field-odd"><p>2025-10-27</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -601,6 +686,11 @@ core GenMR workflows by streamlining data handling, computation, and visualisati
 <span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">get_neighborhood_ind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Moore'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.get_neighborhood_ind" title="Link to this definition"></a></dt>
 <dd><p>Get the indices of the neighboring cells, depending on method and radius of vision</p>
 </dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.get_net_coord">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">get_net_coord</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.get_net_coord" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="GenMR.utils.incrementing">

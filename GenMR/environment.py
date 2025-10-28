@@ -23,7 +23,7 @@ Planned Additions (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 0.1
-:Date: 2025-10-20
+:Date: 2025-10-27
 :License: AGPL-3
 """
 
@@ -38,6 +38,8 @@ from matplotlib.patches import Patch
 ls = plt_col.LightSource(azdeg=45, altdeg=45)
 
 from scipy.interpolate import RegularGridInterpolator
+
+import networkx as netx
 
 import GenMR.utils as GenMR_utils
 

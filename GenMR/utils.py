@@ -8,17 +8,21 @@ core GenMR workflows by streamlining data handling, computation, and visualisati
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 0.1
-:Date: 2025-10-20
+:Date: 2025-10-27
 :License: AGPL-3
 """
 
 
 import numpy as np
+
 import os
 import json
 import pickle
+
 import matplotlib.pyplot as plt
 import matplotlib.colors as plt_col
+
+import networkx as netx
 
 
 
@@ -208,6 +212,19 @@ def get_neighborhood_ind(i, j, grid_shape, r_v, method = 'Moore'):
         mask_cut[rad <= r_v] = 1
         mask_cut[i0,j0] = 0
     return [np.meshgrid(ik,jk)[i].flatten()[mask_cut.flatten()] for i in range(2)]
+
+
+
+########################
+# NETWORK MANIPULATION #
+########################
+def get_net_coord(net):
+    pos = netx.get_node_attributes(net, 'pos')
+    node_x = [xx for xx, yy in pos.values()]
+    node_y = [yy for xx, yy in pos.values()]
+    edge_x = [xx for n0, n1 in net.edges for xx in (pos[n0][0], pos[n1][0], None)]
+    edge_y = [yy for n0, n1 in net.edges for yy in (pos[n0][1], pos[n1][1], None)]
+    return node_x, node_y, edge_x, edge_y
 
 
 
