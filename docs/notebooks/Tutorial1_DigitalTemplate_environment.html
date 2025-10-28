@@ -154,6 +154,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#technological-environment-generation">2. Technological environment generation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#generating-the-urban-land-layer-and-road-network-object">2.1. Generating the urban land layer (and road network object)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#environmental-layer-properties">2.2. Environmental layer properties</a></li>
 </ul>
 </li>
 </ul>
@@ -188,7 +189,7 @@
 <h1>Tutorial 1: Generating a virtual environment for the GenMR digital template<a class="headerlink" href="#tutorial-1-generating-a-virtual-environment-for-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 0.1<br />
-<strong>Last Updated:</strong> 2025-10-27<br />
+<strong>Last Updated:</strong> 2025-10-28<br />
 <strong>License:</strong> AGPL-3</p>
 <p>The <em>digital template</em>, first described in <a class="reference external" href="https://www.mdpi.com/1660-4601/19/23/16097">Mignan (2022)</a> and used in the CAT Risk Modelling Sandbox <a class="reference external" href="https://github.com/amignan/Intro2CATriskModelling/blob/main/CATRiskModellingSandbox_tutorial.ipynb">Mignan (2024)</a>, is a microcosm simulation of the complex Earth system for catastrophe dynamics R&amp;D, multi-risk prototyping in the Generic Multi-Risk (GenMR) framework, and catastrophe risk eduction. It is defined as a virtual environment populated by loss-generating events that interact with each other and with the environment. The virtual environment, to be built in this tutorial, is composed of <em>environmental layers</em> that consist of sets of variables <span class="math notranslate nohighlight">\(\theta(x,y)\)</span> defined in a spatial grid of coordinates <span class="math notranslate nohighlight">\((x,y)\)</span>. Each layer may be altered by <em>environmental objects</em> located within the layer. The parsimonious complex Earth system finally consists of a stack of interacting environmental layers defined in the natural, technological and socio-economic systems. The loss-generating events that populate the virtual environment will be defined in the next tutorial, and their occurrence rates and interactions in a third and final tutorial.</p>
 <p>Currently, a limited number of environmental layers and objects are available (Fig. 1, Table 1). This notebook provides a concise overview of these layers using a default parameterisation, with alternative scenarios to be introduced later in the How-To Guides. The outputs generated here will serve as input for hazard and risk assessments in the subsequent tutorials.</p>
@@ -515,8 +516,8 @@ Please note that the SLEUTH algorithm used for <code>GenMR</code> was developed 
 <p>-&gt; ADD a modifying factor with distance from city center (or built year)…</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">file_urbLandLayer</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>           <span class="c1"># run the city growth model if &#39;&#39; provided</span>
-<span class="c1">#file_urbLandLayer = &#39;envLayer_urbLand.pkl&#39;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#file_urbLandLayer = &#39;&#39;           # run the city growth model if &#39;&#39; provided</span>
+<span class="n">file_urbLandLayer</span> <span class="o">=</span> <span class="s1">&#39;envLayer_urbLand.pkl&#39;</span>
 
 <span class="n">urbLandPar</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;lores_f&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;rdm_seed&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="c1"># seed does not work -&gt; find where to put it...</span>
@@ -557,36 +558,28 @@ Please note that the SLEUTH algorithm used for <code>GenMR</code> was developed 
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0 1
-10 2716
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:990: RuntimeWarning: invalid value encountered in scalar power
-  pr = ((par[&#39;SLEUTH_maxslope&#39;] - np.round(slope)) / par[&#39;SLEUTH_maxslope&#39;])**expo
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>20 7785
-30 15216
-40 24844
-50 36578
-60 49865
-70 62504
-80 73050
-90 82763
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>... urbLandLayer class instance loaded
 </pre></div>
 </div>
 </div>
 </div>
+</section>
+<section id="environmental-layer-properties">
+<h3>2.2. Environmental layer properties<a class="headerlink" href="#environmental-layer-properties" title="Link to this heading"></a></h3>
+<p>We will again use the function <code class="docutils literal notranslate"><span class="pre">plot_EnvLayer()</span></code> to display the environmental layer main attributes and other properties. For a <code class="docutils literal notranslate"><span class="pre">landUrbLayer</span></code> class instance, the main attribute is the land-use state <span class="math notranslate nohighlight">\(S\)</span>. The two properties are the linked road network <code class="docutils literal notranslate"><span class="pre">roadNet</span></code> and the asset value <code class="docutils literal notranslate"><span class="pre">expo_value</span></code> (function of a simple function relating price/m<span class="math notranslate nohighlight">\(^2\)</span> per occupancy type - add ref). The asset value will represent the exposure data for risk assessment in the next tutorial. More attributes are actually available (see full list in Table A1) and can be plotted individually by using <code class="docutils literal notranslate"><span class="pre">plot_EnvLayer_attr()</span></code> (an example is given below for year built).</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">urbLandLayer</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#GenMR_env.plot_EnvLayers([urbLandLayer], file_ext = &#39;jpg&#39;)</span>
+<span class="n">GenMR_env</span><span class="o">.</span><span class="n">plot_EnvLayers</span><span class="p">([</span><span class="n">topoLayer</span><span class="p">,</span> <span class="n">soilLayer</span><span class="p">,</span> <span class="n">natLandLayer</span><span class="p">,</span> <span class="n">urbLandLayer</span><span class="p">],</span> <span class="n">file_ext</span> <span class="o">=</span> <span class="s1">&#39;jpg&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;GenMR.environment.EnvLayer_urbLand at 0x16dcc7390&gt;
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:605: RuntimeWarning: divide by zero encountered in divide
+  FS = (par[&#39;Ceff_Pa&#39;] / (par[&#39;rho_kg/m3&#39;] * GenMR_utils.g_earth * h) + np.cos(slope * np.pi/180) * \
 </pre></div>
 </div>
+<img alt="../_images/3cef7b7856ac0d7e049217c14e5d0062bc5d757c6bbe4b606bd38f500dc86db3.png" src="../_images/3cef7b7856ac0d7e049217c14e5d0062bc5d757c6bbe4b606bd38f500dc86db3.png" />
 </div>
 </div>
 </section>
