@@ -157,6 +157,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#environmental-layer-properties">2.2. Environmental layer properties</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#appendix">Appendix</a></li>
 </ul>
 </li>
 </ul>
@@ -189,7 +191,7 @@
 <h1>Tutorial 1: Generating a virtual environment for the GenMR digital template<a class="headerlink" href="#tutorial-1-generating-a-virtual-environment-for-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 0.1<br />
-<strong>Last Updated:</strong> 2025-10-28<br />
+<strong>Last Updated:</strong> 2025-10-29<br />
 <strong>License:</strong> AGPL-3</p>
 <p>The <em>digital template</em>, first described in <a class="reference external" href="https://www.mdpi.com/1660-4601/19/23/16097">Mignan (2022)</a> and used in the CAT Risk Modelling Sandbox <a class="reference external" href="https://github.com/amignan/Intro2CATriskModelling/blob/main/CATRiskModellingSandbox_tutorial.ipynb">Mignan (2024)</a>, is a microcosm simulation of the complex Earth system for catastrophe dynamics R&amp;D, multi-risk prototyping in the Generic Multi-Risk (GenMR) framework, and catastrophe risk eduction. It is defined as a virtual environment populated by loss-generating events that interact with each other and with the environment. The virtual environment, to be built in this tutorial, is composed of <em>environmental layers</em> that consist of sets of variables <span class="math notranslate nohighlight">\(\theta(x,y)\)</span> defined in a spatial grid of coordinates <span class="math notranslate nohighlight">\((x,y)\)</span>. Each layer may be altered by <em>environmental objects</em> located within the layer. The parsimonious complex Earth system finally consists of a stack of interacting environmental layers defined in the natural, technological and socio-economic systems. The loss-generating events that populate the virtual environment will be defined in the next tutorial, and their occurrence rates and interactions in a third and final tutorial.</p>
 <p>Currently, a limited number of environmental layers and objects are available (Fig. 1, Table 1). This notebook provides a concise overview of these layers using a default parameterisation, with alternative scenarios to be introduced later in the How-To Guides. The outputs generated here will serve as input for hazard and risk assessments in the subsequent tutorials.</p>
@@ -501,9 +503,8 @@ The environmental layers are generated as follows:
 <p>The technological system refers to all things produced by humans. This includes the built environment and critical infrastructures (transportation network, energy production and distribution). Goods and services (via businesses) will be defined in the socio-economic system.</p>
 <section id="generating-the-urban-land-layer-and-road-network-object">
 <h3>2.1. Generating the urban land layer (and road network object)<a class="headerlink" href="#generating-the-urban-land-layer-and-road-network-object" title="Link to this heading"></a></h3>
-<p>The <em>urban land layer</em> (parameterized in <code class="docutils literal notranslate"><span class="pre">urbLandPar</span></code>) updates the natural land layer by urbanising grid pixels with new states <span class="math notranslate nohighlight">\(S = 2\)</span> for residential, <span class="math notranslate nohighlight">\(S = 3\)</span> for industrial and <span class="math notranslate nohighlight">\(S = 4\)</span> for commercial. The city nucleates at <code class="docutils literal notranslate"><span class="pre">city_seed</span></code><span class="math notranslate nohighlight">\((x,y)\)</span> and grows for a period <code class="docutils literal notranslate"><span class="pre">city_yrs</span></code> by following the main rules of the SLEUTH CA (Clarke et al., 1997; Candau et al., 2002; Candau, 2002) parameterized by <code class="docutils literal notranslate"><span class="pre">SLEUTH_*</span></code>. Each year, the city develops constrained on the road network configuration (an environmental object in the digital template) that grows in parallel to the city, and which is also based on a CA (Koenig &amp; Bauriedel, 2009) with parameters <code class="docutils literal notranslate"><span class="pre">road_*</span></code>. After each built per simulation-year, built grid pixels get their state <span class="math notranslate nohighlight">\(S\)</span> following the land-use transformation function of White et al. (1997:tab.1). The full description of this hybrid city-generator will be given in a future article (Mignan, in prep. - See also Mignan, 2024:boxes 3.1-3.3).</p>
-<div class="alert alert-block alert-info"> <b>On the SLEUTH model</b><br>
-Please note that the SLEUTH algorithm used for <code>GenMR</code> was developed from the modelling instructions provided in Clarke et al. (1997), Candau et al. (2002) and Candau (2002) to gain knowledge on the general process of city growth. It is therefore likely that the code differs in many ways from the official SLEUTH urban growth model. Consider using <code><a href="https://pypi.org/project/sleuth-automation/" target="_blank">sleuth-automation</a></code> for any dedicated SLEUTH model use. The class <code>GenMR.environment.EnvLayer_landUrb()</code> includes a road network CA within the SLEUTH loop and adds the land use transformation function of White et al. (1997) instead of the SLEUTH Deltatron at the end of each year-run.</div>
+<p>The <em>urban land layer</em> (parameterized in <code class="docutils literal notranslate"><span class="pre">urbLandPar</span></code>) updates the natural land layer by urbanising grid pixels with new states <span class="math notranslate nohighlight">\(S = 2\)</span> for residential, <span class="math notranslate nohighlight">\(S = 3\)</span> for industrial and <span class="math notranslate nohighlight">\(S = 4\)</span> for commercial. The city nucleates at <code class="docutils literal notranslate"><span class="pre">city_seed</span></code><span class="math notranslate nohighlight">\((x,y)\)</span> and grows for a period <code class="docutils literal notranslate"><span class="pre">city_yrs</span></code> by following the main rules of the SLEUTH CA (Clarke et al., 1997; Candau et al., 2002; Candau, 2002) parameterized by <code class="docutils literal notranslate"><span class="pre">SLEUTH_*</span></code>. Each year, the city develops constrained on the road network configuration (an environmental object in the digital template) that grows in parallel to the city, and which is also based on a CA (Koenig &amp; Bauriedel, 2009) with parameters <code class="docutils literal notranslate"><span class="pre">road_*</span></code>. After each built per simulation-year, built grid pixels get their state <span class="math notranslate nohighlight">\(S\)</span> following the land-use transformation function of White et al. (1997:tab.1). The full description of this hybrid city-generator will be given in a future article (Mignan, in prep. - See also <a class="reference external" href="https://www.cambridge.org/highereducation/books/introduction-to-catastrophe-risk-modelling/A3A5B5FB990921422BFEBB07734BF869#overview">Mignan, 2024:boxes 3.1-3.3</a>).</p>
+<p><strong>On the SLEUTH model:</strong> Please note that the SLEUTH algorithm used for <code>GenMR</code> was developed from the modelling instructions provided in Clarke et al. (1997), Candau et al. (2002) and Candau (2002) to gain knowledge on the general process of city growth. It is therefore likely that the code differs in many ways from the official SLEUTH urban growth model. Consider using <code><a href="https://pypi.org/project/sleuth-automation/" target="_blank">sleuth-automation</a></code> for any dedicated SLEUTH model use. The class <code>GenMR.environment.EnvLayer_landUrb()</code> includes a road network CA within the SLEUTH loop and adds the land use transformation function of White et al. (1997) instead of the SLEUTH Deltatron at the end of each year-run.</p>
 <p>Depending on the parameterization (especially on the value of <code class="docutils literal notranslate"><span class="pre">city_yrs</span></code>), the city generation may take more than a few minutes! (possibly half an hour for a 100-year built). To expedite the process, the user could directly load the saved default <code class="docutils literal notranslate"><span class="pre">urbLandLayer</span></code> class instance by fixing <code class="docutils literal notranslate"><span class="pre">file_urbLandLayer</span> <span class="pre">=</span> <span class="pre">'envLayer_natLand_default.pkl'</span></code> below.</p>
 <p>For economic loss assessment in the next notebooks, additional attributes are defined per building block, function of the occupancy class. Four generic building materials <code class="docutils literal notranslate"><span class="pre">bldg_type</span></code> are considered: Wood (W), masonry (M), reinforced concrete (RC) and steel (S). Building value <code class="docutils literal notranslate"><span class="pre">bldg_value</span></code> is estimated as a function of GDP per capita (see parameter <code class="docutils literal notranslate"><span class="pre">GPD_percapita_USD</span></code>) following the power-law</p>
 <p><span class="math notranslate nohighlight">\(C = c_1 V^{c_2}\)</span></p>
@@ -593,6 +594,139 @@ Please note that the SLEUTH algorithm used for <code>GenMR</code> was developed 
 </div>
 </div>
 </section>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Candau JT (2002), Temporal calibration sensitivity of the SLEUTH urban growth model. Master Thesis, University of California Santa Barbara, 130 pp.</p></li>
+<li><p>Clarke KC, Hoppen S, Gaydos L (1997), A self-modifying cellular automaton model of historical urbanization in the San Francisco Bay area. Environment and Planning B: Planning and Design, 24, 247-261.</p></li>
+<li><p>Koenig R, Bauriedel C (2009), Generating settlement structures: a method for urban planning and analysis supported by cellular automata. Environment and Planning B: Planning and Design, 36, 602-624.</p></li>
+<li><p>Mignan A (2022), A Digital Template for the Generic Multi-Risk (GenMR) Framework: A Virtual Natural Environment. International Journal of Environmental Research and Public Health, 19 (23), 16097, doi: 10.3390/ijerph192316097</p></li>
+<li><p>Mignan A (2024), Introduction to Catastrophe Risk Modelling - A Physics-based Approach. Cambridge University Press, doi: 10.1017/9781009437370</p></li>
+<li><p>Morgan-Wall T (2022), rayshader: Create Maps and Visualize Data in 2D and 3D. https://www.rayshader.com, https://github.com/tylermorganwall/rayshader, https://www.rayshader.com/.</p></li>
+<li><p>White R, Engelen G, Uljee I (1997), The use of constrained cellular automata for high-resolution modelling of urban land-use dynamics. Environment and Planning B: Planning and Design, 24, 323-343.</p></li>
+</ul>
+</section>
+<section id="appendix">
+<h2>Appendix<a class="headerlink" href="#appendix" title="Link to this heading"></a></h2>
+<center><small><b>Tab. A1.</b> Full list of attributes and properties in environmental layers <code>EnvLayer_ID</code>.</small></center>
+<br>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Layer ID</p></th>
+<th class="head text-left"><p>Attribute</p></th>
+<th class="head text-left"><p>ID</p></th>
+<th class="head text-left"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">topoLayer</span></code></p></td>
+<td class="text-left"><p>Elevation</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">z</span></code></p></td>
+<td class="text-left"><p>Main variable (m)</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">topoLayer</span></code></p></td>
+<td class="text-left"><p>Object coordinates</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">coastline_coord</span></code></p></td>
+<td class="text-left"><p>Coordinates of the coastline</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">topoLayer</span></code></p></td>
+<td class="text-left"><p>Object coordinates</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">river_coord</span></code></p></td>
+<td class="text-left"><p>Coordinates of the river(s)</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">topoLayer</span></code></p></td>
+<td class="text-left"><p>Slope</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">slope</span></code></p></td>
+<td class="text-left"><p>Terrain slope (<span class="math notranslate nohighlight">\(^\circ\)</span>)</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">topoLayer</span></code></p></td>
+<td class="text-left"><p>Aspect</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">aspect</span></code></p></td>
+<td class="text-left"><p>Azimuth that the terrain surface faces (<span class="math notranslate nohighlight">\(^\circ\)</span>)</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil</span></code></p></td>
+<td class="text-left"><p>Soil thickness</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">h</span></code></p></td>
+<td class="text-left"><p>Main variable (m)</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil</span></code></p></td>
+<td class="text-left"><p>Water column</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">hw</span></code></p></td>
+<td class="text-left"><p>Water height in soil (m)</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil</span></code></p></td>
+<td class="text-left"><p>Factor of safety value</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">FS_value</span></code></p></td>
+<td class="text-left"><p>Describes the stability level of the soil</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil</span></code></p></td>
+<td class="text-left"><p>Factor of safety state</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">FS_state</span></code></p></td>
+<td class="text-left"><p>stable (<span class="math notranslate nohighlight">\(=0\)</span>), critical (<span class="math notranslate nohighlight">\(=1\)</span>), unstable (<span class="math notranslate nohighlight">\(=2\)</span>)</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil</span></code></p></td>
+<td class="text-left"><p>Wetness</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">wetness</span></code></p></td>
+<td class="text-left"><p>Ratio between <code class="docutils literal notranslate"><span class="pre">hw</span></code> and <code class="docutils literal notranslate"><span class="pre">h</span></code></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand</span></code></p></td>
+<td class="text-left"><p>Land class</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">S</span></code></p></td>
+<td class="text-left"><p>Main variable, water (<span class="math notranslate nohighlight">\(=-1\)</span>), grassland (<span class="math notranslate nohighlight">\(=0\)</span>), forest (<span class="math notranslate nohighlight">\(=1\)</span>)</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand</span></code></p></td>
+<td class="text-left"><p>Water column</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">hW</span></code></p></td>
+<td class="text-left"><p>Water level above soil (in river)</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand</span></code></p></td>
+<td class="text-left"><p>Occupancy class</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">S</span></code></p></td>
+<td class="text-left"><p>Main varable, residential (<span class="math notranslate nohighlight">\(=2\)</span>), industrial (<span class="math notranslate nohighlight">\(=3\)</span>), commercial (<span class="math notranslate nohighlight">\(=4\)</span>)</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand</span></code></p></td>
+<td class="text-left"><p>Built year</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">built_yr</span></code></p></td>
+<td class="text-left"><p>Year in which the city block has been built</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand</span></code></p></td>
+<td class="text-left"><p>Object coordinates</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">roadNet_coord</span></code></p></td>
+<td class="text-left"><p>Coordinates of the road network</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand</span></code></p></td>
+<td class="text-left"><p>Building type</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">bldg_type</span></code></p></td>
+<td class="text-left"><p>Wood (<code class="docutils literal notranslate"><span class="pre">W</span></code>), masonry (<code class="docutils literal notranslate"><span class="pre">M</span></code>), reinforced concrete (<code class="docutils literal notranslate"><span class="pre">RC</span></code>), steel (<code class="docutils literal notranslate"><span class="pre">S</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand</span></code></p></td>
+<td class="text-left"><p>Building roof pitch</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">bldg_roofpitch</span></code></p></td>
+<td class="text-left"><p>Low (<code class="docutils literal notranslate"><span class="pre">L</span></code>), medium (<code class="docutils literal notranslate"><span class="pre">M</span></code>), high (<code class="docutils literal notranslate"><span class="pre">H</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand</span></code></p></td>
+<td class="text-left"><p>Building value</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">bldg_value</span></code></p></td>
+<td class="text-left"><p>Construction cost (currency unit)</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+</tbody>
+</table>
 </section>
 </section>
 
