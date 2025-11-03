@@ -3,7 +3,7 @@
 # GenMR
 
 GenMR is an open-source Python package for research and development in catastrophe dynamics. It provides the probabilistic Generic Multi-Risk (GenMR) framework along with a digital template for multi-risk simulations in a fully parameterizable virtual environment. The catastrophe dynamics process is structured into three sequential steps:
-1. Virtual environment generation - handled by `GenMR.environment.py` (*upcoming*)
+1. Virtual environment generation - handled by `GenMR.environment.py`
 2. Definition of stochastic events for individual perils - handled by `GenMR.perils.py` (*upcoming*)
 3. Simulation of chains-of-events and risk drivers - handled by `GenMR.dynamics.py` (*planned for Fall 2026*).
 
@@ -62,6 +62,7 @@ COMING LATER
 
 rationale
 manual
-Tutorial 1: Environment creation (in construction)<notebooks/Tutorial1_DigitalTemplate_environment>
+Tutorial 1: Environment generation<notebooks/Tutorial1_DigitalTemplate_environment>
+Tutorial 2: Peril implementation (in construction)<notebooks/Tutorial2_DigitalTemplate_perils>
 ```
 

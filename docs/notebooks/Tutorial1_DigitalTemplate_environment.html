@@ -22,6 +22,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorial 2: Implementing perils for the GenMR digital template" href="Tutorial2_DigitalTemplate_perils.html" />
     <link rel="prev" title="Reference manual" href="../manual.html" /> 
 </head>
 
@@ -143,7 +144,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial 1: Environment creation (in construction)</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial 1: Environment generation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#natural-environment-generation">1. Natural environment generation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#grid-definition">1.1. Grid definition</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#natural-peril-definition-for-environmental-objects">1.2. Natural peril definition (for environmental objects)</a></li>
@@ -159,6 +160,13 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#appendix">Appendix</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html">Tutorial 2: Peril implementation (in construction)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#event-set-definition">1. Event set definition</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#peril-source-definition">1.1. Peril source definition</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -192,7 +200,7 @@
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 0.1<br />
 <strong>Last Updated:</strong> 2025-10-29<br />
-<strong>License:</strong> AGPL-3</p>
+<strong>License:</strong> AGPL-3, https://opensource.org/license/agpl-v3</p>
 <p>The <em>digital template</em>, first described in <a class="reference external" href="https://www.mdpi.com/1660-4601/19/23/16097">Mignan (2022)</a> and used in the CAT Risk Modelling Sandbox <a class="reference external" href="https://github.com/amignan/Intro2CATriskModelling/blob/main/CATRiskModellingSandbox_tutorial.ipynb">Mignan (2024)</a>, is a microcosm simulation of the complex Earth system for catastrophe dynamics R&amp;D, multi-risk prototyping in the Generic Multi-Risk (GenMR) framework, and catastrophe risk eduction. It is defined as a virtual environment populated by loss-generating events that interact with each other and with the environment. The virtual environment, to be built in this tutorial, is composed of <em>environmental layers</em> that consist of sets of variables <span class="math notranslate nohighlight">\(\theta(x,y)\)</span> defined in a spatial grid of coordinates <span class="math notranslate nohighlight">\((x,y)\)</span>. Each layer may be altered by <em>environmental objects</em> located within the layer. The parsimonious complex Earth system finally consists of a stack of interacting environmental layers defined in the natural, technological and socio-economic systems. The loss-generating events that populate the virtual environment will be defined in the next tutorial, and their occurrence rates and interactions in a third and final tutorial.</p>
 <p>Currently, a limited number of environmental layers and objects are available (Fig. 1, Table 1). This notebook provides a concise overview of these layers using a default parameterisation, with alternative scenarios to be introduced later in the How-To Guides. The outputs generated here will serve as input for hazard and risk assessments in the subsequent tutorials.</p>
 <p><img alt="" src="../_images/digitaltemplate_env_rayshader.jpg" /></p>
@@ -735,6 +743,7 @@ The environmental layers are generated as follows:
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../manual.html" class="btn btn-neutral float-left" title="Reference manual" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Tutorial2_DigitalTemplate_perils.html" class="btn btn-neutral float-right" title="Tutorial 2: Implementing perils for the GenMR digital template" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
