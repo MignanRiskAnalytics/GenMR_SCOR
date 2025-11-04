@@ -32,11 +32,13 @@ import networkx as netx
 def init_io():
     '''
     Initialise required I/O directories for GenMR.
+
     Creates the following directories if they do not already exist:
-      - io/
-      - figs/
-      - figs/CellAut_steps/
-      - movs/
+
+    - io/
+    - figs/
+    - figs/CellAut_steps/
+    - movs/
     '''
     os.makedirs('io', exist_ok=True)
     os.makedirs('figs/CellAut_steps', exist_ok=True)

@@ -135,7 +135,7 @@ def pop_rdm_tracks(N, grid, par, extrabuffer_f = 3):
     '''
     Return coordinates of N tracks following pseudo-random walk.
     
-    Note:
+    Notes:
         For this version of the digital template, a very simple 
         approach used with track oriented W-E on average.
     '''
@@ -173,6 +173,8 @@ def gen_rdmcoord_tracks(N, grid, npt, max_deviation, rdm_seed = None):
     return x, y, ID
 
 def pop_grid_area(N, grid):
+    '''
+    '''
     box_x = np.tile([grid.xmin, grid.xmax, grid.xmax, grid.xmin, grid.xmin], N)
     box_y = np.tile([grid.ymin, grid.ymin, grid.ymax, grid.ymax, grid.ymin], N)
     return box_x, box_y
@@ -212,6 +214,8 @@ def calc_EQ_M2L(M):
     return 10**((M - 4.49) / 1.49)    # for floating rupture computations
 
 def get_highres(x0, y0, id0, par):
+    '''
+    '''
     x_hires = np.array([])
     y_hires = np.array([])
     id_hires = np.array([])

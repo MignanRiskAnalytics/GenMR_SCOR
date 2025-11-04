@@ -142,7 +142,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html">Tutorial 1: Environment creation (in construction)</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html">Tutorial 1: Environment generation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#natural-environment-generation">1. Natural environment generation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#grid-definition">1.1. Grid definition</a></li>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#natural-peril-definition-for-environmental-objects">1.2. Natural peril definition (for environmental objects)</a></li>
@@ -153,6 +153,17 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#technological-environment-generation">2. Technological environment generation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#generating-the-urban-land-layer-and-road-network-object">2.1. Generating the urban land layer (and road network object)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#environmental-layer-properties">2.2. Environmental layer properties</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#references">References</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#appendix">Appendix</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html">Tutorial 2: Peril implementation (in construction)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#probabilistic-hazard-assessment">1. Probabilistic hazard assessment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#peril-source-definition">1.1. Peril source definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#stochastic-event-set-generation">1.2. Stochastic event set generation</a></li>
 </ul>
 </li>
 </ul>
@@ -550,17 +561,25 @@ Canada, 21 September 1998</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="GenMR.environment.downscale_RasterGrid">
 <span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">downscale_RasterGrid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">appl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pooling'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.downscale_RasterGrid" title="Link to this definition"></a></dt>
-<dd><p>Reduce the resolution of a RasterGrid grid for specific applications.
-appl = topo for topography generation (with outer layer) for later upscaling</p>
-<blockquote>
-<div><p>= pooling for max- or mean-pooling</p>
-</div></blockquote>
+<dd><p>Reduce the resolution of a RasterGrid grid for specific applications.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">appl</span></code> parameter controls how the downscaling is performed:
+- <code class="docutils literal notranslate"><span class="pre">topo</span></code>: for topography generation (with outer layer) for later upscaling.
+- <code class="docutils literal notranslate"><span class="pre">pooling</span></code>: for max- or mean-pooling.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>xxx</strong></p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>grid</strong> (<a class="reference internal" href="#GenMR.environment.RasterGrid" title="GenMR.environment.RasterGrid"><em>RasterGrid</em></a>) – Input raster grid.</p></li>
+<li><p><strong>factor</strong> (<em>int</em>) – Downscaling factor.</p></li>
+<li><p><strong>appl</strong> (<em>str</em><em>, </em><em>optional</em>) – Application mode. Defaults to ‘pooling’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Downscaled raster grid.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#GenMR.environment.RasterGrid" title="GenMR.environment.RasterGrid">RasterGrid</a></p>
 </dd>
 </dl>
-<p>Returns:</p>
 </dd></dl>
 
 <dl class="py function">
@@ -607,7 +626,7 @@ per layer.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="GenMR.environment.plot_src">
-<span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">plot_src</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.plot_src" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">plot_src</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hillshading_z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.plot_src" title="Link to this definition"></a></dt>
 <dd><p>Plot peril sources in the spatial grid.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -702,16 +721,14 @@ or log space, or repeat xmax xbin times if method = ‘rep’.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="GenMR.utils.init_io">
 <span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">init_io</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.init_io" title="Link to this definition"></a></dt>
-<dd><p>Initialise required I/O directories for GenMR.
-Creates the following directories if they do not already exist:</p>
-<blockquote>
-<div><ul class="simple">
+<dd><p>Initialise required I/O directories for GenMR.</p>
+<p>Creates the following directories if they do not already exist:</p>
+<ul class="simple">
 <li><p>io/</p></li>
 <li><p>figs/</p></li>
 <li><p>figs/CellAut_steps/</p></li>
 <li><p>movs/</p></li>
 </ul>
-</div></blockquote>
 </dd></dl>
 
 <dl class="py function">

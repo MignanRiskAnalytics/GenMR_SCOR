@@ -146,14 +146,18 @@ class RasterGrid:
 def downscale_RasterGrid(grid, factor, appl = 'pooling'):
     '''
     Reduce the resolution of a RasterGrid grid for specific applications.
-    appl = topo for topography generation (with outer layer) for later upscaling
-         = pooling for max- or mean-pooling
-         
+
+    The ``appl`` parameter controls how the downscaling is performed:
+    - ``topo``: for topography generation (with outer layer) for later upscaling.
+    - ``pooling``: for max- or mean-pooling.
+
     Args:
-        xxx
-        
+        grid (RasterGrid): Input raster grid.
+        factor (int): Downscaling factor.
+        appl (str, optional): Application mode. Defaults to 'pooling'.
+
     Returns:
-        
+        RasterGrid: Downscaled raster grid.
     '''
     w = grid.w * factor
     if appl == 'topo':
