@@ -155,11 +155,14 @@ def pop_rdm_tracks(N, grid, par, extrabuffer_f = 3):
         track_y = np.append(track_y, y)
     return track_x, track_y
 
-def gen_rdmcoord_tracks(N, grid, npt, max_deviation):
+def gen_rdmcoord_tracks(N, grid, npt, max_deviation, rdm_seed = None):
     '''
     Return coordinates of N storm tracks, defined as straight lines
     subject to random deviation (below max_deviation) along y at npt points.
     '''
+    if rdm_seed is not None:
+        np.random.seed(rdm_seed)
+
     ID = np.repeat(np.arange(N)+1, npt)
     x = np.tile(np.linspace(grid.xmin, grid.xmax, npt), N)
     ystart = grid.ymin + np.random.random(N) * (grid.ymax - grid.ymin)
