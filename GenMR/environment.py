@@ -1065,7 +1065,7 @@ class EnvLayer_urbLand:
 # PLOTTING #
 ############
 
-def plot_src(src, file_ext = '-'):
+def plot_src(src, hillshading_z = '', file_ext = '-'):
     '''
     Plot peril sources in the spatial grid.
     
@@ -1085,6 +1085,8 @@ def plot_src(src, file_ext = '-'):
     labels = []
 
     fig, ax = plt.subplots(1, 2, figsize=(10,4))
+    if len(hillshading_z) != 0:
+        ax[0].contourf(src.grid.xx, src.grid.yy, ls.hillshade(hillshading_z, vert_exag=.1), cmap='gray', alpha = .2)
     if 'EQ' in src.par['perils']:
         for src_i in range(len(src.par['EQ']['x'])):
             h_eq, = ax[0].plot(src.par['EQ']['x'][src_i], src.par['EQ']['y'][src_i], color = GenMR_utils.col_peril('EQ'))
@@ -1094,13 +1096,31 @@ def plot_src(src, file_ext = '-'):
         river_xi, river_yi, _, river_id = calc_coord_river_dampedsine(src.grid, src.par['FF'])
         for src_i in range(len(src.par['FF']['riv_y0'])):
             indriv = river_id == src_i
-            h_ff, = ax[0].plot(river_xi[indriv], river_yi[indriv], color = GenMR_utils.col_peril('FF'))
+            h_riv, = ax[0].plot(river_xi[indriv], river_yi[indriv], color = GenMR_utils.col_peril('FF'), linestyle = 'dashed')
+            h_ff = ax[0].scatter(np.max(river_xi), src.par['FF']['riv_y0'][0], s=75, marker = 's', color = GenMR_utils.col_peril('FF'))
         handles.append(h_ff)
-        labels.append('River: Fluvial Flood (FF)')
+        labels.append('River upstream point: Fluvial Flood (FF)')
+        handles.append(h_riv)
+        labels.append('River bed')
     if 'VE' in src.par['perils']:
-        h_ve = ax[0].scatter(src.par['VE']['x'], src.par['VE']['x'], color = GenMR_utils.col_peril('VE'), s=100, marker='^')
+        h_ve = ax[0].scatter(src.par['VE']['x'], src.par['VE']['x'], color = GenMR_utils.col_peril('VE'), s=75, marker='^')
         handles.append(h_ve)
         labels.append('Volcano: Volcanic Eruption (VE)')
+    if 'SS' in src.par['perils']:
+        h_ss, = ax[0].plot(src.par['SS']['x'], src.par['SS']['y'], color = GenMR_utils.col_peril('SS'))
+        handles.append(h_ss)
+        labels.append('Coastline: Storm surge (SS)')
+    if 'TC' in src.par['perils']:
+        for src_i in range(src.par['TC']['N']):
+            indsrc = np.where(src.par['TC']['ID'] == src_i)[0]
+            h_tc, = ax[0].plot(src.par['TC']['x'][indsrc], src.par['TC']['y'][indsrc], color = GenMR_utils.col_peril('TC'))
+        handles.append(h_tc)
+        labels.append('Storm track: Tropical cyclone (TC)')
+    if 'AI' in src.par['perils']:
+        h_ai = ax[0].scatter(src.par['AI']['x'], src.par['AI']['y'], color = GenMR_utils.col_peril('AI'), s=30, marker = '+')
+        handles.append(h_ai)
+        labels.append('Impact site: Asteroid impact (AI)')
+
     h_box, = ax[0].plot([src.grid.xmin + src.grid.xbuffer, src.grid.xmax - src.grid.xbuffer, src.grid.xmax - src.grid.xbuffer, \
                 src.grid.xmin + src.grid.xbuffer, src.grid.xmin + src.grid.xbuffer],
                [src.grid.ymin + src.grid.ybuffer, src.grid.ymin + src.grid.ybuffer, src.grid.ymax - src.grid.ybuffer, \
@@ -1112,7 +1132,7 @@ def plot_src(src, file_ext = '-'):
     ax[0].set_ylim(src.grid.ymin, src.grid.ymax)
     ax[0].set_xlabel('$x$ (km)')
     ax[0].set_ylabel('$y$ (km)')
-    ax[0].set_title('Peril source coordinates', size = 14)
+    ax[0].set_title('Peril source coordinates', size = 14, pad = 20)
     ax[0].set_aspect(1)
 
 
