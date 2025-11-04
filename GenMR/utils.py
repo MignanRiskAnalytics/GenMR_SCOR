@@ -286,7 +286,7 @@ def col_peril(peril):
         col = col_peril_geophys
     if peril == 'FF' or peril == 'SS':
         col = col_peril_hydro
-    if peril == 'RS' or peril == 'WS':
+    if peril == 'RS' or peril == 'TC' or peril == 'WS':
         col = col_peril_meteo
     return col
 
