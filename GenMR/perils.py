@@ -80,7 +80,7 @@ class Src:
     
     
     '''
-    def __init__(self, par, grid, topoLayer = None):
+    def __init__(self, par, grid):
         '''
         Initialize Src
         
@@ -94,8 +94,19 @@ class Src:
         par['grid_A_km2'] = (grid.xmax - grid.xmin) * (grid.ymax - grid.ymin)    # virtual region area (km2)
         self.par = par
         self.grid = copy.copy(grid)
-
         self.SS_char = None
+
+
+    ## AI characteristics ##
+    @property
+    def AI_char(self):
+        '''
+        '''
+        if 'AI' in self.par['perils']:
+            src_xi, src_yi = gen_stochsrc_points(self.par['AI']['N'], self.grid, self.par['rdm_seed'])
+            return {'x': src_xi, 'y': src_yi}
+        else:
+            return print('WARNING: No earthquake source initiated in source parameter list')
 
 
     ## EQ characteristics ##
@@ -175,55 +186,21 @@ class Src:
                 seg += 1
                 Lsum += L
             src_L = np.append(src_L, Lsum)
-        return {'x': src_xi, 'y': src_yi, 'srcID': src_id, 'srcL': src_L, 'segID': seg_id, 'strike': seg_strike, 'segL': seg_L}
+        src_Mmax = calc_EQ_length2magnitude(src_L)
+        return {'x': src_xi, 'y': src_yi, 'srcID': src_id, 'srcL': src_L, 'srcMmax': src_Mmax, 'segID': seg_id, 'strike': seg_strike, 'segL': seg_L}
 
 
     ## TC characteristics ##
     @property
     def TC_char(self):
         '''
-        Calls the function get_char_srcTrack(self, par) if TC source provided, otherwise 
-        returns error message.
-        
-        Args:
-            self
-        
-        Returns:
-            X: xxx
         '''
         if 'TC' in self.par['perils']:
-            return self.get_track_highres(self.par['TC'])
+            src_xi, src_yi, src_id = gen_stochsrc_tracks(self.par['TC']['N'], self.grid, self.par['TC']['npt'], self.par['TC']['max_dev'], self.par['rdm_seed'])
+            return {'x': src_xi, 'y': src_yi, 'ID': src_id}
         else:
             return print('WARNING: No tropical cyclone source initiated in source parameter list')
 
-    def get_track_highres(self, par):
-        x_hires = np.array([])
-        y_hires = np.array([])
-        id_hires = np.array([])
-        evID = np.unique(par['ID'])
-        for i in range(len(evID)):
-            indev = np.where(par['ID'] == evID[i])[0]
-            x_ev = par['x'][indev]
-            y_ev = par['y'][indev]
-            for seg in range(len(x_ev) - 1):
-                dx = x_ev[seg + 1] - x_ev[seg]
-                dy = y_ev[seg + 1] - y_ev[seg]
-                sign1 = dx / np.abs(dx)
-                sign2 = dy / np.abs(dy)
-                L = np.sqrt(dx**2 + dy**2)
-                strike = np.arctan(dx/dy) * 180 / np.pi
-                npt = int(np.round(L / par['bin_km']))
-                seg_xi = np.zeros(npt)
-                seg_yi = np.zeros(npt)
-                seg_xi[0] = x_ev[seg]
-                seg_yi[0] = y_ev[seg]
-                for k in range(1, npt):
-                    seg_xi[k] = seg_xi[k-1] + sign1 * sign2 * par['bin_km'] * np.sin(strike * np.pi / 180)
-                    seg_yi[k] = seg_yi[k-1] + sign1 * sign2 * par['bin_km'] * np.cos(strike * np.pi / 180)
-                x_hires = np.append(x_hires, np.append(seg_xi, x_ev[seg + 1]))
-                y_hires = np.append(y_hires, np.append(seg_yi, y_ev[seg + 1]))
-                id_hires = np.append(id_hires, np.repeat(evID[i], len(seg_xi)+1))
-        return x_hires, y_hires, id_hires
 
     def __repr__(self):
         return 'Src({})'.format(self.par)
@@ -284,6 +261,37 @@ def gen_EQ_floatingRupture(evIDi, Si, src, srcEQ_char):
     return Rup_coord
 
 
+## TC CASE ##
+def get_TCtrack_highres(x0, y0, id0, bin_km):
+    x_hires = np.array([])
+    y_hires = np.array([])
+    id_hires = np.array([])
+    evID = np.unique(id0)
+    for i in range(len(evID)):
+        indev = np.where(id0 == evID[i])[0]
+        x_ev = x0[indev]
+        y_ev = y0[indev]
+        for seg in range(len(x_ev) - 1):
+            dx = x_ev[seg + 1] - x_ev[seg]
+            dy = y_ev[seg + 1] - y_ev[seg]
+            sign1 = dx / np.abs(dx)
+            sign2 = dy / np.abs(dy)
+            L = np.sqrt(dx**2 + dy**2)
+            strike = np.arctan(dx/dy) * 180 / np.pi
+            npt = int(np.round(L / bin_km))
+            seg_xi = np.zeros(npt)
+            seg_yi = np.zeros(npt)
+            seg_xi[0] = x_ev[seg]
+            seg_yi[0] = y_ev[seg]
+            for k in range(1, npt):
+                seg_xi[k] = seg_xi[k-1] + sign1 * sign2 * bin_km * np.sin(strike * np.pi / 180)
+                seg_yi[k] = seg_yi[k-1] + sign1 * sign2 * bin_km * np.cos(strike * np.pi / 180)
+            x_hires = np.append(x_hires, np.append(seg_xi, x_ev[seg + 1]))
+            y_hires = np.append(y_hires, np.append(seg_yi, y_ev[seg + 1]))
+            id_hires = np.append(id_hires, np.repeat(evID[i], len(seg_xi)+1))
+    
+    Track_coord = pd.DataFrame({'x': x_hires, 'y': y_hires, 'ID': id_hires})
+    return Track_coord
 
 def calc_S_track(stochset, src, Track_coord):    
     indperil = np.where(stochset['ID'] == 'TC')[0]
@@ -305,10 +313,9 @@ def calc_S_track(stochset, src, Track_coord):
         d2coast = track_x[indcoast[0]:] - track_x[indcoast[0]]
         # ad-hoc decay relationship:
         track_vmax[indcoast[0]:] = vmax_start[i] * np.exp(-.1 / src['TC']['vforward_m/s'] * d2coast)
-            
+        
         S_alongtrack[evIDs[i]] = track_vmax
     return S_alongtrack
-
 
 
 
@@ -587,12 +594,12 @@ def plot_src(src, hillshading_z = '', file_ext = '-'):
         labels.append('Coastline: Storm surge (SS)')
     if 'TC' in src.par['perils']:
         for src_i in range(src.par['TC']['N']):
-            indsrc = np.where(src.par['TC']['ID'] == src_i)[0]
-            h_tc, = ax[0].plot(src.par['TC']['x'][indsrc], src.par['TC']['y'][indsrc], color = GenMR_utils.col_peril('TC'))
+            indsrc = np.where(src.TC_char['ID'] == src_i)[0]
+            h_tc, = ax[0].plot(src.TC_char['x'][indsrc], src.TC_char['y'][indsrc], color = GenMR_utils.col_peril('TC'))
         handles.append(h_tc)
         labels.append('Storm track: Tropical cyclone (TC)')
     if 'AI' in src.par['perils']:
-        h_ai = ax[0].scatter(src.par['AI']['x'], src.par['AI']['y'], color = GenMR_utils.col_peril('AI'), s=30, marker = '+', clip_on = False)
+        h_ai = ax[0].scatter(src.AI_char['x'], src.AI_char['y'], color = GenMR_utils.col_peril('AI'), s=30, marker = '+', clip_on = False)
         handles.append(h_ai)
         labels.append('Impact site: Asteroid impact (AI)')
 
