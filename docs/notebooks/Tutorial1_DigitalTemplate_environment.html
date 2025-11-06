@@ -106,11 +106,6 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.EnvObj_roadNetwork"><code class="docutils literal notranslate"><span class="pre">EnvObj_roadNetwork</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.RasterGrid"><code class="docutils literal notranslate"><span class="pre">RasterGrid</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.Src"><code class="docutils literal notranslate"><span class="pre">Src</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.Src.EQ_char"><code class="docutils literal notranslate"><span class="pre">Src.EQ_char</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.Src.get_char_srcLine"><code class="docutils literal notranslate"><span class="pre">Src.get_char_srcLine()</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.calc_FS"><code class="docutils literal notranslate"><span class="pre">calc_FS()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.calc_coord_river_dampedsine"><code class="docutils literal notranslate"><span class="pre">calc_coord_river_dampedsine()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.calc_topo_attributes"><code class="docutils literal notranslate"><span class="pre">calc_topo_attributes()</span></code></a></li>
@@ -126,6 +121,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.cmap_peril"><code class="docutils literal notranslate"><span class="pre">cmap_peril()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.col_peril"><code class="docutils literal notranslate"><span class="pre">col_peril()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.col_state_h"><code class="docutils literal notranslate"><span class="pre">col_state_h()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.fetch_A0"><code class="docutils literal notranslate"><span class="pre">fetch_A0()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.flatten_list"><code class="docutils literal notranslate"><span class="pre">flatten_list()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.get_data"><code class="docutils literal notranslate"><span class="pre">get_data()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.get_neighborhood_ind"><code class="docutils literal notranslate"><span class="pre">get_neighborhood_ind()</span></code></a></li>
@@ -166,8 +162,11 @@
 <li class="toctree-l2"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#probabilistic-hazard-assessment">1. Probabilistic hazard assessment</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#peril-source-definition">1.1. Peril source definition</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#stochastic-event-set-generation">1.2. Stochastic event set generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#intensity-footprint-catalogue-generation">1.3. Intensity footprint catalogue generation</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#references">References</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#appendix">Appendix</a></li>
 </ul>
 </li>
 </ul>
@@ -199,8 +198,8 @@
   <section class="tex2jax_ignore mathjax_ignore" id="tutorial-1-generating-a-virtual-environment-for-the-genmr-digital-template">
 <h1>Tutorial 1: Generating a virtual environment for the GenMR digital template<a class="headerlink" href="#tutorial-1-generating-a-virtual-environment-for-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
-<strong>Version:</strong> 0.1<br />
-<strong>Last Updated:</strong> 2025-10-29<br />
+<strong>Version:</strong> 1.1.0<br />
+<strong>Last Updated:</strong> 2025-11-06<br />
 <strong>License:</strong> AGPL-3, https://opensource.org/license/agpl-v3</p>
 <p>The <em>digital template</em>, first described in <a class="reference external" href="https://www.mdpi.com/1660-4601/19/23/16097">Mignan (2022)</a> and used in the CAT Risk Modelling Sandbox <a class="reference external" href="https://github.com/amignan/Intro2CATriskModelling/blob/main/CATRiskModellingSandbox_tutorial.ipynb">Mignan (2024)</a>, is a microcosm simulation of the complex Earth system for catastrophe dynamics R&amp;D, multi-risk prototyping in the Generic Multi-Risk (GenMR) framework, and catastrophe risk eduction. It is defined as a virtual environment populated by loss-generating events that interact with each other and with the environment. The virtual environment, to be built in this tutorial, is composed of <em>environmental layers</em> that consist of sets of variables <span class="math notranslate nohighlight">\(\theta(x,y)\)</span> defined in a spatial grid of coordinates <span class="math notranslate nohighlight">\((x,y)\)</span>. Each layer may be altered by <em>environmental objects</em> located within the layer. The parsimonious complex Earth system finally consists of a stack of interacting environmental layers defined in the natural, technological and socio-economic systems. The loss-generating events that populate the virtual environment will be defined in the next tutorial, and their occurrence rates and interactions in a third and final tutorial.</p>
 <p>Currently, a limited number of environmental layers and objects are available (Fig. 1, Table 1). This notebook provides a concise overview of these layers using a default parameterisation, with alternative scenarios to be introduced later in the How-To Guides. The outputs generated here will serve as input for hazard and risk assessments in the subsequent tutorials.</p>
@@ -281,6 +280,7 @@ The environmental layers are generated as follows:
 <span class="c1">#warnings.filterwarnings(&#39;ignore&#39;)   # commented, try to remove all warnings</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">GenMR</span><span class="w"> </span><span class="kn">import</span> <span class="n">environment</span> <span class="k">as</span> <span class="n">GenMR_env</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GenMR</span><span class="w"> </span><span class="kn">import</span> <span class="n">perils</span> <span class="k">as</span> <span class="n">GenMR_perils</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">GenMR</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span> <span class="k">as</span> <span class="n">GenMR_utils</span>
 
 <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">init_io</span><span class="p">()</span>  <span class="c1"># make folders /io and /fig if do not exist</span>
@@ -359,14 +359,14 @@ The environmental layers are generated as follows:
     <span class="s1">&#39;VE&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;volcano&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">90</span><span class="p">],</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">90</span><span class="p">]},</span>
 <span class="p">}</span>
 
-<span class="n">src</span> <span class="o">=</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">Src</span><span class="p">(</span><span class="n">srcPar</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
+<span class="n">src</span> <span class="o">=</span> <span class="n">GenMR_perils</span><span class="o">.</span><span class="n">Src</span><span class="p">(</span><span class="n">srcPar</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
 
-<span class="n">GenMR_env</span><span class="o">.</span><span class="n">plot_src</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+<span class="n">GenMR_perils</span><span class="o">.</span><span class="n">plot_src</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ee71cf21a812c37680a2fd0126b1e0570592f0bc235ec36a04b095f775535bcc.png" src="../_images/ee71cf21a812c37680a2fd0126b1e0570592f0bc235ec36a04b095f775535bcc.png" />
+<img alt="../_images/51876fd466585f81c65d97f7ae9948b9075b8324493f2b86e35872b43d450afb.png" src="../_images/51876fd466585f81c65d97f7ae9948b9075b8324493f2b86e35872b43d450afb.png" />
 </div>
 </div>
 </section>
@@ -417,7 +417,7 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:460: RuntimeWarning: invalid value encountered in sqrt
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:359: RuntimeWarning: invalid value encountered in sqrt
   zth_tmp = Pe * np.sqrt(1 - (x_rot-xc_rot)**2/Le**2 - (y_rot-yc_rot)**2/We**2) +zc[seg]
 </pre></div>
 </div>
@@ -445,7 +445,7 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:605: RuntimeWarning: divide by zero encountered in divide
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:504: RuntimeWarning: divide by zero encountered in divide
   FS = (par[&#39;Ceff_Pa&#39;] / (par[&#39;rho_kg/m3&#39;] * GenMR_utils.g_earth * h) + np.cos(slope * np.pi/180) * \
 </pre></div>
 </div>
@@ -462,7 +462,7 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:605: RuntimeWarning: divide by zero encountered in divide
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:504: RuntimeWarning: divide by zero encountered in divide
   FS = (par[&#39;Ceff_Pa&#39;] / (par[&#39;rho_kg/m3&#39;] * GenMR_utils.g_earth * h) + np.cos(slope * np.pi/180) * \
 </pre></div>
 </div>
@@ -526,8 +526,8 @@ The environmental layers are generated as follows:
 <p>-&gt; ADD a modifying factor with distance from city center (or built year)…</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#file_urbLandLayer = &#39;&#39;           # run the city growth model if &#39;&#39; provided</span>
-<span class="n">file_urbLandLayer</span> <span class="o">=</span> <span class="s1">&#39;envLayer_urbLand.pkl&#39;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">file_urbLandLayer</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>           <span class="c1"># run the city growth model if &#39;&#39; provided</span>
+<span class="c1">#file_urbLandLayer = &#39;envLayer_urbLand.pkl&#39;</span>
 
 <span class="n">urbLandPar</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;lores_f&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;rdm_seed&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="c1"># seed does not work -&gt; find where to put it...</span>
@@ -568,7 +568,22 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>... urbLandLayer class instance loaded
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0 1
+10 2598
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:889: RuntimeWarning: invalid value encountered in scalar power
+  pr = ((par[&#39;SLEUTH_maxslope&#39;] - np.round(slope)) / par[&#39;SLEUTH_maxslope&#39;])**expo
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>20 7679
+30 15377
+40 24897
+50 36729
+60 49450
+70 62986
+80 75575
+90 87194
 </pre></div>
 </div>
 </div>
@@ -585,11 +600,7 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:605: RuntimeWarning: divide by zero encountered in divide
-  FS = (par[&#39;Ceff_Pa&#39;] / (par[&#39;rho_kg/m3&#39;] * GenMR_utils.g_earth * h) + np.cos(slope * np.pi/180) * \
-</pre></div>
-</div>
-<img alt="../_images/3cef7b7856ac0d7e049217c14e5d0062bc5d757c6bbe4b606bd38f500dc86db3.png" src="../_images/3cef7b7856ac0d7e049217c14e5d0062bc5d757c6bbe4b606bd38f500dc86db3.png" />
+<img alt="../_images/2846cebdeb9c55107df1903e31ce1cbc6484905d769e46d8a1d54f103a092b34.png" src="../_images/2846cebdeb9c55107df1903e31ce1cbc6484905d769e46d8a1d54f103a092b34.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -599,7 +610,7 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/270de6f08d77d3e17c4b920b8110d2bb7d601485329b3e52083f17ce57403d1e.png" src="../_images/270de6f08d77d3e17c4b920b8110d2bb7d601485329b3e52083f17ce57403d1e.png" />
+<img alt="../_images/93f70e5655fb8017ecadd31bc67c581333720a1b0716bdb1afa85a078c6c0867.png" src="../_images/93f70e5655fb8017ecadd31bc67c581333720a1b0716bdb1afa85a078c6c0867.png" />
 </div>
 </div>
 </section>
