@@ -18,8 +18,6 @@ import pandas as pd
 import copy
 
 import matplotlib.pyplot as plt
-import matplotlib.colors as plt_col
-ls = plt_col.LightSource(azdeg=45, altdeg=45)
 
 from GenMR import environment as GenMR_env
 from GenMR import dynamics as GenMR_dynamics
@@ -207,9 +205,10 @@ class Src:
 
 
 
+################
+# SCALING LAWS #
+################
 
-
-## EQ CASE ##
 def calc_EQ_length2magnitude(L):
     '''
     Given the earthquake rupture L (km), calculate the magnitude M
@@ -226,96 +225,6 @@ def calc_EQ_magnitude2length(M):
     c1, c2 = [5., 1.22]     # reverse case, Fig. 2.6b, Wells and Coppersmith (1994)
     L = 10**((M - c1)/c2)
     return L
-
-
-def gen_EQ_floatingRupture(evIDi, Si, src, srcEQ_char):
-    '''
-    '''
-    nRup = len(Si)
-    li = calc_EQ_magnitude2length(Si)
-    flt_x = srcEQ_char['x']
-    flt_y = srcEQ_char['y']
-    flt_L = srcEQ_char['srcL']
-    flt_id = srcEQ_char['srcID']
-    indflt = GenMR_utils.partitioning(np.arange(len(flt_L)), flt_L / np.sum(flt_L), nRup)  # longer faults visited more often
-    Rup_loc = np.zeros(nRup, dtype = object)
-    Rup_coord = pd.DataFrame(columns = ['evID', 'x', 'y', 'loc'])
-    i = 0
-    while i < nRup:
-        flt_target = np.random.choice(indflt, 1)
-        indID = flt_id == flt_target
-        src_x = flt_x[indID]
-        src_y = flt_y[indID]
-        src_L = flt_L[flt_target]
-        init = np.floor((src_L - li[i]) / src['EQ']['bin_km'])
-        if src_L >= li[i]:
-            u = np.ceil(np.random.random(1) * init).astype(int)[0]         # random rupture start loc
-            Rup_x = src_x[u:(u + li[i] / src['EQ']['bin_km']).astype(int)]
-            Rup_y = src_y[u:(u + li[i] / src['EQ']['bin_km']).astype(int)]
-            Rup_loc[i] = src['EQ']['object'] + str(flt_target[0] + 1)
-            Rup_coord = pd.concat([Rup_coord, pd.DataFrame(data = {'evID': np.repeat(evIDi[i], len(Rup_x)), \
-                                                              'x': Rup_x, 'y': Rup_y, \
-                                                              'loc': np.repeat(Rup_loc[i], len(Rup_x))})], ignore_index=True)
-            i += 1
-            
-    return Rup_coord
-
-
-## TC CASE ##
-def get_TCtrack_highres(x0, y0, id0, bin_km):
-    x_hires = np.array([])
-    y_hires = np.array([])
-    id_hires = np.array([])
-    evID = np.unique(id0)
-    for i in range(len(evID)):
-        indev = np.where(id0 == evID[i])[0]
-        x_ev = x0[indev]
-        y_ev = y0[indev]
-        for seg in range(len(x_ev) - 1):
-            dx = x_ev[seg + 1] - x_ev[seg]
-            dy = y_ev[seg + 1] - y_ev[seg]
-            sign1 = dx / np.abs(dx)
-            sign2 = dy / np.abs(dy)
-            L = np.sqrt(dx**2 + dy**2)
-            strike = np.arctan(dx/dy) * 180 / np.pi
-            npt = int(np.round(L / bin_km))
-            seg_xi = np.zeros(npt)
-            seg_yi = np.zeros(npt)
-            seg_xi[0] = x_ev[seg]
-            seg_yi[0] = y_ev[seg]
-            for k in range(1, npt):
-                seg_xi[k] = seg_xi[k-1] + sign1 * sign2 * bin_km * np.sin(strike * np.pi / 180)
-                seg_yi[k] = seg_yi[k-1] + sign1 * sign2 * bin_km * np.cos(strike * np.pi / 180)
-            x_hires = np.append(x_hires, np.append(seg_xi, x_ev[seg + 1]))
-            y_hires = np.append(y_hires, np.append(seg_yi, y_ev[seg + 1]))
-            id_hires = np.append(id_hires, np.repeat(evID[i], len(seg_xi)+1))
-    
-    Track_coord = pd.DataFrame({'x': x_hires, 'y': y_hires, 'ID': id_hires})
-    return Track_coord
-
-def calc_S_track(stochset, src, Track_coord):    
-    indperil = np.where(stochset['ID'] == 'TC')[0]
-    evIDs = stochset['evID'][indperil].values
-    vmax_start = stochset['S'][indperil].values
-    S_alongtrack = {}
-    for i in range(src['TC']['N']):
-        indtrack = np.where(Track_coord['ID'] == i+1)[0]
-        track_x = Track_coord['x'][indtrack].values
-        track_y = Track_coord['y'][indtrack].values
-
-        npt = len(indtrack)
-        track_vmax = np.repeat(vmax_start[i], npt)  # track over ocean at vmax_start
-
-        # find inland section & reduce vmax
-        d = [np.min(np.sqrt((track_x[j] - src['SS']['x'])**2 + \
-                            (track_y[j] - src['SS']['y'])**2)) for j in range(npt)]
-        indcoast = np.where(d == np.min(d))[0]
-        d2coast = track_x[indcoast[0]:] - track_x[indcoast[0]]
-        # ad-hoc decay relationship:
-        track_vmax[indcoast[0]:] = vmax_start[i] * np.exp(-.1 / src['TC']['vforward_m/s'] * d2coast)
-        
-        S_alongtrack[evIDs[i]] = track_vmax
-    return S_alongtrack
 
 
 
@@ -380,9 +289,9 @@ def transform_cum2noncum(S, par):
 
 ## generate event set ##
 def gen_eventset(src, sizeDistr):
+    '''
+    '''
     ev_stoch = pd.DataFrame(columns = ['ID', 'evID', 'S', 'lbd'])
-    Mmax2 = calc_EQ_length2magnitude(src.EQ_char['srcL'][1])  # smaller of 2 hardcoded faults in src
-
     for ID in src.par['perils']:
         if ID in sizeDistr['primary']:
             # event ID definition #
@@ -432,38 +341,19 @@ def gen_eventset(src, sizeDistr):
     return ev_stoch.reset_index(drop = True)
 
 
-
-
-#def pop_fix_points(N, par):
-#    '''
-#    Return fixed coordinates for N events 
-#    '''
-#    nloc = len(par['x'])
-#    srcID = np.array([par['object'] + str(i + 1) for i in range(nloc)])
-#    src_rdm_ind = np.random.choice(np.arange(nloc), N)
-#    evID_loc = srcID[src_rdm_ind]
-#    evID_x = np.array(par['x'])[src_rdm_ind]
-#    evID_y = np.array(par['y'])[src_rdm_ind]
-#    return evID_x, evID_y, evID_loc
-
-
-#def pop_grid_area(N, grid):
-#    '''
-#    '''
-#    box_x = np.tile([grid.xmin, grid.xmax, grid.xmax, grid.xmin, grid.xmin], N)
-#    box_y = np.tile([grid.ymin, grid.ymin, grid.ymax, grid.ymax, grid.ymin], N)
-#    return box_x, box_y
-
-
-def pop_EQ_floatingRupture(evIDi, Si, src):
+## stochastic event characteristics ##
+def gen_EQ_floatingRupture(evIDi, Si, src):
     '''
     '''
     nRup = len(Si)
-    li = calc_EQ_M2L(Si)
-    flt_x, flt_y, flt_id, flt_L, seg_id, seg_strike, seg_L = src.EQ_char    
+    li = calc_EQ_magnitude2length(Si)
+    flt_x = src.EQ_char['x']
+    flt_y = src.EQ_char['y']
+    flt_L = src.EQ_char['srcL']
+    flt_id = src.EQ_char['srcID']
     indflt = GenMR_utils.partitioning(np.arange(len(flt_L)), flt_L / np.sum(flt_L), nRup)  # longer faults visited more often
-    Rup_loc = np.zeros(nRup, dtype=object)
-    Rup_coord = pd.DataFrame(columns = ['evID', 'x', 'y', 'z'])
+    Rup_loc = np.zeros(nRup, dtype = object)
+    Rup_coord = pd.DataFrame(columns = ['evID', 'x', 'y', 'loc'])
     i = 0
     while i < nRup:
         flt_target = np.random.choice(indflt, 1)
@@ -471,26 +361,19 @@ def pop_EQ_floatingRupture(evIDi, Si, src):
         src_x = flt_x[indID]
         src_y = flt_y[indID]
         src_L = flt_L[flt_target]
-        src_z = src.par['EQ']['z_km'][indflt[i]]
         init = np.floor((src_L - li[i]) / src.par['EQ']['bin_km'])
         if src_L >= li[i]:
-            u = np.ceil(np.random.random(1) * init).astype(int)[0]                         # random rupture start loc
+            u = np.ceil(np.random.random(1) * init).astype(int)[0]         # random rupture start loc
             Rup_x = src_x[u:(u + li[i] / src.par['EQ']['bin_km']).astype(int)]
             Rup_y = src_y[u:(u + li[i] / src.par['EQ']['bin_km']).astype(int)]
             Rup_loc[i] = src.par['EQ']['object'] + str(flt_target[0] + 1)
-            Rup_coord = pd.concat([Rup_coord, pd.DataFrame({'evID': np.repeat(evIDi[i], len(Rup_x)), \
-                            'x': Rup_x, 'y': Rup_y, 'z': np.repeat(src_z, len(Rup_x))})], ignore_index=True)
+            Rup_coord = pd.concat([Rup_coord, pd.DataFrame({'evID': np.repeat(evIDi[i], len(Rup_x)), 'x': Rup_x, 'y': Rup_y, \
+                                                            'loc': np.repeat(Rup_loc[i], len(Rup_x))})], ignore_index=True)
             i += 1
-    return Rup_coord['evID'], Rup_coord['x'], Rup_coord['y'], Rup_coord['z'], Rup_loc
+    return Rup_coord
 
-def calc_EQ_M2L(M):
-    '''
-    '''
-    return 10**((M - 4.49) / 1.49)    # for floating rupture computations
 
-def get_highres(x0, y0, id0, par):
-    '''
-    '''
+def get_TCtrack_highres(x0, y0, id0, bin_km):
     x_hires = np.array([])
     y_hires = np.array([])
     id_hires = np.array([])
@@ -506,19 +389,44 @@ def get_highres(x0, y0, id0, par):
             sign2 = dy / np.abs(dy)
             L = np.sqrt(dx**2 + dy**2)
             strike = np.arctan(dx/dy) * 180 / np.pi
-            npt = int(np.round(L / par['bin_km']))
+            npt = int(np.round(L / bin_km))
             seg_xi = np.zeros(npt)
             seg_yi = np.zeros(npt)
             seg_xi[0] = x_ev[seg]
             seg_yi[0] = y_ev[seg]
             for k in range(1, npt):
-                seg_xi[k] = seg_xi[k-1] + sign1 * sign2 * par['bin_km'] * np.sin(strike * np.pi / 180)
-                seg_yi[k] = seg_yi[k-1] + sign1 * sign2 * par['bin_km'] * np.cos(strike * np.pi / 180)
+                seg_xi[k] = seg_xi[k-1] + sign1 * sign2 * bin_km * np.sin(strike * np.pi / 180)
+                seg_yi[k] = seg_yi[k-1] + sign1 * sign2 * bin_km * np.cos(strike * np.pi / 180)
             x_hires = np.append(x_hires, np.append(seg_xi, x_ev[seg + 1]))
             y_hires = np.append(y_hires, np.append(seg_yi, y_ev[seg + 1]))
             id_hires = np.append(id_hires, np.repeat(evID[i], len(seg_xi)+1))
-    return x_hires, y_hires, id_hires
+    
+    Track_coord = pd.DataFrame({'x': x_hires, 'y': y_hires, 'ID': id_hires})
+    return Track_coord
 
+def calc_S_track(stochset, src, Track_coord):    
+    indperil = np.where(stochset['ID'] == 'TC')[0]
+    evIDs = stochset['evID'][indperil].values
+    vmax_start = stochset['S'][indperil].values
+    S_alongtrack = {}
+    for i in range(src['TC']['N']):
+        indtrack = np.where(Track_coord['ID'] == i+1)[0]
+        track_x = Track_coord['x'][indtrack].values
+        track_y = Track_coord['y'][indtrack].values
+
+        npt = len(indtrack)
+        track_vmax = np.repeat(vmax_start[i], npt)  # track over ocean at vmax_start
+
+        # find inland section & reduce vmax
+        d = [np.min(np.sqrt((track_x[j] - src['SS']['x'])**2 + \
+                            (track_y[j] - src['SS']['y'])**2)) for j in range(npt)]
+        indcoast = np.where(d == np.min(d))[0]
+        d2coast = track_x[indcoast[0]:] - track_x[indcoast[0]]
+        # ad-hoc decay relationship:
+        track_vmax[indcoast[0]:] = vmax_start[i] * np.exp(-.1 / src['TC']['vforward_m/s'] * d2coast)
+        
+        S_alongtrack[evIDs[i]] = track_vmax
+    return S_alongtrack
 
 
 
@@ -526,7 +434,7 @@ def get_highres(x0, y0, id0, par):
 # HAZARD FOOTPRINTS #
 #####################
 
-# TO ADD...
+
 
 
 
@@ -568,7 +476,7 @@ def plot_src(src, hillshading_z = '', file_ext = '-'):
 
     fig, ax = plt.subplots(1, 2, figsize=(10,4))
     if len(hillshading_z) != 0:
-        ax[0].contourf(src.grid.xx, src.grid.yy, ls.hillshade(hillshading_z, vert_exag=.1), cmap='gray', alpha = .2)
+        ax[0].contourf(src.grid.xx, src.grid.yy, GenMR_env.ls.hillshade(hillshading_z, vert_exag=.1), cmap='gray', alpha = .2)
     if 'EQ' in src.par['perils']:
         for src_i in range(len(src.par['EQ']['x'])):
             h_eq, = ax[0].plot(src.par['EQ']['x'][src_i], src.par['EQ']['y'][src_i], color = GenMR_utils.col_peril('EQ'))
