@@ -233,12 +233,24 @@ def get_net_coord(net):
 #######################
 # PHYSICAL PARAMETERS #
 #######################
-g_earth = 9.81                     # [m/s^2]
-R_earth = 6371.                    # [km]
-A_earth = 4 * np.pi * R_earth**2   # [km^2]
-rho_wat = 1000.   # [kg/m^3]
-rho_atm = 1.15    # [kg/m^3]
+g_earth = 9.81                     # (m/s^2)
+R_earth = 6371.                    # (km)
+A_earth = 4 * np.pi * R_earth**2   # (km^2)
 
+A_CONUS = 8080464.                 # (km^2)
+A_IT = 301230.                     # (km^2)
+A_JP = 377915.                     # (km^2)
+A_US_CA = 423970.                  # (km^2)
+A_US_FL = 170312.                  # (km^2)
+
+rho_wat = 1000.   # (kg/m^3)
+rho_atm = 1.15    # (kg/m^3)
+
+def fetch_A0(level):
+    levels = ['global', 'CONUS', 'IT', 'JP', 'US_CA', 'US_FL']
+    As = [A_earth, A_CONUS, A_IT, A_JP, A_US_CA, A_US_FL]
+    ind = level == levels
+    return As[ind]
 
 
 ####################

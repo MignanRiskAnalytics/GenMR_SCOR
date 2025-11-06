@@ -174,115 +174,7 @@ def downscale_RasterGrid(grid, factor, appl = 'pooling'):
 
 
 
-#################
-# PERIL SOURCES #
-#################
-class Src:
-    '''
-    Define the characteristics of the peril sources.
-    
-    Args:
-        par (dict): A dictionary with nested keys ['perils',
-                        'EQ'['x', 'y', 'w_km', 'dip_deg', 'z_km', 'mec', 'bin_km'],
-                        'FF'['riv_A_km', 'riv_lbd', 'riv_ome', 'riv_y0', 'Q_m3/s', 'A_km2'],
-                        'VE'['x', 'y']]
-    
-    
-    '''
-    def __init__(self, par, grid):
-        '''
-        Initialize Src
-        
-        Args:
-            par (dict): A dictionary with nested keys ['perils',
-                        'EQ'['x', 'y', 'w_km', 'dip_deg', 'z_km', 'mec', 'bin_km'],
-                        'FF'['riv_A_km', 'riv_lbd', 'riv_ome', 'riv_y0', 'Q_m3/s', 'A_km2'],
-                        'VE'['x', 'y']]
-            grid (class): A class instance of RasterGrid
-        '''
-        self.par = par
-        self.grid = copy.copy(grid)
 
-    @property
-    def EQ_char(self):
-        '''
-        Calls the function get_char_srcLine(self, par) if EQ source provided, otherwise 
-        returns error message.
-        
-        Args:
-            self
-        
-        Returns:
-            list: list of arrays (if EQ source defined)
-                [0] (ndarray(dtype=float, ndim=1)): 1D array of src_xi (for all points)
-                [1] (ndarray(dtype=float, ndim=1)): 1D array of src_yi (for all points)
-                [2] (ndarray(dtype=float, ndim=1)): 1D array of src_id (for all points)
-                [3] (ndarray(dtype=float, ndim=1)): 1D array of src_L (for all faults)
-                [4] (ndarray(dtype=float, ndim=1)): 1D array of seg_id (for all points)
-                [5] (ndarray(dtype=float, ndim=1)): 1D array of seg_strike (for all fault segments)
-                [6] (ndarray(dtype=float, ndim=1)): 1D array of seg_L (for all fault segments)
-        '''
-        if 'EQ' in self.par['perils']:
-            return self.get_char_srcLine(self.par['EQ'])
-        else:
-            return print('No earthquake source initiated in source parameter list')
-    
-    def get_char_srcLine(self, par):
-        '''
-        Calculate the coordinates of fault sources based on their extrema and the provided 
-        resolution , as well as lenghts and strikes of faults and fault segments.
-        
-        Args:
-            par (dict): A dictionary with keys ['x', 'y', 'w_km', 'dip_deg', 'z_km', 'mec', 'bin_km']
-        
-        Returns:
-            ndarray(dtype=float, ndim=1): 1D array of src_xi (for all points)
-            ndarray(dtype=float, ndim=1): 1D array of src_yi (for all points)
-            ndarray(dtype=float, ndim=1): 1D array of src_id (for all points)
-            ndarray(dtype=float, ndim=1): 1D array of src_L (for all faults)
-            ndarray(dtype=float, ndim=1): 1D array of seg_id (for all points)
-            ndarray(dtype=float, ndim=1): 1D array of seg_strike (for all fault segments)
-            ndarray(dtype=float, ndim=1): 1D array of seg_L (for all fault segments)
-        '''
-        src_xi = np.array([])
-        src_yi = np.array([])
-        src_id = np.array([])
-        src_L = np.array([])
-        seg_id = np.array([])
-        seg_strike = np.array([])
-        seg_L = np.array([])
-        seg = 0
-        for src_i in range(len(par['x'])):
-            Lsum = 0
-            for seg_i in range(len(par['x'][src_i]) - 1):
-                dx = par['x'][src_i][seg_i+1] - par['x'][src_i][seg_i]
-                dy = par['y'][src_i][seg_i+1] - par['y'][src_i][seg_i]
-                sign1 = dx / np.abs(dx)
-                sign2 = dy / np.abs(dy)
-                L = np.sqrt(dx**2 + dy**2)
-                strike = np.arctan(dx/dy) * 180 / np.pi
-                sign3 = np.sin(strike * np.pi / 180) / np.abs(np.sin(strike * np.pi / 180))
-                npt = int(np.round(L / par['bin_km']))
-                seg_xi = np.zeros(npt)
-                seg_yi = np.zeros(npt)
-                seg_xi[0] = par['x'][src_i][seg_i]
-                seg_yi[0] = par['y'][src_i][seg_i]
-                for k in range(1, npt):
-                    seg_xi[k] = seg_xi[k-1] + sign1 * sign3 * par['bin_km'] * np.sin(strike * np.pi / 180)
-                    seg_yi[k] = seg_yi[k-1] + sign2 * par['bin_km'] * np.cos(strike * np.pi / 180)
-                src_xi = np.append(src_xi, np.append(seg_xi, par['x'][src_i][seg_i+1]))
-                src_yi = np.append(src_yi, np.append(seg_yi, par['y'][src_i][seg_i+1]))
-                src_id = np.append(src_id, np.repeat(src_i, len(seg_xi)+1))
-                seg_id = np.append(seg_id, np.repeat(seg, len(seg_xi)+1))
-                seg_strike = np.append(seg_strike, strike)
-                seg_L = np.append(seg_L, L)
-                seg += 1
-                Lsum += L
-            src_L = np.append(src_L, Lsum)
-        return src_xi, src_yi, src_id, src_L, seg_id, seg_strike, seg_L
-
-    def __repr__(self):
-        return 'Src({})'.format(self.par)
 
 
 
@@ -425,7 +317,10 @@ class EnvLayer_topo:
 
     def model_th_ellipsoid(self):
         zth = np.zeros((self.gridlow.nx, self.gridlow.ny))
-        flt_x, flt_y, flt_id, _, seg_id, seg_strike, seg_L = self.src.EQ_char
+#        flt_x, flt_y, flt_id, _, seg_id, seg_strike, seg_L = self.src.EQ_char
+        flt_x, flt_y, flt_id, seg_id, seg_strike, seg_L = (
+            self.src.EQ_char[k] for k in ['x', 'y', 'srcID', 'segID', 'strike', 'segL']
+        )
         n_seg = len(np.unique(seg_id))
         xc, yc, zc = [np.zeros(n_seg), np.zeros(n_seg), np.zeros(n_seg)]
         for seg in range(n_seg):
@@ -1101,7 +996,7 @@ def plot_src(src, hillshading_z = '', file_ext = '-'):
         for src_i in range(len(src.par['FF']['riv_y0'])):
             indriv = river_id == src_i
             h_riv, = ax[0].plot(river_xi[indriv], river_yi[indriv], color = GenMR_utils.col_peril('FF'), linestyle = 'dashed')
-            h_ff = ax[0].scatter(np.max(river_xi), src.par['FF']['riv_y0'][0], s=75, marker = 's', color = GenMR_utils.col_peril('FF'))
+            h_ff = ax[0].scatter(np.max(river_xi), src.par['FF']['riv_y0'][0], s=75, marker = 's', clip_on = False, color = GenMR_utils.col_peril('FF'))
         handles.append(h_ff)
         labels.append('River upstream point: Fluvial Flood (FF)')
         handles.append(h_riv)
@@ -1121,7 +1016,7 @@ def plot_src(src, hillshading_z = '', file_ext = '-'):
         handles.append(h_tc)
         labels.append('Storm track: Tropical cyclone (TC)')
     if 'AI' in src.par['perils']:
-        h_ai = ax[0].scatter(src.par['AI']['x'], src.par['AI']['y'], color = GenMR_utils.col_peril('AI'), s=30, marker = '+')
+        h_ai = ax[0].scatter(src.par['AI']['x'], src.par['AI']['y'], color = GenMR_utils.col_peril('AI'), s=30, marker = '+', clip_on = False)
         handles.append(h_ai)
         labels.append('Impact site: Asteroid impact (AI)')
 
