@@ -317,9 +317,8 @@ class EnvLayer_topo:
 
     def model_th_ellipsoid(self):
         zth = np.zeros((self.gridlow.nx, self.gridlow.ny))
-#        flt_x, flt_y, flt_id, _, seg_id, seg_strike, seg_L = self.src.EQ_char
         flt_x, flt_y, flt_id, seg_id, seg_strike, seg_L = (
-            self.src.EQ_char[k] for k in ['x', 'y', 'srcID', 'segID', 'strike', 'segL']
+            self.src.EQ_char[k] for k in ['x', 'y', 'fltID', 'segID', 'strike', 'segL']
         )
         n_seg = len(np.unique(seg_id))
         xc, yc, zc = [np.zeros(n_seg), np.zeros(n_seg), np.zeros(n_seg)]
@@ -963,91 +962,6 @@ class EnvLayer_urbLand:
 ############
 # PLOTTING #
 ############
-
-def plot_src(src, hillshading_z = '', file_ext = '-'):
-    '''
-    Plot peril sources in the spatial grid.
-    
-    Args:
-        grid (class): An instance of class RasterGrid
-        par (dict): A dictionary with nested keys ['perils',
-                        'EQ'['x', 'y', 'w_km', 'dip_deg', 'z_km', 'mec', 'bin_km'],
-                        'FF'['riv_A_km', 'riv_lbd', 'riv_ome', 'riv_y0', 'Q_m3/s', 'A_km2'],
-                        'VE'['x', 'y']]
-        file_ext (str, optional): String representing the figure format ('jpg', 'pdf', etc., '-' by default)
-    
-    Returns:
-        A plot (saved in file if file_ext not '-')
-    '''
-
-    handles = []
-    labels = []
-
-    fig, ax = plt.subplots(1, 2, figsize=(10,4))
-    if len(hillshading_z) != 0:
-        ax[0].contourf(src.grid.xx, src.grid.yy, ls.hillshade(hillshading_z, vert_exag=.1), cmap='gray', alpha = .2)
-    if 'EQ' in src.par['perils']:
-        for src_i in range(len(src.par['EQ']['x'])):
-            h_eq, = ax[0].plot(src.par['EQ']['x'][src_i], src.par['EQ']['y'][src_i], color = GenMR_utils.col_peril('EQ'))
-        handles.append(h_eq)
-        labels.append('Fault segment: Earthquake (EQ)')
-    if 'FF' in src.par['perils']:
-        river_xi, river_yi, _, river_id = calc_coord_river_dampedsine(src.grid, src.par['FF'])
-        for src_i in range(len(src.par['FF']['riv_y0'])):
-            indriv = river_id == src_i
-            h_riv, = ax[0].plot(river_xi[indriv], river_yi[indriv], color = GenMR_utils.col_peril('FF'), linestyle = 'dashed')
-            h_ff = ax[0].scatter(np.max(river_xi), src.par['FF']['riv_y0'][0], s=75, marker = 's', clip_on = False, color = GenMR_utils.col_peril('FF'))
-        handles.append(h_ff)
-        labels.append('River upstream point: Fluvial Flood (FF)')
-        handles.append(h_riv)
-        labels.append('River bed')
-    if 'VE' in src.par['perils']:
-        h_ve = ax[0].scatter(src.par['VE']['x'], src.par['VE']['x'], color = GenMR_utils.col_peril('VE'), s=75, marker='^')
-        handles.append(h_ve)
-        labels.append('Volcano: Volcanic Eruption (VE)')
-    if 'SS' in src.par['perils']:
-        h_ss, = ax[0].plot(src.par['SS']['x'], src.par['SS']['y'], color = GenMR_utils.col_peril('SS'))
-        handles.append(h_ss)
-        labels.append('Coastline: Storm surge (SS)')
-    if 'TC' in src.par['perils']:
-        for src_i in range(src.par['TC']['N']):
-            indsrc = np.where(src.par['TC']['ID'] == src_i)[0]
-            h_tc, = ax[0].plot(src.par['TC']['x'][indsrc], src.par['TC']['y'][indsrc], color = GenMR_utils.col_peril('TC'))
-        handles.append(h_tc)
-        labels.append('Storm track: Tropical cyclone (TC)')
-    if 'AI' in src.par['perils']:
-        h_ai = ax[0].scatter(src.par['AI']['x'], src.par['AI']['y'], color = GenMR_utils.col_peril('AI'), s=30, marker = '+', clip_on = False)
-        handles.append(h_ai)
-        labels.append('Impact site: Asteroid impact (AI)')
-
-    h_box, = ax[0].plot([src.grid.xmin + src.grid.xbuffer, src.grid.xmax - src.grid.xbuffer, src.grid.xmax - src.grid.xbuffer, \
-                src.grid.xmin + src.grid.xbuffer, src.grid.xmin + src.grid.xbuffer],
-               [src.grid.ymin + src.grid.ybuffer, src.grid.ymin + src.grid.ybuffer, src.grid.ymax - src.grid.ybuffer, \
-                src.grid.ymax - src.grid.ybuffer, src.grid.ymin + src.grid.ybuffer], linestyle='dotted', color='black')
-    handles.append(h_box)
-    labels.append('Active domain')
-     
-    ax[0].set_xlim(src.grid.xmin, src.grid.xmax)
-    ax[0].set_ylim(src.grid.ymin, src.grid.ymax)
-    ax[0].set_xlabel('$x$ (km)')
-    ax[0].set_ylabel('$y$ (km)')
-    ax[0].set_title('Peril source coordinates', size = 14, pad = 20)
-    ax[0].set_aspect(1)
-
-
-    lgd_src = ax[1].legend(handles, labels,
-        loc='upper left',
-        frameon=False,
-        handletextpad=.8,   # spacing between patch & text
-        borderaxespad=.5,   # spacing between legend & axes
-        borderpad=.5        # padding in legend box
-    )
-    ax[1].add_artist(lgd_src)
-    ax[1].axis('off')
-
-    if file_ext != '-':
-        plt.savefig('figs/DigitalTemplate_src.' + file_ext)
-
 
 def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
     '''
