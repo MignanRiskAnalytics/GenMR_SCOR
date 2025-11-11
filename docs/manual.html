@@ -110,7 +110,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.downscale_RasterGrid"><code class="docutils literal notranslate"><span class="pre">downscale_RasterGrid()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.plot_EnvLayer_attr"><code class="docutils literal notranslate"><span class="pre">plot_EnvLayer_attr()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.plot_EnvLayers"><code class="docutils literal notranslate"><span class="pre">plot_EnvLayers()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.plot_src"><code class="docutils literal notranslate"><span class="pre">plot_src()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-GenMR.utils">GenMR.utils module</a><ul>
@@ -160,7 +159,11 @@
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#probabilistic-hazard-assessment">1. Probabilistic hazard assessment</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#peril-source-definition">1.1. Peril source definition</a></li>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#stochastic-event-set-generation">1.2. Stochastic event set generation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#intensity-footprint-catalogue-generation">1.3. Intensity footprint catalogue generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#intensity-footprint-catalogue-generation">1.3. Intensity footprint catalogue generation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#from-analytical-expressions-threshold-models">1.3.1. From analytical expressions &amp; threshold models</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#from-numerical-models-cellular-automata">1.3.2. From numerical models (cellular automata)</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#references">References</a></li>
@@ -552,27 +555,6 @@ per layer.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A plot</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="GenMR.environment.plot_src">
-<span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">plot_src</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hillshading_z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.plot_src" title="Link to this definition"></a></dt>
-<dd><p>Plot peril sources in the spatial grid.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>grid</strong> (<em>class</em>) – An instance of class RasterGrid</p></li>
-<li><p><strong>par</strong> (<em>dict</em>) – A dictionary with nested keys [‘perils’,
-‘EQ’[‘x’, ‘y’, ‘w_km’, ‘dip_deg’, ‘z_km’, ‘mec’, ‘bin_km’],
-‘FF’[‘riv_A_km’, ‘riv_lbd’, ‘riv_ome’, ‘riv_y0’, ‘Q_m3/s’, ‘A_km2’],
-‘VE’[‘x’, ‘y’]]</p></li>
-<li><p><strong>file_ext</strong> (<em>str</em><em>, </em><em>optional</em>) – String representing the figure format (‘jpg’, ‘pdf’, etc., ‘-’ by default)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A plot (saved in file if file_ext not ‘-‘)</p>
 </dd>
 </dl>
 </dd></dl>
