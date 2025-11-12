@@ -17,6 +17,7 @@ import pandas as pd
 
 import copy
 import re
+import warnings
 
 import matplotlib.pyplot as plt
 
@@ -30,11 +31,11 @@ from GenMR import utils as GenMR_utils
 # PERIL SOURCES #
 #################
 
-def get_peril_evID(evID):
+def get_peril_evID(evIDs):
     '''
     Return the peril identifiers for an array of event identifiers
     '''
-    return np.array([evID[k][0:2] for k in range(len(evID))])
+    return np.array([evID[:2] for evID in evIDs])
 
 
 class Src:
@@ -79,12 +80,13 @@ class Src:
         '''
         if 'AI' in self.par['perils']:
             srcID = [self.par['AI']['object'] + str(i + 1) for i in range(self.par['AI']['N'])]
-            src_xi, src_yi = self.gen_stochsrc_points(self.par['AI']['N'], self.grid, self.par['rdm_seed'])
+            src_xi, src_yi = self._gen_stochsrc_points(self.par['AI']['N'], self.grid, self.par['rdm_seed'])
             return {'srcID': srcID, 'x': src_xi, 'y': src_yi}
         else:
-            return print('WARNING: No earthquake source initiated in source parameter list')
-
-    def gen_stochsrc_points(self, N, grid, rdm_seed = None):
+            warnings.warn('No AI source initiated in source parameter list')
+            return {'srcID': [], 'x': [], 'y': []}
+        
+    def _gen_stochsrc_points(self, N, grid, rdm_seed = None):
         '''
         Return random uniform coordinates for N points in the grid
         '''
@@ -108,12 +110,19 @@ class Src:
         Returns:
             x: xxx
         '''
+        # Check if result already cached
+        if hasattr(self, '_EQ_char_cache'):
+            return self._EQ_char_cache
+        # Compute only if EQ peril exists
         if 'EQ' in self.par['perils']:
-            return self.get_char_srcEQline(self.par['EQ'])
+            result = self._get_char_srcEQline(self.par['EQ'])
+            self._EQ_char_cache = result
+            return result
         else:
-            return print('WARNING: No earthquake source initiated in source parameter list')
+            warnings.warn('No EQ source initiated in source parameter list')
+            return {'srcID': [], 'x': [], 'y': []}
     
-    def get_char_srcEQline(self, par):
+    def _get_char_srcEQline(self, par):
         '''
         Calculate the coordinates of fault sources based on their extrema and the provided 
         resolution , as well as lenghts and strikes of faults and fault segments.
@@ -137,8 +146,8 @@ class Src:
             for seg_i in range(len(par['x'][src_i]) - 1):
                 dx = par['x'][src_i][seg_i+1] - par['x'][src_i][seg_i]
                 dy = par['y'][src_i][seg_i+1] - par['y'][src_i][seg_i]
-                sign1 = dx / np.abs(dx)
-                sign2 = dy / np.abs(dy)
+                sign1 = np.sign(dx)
+                sign2 = np.sign(dy)
                 L = np.sqrt(dx**2 + dy**2)
                 strike = np.arctan(dx/dy) * 180 / np.pi
                 sign3 = np.sin(strike * np.pi / 180) / np.abs(np.sin(strike * np.pi / 180))
@@ -175,7 +184,8 @@ class Src:
             FF_x0 = np.repeat(self.grid.xmax, self.par['FF']['N'])
             return {'srcID': srcID, 'x': FF_x0, 'y': self.par['FF']['riv_y0']}
         else:
-            return print('WARNING: No fluvial flood source initiated in source parameter list')
+            warnings.warn('No FF source initiated in source parameter list')
+            return {'srcID': [], 'x': [], 'y': []}
 
 
     ## TC characteristics ##
@@ -184,13 +194,14 @@ class Src:
         '''
         '''
         if 'TC' in self.par['perils']:
-            src_ind, src_xi, src_yi = self.gen_stochsrc_TCtracks(self.par['TC']['N'], self.grid, self.par['TC']['npt'], self.par['TC']['max_dev'], self.par['rdm_seed'])
+            src_ind, src_xi, src_yi = self._gen_stochsrc_TCtracks(self.par['TC']['N'], self.grid, self.par['TC']['npt'], self.par['TC']['max_dev'], self.par['rdm_seed'])
             srcID = np.char.add(self.par['TC']['object'], src_ind.astype(str))
             return {'srcID': srcID, 'x': src_xi, 'y': src_yi}
         else:
-            return print('WARNING: No tropical cyclone source initiated in source parameter list')
+            warnings.warn('No TC source initiated in source parameter list')
+            return {'srcID': [], 'x': [], 'y': []}
 
-    def gen_stochsrc_TCtracks(self, N, grid, npt, max_deviation, rdm_seed = None):
+    def _gen_stochsrc_TCtracks(self, N, grid, npt, max_deviation, rdm_seed = None):
         '''
         Return coordinates of N storm tracks, defined as straight lines
         subject to random deviation (below max_deviation) along y at npt points.
@@ -217,7 +228,8 @@ class Src:
             srcID = np.char.add(self.par['VE']['object'], src_ind.astype(str))
             return {'srcID': srcID, 'x': self.par['VE']['x'], 'y': self.par['VE']['y']}
         else:
-            return print('WARNING: No volcanic eruption source initiated in source parameter list')
+            warnings.warn('No VE source initiated in source parameter list')
+            return {'srcID': [], 'x': [], 'y': []}
 
 
     def __repr__(self):
