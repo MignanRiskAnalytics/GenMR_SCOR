@@ -201,7 +201,7 @@
 <h1>Tutorial 2: Implementing perils in the GenMR digital template<a class="headerlink" href="#tutorial-2-implementing-perils-in-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 0.1<br />
-<strong>Last Updated:</strong> 2025-11-11<br />
+<strong>Last Updated:</strong> 2025-11-12<br />
 <strong>License:</strong> AGPL-3, https://opensource.org/license/agpl-v3</p>
 <p>Once a virtual environment has been generated (see previous tutorial), stochastic events can be modelled to populate it. Table 1 lists the perils so far considered in version 1.1.1 as well as the ones to be added in the near future (v. 1.1.2).</p>
 <br>
@@ -579,7 +579,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:336: RuntimeWarning: divide by zero encountered in divide
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:340: RuntimeWarning: divide by zero encountered in divide
   wi = 1 / np.array([np.count_nonzero(Si_ind_vec == i) for i in Si_ind])
 </pre></div>
 </div>
@@ -940,7 +940,7 @@
     <tr>
       <th>41</th>
       <td>FF</td>
-      <td>river</td>
+      <td>river1</td>
       <td>FF_fromRS1</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -948,7 +948,7 @@
     <tr>
       <th>42</th>
       <td>FF</td>
-      <td>river</td>
+      <td>river1</td>
       <td>FF_fromRS2</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -956,7 +956,7 @@
     <tr>
       <th>43</th>
       <td>FF</td>
-      <td>river</td>
+      <td>river1</td>
       <td>FF_fromRS3</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -1112,17 +1112,59 @@
 <span class="c1"># virtual region bathymetry characteristics for SS height given storm wind speed</span>
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;SS&#39;</span><span class="p">][</span><span class="s1">&#39;bathy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;New York harbor&#39;</span>  <span class="c1"># &#39;generic&#39; (Saffir-Simpson, Mignan, 2024:eq. 2.16) </span>
                                             <span class="c1"># &#39;New York harbor&#39; (Eq. in Mignan, 2024:fig. 2.7)</span>
-    
-<span class="c1">#catalog_hazFootprints = GenMR_perils.gen_hazFootprints(stochset, src, grid, topoLayer.z)</span>
+
+<span class="n">catalog_hazFootprints</span> <span class="o">=</span> <span class="n">GenMR_perils</span><span class="o">.</span><span class="n">gen_hazFootprints</span><span class="p">(</span><span class="n">evtable</span><span class="p">,</span> <span class="n">evchar</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">catalog_hazFootprints</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="c1"># footprints are catalogued by evID</span>
 
 <span class="c1">#hazFp_static = GenMR_events.hazFootprints_static(src, evPar, evTable)</span>
-
-
-<span class="c1">#print(catalog_hazFootprints.keys()) # footprints are catalogued by evID</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>generating footprints for:
+AI
+EQ
+TC
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:524: RuntimeWarning: divide by zero encountered in divide
+  alpha = np.arctan(dy/dx)
+/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:524: RuntimeWarning: divide by zero encountered in divide
+  alpha = np.arctan(dy/dx)
+/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:524: RuntimeWarning: divide by zero encountered in divide
+  alpha = np.arctan(dy/dx)
+/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:524: RuntimeWarning: divide by zero encountered in divide
+  alpha = np.arctan(dy/dx)
+/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:524: RuntimeWarning: divide by zero encountered in divide
+  alpha = np.arctan(dy/dx)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>VE
+SS
+... catalogue completed
+dict_keys([&#39;AI1&#39;, &#39;AI2&#39;, &#39;AI3&#39;, &#39;AI4&#39;, &#39;AI5&#39;, &#39;AI6&#39;, &#39;AI7&#39;, &#39;AI8&#39;, &#39;AI9&#39;, &#39;AI10&#39;, &#39;EQ1&#39;, &#39;EQ2&#39;, &#39;EQ3&#39;, &#39;EQ4&#39;, &#39;EQ5&#39;, &#39;EQ6&#39;, &#39;EQ7&#39;, &#39;EQ8&#39;, &#39;EQ9&#39;, &#39;EQ10&#39;, &#39;EQ11&#39;, &#39;EQ12&#39;, &#39;EQ13&#39;, &#39;EQ14&#39;, &#39;EQ15&#39;, &#39;EQ16&#39;, &#39;EQ17&#39;, &#39;EQ18&#39;, &#39;EQ19&#39;, &#39;EQ20&#39;, &#39;TC1&#39;, &#39;TC2&#39;, &#39;TC3&#39;, &#39;TC4&#39;, &#39;TC5&#39;, &#39;VE1&#39;, &#39;VE2&#39;, &#39;VE3&#39;, &#39;SS_fromTC1&#39;, &#39;SS_fromTC2&#39;, &#39;SS_fromTC3&#39;, &#39;SS_fromTC4&#39;, &#39;SS_fromTC5&#39;])
 </pre></div>
 </div>
 </div>
 </div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># max intensity Imax in color range [see units in previous table]</span>
+<span class="c1"># to compare similar levels of expected damage, choose a value per peril for a constant MDR in the vulnerability</span>
+<span class="c1"># curves (see curves generated by plot_vulnFunctions())</span>
+<span class="n">plot_Imax</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;AI&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;EQ&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;VE&#39;</span><span class="p">:</span> <span class="mf">.5</span><span class="p">,</span> <span class="s1">&#39;TC&#39;</span><span class="p">:</span> <span class="mf">70.</span><span class="p">,</span> <span class="s1">&#39;SS&#39;</span><span class="p">:</span> <span class="mf">2.</span><span class="p">,</span> <span class="s1">&#39;LS&#39;</span><span class="p">:</span> <span class="mf">2.</span><span class="p">}</span>
+
+<span class="c1"># nstoch (default = 5) defines the number of events per peril to be displayed by row</span>
+<span class="c1"># if the number of events &gt; nstoch, footprints are randomly sampled from all possibilities</span>
+<span class="n">GenMR_perils</span><span class="o">.</span><span class="n">plot_hazFootprints</span><span class="p">(</span><span class="n">catalog_hazFootprints</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">plot_Imax</span><span class="p">)</span>  <span class="c1">#, nstoch = 5)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/07e066e347e620cd7d252283aeef01df6c0778eed3fd2b278ef8a9ff8f1a5900.png" src="../_images/07e066e347e620cd7d252283aeef01df6c0778eed3fd2b278ef8a9ff8f1a5900.png" />
+</div>
+</div>
+<p><strong>Note:</strong> Observe the <code class="docutils literal notranslate"><span class="pre">TC</span></code> footprint boundary effect (cyclonic eye), which is due to the track artificially starting at <code class="docutils literal notranslate"><span class="pre">grid.xmin</span></code>.</p>
 </section>
 <section id="from-numerical-models-cellular-automata">
 <h4>1.3.2. From numerical models (cellular automata)<a class="headerlink" href="#from-numerical-models-cellular-automata" title="Link to this heading"></a></h4>
