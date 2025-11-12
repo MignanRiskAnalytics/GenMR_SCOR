@@ -1057,7 +1057,7 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
     plt.title('Layer:' + envLayer.ID + ' with attribute:' + attr, size = 14)
     ax.set_aspect(1)
     if file_ext != '-':
-        plt.savefig('figs/DigitalTemplate_envLayer_' + envLayer.ID + '_' + attr + '.' + file_ext)
+        plt.savefig('figs/envLayer_' + envLayer.ID + '_' + attr + '.' + file_ext)
 
 
 def plot_EnvLayers(envLayers, file_ext = '-'):
@@ -1224,4 +1224,4 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
             ax[i,2].set_aspect(1)
             fig.colorbar(img, ax = ax[i,2], fraction = .04, pad = .04, label = 'Value ($)')
     if file_ext != '-':
-        plt.savefig('figs/DigitalTemplate_envLayers' + IDs + '.' + file_ext)
+        plt.savefig('figs/envLayers' + IDs + '.' + file_ext)

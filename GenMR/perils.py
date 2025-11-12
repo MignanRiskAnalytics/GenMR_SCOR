@@ -64,6 +64,9 @@ class Src:
         par['EQ']['N'] = len(par['EQ']['x'])
         par['FF']['N'] = len(par['FF']['riv_A_km'])
         par['VE']['N'] = len(par['VE']['x'])
+        par['EQ']['ID'] = np.char.add(par['EQ']['object'], (np.arange(par['EQ']['N'])+1).astype(str))
+        par['FF']['ID'] = np.char.add(par['FF']['object'], (np.arange(par['FF']['N'])+1).astype(str))
+        par['VE']['ID'] = np.char.add(par['VE']['object'], (np.arange(par['VE']['N'])+1).astype(str))
         self.par = par
         self.grid = copy.copy(grid)
         self.SS_char = None
@@ -169,7 +172,8 @@ class Src:
         if 'FF' in self.par['perils']:
             src_ind = np.arange(self.par['FF']['N']) + 1
             srcID = np.char.add(self.par['FF']['object'], src_ind.astype(str))
-            return {'srcID': srcID, 'x': self.par['FF']['x'], 'y': self.par['FF']['y']}
+            FF_x0 = np.repeat(self.grid.xmax, self.par['FF']['N'])
+            return {'srcID': srcID, 'x': FF_x0, 'y': self.par['FF']['riv_y0']}
         else:
             return print('WARNING: No fluvial flood source initiated in source parameter list')
 
@@ -312,10 +316,10 @@ def gen_eventset(src, sizeDistr):
     srcIDs = []
     ev_char = pd.DataFrame({'evID': pd.Series(dtype='object'), 'x': pd.Series(dtype=float), 'y': pd.Series(dtype=float)})
     for ID in src.par['perils']:
+        ev_ID = ev_x = ev_y = None
         if ID in sizeDistr['primary']:
             # event ID definition #
             evID = [ID + str(i+1) for i in range(sizeDistr[ID]['Nstoch'])]
-            ev_ID = ev_x = ev_y = None
 
             # size incrementation #
             Si = incrementing(sizeDistr[ID]['Smin'], sizeDistr[ID]['Smax'], sizeDistr[ID]['Sbin'], sizeDistr[ID]['Sscale'])
@@ -369,15 +373,16 @@ def gen_eventset(src, sizeDistr):
         if ID == 'RS':
             srcIDs = np.append(srcIDs, np.repeat(src.par['RS']['object'], sizeDistr['RS']['Nstoch']))
         if ID == 'TC':
-            track_coord = get_TCtrack_highres(src.TC_char['x'], src.TC_char['y'], src.TC_char['srcID'], src.par['TC']['bin_km'])
+            track_coord = get_TCtrack_highres(evID, src)
             ev_ID, ev_x, ev_y = track_coord['evID'], track_coord['x'], track_coord['y']
             srcIDs = np.append(srcIDs, np.unique(src.TC_char['srcID']))
         if ID == 'VE':
-            # WARNING: assumes for now that only one volcano source possible
+            # WARNING: assumes for now that only one volcano source possible for now
             ev_ID, ev_x, ev_y = evID, np.repeat(src.VE_char['x'], sizeDistr['VE']['Nstoch']), np.repeat(src.VE_char['y'], sizeDistr['VE']['Nstoch'])
             srcIDs = np.append(srcIDs, np.repeat(src.VE_char['srcID'], sizeDistr['VE']['Nstoch']))
         if ID == 'FF':
-            srcIDs = np.append(srcIDs, np.repeat(src.par['FF']['object'], sizeDistr[trigger]['Nstoch']))
+            # WARNING: assumes for now that only one river source possible for now
+            srcIDs = np.append(srcIDs, np.repeat(src.FF_char['srcID'], sizeDistr[trigger]['Nstoch']))
         if ID == 'LS':
             srcIDs = np.append(srcIDs, np.repeat(src.par['LS']['object'], sizeDistr[trigger]['Nstoch']))
         if ID == 'SS':
@@ -418,19 +423,17 @@ def gen_EQ_floatingRupture(evIDi, Si, src):
             i += 1
     return Rup_coord, Rup_loc
 
-
-
-
-
-def get_TCtrack_highres(x0, y0, id0, bin_km):
+def get_TCtrack_highres(evIDi, src):
+    '''
+    '''
     x_hires = np.array([])
     y_hires = np.array([])
     id_hires = np.array([])
-    evID = np.unique(id0)
-    for i in range(len(evID)):
-        indev = np.where(id0 == evID[i])[0]
-        x_ev = x0[indev]
-        y_ev = y0[indev]
+    srcID = np.unique(src.TC_char['srcID'])  # match 1:1 between srcID and evID
+    for i in range(len(evIDi)):
+        indev = np.where(src.TC_char['srcID'] == srcID[i])[0]
+        x_ev = src.TC_char['x'][indev]
+        y_ev = src.TC_char['y'][indev]
         for seg in range(len(x_ev) - 1):
             dx = x_ev[seg + 1] - x_ev[seg]
             dy = y_ev[seg + 1] - y_ev[seg]
@@ -438,43 +441,19 @@ def get_TCtrack_highres(x0, y0, id0, bin_km):
             sign2 = dy / np.abs(dy)
             L = np.sqrt(dx**2 + dy**2)
             strike = np.arctan(dx/dy) * 180 / np.pi
-            npt = int(np.round(L / bin_km))
+            npt = int(np.round(L / src.par['TC']['bin_km']))
             seg_xi = np.zeros(npt)
             seg_yi = np.zeros(npt)
             seg_xi[0] = x_ev[seg]
             seg_yi[0] = y_ev[seg]
             for k in range(1, npt):
-                seg_xi[k] = seg_xi[k-1] + sign1 * sign2 * bin_km * np.sin(strike * np.pi / 180)
-                seg_yi[k] = seg_yi[k-1] + sign1 * sign2 * bin_km * np.cos(strike * np.pi / 180)
+                seg_xi[k] = seg_xi[k-1] + sign1 * sign2 * src.par['TC']['bin_km'] * np.sin(strike * np.pi / 180)
+                seg_yi[k] = seg_yi[k-1] + sign1 * sign2 * src.par['TC']['bin_km'] * np.cos(strike * np.pi / 180)
             x_hires = np.append(x_hires, np.append(seg_xi, x_ev[seg + 1]))
             y_hires = np.append(y_hires, np.append(seg_yi, y_ev[seg + 1]))
-            id_hires = np.append(id_hires, np.repeat(evID[i], len(seg_xi)+1))
+            id_hires = np.append(id_hires, np.repeat(evIDi[i], len(seg_xi)+1))
     Track_coord = pd.DataFrame({'evID': id_hires, 'x': x_hires, 'y': y_hires})
     return Track_coord
-
-def calc_S_track(stochset, src, Track_coord):    
-    indperil = np.where(stochset['ID'] == 'TC')[0]
-    evIDs = stochset['evID'][indperil].values
-    vmax_start = stochset['S'][indperil].values
-    S_alongtrack = {}
-    for i in range(src['TC']['N']):
-        indtrack = np.where(Track_coord['ID'] == i+1)[0]
-        track_x = Track_coord['x'][indtrack].values
-        track_y = Track_coord['y'][indtrack].values
-
-        npt = len(indtrack)
-        track_vmax = np.repeat(vmax_start[i], npt)  # track over ocean at vmax_start
-
-        # find inland section & reduce vmax
-        d = [np.min(np.sqrt((track_x[j] - src['SS']['x'])**2 + \
-                            (track_y[j] - src['SS']['y'])**2)) for j in range(npt)]
-        indcoast = np.where(d == np.min(d))[0]
-        d2coast = track_x[indcoast[0]:] - track_x[indcoast[0]]
-        # ad-hoc decay relationship:
-        track_vmax[indcoast[0]:] = vmax_start[i] * np.exp(-.1 / src['TC']['vforward_m/s'] * d2coast)
-        
-        S_alongtrack[evIDs[i]] = track_vmax
-    return S_alongtrack
 
 
 
@@ -531,7 +510,6 @@ def add_v_forward(vf, vtan, track_x, track_y, grid, t_i):
         dx = track_x[t_i]-track_x[t_i-1]
         dy = track_y[t_i]-track_y[t_i-1]
 
-
     beta = np.arctan(dy/dx)
     if dx > 0:
         vf_x = vf * np.cos(beta)
@@ -557,36 +535,48 @@ def add_v_forward(vf, vtan, track_x, track_y, grid, t_i):
     vtot = np.sqrt(vtot_x**2 + vtot_y**2)
     return vtot, vtot_x, vtot_y, vtan_x, vtan_y
 
+def calc_S_track(stochset, src, Track_coord):    
+    indperil = np.where(stochset['ID'] == 'TC')[0]
+    evIDs = stochset['evID'][indperil].values
+    vmax_start = stochset['S'][indperil].values
+    S_alongtrack = {}
+    for i in range(len(evIDs)):
+        indtrack = np.where(Track_coord['evID'] == evIDs[i])[0]
+        track_x = Track_coord['x'][indtrack].values
+        track_y = Track_coord['y'][indtrack].values
+
+        npt = len(indtrack)
+        track_vmax = np.repeat(vmax_start[i], npt)  # track over ocean at vmax_start
+
+        # find inland section & reduce vmax
+        d = [np.min(np.sqrt((track_x[j] - src.SS_char['x'])**2 + \
+                            (track_y[j] - src.SS_char['y'])**2)) for j in range(npt)]
+        indcoast = np.where(d == np.min(d))[0]
+        d2coast = track_x[indcoast[0]:] - track_x[indcoast[0]]
+        # ad-hoc decay relationship:
+        track_vmax[indcoast[0]:] = vmax_start[i] * np.exp(-.1 / src.par['TC']['vforward_m/s'] * d2coast)
+        
+        S_alongtrack[evIDs[i]] = track_vmax
+    return S_alongtrack
+
 
 # threshold model
-def calc_S_TC2SS(v_max, relationship = 'generic'):
-    '''
-    Empirical relationships according to the Saffir-Simpson scale (generic) or 
-    from Lin et al. (2010) (New York harbor).
-    vmax: max wind speed [m/s] during storm passage
-    S_SS: storm surge size at the source (coastline) 
-    '''
-    if relationship == 'generic':
-        S_SS = .0011 * v_max**2 
-    if relationship == 'New York harbor':
-        S_SS = .031641 * v_max - .00075537 * v_max**2 + 3.1941e-5 * v_max**3
-    return np.round(S_SS, decimals = 3)
-
-def model_SS_Bathtub(I_trigger, src_SS, grid, topo_z):
-        vmax_coastline = np.zeros(grid.ny)
-        for j in range(grid.ny):
-            indx = np.where(grid.x > src_SS['x'][j]-1e-6)[0][0]
+def model_SS_Bathtub(I_trigger, src, topo_z):
+        vmax_coastline = np.zeros(src.grid.ny)
+        for j in range(src.grid.ny):
+            indx = np.where(src.grid.x > src.SS_char['x'][j]-1e-6)[0][0]
             vmax_coastline[j] = I_trigger[indx,j]
-        S_SS = calc_S_TC2SS(vmax_coastline, src_SS['bathy'])
-        I_SS = np.zeros((grid.nx, grid.ny))
-        for j in range(grid.ny):
+        S_SS = GenMR_dynamics.calc_S_TC2SS(vmax_coastline, src.par['SS']['bathy'])
+        I_SS = np.zeros((src.grid.nx, src.grid.ny))
+        for j in range(src.grid.ny):
             I_alongx = S_SS[j] - topo_z[:,j]
             I_alongx[I_alongx < 0] = 0
-            I_alongx[grid.x < src_SS['x'][j]] = 0
+            I_alongx[src.grid.x < src.SS_char['x'][j]] = 0
             I_SS[:,j] = I_alongx
         return I_SS
 
-def gen_hazFootprints(stochset, src, grid, topo_z):
+
+def gen_hazFootprints(stochset, evchar, src, topo_z):
     catalog_hazFootprints = {}
     print('generating footprints for:')
     for ID in src.par['perils']:
@@ -595,53 +585,56 @@ def gen_hazFootprints(stochset, src, grid, topo_z):
 
         if ID == 'AI':
             print(ID)
+            AIcoord = evchar[get_peril_evID(evchar['evID']) == 'AI'].reset_index(drop = True)
             for i in range(Nev_peril):
                 evID = stochset['evID'][indperil].values[i]
                 S = stochset['S'][indperil].values[i]
-                r = np.sqrt((grid.xx - src.AI_char['x'][i])**2 + (grid.yy - src.AI_char['y'][i])**2)   # point source
+                r = np.sqrt((src.grid.xx - AIcoord['x'][i])**2 + (src.grid.yy - AIcoord['y'][i])**2)   # point source
                 catalog_hazFootprints[evID] = calc_I_ash_m(S, r)
 
         if ID == 'VE':
             print(ID)
+            VEcoord = evchar[get_peril_evID(evchar['evID']) == 'VE'].reset_index(drop = True)
             for i in range(Nev_peril):
                 evID = stochset['evID'][indperil].values[i]
                 S = stochset['S'][indperil].values[i]
-                r = np.sqrt((grid.xx - src.par['VE']['x'][0])**2 + (grid.yy - src.par['VE']['y'][0])**2)   # point source
+                r = np.sqrt((src.grid.xx - VEcoord['x'][0])**2 + (src.grid.yy - VEcoord['y'][0])**2)   # point source
                 catalog_hazFootprints[evID] = calc_I_blast_kPa(S, r)
 
         if ID == 'EQ':
             print(ID)
-            EQ_coords = src['EQ']['rup_coords']
+            EQcoord = evchar[get_peril_evID(evchar['evID']) == 'EQ'].reset_index(drop = True)
             for i in range(Nev_peril):
                 evID = stochset['evID'][indperil].values[i]
+                srcID = stochset['srcID'][indperil].values[i]
                 S = stochset['S'][indperil].values[i]
-                evID_coords = EQ_coords[EQ_coords['evID'] == evID]
+                evID_coords = EQcoord[EQcoord['evID'] == evID]
                 npt = len(evID_coords)
-                d2rupt = np.zeros((grid.nx, grid.ny, npt))
+                d2rupt = np.zeros((src.grid.nx, src.grid.ny, npt))
                 for k in range(npt):
-                    d2rupt[:,:,k] = np.sqrt((grid.xx - evID_coords['x'].values[k])**2 + (grid.yy - evID_coords['y'].values[k])**2)
+                    d2rupt[:,:,k] = np.sqrt((src.grid.xx - evID_coords['x'].values[k])**2 + (src.grid.yy - evID_coords['y'].values[k])**2)
                 dmin = d2rupt.min(axis = 2)
-                z = src['EQ']['z_km'][int(evID_coords['loc'].iloc[0][-1])-1]
+                z = np.array(src.par['EQ']['z_km'])[src.par['EQ']['ID'] == srcID]
                 r = np.sqrt(dmin**2 + z**2)                                                        # line source
                 catalog_hazFootprints[evID] = calc_I_shaking_ms2(S, r)
 
         if ID == 'TC':
             print(ID)
-            Track_coord = get_TCtrack_highres(src['TC']['x'], src['TC']['y'], src['TC']['ID'], src['TC']['bin_km'])
-            S_alongtrack = calc_S_track(stochset, src, Track_coord) # ad-hoc inland decay of windspeed
+            TCcoord = evchar[get_peril_evID(evchar['evID']) == 'TC'].reset_index(drop = True)
+            S_alongtrack = calc_S_track(stochset, src, TCcoord) # ad-hoc inland decay of windspeed
             for i in range(Nev_peril):
                 evID = stochset['evID'][indperil].values[i]
-                indtrack = np.where(Track_coord['ID'] == i+1)[0]
-                track_x = Track_coord['x'][indtrack].values
-                track_y = Track_coord['y'][indtrack].values
+                indtrack = np.where(TCcoord['evID'] == evID)[0]
+                track_x = TCcoord['x'][indtrack].values
+                track_y = TCcoord['y'][indtrack].values
                 track_S = S_alongtrack[evID]
                 npt = len(indtrack)
-                I_t = np.zeros((grid.nx, grid.ny, npt))
+                I_t = np.zeros((src.grid.nx, src.grid.ny, npt))
                 for j in range(npt):
-                    r = np.sqrt((grid.xx - track_x[j])**2 + (grid.yy - track_y[j])**2)             # point source at time t
-                    I_sym_t = calc_I_v_ms(track_S[j], r, src['TC'])
+                    r = np.sqrt((src.grid.xx - track_x[j])**2 + (src.grid.yy - track_y[j])**2)             # point source at time t
+                    I_sym_t = calc_I_v_ms(track_S[j], r, src.par['TC'])
                     I_t[:,:,j], _, _, _, _ = \
-                        add_v_forward(src['TC']['vforward_m/s'], I_sym_t, track_x, track_y, grid, j)
+                        add_v_forward(src.par['TC']['vforward_m/s'], I_sym_t, track_x, track_y, src.grid, j)
                 catalog_hazFootprints[evID] = np.nanmax(I_t, axis = 2)                                # track source
 
         if ID == 'SS':
@@ -651,7 +644,7 @@ def gen_hazFootprints(stochset, src, grid, topo_z):
                 evID = stochset['evID'][indperil].values[i]
                 evID_trigger = re.search(pattern, evID).group()
                 I_trigger = catalog_hazFootprints[evID_trigger]
-                catalog_hazFootprints[evID] = model_SS_Bathtub(I_trigger, src['SS'], grid, topo_z)
+                catalog_hazFootprints[evID] = model_SS_Bathtub(I_trigger, src, topo_z)
 
     print('... catalogue completed')
     return catalog_hazFootprints
@@ -707,7 +700,7 @@ def plot_src(src, hillshading_z = '', file_ext = '-'):
         for src_i in range(len(src.par['FF']['riv_y0'])):
             indriv = river_id == src_i
             h_riv, = ax[0].plot(river_xi[indriv], river_yi[indriv], color = GenMR_utils.col_peril('FF'), linestyle = 'dashed')
-            h_ff = ax[0].scatter(np.max(river_xi), src.par['FF']['riv_y0'][0], s=75, marker = 's', clip_on = False, color = GenMR_utils.col_peril('FF'))
+            h_ff = ax[0].scatter(src.FF_char['x'], src.FF_char['y'], s=75, marker = 's', clip_on = False, color = GenMR_utils.col_peril('FF'))
         handles.append(h_ff)
         labels.append('River upstream point: Fluvial Flood (FF)')
         handles.append(h_riv)
@@ -757,5 +750,45 @@ def plot_src(src, hillshading_z = '', file_ext = '-'):
     ax[1].axis('off')
 
     if file_ext != '-':
-        plt.savefig('figs/DigitalTemplate_src.' + file_ext)
+        plt.savefig('figs/src.' + file_ext)
 
+
+
+def plot_hazFootprints(catalog_hazFootprints, grid, topoLayer_z, plot_Imax, nstoch = 5, file_ext = '-'):
+    evIDs = np.array(list(catalog_hazFootprints.keys()))
+    ev_peril = get_peril_evID(evIDs)
+    perils = np.unique(ev_peril)
+    nperil = len(perils)
+
+    plt.rcParams['font.size'] = '18'
+    _, ax = plt.subplots(nperil, nstoch, figsize=(20, nperil*20/nstoch))
+
+    for i in range(nperil):
+        indperil = np.where(ev_peril == perils[i])[0]
+        nev = len(indperil)
+        nplot = np.min([nstoch, nev])
+        evID_shuffled = evIDs[indperil]
+        if nev > nplot:
+            np.random.shuffle(evID_shuffled)
+        Imax = plot_Imax[perils[i]]
+        for j in range(nplot):
+            I_plt = np.copy(catalog_hazFootprints[evID_shuffled[j]])
+            I_plt[I_plt >= Imax] = Imax
+            ax[i,j].contourf(grid.xx, grid.yy, I_plt, cmap = 'Reds', levels = np.linspace(0, Imax, 100))
+            ax[i,j].contourf(grid.xx, grid.yy, GenMR_env.ls.hillshade(topoLayer_z, vert_exag=.1), cmap='gray', alpha = .1)
+            ax[i,j].set_xlim(grid.xmin, grid.xmax)
+            ax[i,j].set_ylim(grid.ymin, grid.ymax)
+            ax[i,j].set_xlabel('$x$ (km)')
+            ax[i,j].set_ylabel('$y$ (km)')
+            ax[i,j].set_title(evID_shuffled[j], pad = 10)
+            ax[i,j].set_aspect(1)
+        if nplot < nstoch:
+            for j in np.arange(nplot, nstoch):
+                ax[i,j].set_axis_off()
+    plt.tight_layout()    
+
+    if file_ext != '-':
+        plt.savefig('figs/hazFootprints.' + file_ext)
+
+    plt.pause(1)
+    plt.show()
