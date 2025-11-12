@@ -284,176 +284,227 @@ def calc_Lbd_GPD(S, mu, xi, sigma, Lbdmin):
     Lbd = Lbdmin * (1 + xi * (S - mu) / sigma)**(-1 / xi)
     return Lbd
 
-def transform_cum2noncum(S, par):
+
+## event set ##
+class EventSetGenerator:
     '''
-    Transform the rate from cumulative (Lbd) to non-cumulative (lbd) (e.g., Eq. 2.65)
+    Generates stochastic event set based on source and size distribution parameters.
     '''
-    if par['Sscale'] == 'linear':
-        S_lo = S - par['Sbin']/2
-        S_hi = S + par['Sbin']/2
-    elif par['Sscale'] == 'log':
-        S_lo = 10**(np.log10(S) - par['Sbin']/2)
-        S_hi = 10**(np.log10(S) + par['Sbin']/2)
-    if par['distr'] == 'powerlaw':
-        Lbd_lo = calc_Lbd_powerlaw(S_lo, par['a'], par['b'])
-        Lbd_hi = calc_Lbd_powerlaw(S_hi, par['a'], par['b'])
-    if par['distr'] == 'exponential':
-        Lbd_lo = calc_Lbd_exponential(S_lo, par['a'], par['b'])
-        Lbd_hi = calc_Lbd_exponential(S_hi, par['a'], par['b'])
-    if par['distr'] == 'GPD':
-        Lbd_lo = calc_Lbd_GPD(S_lo, par['mu'], par['xi'], par['sigma'], par['Lbdmin'])
-        Lbd_hi = calc_Lbd_GPD(S_hi, par['mu'], par['xi'], par['sigma'], par['Lbdmin'])
-    lbd = Lbd_lo - Lbd_hi
-    return lbd
+
+    def __init__(self, src, sizeDistr, utils):
+        self.src = src
+        self.sizeDistr = sizeDistr
+        self.utils = utils  # e.g. GenMR_utils module or similar
+        self.ev_stoch = pd.DataFrame({'ID': pd.Series(dtype='object'), 'srcID': pd.Series(dtype='object'), 'evID': pd.Series(dtype='object'),
+                                      'S': pd.Series(dtype=float), 'lbd': pd.Series(dtype=float)})
+        self.ev_char = pd.DataFrame({'evID': pd.Series(dtype='object'), 'x': pd.Series(dtype=float), 'y': pd.Series(dtype=float)})
+        self.srcIDs = []
+
+    def generate(self):
+        for ID in self.src.par['perils']:
+            ev_ID = ev_x = ev_y = None
+
+            ## PRIMARY EVENTS ##
+            if ID in self.sizeDistr['primary']:
+                evID, Si_vec, lbdi = self._generate_primary(ID)
+                self.ev_stoch = pd.concat([
+                    self.ev_stoch,
+                    pd.DataFrame({'ID': np.repeat(ID, self.sizeDistr[ID]['Nstoch']), 'evID': evID, 'S': Si_vec, 'lbd': lbdi})
+                ], ignore_index=True)
+
+            ## SECONDARY EVENTS ##
+            if ID in self.sizeDistr['secondary']:
+                evID, Si_vec, lbdi = self._generate_secondary(ID)
+                self.ev_stoch = pd.concat([
+                    self.ev_stoch,
+                    pd.DataFrame({'ID': np.repeat(ID, self.sizeDistr[evID['trigger']]['Nstoch']), 'evID': evID['evID'], 'S': Si_vec, 'lbd': lbdi})
+                ], ignore_index=True)
+
+            ## Spatial characteristics ##
+            ev_ID, ev_x, ev_y = self._add_spatial_characteristics(ID, evID, Si_vec)
+            if ev_ID is not None:
+                self.ev_char = pd.concat([
+                    self.ev_char,
+                    pd.DataFrame({'evID': ev_ID, 'x': ev_x, 'y': ev_y})
+                ])
+
+        self.ev_stoch['srcID'] = self.srcIDs
+        return self.ev_stoch.reset_index(drop=True), self.ev_char.reset_index(drop=True)
 
 
-## generate event set ##
-def gen_eventset(src, sizeDistr):
-    '''
-    '''
-    ev_stoch = pd.DataFrame({'ID': pd.Series(dtype='object'), 'srcID': pd.Series(dtype='object'), 'evID': pd.Series(dtype='object'),
-        'S': pd.Series(dtype=float), 'lbd': pd.Series(dtype=float)})
-    srcIDs = []
-    ev_char = pd.DataFrame({'evID': pd.Series(dtype='object'), 'x': pd.Series(dtype=float), 'y': pd.Series(dtype=float)})
-    for ID in src.par['perils']:
-        ev_ID = ev_x = ev_y = None
-        if ID in sizeDistr['primary']:
-            # event ID definition #
-            evID = [ID + str(i+1) for i in range(sizeDistr[ID]['Nstoch'])]
+    def _generate_primary(self, ID):
+        N = self.sizeDistr[ID]['Nstoch']
+        evID = [f"{ID}{i+1}" for i in range(N)]
 
-            # size incrementation #
-            Si = incrementing(sizeDistr[ID]['Smin'], sizeDistr[ID]['Smax'], sizeDistr[ID]['Sbin'], sizeDistr[ID]['Sscale'])
+        # Generate size distribution
+        Si = incrementing(self.sizeDistr[ID]['Smin'], self.sizeDistr[ID]['Smax'], self.sizeDistr[ID]['Sbin'], self.sizeDistr[ID]['Sscale'])
 
-            # weighting how Si size distributed over N event sources
-            Si_n = len(Si)
-            Si_ind = np.arange(Si_n)
-            if ID == 'EQ':
-                # smaller events more often to test more spatial combinations on fault segments
-                qi = np.linspace(1,11,Si_n)
-                qi /= np.sum(qi)
-                qi = np.sort(qi)[::-1]
-            else:
-                # equal weight
-                qi = np.repeat(1./Si_n, Si_n)
-            Si_ind_vec = GenMR_utils.partitioning(Si_ind, qi, sizeDistr[ID]['Nstoch'])  # distribute Si sizes into N event sources
-            Si_vec = Si[Si_ind_vec]
-            wi = 1 / np.array([np.count_nonzero(Si_ind_vec == i) for i in Si_ind])
-            wi_vec = [wi[Si_ind == i][0] for i in Si_ind_vec]    # weight of rate(Si) at each of N locations
+        # Weighting logic
+        Si_vec, wi_vec = self._distribute_sizes(ID, Si)
 
-            # rate calculation #
-            # calibrate event productivity
-            if sizeDistr[ID]['distr'] == 'powerlaw':
-                if 'a' not in sizeDistr[ID].keys():
-                    rescaled = src.par['grid_A_km2'] / GenMR_utils.fetch_A0(sizeDistr[ID]['region'])
-                    sizeDistr[ID]['a'] = sizeDistr[ID]['a0'] + np.log10(rescaled)
-            if sizeDistr[ID]['distr'] == 'GPD':
-                if 'Lbdmin' not in sizeDistr[ID].keys():
-                    rescaled = src.par['grid_A_km2'] / GenMR_utils.fetch_A0(sizeDistr[ID]['region'])
-                    sizeDistr[ID]['Lbdmin'] = sizeDistr[ID]['Lbdmin0'] * rescaled
-            # calculate event rate (weighted)
-            lbdi = transform_cum2noncum(Si_vec, sizeDistr[ID])
-            lbdi = lbdi * wi_vec
-            ev_stoch = pd.concat([ev_stoch, pd.DataFrame({'ID': np.repeat(ID, sizeDistr[ID]['Nstoch']), 'evID': evID, 'S': Si_vec, 'lbd': lbdi})], ignore_index=True)
+        # Calibration for rate calculation
+        if self.sizeDistr[ID]['distr'] == 'powerlaw':
+            if 'a' not in self.sizeDistr[ID]:
+                rescaled = self.src.par['grid_A_km2'] / self.utils.fetch_A0(self.sizeDistr[ID]['region'])
+                self.sizeDistr[ID]['a'] = self.sizeDistr[ID]['a0'] + np.log10(rescaled)
+        if self.sizeDistr[ID]['distr'] == 'GPD':
+            if 'Lbdmin' not in self.sizeDistr[ID]:
+                rescaled = self.src.par['grid_A_km2'] / self.utils.fetch_A0(self.sizeDistr[ID]['region'])
+                self.sizeDistr[ID]['Lbdmin'] = self.sizeDistr[ID]['Lbdmin0'] * rescaled
 
-        if ID in sizeDistr['secondary']:
-            trigger = sizeDistr[ID]['trigger']
-            evID = [ID + '_from' + trigger + str(i+1) for i in range(sizeDistr[trigger]['Nstoch'])]
-            Si_vec = np.repeat(np.nan, sizeDistr[trigger]['Nstoch'])
-            lbdi = np.repeat(np.nan, sizeDistr[trigger]['Nstoch'])
-            ev_stoch = pd.concat([ev_stoch, pd.DataFrame({'ID': np.repeat(ID, sizeDistr[trigger]['Nstoch']), 'evID': evID, 'S': Si_vec, 'lbd': lbdi})], ignore_index=True)
+        # Calculate weighted event rates
+        lbdi = self._transform_cum2noncum(Si_vec, self.sizeDistr[ID]) * wi_vec
+        return evID, Si_vec, lbdi
 
-        ## get event spatial characteristics ##
-        if ID == 'AI':
-            ev_ID, ev_x, ev_y = evID, src.AI_char['x'], src.AI_char['y']
-            srcIDs = np.append(srcIDs, src.AI_char['srcID'])
+    def _generate_secondary(self, ID):
+        trigger = self.sizeDistr[ID]['trigger']
+        N = self.sizeDistr[trigger]['Nstoch']
+        evID = [f"{ID}_from{trigger}{i+1}" for i in range(N)]
+        Si_vec = np.repeat(np.nan, N)
+        lbdi = np.repeat(np.nan, N)
+        return {'trigger': trigger, 'evID': evID}, Si_vec, lbdi
+
+
+    def _distribute_sizes(self, ID, Si):
+        Si_n = len(Si)
+        Si_ind = np.arange(Si_n)
+
         if ID == 'EQ':
-            Rup_coord, Rup_loc = gen_EQ_floatingRupture(evID, Si_vec, src)
+            qi = np.linspace(1, 11, Si_n)
+            qi /= np.sum(qi)
+            qi = np.sort(qi)[::-1]
+        else:
+            qi = np.repeat(1. / Si_n, Si_n)
+
+        Si_ind_vec = self.utils.partitioning(Si_ind, qi, self.sizeDistr[ID]['Nstoch'])
+        Si_vec = Si[Si_ind_vec]
+        wi = 1 / np.array([np.count_nonzero(Si_ind_vec == i) for i in Si_ind])
+        wi_vec = [wi[Si_ind == i][0] for i in Si_ind_vec]
+        return Si_vec, wi_vec
+
+    def _transform_cum2noncum(self, S, par):
+        '''
+        Transform the rate from cumulative (Lbd) to non-cumulative (lbd) (e.g., Eq. 2.65)
+        '''
+        if par['Sscale'] == 'linear':
+            S_lo = S - par['Sbin']/2
+            S_hi = S + par['Sbin']/2
+        elif par['Sscale'] == 'log':
+            S_lo = 10**(np.log10(S) - par['Sbin']/2)
+            S_hi = 10**(np.log10(S) + par['Sbin']/2)
+        if par['distr'] == 'powerlaw':
+            Lbd_lo = calc_Lbd_powerlaw(S_lo, par['a'], par['b'])
+            Lbd_hi = calc_Lbd_powerlaw(S_hi, par['a'], par['b'])
+        if par['distr'] == 'exponential':
+            Lbd_lo = calc_Lbd_exponential(S_lo, par['a'], par['b'])
+            Lbd_hi = calc_Lbd_exponential(S_hi, par['a'], par['b'])
+        if par['distr'] == 'GPD':
+            Lbd_lo = calc_Lbd_GPD(S_lo, par['mu'], par['xi'], par['sigma'], par['Lbdmin'])
+            Lbd_hi = calc_Lbd_GPD(S_hi, par['mu'], par['xi'], par['sigma'], par['Lbdmin'])
+        lbd = Lbd_lo - Lbd_hi
+        return lbd
+
+    def _add_spatial_characteristics(self, ID, evID, Si_vec):
+        ev_ID = ev_x = ev_y = None
+
+        if ID == 'AI':
+            ev_ID, ev_x, ev_y = evID, self.src.AI_char['x'], self.src.AI_char['y']
+            self.srcIDs = np.append(self.srcIDs, self.src.AI_char['srcID'])
+
+        elif ID == 'EQ':
+            Rup_coord, Rup_loc = self._gen_EQ_floatingRupture(evID, Si_vec, self.src)
             ev_ID, ev_x, ev_y = Rup_coord['evID'], Rup_coord['x'], Rup_coord['y']
-            srcIDs = np.append(srcIDs, Rup_loc)
-        if ID == 'RS':
-            srcIDs = np.append(srcIDs, np.repeat(src.par['RS']['object'], sizeDistr['RS']['Nstoch']))
-        if ID == 'TC':
-            track_coord = get_TCtrack_highres(evID, src)
+            self.srcIDs = np.append(self.srcIDs, Rup_loc)
+
+        elif ID == 'RS':
+            self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.par['RS']['object'], self.sizeDistr['RS']['Nstoch']))
+
+        elif ID == 'TC':
+            track_coord = self._get_TCtrack_highres(evID, self.src)
             ev_ID, ev_x, ev_y = track_coord['evID'], track_coord['x'], track_coord['y']
-            srcIDs = np.append(srcIDs, np.unique(src.TC_char['srcID']))
-        if ID == 'VE':
-            # WARNING: assumes for now that only one volcano source possible for now
-            ev_ID, ev_x, ev_y = evID, np.repeat(src.VE_char['x'], sizeDistr['VE']['Nstoch']), np.repeat(src.VE_char['y'], sizeDistr['VE']['Nstoch'])
-            srcIDs = np.append(srcIDs, np.repeat(src.VE_char['srcID'], sizeDistr['VE']['Nstoch']))
-        if ID == 'FF':
-            # WARNING: assumes for now that only one river source possible for now
-            srcIDs = np.append(srcIDs, np.repeat(src.FF_char['srcID'], sizeDistr[trigger]['Nstoch']))
-        if ID == 'LS':
-            srcIDs = np.append(srcIDs, np.repeat(src.par['LS']['object'], sizeDistr[trigger]['Nstoch']))
-        if ID == 'SS':
-            srcIDs = np.append(srcIDs, np.repeat(src.par['SS']['object'], sizeDistr[trigger]['Nstoch']))
-        if ev_ID is not None:
-            ev_char = pd.concat([ev_char, pd.DataFrame({'evID': ev_ID, 'x': ev_x, 'y': ev_y})])
-    ev_stoch['srcID'] = srcIDs
-    return ev_stoch.reset_index(drop = True), ev_char.reset_index(drop = True)
+            self.srcIDs = np.append(self.srcIDs, np.unique(self.src.TC_char['srcID']))
+
+        elif ID == 'VE':
+            ev_ID, ev_x, ev_y = evID, np.repeat(self.src.VE_char['x'], self.sizeDistr['VE']['Nstoch']), np.repeat(self.src.VE_char['y'], self.sizeDistr['VE']['Nstoch'])
+            self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.VE_char['srcID'], self.sizeDistr['VE']['Nstoch']))
+
+        elif ID == 'FF':
+            trigger = self.sizeDistr[ID]['trigger']
+            self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.FF_char['srcID'], self.sizeDistr[trigger]['Nstoch']))
+
+        elif ID == 'LS':
+            trigger = self.sizeDistr[ID]['trigger']
+            self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.par['LS']['object'], self.sizeDistr[trigger]['Nstoch']))
+
+        elif ID == 'SS':
+            trigger = self.sizeDistr[ID]['trigger']
+            self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.par['SS']['object'], self.sizeDistr[trigger]['Nstoch']))
+
+        return ev_ID, ev_x, ev_y
+
+    ## stochastic event characteristics ##
+    def _gen_EQ_floatingRupture(self, evIDi, Si, src):
+        '''
+        '''
+        nRup = len(Si)
+        li = calc_EQ_magnitude2length(Si)
+        flt_x = src.EQ_char['x']
+        flt_y = src.EQ_char['y']
+        flt_L = src.EQ_char['srcL']
+        flt_id = src.EQ_char['fltID']
+        indflt = GenMR_utils.partitioning(np.arange(len(flt_L)), flt_L / np.sum(flt_L), nRup)  # longer faults visited more often
+        Rup_loc = np.zeros(nRup, dtype = object)
+        Rup_coord = pd.DataFrame({'loc': pd.Series(dtype='object'), 'evID': pd.Series(dtype='object'), 'x': pd.Series(dtype=float), 'y': pd.Series(dtype=float)})
+        i = 0
+        while i < nRup:
+            flt_target = np.random.choice(indflt, 1)
+            indID = flt_id == flt_target
+            src_x = flt_x[indID]
+            src_y = flt_y[indID]
+            src_L = flt_L[flt_target]
+            init = np.floor((src_L - li[i]) / src.par['EQ']['bin_km'])
+            if src_L >= li[i]:
+                u = np.ceil(np.random.random(1) * init).astype(int)[0]         # random rupture start loc
+                Rup_x = src_x[u:(u + li[i] / src.par['EQ']['bin_km']).astype(int)]
+                Rup_y = src_y[u:(u + li[i] / src.par['EQ']['bin_km']).astype(int)]
+                Rup_loc[i] = src.par['EQ']['object'] + str(flt_target[0] + 1)
+                Rup_coord = pd.concat([Rup_coord, pd.DataFrame({'evID': np.repeat(evIDi[i], len(Rup_x)), 'x': Rup_x, 'y': Rup_y})], ignore_index=True)
+                i += 1
+        return Rup_coord, Rup_loc
+
+    def _get_TCtrack_highres(self, evIDi, src):
+        '''
+        '''
+        x_hires = np.array([])
+        y_hires = np.array([])
+        id_hires = np.array([])
+        srcID = np.unique(src.TC_char['srcID'])  # match 1:1 between srcID and evID
+        for i in range(len(evIDi)):
+            indev = np.where(src.TC_char['srcID'] == srcID[i])[0]
+            x_ev = src.TC_char['x'][indev]
+            y_ev = src.TC_char['y'][indev]
+            for seg in range(len(x_ev) - 1):
+                dx = x_ev[seg + 1] - x_ev[seg]
+                dy = y_ev[seg + 1] - y_ev[seg]
+                sign1 = dx / np.abs(dx)
+                sign2 = dy / np.abs(dy)
+                L = np.sqrt(dx**2 + dy**2)
+                strike = np.arctan(dx/dy) * 180 / np.pi
+                npt = int(np.round(L / src.par['TC']['bin_km']))
+                seg_xi = np.zeros(npt)
+                seg_yi = np.zeros(npt)
+                seg_xi[0] = x_ev[seg]
+                seg_yi[0] = y_ev[seg]
+                for k in range(1, npt):
+                    seg_xi[k] = seg_xi[k-1] + sign1 * sign2 * src.par['TC']['bin_km'] * np.sin(strike * np.pi / 180)
+                    seg_yi[k] = seg_yi[k-1] + sign1 * sign2 * src.par['TC']['bin_km'] * np.cos(strike * np.pi / 180)
+                x_hires = np.append(x_hires, np.append(seg_xi, x_ev[seg + 1]))
+                y_hires = np.append(y_hires, np.append(seg_yi, y_ev[seg + 1]))
+                id_hires = np.append(id_hires, np.repeat(evIDi[i], len(seg_xi)+1))
+        Track_coord = pd.DataFrame({'evID': id_hires, 'x': x_hires, 'y': y_hires})
+        return Track_coord
 
 
-## stochastic event characteristics ##
-def gen_EQ_floatingRupture(evIDi, Si, src):
-    '''
-    '''
-    nRup = len(Si)
-    li = calc_EQ_magnitude2length(Si)
-    flt_x = src.EQ_char['x']
-    flt_y = src.EQ_char['y']
-    flt_L = src.EQ_char['srcL']
-    flt_id = src.EQ_char['fltID']
-    indflt = GenMR_utils.partitioning(np.arange(len(flt_L)), flt_L / np.sum(flt_L), nRup)  # longer faults visited more often
-    Rup_loc = np.zeros(nRup, dtype = object)
-    Rup_coord = pd.DataFrame({'loc': pd.Series(dtype='object'), 'evID': pd.Series(dtype='object'), 'x': pd.Series(dtype=float), 'y': pd.Series(dtype=float)})
-    i = 0
-    while i < nRup:
-        flt_target = np.random.choice(indflt, 1)
-        indID = flt_id == flt_target
-        src_x = flt_x[indID]
-        src_y = flt_y[indID]
-        src_L = flt_L[flt_target]
-        init = np.floor((src_L - li[i]) / src.par['EQ']['bin_km'])
-        if src_L >= li[i]:
-            u = np.ceil(np.random.random(1) * init).astype(int)[0]         # random rupture start loc
-            Rup_x = src_x[u:(u + li[i] / src.par['EQ']['bin_km']).astype(int)]
-            Rup_y = src_y[u:(u + li[i] / src.par['EQ']['bin_km']).astype(int)]
-            Rup_loc[i] = src.par['EQ']['object'] + str(flt_target[0] + 1)
-            Rup_coord = pd.concat([Rup_coord, pd.DataFrame({'evID': np.repeat(evIDi[i], len(Rup_x)), 'x': Rup_x, 'y': Rup_y})], ignore_index=True)
-            i += 1
-    return Rup_coord, Rup_loc
-
-def get_TCtrack_highres(evIDi, src):
-    '''
-    '''
-    x_hires = np.array([])
-    y_hires = np.array([])
-    id_hires = np.array([])
-    srcID = np.unique(src.TC_char['srcID'])  # match 1:1 between srcID and evID
-    for i in range(len(evIDi)):
-        indev = np.where(src.TC_char['srcID'] == srcID[i])[0]
-        x_ev = src.TC_char['x'][indev]
-        y_ev = src.TC_char['y'][indev]
-        for seg in range(len(x_ev) - 1):
-            dx = x_ev[seg + 1] - x_ev[seg]
-            dy = y_ev[seg + 1] - y_ev[seg]
-            sign1 = dx / np.abs(dx)
-            sign2 = dy / np.abs(dy)
-            L = np.sqrt(dx**2 + dy**2)
-            strike = np.arctan(dx/dy) * 180 / np.pi
-            npt = int(np.round(L / src.par['TC']['bin_km']))
-            seg_xi = np.zeros(npt)
-            seg_yi = np.zeros(npt)
-            seg_xi[0] = x_ev[seg]
-            seg_yi[0] = y_ev[seg]
-            for k in range(1, npt):
-                seg_xi[k] = seg_xi[k-1] + sign1 * sign2 * src.par['TC']['bin_km'] * np.sin(strike * np.pi / 180)
-                seg_yi[k] = seg_yi[k-1] + sign1 * sign2 * src.par['TC']['bin_km'] * np.cos(strike * np.pi / 180)
-            x_hires = np.append(x_hires, np.append(seg_xi, x_ev[seg + 1]))
-            y_hires = np.append(y_hires, np.append(seg_yi, y_ev[seg + 1]))
-            id_hires = np.append(id_hires, np.repeat(evIDi[i], len(seg_xi)+1))
-    Track_coord = pd.DataFrame({'evID': id_hires, 'x': x_hires, 'y': y_hires})
-    return Track_coord
 
 
 
