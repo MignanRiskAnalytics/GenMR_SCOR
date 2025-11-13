@@ -639,9 +639,9 @@ class HazardFootprintGenerator:
 
         return I_SS
 
-    # ====== Main footprint generator ======
+    ## INTENSITY FOOTPRINT GENERATOR ##
     def generate(self):
-        print('generating footprints for:')
+        print('generating footprints for:', end=' ')
         for ID in self.src.par['perils']:
             indperil = np.where(self.stochset['ID'] == ID)[0]
             Nev_peril = len(indperil)
@@ -708,6 +708,43 @@ class HazardFootprintGenerator:
 
         print('... catalogue completed')
         return self.catalog_hazFootprints
+
+    ## TC CASE ##
+    def get_TC_timeshot(self, evID, t):
+        '''
+        Compute a single time-step (snapshot) of a tropical cyclone (TC) event.
+
+        Args:
+            evID (str): Event ID
+            t (int): Time index along the cyclone track (0 ≤ t < npt)
+
+        Returns:
+            tuple: 
+                I_sym_t (ndarray): Symmetric wind field (static storm).
+                I_asym_t (ndarray): Asymmetric wind field (storm in motion).
+                vtot_x (ndarray): Total velocity component along x.
+                vtot_y (ndarray): Total velocity component along y.
+                vtan_x (ndarray): Tangential velocity component along x.
+                vtan_y (ndarray): Tangential velocity component along y.
+        '''
+        Track_coord = self.evchar[get_peril_evID(self.evchar['evID']) == 'TC'].reset_index(drop=True)
+        S_alongtrack = self.calc_S_track(self.stochset, self.src, Track_coord)   # always calculate for all, rewrite for one track...
+
+        indtrack = np.where(Track_coord['evID'] == evID)[0]
+        track_x = Track_coord['x'][indtrack].values
+        track_y = Track_coord['y'][indtrack].values
+        track_S = S_alongtrack[evID]
+        npt = len(indtrack)
+
+        if t < 0 or t >= npt:
+            raise ValueError(f"t={t} is out of range (0 ≤ t < {npt}).")
+
+        r = np.sqrt((self.src.grid.xx - track_x[t])**2 + (self.src.grid.yy - track_y[t])**2)
+        I_sym_t = self.calc_I_v_ms(track_S[t], r, self.src.par['TC'])
+        I_asym_t, vtot_x, vtot_y, vtan_x, vtan_y = self.add_v_forward(
+            self.src.par['TC']['vforward_m/s'], I_sym_t, track_x, track_y, self.src.grid, t)
+
+        return I_sym_t, I_asym_t, vtot_x, vtot_y, vtan_x, vtan_y
 
 
 
