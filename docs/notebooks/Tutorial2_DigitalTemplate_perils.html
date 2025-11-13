@@ -168,7 +168,15 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#appendix">Appendix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#appendix">Appendix</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#a-peril-sources">A. Peril sources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#b-stochastic-event-set">B. Stochastic event set</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#c-hazard-footprints">C. Hazard footprints</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#c-1-tropical-cyclone-case">C.1. Tropical cyclone case</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -201,7 +209,7 @@
 <h1>Tutorial 2: Implementing perils in the GenMR digital template<a class="headerlink" href="#tutorial-2-implementing-perils-in-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 0.1<br />
-<strong>Last Updated:</strong> 2025-11-12<br />
+<strong>Last Updated:</strong> 2025-11-13<br />
 <strong>License:</strong> AGPL-3, https://opensource.org/license/agpl-v3</p>
 <p>Once a virtual environment has been generated (see previous tutorial), stochastic events can be modelled to populate it. Table 1 lists the perils so far considered in version 1.1.1 as well as the ones to be added in the near future (v. 1.1.2).</p>
 <br>
@@ -573,13 +581,14 @@
     <span class="s1">&#39;SS&#39;</span><span class="p">:{</span><span class="s1">&#39;trigger&#39;</span><span class="p">:</span> <span class="s1">&#39;TC&#39;</span><span class="p">}</span>
 <span class="p">}</span>
 
-<span class="n">evtable</span><span class="p">,</span> <span class="n">evchar</span> <span class="o">=</span> <span class="n">GenMR_perils</span><span class="o">.</span><span class="n">gen_eventset</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">sizeDistr</span><span class="p">)</span>
+<span class="n">eventSet</span> <span class="o">=</span> <span class="n">GenMR_perils</span><span class="o">.</span><span class="n">EventSetGenerator</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">sizeDistr</span><span class="p">,</span> <span class="n">GenMR_utils</span><span class="p">)</span>
+<span class="n">evtable</span><span class="p">,</span> <span class="n">evchar</span> <span class="o">=</span> <span class="n">eventSet</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
 <span class="n">evtable</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:340: RuntimeWarning: divide by zero encountered in divide
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:393: RuntimeWarning: divide by zero encountered in divide
   wi = 1 / np.array([np.count_nonzero(Si_ind_vec == i) for i in Si_ind])
 </pre></div>
 </div>
@@ -1113,36 +1122,28 @@
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;SS&#39;</span><span class="p">][</span><span class="s1">&#39;bathy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;New York harbor&#39;</span>  <span class="c1"># &#39;generic&#39; (Saffir-Simpson, Mignan, 2024:eq. 2.16) </span>
                                             <span class="c1"># &#39;New York harbor&#39; (Eq. in Mignan, 2024:fig. 2.7)</span>
 
-<span class="n">catalog_hazFootprints</span> <span class="o">=</span> <span class="n">GenMR_perils</span><span class="o">.</span><span class="n">gen_hazFootprints</span><span class="p">(</span><span class="n">evtable</span><span class="p">,</span> <span class="n">evchar</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">catalog_hazFootprints</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="c1"># footprints are catalogued by evID</span>
-
-<span class="c1">#hazFp_static = GenMR_events.hazFootprints_static(src, evPar, evTable)</span>
+<span class="n">hazFootprints</span> <span class="o">=</span> <span class="n">GenMR_perils</span><span class="o">.</span><span class="n">HazardFootprintGenerator</span><span class="p">(</span><span class="n">evtable</span><span class="p">,</span> <span class="n">evchar</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">)</span>
+<span class="n">catalog_hazFootprints</span> <span class="o">=</span> <span class="n">hazFootprints</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>generating footprints for:
-AI
-EQ
-TC
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>generating footprints for: AI, EQ, RS, TC, 
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:524: RuntimeWarning: divide by zero encountered in divide
-  alpha = np.arctan(dy/dx)
-/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:524: RuntimeWarning: divide by zero encountered in divide
-  alpha = np.arctan(dy/dx)
-/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:524: RuntimeWarning: divide by zero encountered in divide
-  alpha = np.arctan(dy/dx)
-/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:524: RuntimeWarning: divide by zero encountered in divide
-  alpha = np.arctan(dy/dx)
-/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:524: RuntimeWarning: divide by zero encountered in divide
-  alpha = np.arctan(dy/dx)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:588: RuntimeWarning: divide by zero encountered in divide
+  alpha = np.arctan(dy / dx)
+/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:588: RuntimeWarning: divide by zero encountered in divide
+  alpha = np.arctan(dy / dx)
+/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:588: RuntimeWarning: divide by zero encountered in divide
+  alpha = np.arctan(dy / dx)
+/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:588: RuntimeWarning: divide by zero encountered in divide
+  alpha = np.arctan(dy / dx)
+/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:588: RuntimeWarning: divide by zero encountered in divide
+  alpha = np.arctan(dy / dx)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>VE
-SS
-... catalogue completed
-dict_keys([&#39;AI1&#39;, &#39;AI2&#39;, &#39;AI3&#39;, &#39;AI4&#39;, &#39;AI5&#39;, &#39;AI6&#39;, &#39;AI7&#39;, &#39;AI8&#39;, &#39;AI9&#39;, &#39;AI10&#39;, &#39;EQ1&#39;, &#39;EQ2&#39;, &#39;EQ3&#39;, &#39;EQ4&#39;, &#39;EQ5&#39;, &#39;EQ6&#39;, &#39;EQ7&#39;, &#39;EQ8&#39;, &#39;EQ9&#39;, &#39;EQ10&#39;, &#39;EQ11&#39;, &#39;EQ12&#39;, &#39;EQ13&#39;, &#39;EQ14&#39;, &#39;EQ15&#39;, &#39;EQ16&#39;, &#39;EQ17&#39;, &#39;EQ18&#39;, &#39;EQ19&#39;, &#39;EQ20&#39;, &#39;TC1&#39;, &#39;TC2&#39;, &#39;TC3&#39;, &#39;TC4&#39;, &#39;TC5&#39;, &#39;VE1&#39;, &#39;VE2&#39;, &#39;VE3&#39;, &#39;SS_fromTC1&#39;, &#39;SS_fromTC2&#39;, &#39;SS_fromTC3&#39;, &#39;SS_fromTC4&#39;, &#39;SS_fromTC5&#39;])
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>VE, FF, LS, SS, ... catalogue completed
 </pre></div>
 </div>
 </div>
@@ -1178,7 +1179,83 @@ dict_keys([&#39;AI1&#39;, &#39;AI2&#39;, &#39;AI3&#39;, &#39;AI4&#39;, &#39;AI5&
 </section>
 <section id="appendix">
 <h2>Appendix<a class="headerlink" href="#appendix" title="Link to this heading"></a></h2>
+<section id="a-peril-sources">
+<h3>A. Peril sources<a class="headerlink" href="#a-peril-sources" title="Link to this heading"></a></h3>
 <p>ADD TABLE giving source class properties</p>
+</section>
+<section id="b-stochastic-event-set">
+<h3>B. Stochastic event set<a class="headerlink" href="#b-stochastic-event-set" title="Link to this heading"></a></h3>
+<p>TO DEVELOP</p>
+</section>
+<section id="c-hazard-footprints">
+<h3>C. Hazard footprints<a class="headerlink" href="#c-hazard-footprints" title="Link to this heading"></a></h3>
+<p>TO DEVELOP</p>
+<section id="c-1-tropical-cyclone-case">
+<h4>C.1. Tropical cyclone case<a class="headerlink" href="#c-1-tropical-cyclone-case" title="Link to this heading"></a></h4>
+<p>If the modelling of <code class="docutils literal notranslate"><span class="pre">AI</span></code>, <code class="docutils literal notranslate"><span class="pre">EQ</span></code> and <code class="docutils literal notranslate"><span class="pre">VE</span></code> intensity footprints is straightforward, this is not the case for <code class="docutils literal notranslate"><span class="pre">TC</span></code>. For completeness, windfields can be plotted at a given time - REWRITE…</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">evID</span> <span class="o">=</span> <span class="s1">&#39;TC5&#39;</span>     <span class="c1"># choose a TC event</span>
+<span class="n">loc_x</span> <span class="o">=</span> <span class="mf">25.</span>      <span class="c1"># location of time snapshot (km)</span>
+
+
+<span class="n">track_evID</span> <span class="o">=</span> <span class="n">evchar</span><span class="p">[</span><span class="n">evchar</span><span class="p">[</span><span class="s1">&#39;evID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">evID</span><span class="p">]</span>
+<span class="n">t_snapshot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">track_evID</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">loc_x</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">I_sym_t</span><span class="p">,</span> <span class="n">I_asym_t</span><span class="p">,</span> <span class="n">vtot_x</span><span class="p">,</span> <span class="n">vtot_y</span><span class="p">,</span> <span class="n">vtan_x</span><span class="p">,</span> <span class="n">vtan_y</span> <span class="o">=</span> <span class="n">hazFootprints</span><span class="o">.</span><span class="n">get_TC_timeshot</span><span class="p">(</span><span class="n">evID</span><span class="p">,</span> <span class="n">t_snapshot</span><span class="p">)</span>
+
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;18&#39;</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+
+<span class="n">Imax</span> <span class="o">=</span> <span class="n">plot_Imax</span><span class="p">[</span><span class="s1">&#39;TC&#39;</span><span class="p">]</span>
+<span class="n">I_plt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">I_sym_t</span><span class="p">)</span>
+<span class="n">I_plt</span><span class="p">[</span><span class="n">I_plt</span> <span class="o">&gt;=</span> <span class="n">Imax</span><span class="p">]</span> <span class="o">=</span> <span class="n">Imax</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">I_plt</span><span class="p">,</span> <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;Reds&#39;</span><span class="p">,</span> <span class="n">levels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">Imax</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">33</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">Imax</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">track_evID</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="n">track_evID</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">color</span> <span class="o">=</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">col_peril</span><span class="p">(</span><span class="s1">&#39;TC&#39;</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">SS_char</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="n">src</span><span class="o">.</span><span class="n">SS_char</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span> <span class="o">=</span> <span class="s1">&#39;dashed&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">track_evID</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">t_snapshot</span><span class="p">],</span> <span class="n">track_evID</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">t_snapshot</span><span class="p">],</span> <span class="n">marker</span> <span class="o">=</span> <span class="s1">&#39;+&#39;</span><span class="p">,</span> \
+              <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">delta</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">delta</span><span class="p">)):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">delta</span><span class="p">)):</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">arrow</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">[</span><span class="n">delta</span><span class="o">*</span><span class="n">i</span><span class="p">,</span><span class="n">delta</span><span class="o">*</span><span class="n">j</span><span class="p">],</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">[</span><span class="n">delta</span><span class="o">*</span><span class="n">i</span><span class="p">,</span><span class="n">delta</span><span class="o">*</span><span class="n">j</span><span class="p">],</span> 
+            <span class="mf">.05</span> <span class="o">*</span> <span class="n">vtan_x</span><span class="p">[</span><span class="n">delta</span><span class="o">*</span><span class="n">i</span><span class="p">,</span><span class="n">delta</span><span class="o">*</span><span class="n">j</span><span class="p">],</span> <span class="mf">.05</span><span class="o">*</span> <span class="n">vtan_y</span><span class="p">[</span><span class="n">delta</span><span class="o">*</span><span class="n">i</span><span class="p">,</span><span class="n">delta</span><span class="o">*</span><span class="n">j</span><span class="p">],</span> <span class="n">head_width</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;white&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Static storm&#39;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xmin</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">xmax</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">ymin</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">ymax</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">I_plt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">I_asym_t</span><span class="p">)</span>
+<span class="n">I_plt</span><span class="p">[</span><span class="n">I_plt</span> <span class="o">&gt;=</span> <span class="n">Imax</span><span class="p">]</span> <span class="o">=</span> <span class="n">Imax</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">I_plt</span><span class="p">,</span> <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;Reds&#39;</span><span class="p">,</span> <span class="n">levels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">Imax</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">33</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">Imax</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">track_evID</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="n">track_evID</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">color</span> <span class="o">=</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">col_peril</span><span class="p">(</span><span class="s1">&#39;TC&#39;</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">SS_char</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="n">src</span><span class="o">.</span><span class="n">SS_char</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span> <span class="o">=</span> <span class="s1">&#39;dashed&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">track_evID</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">t_snapshot</span><span class="p">],</span> <span class="n">track_evID</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">t_snapshot</span><span class="p">],</span> <span class="n">marker</span> <span class="o">=</span> <span class="s1">&#39;+&#39;</span><span class="p">,</span> \
+              <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">delta</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">delta</span><span class="p">)):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">delta</span><span class="p">)):</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">arrow</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">[</span><span class="n">delta</span><span class="o">*</span><span class="n">i</span><span class="p">,</span><span class="n">delta</span><span class="o">*</span><span class="n">j</span><span class="p">],</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">[</span><span class="n">delta</span><span class="o">*</span><span class="n">i</span><span class="p">,</span><span class="n">delta</span><span class="o">*</span><span class="n">j</span><span class="p">],</span> 
+            <span class="mf">.05</span> <span class="o">*</span> <span class="n">vtot_x</span><span class="p">[</span><span class="n">delta</span><span class="o">*</span><span class="n">i</span><span class="p">,</span><span class="n">delta</span><span class="o">*</span><span class="n">j</span><span class="p">],</span> <span class="mf">.05</span><span class="o">*</span> <span class="n">vtot_y</span><span class="p">[</span><span class="n">delta</span><span class="o">*</span><span class="n">i</span><span class="p">,</span><span class="n">delta</span><span class="o">*</span><span class="n">j</span><span class="p">],</span> <span class="n">head_width</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;white&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Storm in motion&#39;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xmin</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">xmax</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">ymin</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">ymax</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/dd1cc1805757ff84ff9799422d0370ebdff64cc8770d03f4f3b1788bd2788973.png" src="../_images/dd1cc1805757ff84ff9799422d0370ebdff64cc8770d03f4f3b1788bd2788973.png" />
+</div>
+</div>
+</section>
+</section>
 </section>
 </section>
 
