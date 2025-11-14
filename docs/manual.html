@@ -108,6 +108,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.calc_coord_river_dampedsine"><code class="docutils literal notranslate"><span class="pre">calc_coord_river_dampedsine()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.calc_topo_attributes"><code class="docutils literal notranslate"><span class="pre">calc_topo_attributes()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.downscale_RasterGrid"><code class="docutils literal notranslate"><span class="pre">downscale_RasterGrid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.get_FS_state"><code class="docutils literal notranslate"><span class="pre">get_FS_state()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.plot_EnvLayer_attr"><code class="docutils literal notranslate"><span class="pre">plot_EnvLayer_attr()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.plot_EnvLayers"><code class="docutils literal notranslate"><span class="pre">plot_EnvLayers()</span></code></a></li>
 </ul>
@@ -121,6 +122,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.fetch_A0"><code class="docutils literal notranslate"><span class="pre">fetch_A0()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.flatten_list"><code class="docutils literal notranslate"><span class="pre">flatten_list()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_data"><code class="docutils literal notranslate"><span class="pre">get_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_ind_aspect2moore"><code class="docutils literal notranslate"><span class="pre">get_ind_aspect2moore()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_neighborhood_ind"><code class="docutils literal notranslate"><span class="pre">get_neighborhood_ind()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_net_coord"><code class="docutils literal notranslate"><span class="pre">get_net_coord()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.incrementing"><code class="docutils literal notranslate"><span class="pre">incrementing()</span></code></a></li>
@@ -133,6 +135,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.pooling"><code class="docutils literal notranslate"><span class="pre">pooling()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.save_class2pickle"><code class="docutils literal notranslate"><span class="pre">save_class2pickle()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.save_dict2json"><code class="docutils literal notranslate"><span class="pre">save_dict2json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.zero_boundary_2d"><code class="docutils literal notranslate"><span class="pre">zero_boundary_2d()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -167,7 +170,15 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#references">References</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#appendix">Appendix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#appendix">Appendix</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#a-peril-sources">A. Peril sources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#b-stochastic-event-set">B. Stochastic event set</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-hazard-footprints">C. Hazard footprints</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-1-tropical-cyclone-case">C.1. Tropical cyclone case</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -228,10 +239,10 @@ defined as classes or methods.</p>
 <dd class="field-odd"><p>Arnaud Mignan, Mignan Risk Analytics GmbH</p>
 </dd>
 <dt class="field-even">Version<span class="colon">:</span></dt>
-<dd class="field-even"><p>0.1</p>
+<dd class="field-even"><p>1.1.1</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2025-10-27</p>
+<dd class="field-odd"><p>2025-11-14</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -518,6 +529,11 @@ Canada, 21 September 1998</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="GenMR.environment.get_FS_state">
+<span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">get_FS_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">FS</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.get_FS_state" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="GenMR.environment.plot_EnvLayer_attr">
 <span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">plot_EnvLayer_attr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">envLayer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hillshading_z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.plot_EnvLayer_attr" title="Link to this definition"></a></dt>
 <dd><p>Plot the attribute of an environmental layer.</p>
@@ -620,6 +636,26 @@ core GenMR workflows by streamlining data handling, computation, and visualisati
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.get_ind_aspect2moore">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">get_ind_aspect2moore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ind_old</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.get_ind_aspect2moore" title="Link to this definition"></a></dt>
+<dd><p>Return Moore indices from indices defined from the aspect angle.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The aspect angle directs towards index np.round(aspect*8/360).astype(‘int’).
+It therefore takes the form:  765</p>
+<blockquote>
+<div><p>0 4
+123</p>
+</div></blockquote>
+<dl class="simple">
+<dt>while Moore indices take the form: 012 (see get_neighborhood_ind() function).</dt><dd><p>3 4
+567</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="GenMR.utils.get_neighborhood_ind">
 <span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">get_neighborhood_ind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Moore'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.get_neighborhood_ind" title="Link to this definition"></a></dt>
 <dd><p>Get the indices of the neighboring cells, depending on method and radius of vision</p>
@@ -645,7 +681,6 @@ or log space, or repeat xmax xbin times if method = ‘rep’.</p>
 <ul class="simple">
 <li><p>io/</p></li>
 <li><p>figs/</p></li>
-<li><p>figs/CellAut_steps/</p></li>
 <li><p>movs/</p></li>
 </ul>
 </dd></dl>
@@ -717,6 +752,11 @@ or log space, or repeat xmax xbin times if method = ‘rep’.</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.zero_boundary_2d">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">zero_boundary_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ny</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.zero_boundary_2d" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 </section>
 </section>

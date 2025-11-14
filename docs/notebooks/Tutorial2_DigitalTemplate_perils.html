@@ -109,6 +109,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.calc_coord_river_dampedsine"><code class="docutils literal notranslate"><span class="pre">calc_coord_river_dampedsine()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.calc_topo_attributes"><code class="docutils literal notranslate"><span class="pre">calc_topo_attributes()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.downscale_RasterGrid"><code class="docutils literal notranslate"><span class="pre">downscale_RasterGrid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.get_FS_state"><code class="docutils literal notranslate"><span class="pre">get_FS_state()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.plot_EnvLayer_attr"><code class="docutils literal notranslate"><span class="pre">plot_EnvLayer_attr()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.plot_EnvLayers"><code class="docutils literal notranslate"><span class="pre">plot_EnvLayers()</span></code></a></li>
 </ul>
@@ -122,6 +123,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.fetch_A0"><code class="docutils literal notranslate"><span class="pre">fetch_A0()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.flatten_list"><code class="docutils literal notranslate"><span class="pre">flatten_list()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.get_data"><code class="docutils literal notranslate"><span class="pre">get_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.get_ind_aspect2moore"><code class="docutils literal notranslate"><span class="pre">get_ind_aspect2moore()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.get_neighborhood_ind"><code class="docutils literal notranslate"><span class="pre">get_neighborhood_ind()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.get_net_coord"><code class="docutils literal notranslate"><span class="pre">get_net_coord()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.incrementing"><code class="docutils literal notranslate"><span class="pre">incrementing()</span></code></a></li>
@@ -134,6 +136,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.pooling"><code class="docutils literal notranslate"><span class="pre">pooling()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.save_class2pickle"><code class="docutils literal notranslate"><span class="pre">save_class2pickle()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.save_dict2json"><code class="docutils literal notranslate"><span class="pre">save_dict2json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.zero_boundary_2d"><code class="docutils literal notranslate"><span class="pre">zero_boundary_2d()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -209,9 +212,9 @@
 <h1>Tutorial 2: Implementing perils in the GenMR digital template<a class="headerlink" href="#tutorial-2-implementing-perils-in-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 0.1<br />
-<strong>Last Updated:</strong> 2025-11-13<br />
-<strong>License:</strong> AGPL-3, https://opensource.org/license/agpl-v3</p>
-<p>Once a virtual environment has been generated (see previous tutorial), stochastic events can be modelled to populate it. Table 1 lists the perils so far considered in version 1.1.1 as well as the ones to be added in the near future (v. 1.1.2).</p>
+<strong>Last Updated:</strong> 2025-11-14<br />
+<strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
+<p>Once a virtual environment has been generated (see previous tutorial), stochastic events are modelled to populate it. Table 1 lists the perils so far considered in version 1.1.1 as well as the ones to be added in the near future (v. 1.1.2).</p>
 <br>
 <center><small><b>Tab. 1.</b> List of perils with identifiers (ID) according to <a href='https://www.cambridge.org/highereducation/books/introduction-to-catastrophe-risk-modelling/A3A5B5FB990921422BFEBB07734BF869#overview' target='_blank'>Mignan (2024:tab.1.7)</a>.</small></center>
 <table class="docutils align-default">
@@ -479,11 +482,11 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:503: RuntimeWarning: divide by zero encountered in divide
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:504: RuntimeWarning: divide by zero encountered in divide
   FS = (par[&#39;Ceff_Pa&#39;] / (par[&#39;rho_kg/m3&#39;] * GenMR_utils.g_earth * h) + np.cos(slope * np.pi/180) * \
 </pre></div>
 </div>
-<img alt="../_images/56ef59ffc5bc94f85a4681cdb824a5a8bd2536067ffcc35662c03866f11386af.png" src="../_images/56ef59ffc5bc94f85a4681cdb824a5a8bd2536067ffcc35662c03866f11386af.png" />
+<img alt="../_images/7c81c0b97691ce2d2dcacc3d1c783933c02c357cdd2f044513bb072bf51ebd32.png" src="../_images/7c81c0b97691ce2d2dcacc3d1c783933c02c357cdd2f044513bb072bf51ebd32.png" />
 </div>
 </div>
 <p>Note that the configuration of the digital template environment may be changed through Tutorial 1.</p>
@@ -503,7 +506,9 @@
 <span class="c1"># define new perils</span>
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;AI&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;impact&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">}</span>     <span class="c1"># random uniform asteroid impacts (point sources)</span>
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;LS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;terrain&#39;</span><span class="p">}</span>
-<span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;RS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;atmosphere&#39;</span><span class="p">}</span>          <span class="c1"># as trigger of landslides</span>
+<span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;RS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;atmosphere&#39;</span><span class="p">,</span>          <span class="c1"># as trigger of landslides</span>
+                 <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">36</span><span class="p">}</span>                  <span class="c1"># (hr) to calc. soil wetness that triggers LS</span>
+                                                  <span class="c1"># WARNING: constant for now, to be improved</span>
 
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;SS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;coastline&#39;</span><span class="p">}</span>
 <span class="n">SS_src_xi</span><span class="p">,</span> <span class="n">SS_src_yi</span> <span class="o">=</span> <span class="n">topoLayer</span><span class="o">.</span><span class="n">coastline_coord</span>
@@ -552,7 +557,7 @@
     <span class="s1">&#39;AI&#39;</span><span class="p">:{</span>
         <span class="s1">&#39;Nstoch&#39;</span><span class="p">:</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;AI&#39;</span><span class="p">][</span><span class="s1">&#39;N&#39;</span><span class="p">],</span> <span class="s1">&#39;Sunit&#39;</span><span class="p">:</span> <span class="s1">&#39;Bolide energy $E$ (kton)&#39;</span><span class="p">,</span>
         <span class="s1">&#39;Smin&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;Smax&#39;</span><span class="p">:</span> <span class="mf">1e3</span><span class="p">,</span> <span class="s1">&#39;Sbin&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Sscale&#39;</span><span class="p">:</span> <span class="s1">&#39;log&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;powerlaw&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="s1">&#39;global&#39;</span><span class="p">,</span> <span class="s1">&#39;a0&#39;</span><span class="p">:</span> <span class="mf">.5677</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">.9</span>       <span class="c1"># see Sect. 2.3.1</span>
+        <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;powerlaw&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="s1">&#39;global&#39;</span><span class="p">,</span> <span class="s1">&#39;a0&#39;</span><span class="p">:</span> <span class="mf">.5677</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">.9</span>       <span class="c1"># see Mignan (2024:sect.2.3.1)</span>
     <span class="p">},</span>
     <span class="s1">&#39;EQ&#39;</span><span class="p">:{</span>
         <span class="s1">&#39;Nstoch&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;Sunit&#39;</span><span class="p">:</span> <span class="s1">&#39;Magnitude $M$&#39;</span><span class="p">,</span>
@@ -562,7 +567,8 @@
     <span class="s1">&#39;RS&#39;</span><span class="p">:{</span>
         <span class="s1">&#39;Nstoch&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;Sunit&#39;</span><span class="p">:</span> <span class="s1">&#39;Water column (mm/hr)&#39;</span><span class="p">,</span>
         <span class="s1">&#39;Smin&#39;</span><span class="p">:</span> <span class="mi">75</span><span class="p">,</span> <span class="s1">&#39;Smax&#39;</span><span class="p">:</span> <span class="mi">125</span><span class="p">,</span> <span class="s1">&#39;Sbin&#39;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span> <span class="s1">&#39;Sscale&#39;</span><span class="p">:</span> <span class="s1">&#39;linear&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;GPD&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="s1">&#39;CONUS&#39;</span><span class="p">,</span> <span class="s1">&#39;mu&#39;</span><span class="p">:</span> <span class="mf">50.</span><span class="p">,</span> <span class="s1">&#39;xi&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">.051</span><span class="p">,</span> <span class="s1">&#39;sigma&#39;</span><span class="p">:</span> <span class="mf">11.8</span><span class="p">,</span> <span class="s1">&#39;Lbdmin0&#39;</span><span class="p">:</span> <span class="mf">522.</span> <span class="c1"># see Sect. 2.3.2</span>
+        <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;GPD&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="s1">&#39;CONUS&#39;</span><span class="p">,</span> <span class="s1">&#39;mu&#39;</span><span class="p">:</span> <span class="mf">50.</span><span class="p">,</span> <span class="s1">&#39;xi&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">.051</span><span class="p">,</span> <span class="s1">&#39;sigma&#39;</span><span class="p">:</span> <span class="mf">11.8</span><span class="p">,</span> <span class="s1">&#39;Lbdmin0&#39;</span><span class="p">:</span> <span class="mf">522.</span> 
+            <span class="c1"># see Mignan (2024:sect.2.3.2)</span>
     <span class="p">},</span>
     <span class="s1">&#39;TC&#39;</span><span class="p">:{</span>
         <span class="s1">&#39;Nstoch&#39;</span><span class="p">:</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;TC&#39;</span><span class="p">][</span><span class="s1">&#39;N&#39;</span><span class="p">],</span> <span class="s1">&#39;Sunit&#39;</span><span class="p">:</span> <span class="s1">&#39;Max. wind speed (m/s)&#39;</span><span class="p">,</span>
@@ -588,7 +594,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:393: RuntimeWarning: divide by zero encountered in divide
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:395: RuntimeWarning: divide by zero encountered in divide
   wi = 1 / np.array([np.count_nonzero(Si_ind_vec == i) for i in Si_ind])
 </pre></div>
 </div>
@@ -1131,15 +1137,15 @@
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>generating footprints for: AI, EQ, RS, TC, 
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:588: RuntimeWarning: divide by zero encountered in divide
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:590: RuntimeWarning: divide by zero encountered in divide
   alpha = np.arctan(dy / dx)
-/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:588: RuntimeWarning: divide by zero encountered in divide
+/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:590: RuntimeWarning: divide by zero encountered in divide
   alpha = np.arctan(dy / dx)
-/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:588: RuntimeWarning: divide by zero encountered in divide
+/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:590: RuntimeWarning: divide by zero encountered in divide
   alpha = np.arctan(dy / dx)
-/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:588: RuntimeWarning: divide by zero encountered in divide
+/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:590: RuntimeWarning: divide by zero encountered in divide
   alpha = np.arctan(dy / dx)
-/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:588: RuntimeWarning: divide by zero encountered in divide
+/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:590: RuntimeWarning: divide by zero encountered in divide
   alpha = np.arctan(dy / dx)
 </pre></div>
 </div>
@@ -1169,7 +1175,112 @@
 </section>
 <section id="from-numerical-models-cellular-automata">
 <h4>1.3.2. From numerical models (cellular automata)<a class="headerlink" href="#from-numerical-models-cellular-automata" title="Link to this heading"></a></h4>
-<p>TO DEVELOP</p>
+<p>Generation of hazard intensity footprints via dynamical processes (here cellular automata) is kept separate since they are computationally costly. All footprints are combined later on … REWRITE/DEVELOP</p>
+<p>The following movie is obtained by running <code class="docutils literal notranslate"><span class="pre">LS_CA.write_gif()</span></code>. It shows the landslide propagation over time generated by the cellular automaton. The final hazard intensity footprint to be listed in the hazard footprint catalogue is static and equal to <span class="math notranslate nohighlight">\(\max_t I(x,y,t)\)</span>.</p>
+<img src="movs/LS_CA_xrg38_68_yrg20_35.gif" width = 500>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reproduce_LSmovie</span> <span class="o">=</span> <span class="kc">False</span>          <span class="c1"># True to create &#39;movs/LS_CA_xrg38_68_yrg20_35.gif&#39;</span>
+
+<span class="k">if</span> <span class="n">reproduce_LSmovie</span><span class="p">:</span>
+    <span class="n">movie</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;create&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="s1">&#39;figs/LS_CA_frames/&#39;</span><span class="p">,</span> \
+             <span class="s1">&#39;xmin&#39;</span><span class="p">:</span> <span class="mi">38</span><span class="p">,</span> <span class="s1">&#39;xmax&#39;</span><span class="p">:</span> <span class="mi">68</span><span class="p">,</span> <span class="s1">&#39;ymin&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;ymax&#39;</span><span class="p">:</span> <span class="mi">35</span><span class="p">}</span>   <span class="c1"># to zoom on specific hill (see movie below)</span>
+
+    <span class="n">evID_trigger</span> <span class="o">=</span> <span class="s1">&#39;RS3&#39;</span>
+    <span class="n">S_trigger</span> <span class="o">=</span> <span class="n">evtable</span><span class="p">[</span><span class="s1">&#39;S&#39;</span><span class="p">][</span><span class="n">evtable</span><span class="p">[</span><span class="s1">&#39;evID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">evID_trigger</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">hw</span> <span class="o">=</span> <span class="n">S_trigger</span> <span class="o">*</span> <span class="mf">1e-3</span> <span class="o">*</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;RS&#39;</span><span class="p">][</span><span class="s1">&#39;duration&#39;</span><span class="p">]</span>          <span class="c1"># water column (m)</span>
+    <span class="n">wetness</span> <span class="o">=</span> <span class="n">hw</span> <span class="o">/</span> <span class="n">soilLayer</span><span class="o">.</span><span class="n">h</span>
+    <span class="n">wetness</span><span class="p">[</span><span class="n">wetness</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>                   <span class="c1"># max possible saturation</span>
+    <span class="n">wetness</span><span class="p">[</span><span class="n">soilLayer</span><span class="o">.</span><span class="n">h</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>             <span class="c1"># no soil case</span>
+
+    <span class="n">LS_CA</span> <span class="o">=</span> <span class="n">GenMR_perils</span><span class="o">.</span><span class="n">CellularAutomaton_LS</span><span class="p">(</span><span class="n">soilLayer</span><span class="p">,</span> <span class="n">wetness</span><span class="p">,</span> <span class="n">movie</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">LS_CA</span><span class="p">:</span>
+        <span class="c1"># __next__ called automatically</span>
+        <span class="k">pass</span>
+
+    <span class="n">LS_footprint_hmax</span> <span class="o">=</span> <span class="n">LS_CA</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+    <span class="n">LS_CA</span><span class="o">.</span><span class="n">write_gif</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dynhazFootprints</span> <span class="o">=</span> <span class="n">GenMR_perils</span><span class="o">.</span><span class="n">DynamicHazardFootprintGenerator</span><span class="p">(</span><span class="n">evtable</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">soilLayer</span><span class="p">)</span>
+<span class="n">catalog_dynhazFootprints</span> <span class="o">=</span> <span class="n">dynhazFootprints</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>generating footprints for: LS_fromRS1
+
+iteration 1 / 20
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:777: RuntimeWarning: divide by zero encountered in divide
+  wetness = hw / self.soil.h
+/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:504: RuntimeWarning: divide by zero encountered in divide
+  FS = (par[&#39;Ceff_Pa&#39;] / (par[&#39;rho_kg/m3&#39;] * GenMR_utils.g_earth * h) + np.cos(slope * np.pi/180) * \
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>iteration 20 / 20LS_fromRS2
+iteration 1 / 20
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:777: RuntimeWarning: divide by zero encountered in divide
+  wetness = hw / self.soil.h
+/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:504: RuntimeWarning: divide by zero encountered in divide
+  FS = (par[&#39;Ceff_Pa&#39;] / (par[&#39;rho_kg/m3&#39;] * GenMR_utils.g_earth * h) + np.cos(slope * np.pi/180) * \
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>iteration 20 / 20LS_fromRS3
+iteration 1 / 20
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/perils.py:777: RuntimeWarning: divide by zero encountered in divide
+  wetness = hw / self.soil.h
+/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:504: RuntimeWarning: divide by zero encountered in divide
+  FS = (par[&#39;Ceff_Pa&#39;] / (par[&#39;rho_kg/m3&#39;] * GenMR_utils.g_earth * h) + np.cos(slope * np.pi/180) * \
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>iteration 20 / 20... catalogue completed
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#plot_Imax = {&#39;LS&#39;: 2}</span>
+<span class="c1">#GenMR_perils.plot_hazFootprints(catalog_dynhazFootprints, grid, topoLayer.z, plot_Imax)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;18&#39;</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="o">/</span><span class="mi">3</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">evID</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">catalog_dynhazFootprints</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+    <span class="n">Imax</span> <span class="o">=</span> <span class="n">plot_Imax</span><span class="p">[</span><span class="s1">&#39;LS&#39;</span><span class="p">]</span>
+    <span class="n">I_plt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">catalog_dynhazFootprints</span><span class="p">[</span><span class="n">evID</span><span class="p">])</span>
+    <span class="n">I_plt</span><span class="p">[</span><span class="n">I_plt</span> <span class="o">&gt;=</span> <span class="n">Imax</span><span class="p">]</span> <span class="o">=</span> <span class="n">Imax</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">I_plt</span><span class="p">,</span> <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;Reds&#39;</span><span class="p">,</span> <span class="n">levels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">Imax</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">ls</span><span class="o">.</span><span class="n">hillshade</span><span class="p">(</span><span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">vert_exag</span><span class="o">=</span><span class="mf">.1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.1</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xmin</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">xmax</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">ymin</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">ymax</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">evID</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/5c0641162369b62807090f6d37e2dac9768b4f52dd89de0331a9989bcd2f6b1c.png" src="../_images/5c0641162369b62807090f6d37e2dac9768b4f52dd89de0331a9989bcd2f6b1c.png" />
+</div>
+</div>
 </section>
 </section>
 </section>

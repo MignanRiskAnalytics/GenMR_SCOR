@@ -110,6 +110,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.calc_coord_river_dampedsine"><code class="docutils literal notranslate"><span class="pre">calc_coord_river_dampedsine()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.calc_topo_attributes"><code class="docutils literal notranslate"><span class="pre">calc_topo_attributes()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.downscale_RasterGrid"><code class="docutils literal notranslate"><span class="pre">downscale_RasterGrid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.get_FS_state"><code class="docutils literal notranslate"><span class="pre">get_FS_state()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.plot_EnvLayer_attr"><code class="docutils literal notranslate"><span class="pre">plot_EnvLayer_attr()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.plot_EnvLayers"><code class="docutils literal notranslate"><span class="pre">plot_EnvLayers()</span></code></a></li>
 </ul>
@@ -123,6 +124,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.fetch_A0"><code class="docutils literal notranslate"><span class="pre">fetch_A0()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.flatten_list"><code class="docutils literal notranslate"><span class="pre">flatten_list()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.get_data"><code class="docutils literal notranslate"><span class="pre">get_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.get_ind_aspect2moore"><code class="docutils literal notranslate"><span class="pre">get_ind_aspect2moore()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.get_neighborhood_ind"><code class="docutils literal notranslate"><span class="pre">get_neighborhood_ind()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.get_net_coord"><code class="docutils literal notranslate"><span class="pre">get_net_coord()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.incrementing"><code class="docutils literal notranslate"><span class="pre">incrementing()</span></code></a></li>
@@ -135,6 +137,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.pooling"><code class="docutils literal notranslate"><span class="pre">pooling()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.save_class2pickle"><code class="docutils literal notranslate"><span class="pre">save_class2pickle()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.save_dict2json"><code class="docutils literal notranslate"><span class="pre">save_dict2json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.zero_boundary_2d"><code class="docutils literal notranslate"><span class="pre">zero_boundary_2d()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -210,8 +213,8 @@
 <h1>Tutorial 1: Generating a virtual environment for the GenMR digital template<a class="headerlink" href="#tutorial-1-generating-a-virtual-environment-for-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 1.1.0<br />
-<strong>Last Updated:</strong> 2025-11-06<br />
-<strong>License:</strong> AGPL-3, https://opensource.org/license/agpl-v3</p>
+<strong>Last Updated:</strong> 2025-11-14<br />
+<strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
 <p>The <em>digital template</em>, first described in <a class="reference external" href="https://www.mdpi.com/1660-4601/19/23/16097">Mignan (2022)</a> and used in the CAT Risk Modelling Sandbox <a class="reference external" href="https://github.com/amignan/Intro2CATriskModelling/blob/main/CATRiskModellingSandbox_tutorial.ipynb">Mignan (2024)</a>, is a microcosm simulation of the complex Earth system for catastrophe dynamics R&amp;D, multi-risk prototyping in the Generic Multi-Risk (GenMR) framework, and catastrophe risk eduction. It is defined as a virtual environment populated by loss-generating events that interact with each other and with the environment. The virtual environment, to be built in this tutorial, is composed of <em>environmental layers</em> that consist of sets of variables <span class="math notranslate nohighlight">\(\theta(x,y)\)</span> defined in a spatial grid of coordinates <span class="math notranslate nohighlight">\((x,y)\)</span>. Each layer may be altered by <em>environmental objects</em> located within the layer. The parsimonious complex Earth system finally consists of a stack of interacting environmental layers defined in the natural, technological and socio-economic systems. The loss-generating events that populate the virtual environment will be defined in the next tutorial, and their occurrence rates and interactions in a third and final tutorial.</p>
 <p>Currently, a limited number of environmental layers and objects are available (Fig. 1, Table 1). This notebook provides a concise overview of these layers using a default parameterisation, with alternative scenarios to be introduced later in the How-To Guides. The outputs generated here will serve as input for hazard and risk assessments in the subsequent tutorials.</p>
 <p><img alt="" src="../_images/digitaltemplate_env_rayshader.jpg" /></p>
@@ -456,11 +459,11 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:503: RuntimeWarning: divide by zero encountered in divide
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:504: RuntimeWarning: divide by zero encountered in divide
   FS = (par[&#39;Ceff_Pa&#39;] / (par[&#39;rho_kg/m3&#39;] * GenMR_utils.g_earth * h) + np.cos(slope * np.pi/180) * \
 </pre></div>
 </div>
-<img alt="../_images/b4afed5ae0ce10e1c70156ba5e055885973d1ff62a881d596f49408a732a8ff6.png" src="../_images/b4afed5ae0ce10e1c70156ba5e055885973d1ff62a881d596f49408a732a8ff6.png" />
+<img alt="../_images/4d4ddeaffd9d06928fe339a19545367b0a368f275f73aac954e6227432cacf99.png" src="../_images/4d4ddeaffd9d06928fe339a19545367b0a368f275f73aac954e6227432cacf99.png" />
 </div>
 </div>
 <p>The function <code class="docutils literal notranslate"><span class="pre">plot_EnvLayer_attr()</span></code> plots individual attributes (incl. properties) from environmental layers. If the elevation is given in the argument <code class="docutils literal notranslate"><span class="pre">hillshading_z</span></code>, hill shading is added in the background.</p>
