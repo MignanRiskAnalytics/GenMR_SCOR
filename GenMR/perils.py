@@ -8,18 +8,20 @@ intensity and loss footprint computation... TO DEVELOP/REWRITE
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 0.1
-:Date: 2025-11-11
+:Date: 2025-11-14
 :License: AGPL-3
 """
 
 import numpy as np
 import pandas as pd
 
+import os
 import copy
 import re
 import warnings
 
 import matplotlib.pyplot as plt
+import imageio
 
 from GenMR import environment as GenMR_env
 from GenMR import dynamics as GenMR_dynamics
@@ -745,6 +747,189 @@ class HazardFootprintGenerator:
             self.src.par['TC']['vforward_m/s'], I_sym_t, track_x, track_y, self.src.grid, t)
 
         return I_sym_t, I_asym_t, vtot_x, vtot_y, vtan_x, vtan_y
+
+
+
+class DynamicHazardFootprintGenerator:
+    def __init__(self, stochset, src, soilLayer):
+        self.stochset = stochset
+        self.src = src
+        self.soil = soilLayer
+        self.catalog_hazFootprints = {}
+
+    ## INTENSITY FOOTPRINT GENERATOR ##
+    def generate(self):
+        print('generating footprints for:', end=' ')
+        for ID in self.src.par['perils']:
+            indperil = np.where(self.stochset['ID'] == ID)[0]
+            Nev_peril = len(indperil)
+
+            if ID == 'LS':
+                pattern = re.compile(r'RS(\d+)')
+                movie = {'create': False}
+                for i in range(Nev_peril):
+                    evID = self.stochset['evID'][indperil].values[i]
+                    evID_trigger = re.search(pattern, evID).group()
+                    print(evID)
+                    
+                    S_trigger = self.stochset['S'][self.stochset['evID'] == evID_trigger].values
+                    hw = S_trigger * 1e-3 * self.src.par['RS']['duration']          # water column (m)
+                    wetness = hw / self.soil.h
+                    wetness[wetness > 1] = 1                  # max possible saturation
+                    wetness[self.soil.h == 0] = 0             # no soil case
+
+                    LS_CA = CellularAutomaton_LS(self.soil, wetness, movie)
+                    for _ in LS_CA:
+                        # __next__ called automatically
+                        pass
+
+                    LS_footprint_hmax = LS_CA.result()                    
+                    self.catalog_hazFootprints[evID] = LS_footprint_hmax
+
+            elif ID == 'FF':
+                np.nan
+
+        print('... catalogue completed')
+        return self.catalog_hazFootprints
+
+
+## LANDSLIDE CASE ##
+class CellularAutomaton_LS:
+    '''
+    '''
+    def __init__(self, soilLayer, wetness, movie, kmax = 20):
+        '''
+        '''
+        self.soil = copy.deepcopy(soilLayer)
+        self.grid = self.soil.grid
+        self.z = self.soil.topo.z.copy()
+        self.h0 = self.soil.h.copy()
+        self.h = self.soil.h.copy()
+        self.wetness = wetness
+        self.kmax = kmax
+        self.movie = movie
+
+        LS_footprint = np.zeros((self.grid.nx, self.grid.ny))
+        FS = GenMR_env.calc_FS(self.soil.topo.slope, self.h, self.wetness, self.soil.par)
+        FS_state = GenMR_env.get_FS_state(FS)
+        LS_footprint[FS_state == 2] = 1     # initiates LS where slope is unstable
+        nx, ny = int(self.grid.xbuffer/self.grid.w), int(self.grid.ybuffer/self.grid.w)
+        LS_footprint = GenMR_utils.zero_boundary_2d(LS_footprint, nx, ny)    # no LS in buffer zone
+        self.LS_footprint = LS_footprint
+
+        self.LS_footprint_hmax = np.zeros((self.grid.nx, self.grid.ny))
+        self.k = 1
+
+        if movie['create'] and not os.path.exists(movie['path']):
+            os.makedirs(movie['path'])
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.k > self.kmax:
+            raise StopIteration
+
+        print(f'\riteration {self.k} / {self.kmax}', end = '', flush = True)
+
+        LS_footprint = self.LS_footprint
+        h  = self.h
+        z  = self.z
+        h0 = self.h0
+        grid = self.grid
+        w = self.wetness
+
+        # select movable cells
+        indmov = np.where(np.logical_and(LS_footprint == 1, h > 0))
+
+        for kk in range(len(indmov[0])):
+            i, j = indmov[0][kk], indmov[1][kk]
+
+            # slope and aspect
+            z_pad = np.pad(z, 1, 'edge')
+            tan_slope, aspect = GenMR_env.calc_topo_attributes(z_pad[i:i+3, j:j+3], grid.w)
+            slope = np.degrees(np.arctan(tan_slope[1,1]))
+            steepestdir = int(np.round(aspect[1,1] * 7 / 360))
+
+            slope_stable = self._calc_stableSlope(h[i,j], w[i,j], self.soil.par)
+
+            if slope > slope_stable:
+                # neighbor indices
+                i_nbor, j_nbor = GenMR_utils.get_neighborhood_ind(i, j, (grid.nx, grid.ny), 1, method='Moore')
+                steepestdir_rfmt = GenMR_utils.get_ind_aspect2moore(steepestdir)
+
+                i1 = i_nbor[steepestdir_rfmt]
+                j1 = j_nbor[steepestdir_rfmt]
+
+                if steepestdir % 2 == 0:
+                    dh_stable = grid.w*1e3 * np.tan(np.radians(slope_stable))
+                    dz = (grid.w*1e3 * np.tan(np.radians(slope)) - dh_stable)/2
+                else:
+                    dh_stable = grid.w*1e3 * np.sqrt(2) * np.tan(np.radians(slope_stable))
+                    dz = (grid.w*1e3 * np.sqrt(2) * np.tan(np.radians(slope)) - dh_stable)/2
+
+                dz = min(dz, h[i,j])
+
+                z[i,j]  -= dz
+                z[i1,j1] += dz
+                h[i,j]  -= dz
+                h[i1,j1] += dz
+
+                LS_footprint[i1,j1] = 1
+
+        self.LS_footprint_hmax = np.maximum(self.LS_footprint_hmax, h - h0)
+
+        if self.movie['create']:
+            self._save_frame()
+
+        self.k += 1
+        return self  # return self so the user can inspect state if needed
+
+
+    def _calc_stableSlope(self, h, w, par):
+        slope_i = np.arange(1, 50, .1)
+        FS_i = GenMR_env.calc_FS(slope_i, h, w, par)
+        slope_stable = slope_i[FS_i > 1.5][-1]
+        return slope_stable
+
+    def _save_frame(self):
+        k = self.k
+
+        plt.rcParams['font.size'] = '20'
+        _, ax = plt.subplots(1, 1, figsize=(10,10), facecolor='white')
+
+        h_plot = GenMR_utils.col_state_h(self.h, self.h0)
+        ax.contourf(self.grid.xx, self.grid.yy, h_plot, cmap = GenMR_utils.col_h, vmin = 0, vmax = 5)
+        ax.contourf(self.grid.xx, self.grid.yy, GenMR_env.ls.hillshade(self.z, vert_exag = .1),
+                    cmap = 'gray', alpha = .1)
+
+        ax.set_xlabel('$x$ (km)')
+        ax.set_ylabel('$y$ (km)')
+        ax.set_aspect(1)
+        ax.set_xlim(self.movie['xmin'], self.movie['xmax'])
+        ax.set_ylim(self.movie['ymin'], self.movie['ymax'])
+        ax.set_title(f'LS iteration {k}', pad=10)
+
+        k_str = f"{k:02d}"
+        plt.savefig(self.movie['path'] + f'iter{k_str}.png',
+                    dpi=300, bbox_inches='tight')
+        plt.close()
+
+    def result(self):
+        return self.LS_footprint_hmax
+
+    def write_gif(self):
+        fd = self.movie['path']
+        filenames = sorted([f for f in os.listdir(fd) if f.startswith('iter')])
+        img = [imageio.imread(fd + f) for f in filenames]
+        if not os.path.exists('movs'):
+            os.makedirs('movs')
+        imageio.mimsave(f"movs/LS_CA_xrg{self.movie['xmin']}_{self.movie['xmax']}_yrg{self.movie['ymin']}_{self.movie['ymax']}.gif", \
+                        img, duration=500, loop=0)
+
+
+
+
 
 
 

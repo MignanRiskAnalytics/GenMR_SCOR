@@ -22,8 +22,8 @@ Planned Additions (v1.1.2)
 * Population
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
-:Version: 0.1
-:Date: 2025-10-27
+:Version: 1.1.1
+:Date: 2025-11-14
 :License: AGPL-3
 """
 
@@ -474,10 +474,11 @@ class EnvLayer_soil:
     @property
     def FS_state(self):
         FS = np.copy(self.FS_value)
-        FS_code = np.zeros((self.grid.nx, self.grid.ny))
-        FS_code[FS > 1.5] = 0                                 # stable
-        FS_code[np.logical_and(FS > 1, FS <= 1.5)] = 1        # critical
-        FS_code[FS <= 1] = 2                                  # unstable
+#        FS_code = np.zeros((self.grid.nx, self.grid.ny))
+#        FS_code[FS > 1.5] = 0                                 # stable
+#        FS_code[np.logical_and(FS > 1, FS <= 1.5)] = 1        # critical
+#        FS_code[FS <= 1] = 2                                  # unstable
+        FS_code = get_FS_state(FS)
         return FS_code
 
     @property
@@ -504,6 +505,13 @@ def calc_FS(slope, h, w, par):
          (1 - w * GenMR_utils.rho_wat / par['rho_kg/m3']) * np.tan(par['phieff_deg'] * np.pi/180)) / \
          np.sin(slope * np.pi/180)
     return FS
+
+def get_FS_state(FS):
+        FS_code = np.zeros_like(FS)
+        FS_code[FS > 1.5] = 0                                 # stable
+        FS_code[np.logical_and(FS > 1, FS <= 1.5)] = 1        # critical
+        FS_code[FS <= 1] = 2                                  # unstable
+        return FS_code
 
 
 class EnvLayer_natLand:

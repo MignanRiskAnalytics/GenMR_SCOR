@@ -37,11 +37,10 @@ def init_io():
 
     - io/
     - figs/
-    - figs/CellAut_steps/
     - movs/
     '''
     os.makedirs('io', exist_ok=True)
-    os.makedirs('figs/CellAut_steps', exist_ok=True)
+    os.makedirs('figs', exist_ok=True)
     os.makedirs('movs', exist_ok=True)
 
 
@@ -176,6 +175,16 @@ def pooling(m, f, method = 'max'):
     return m_pool
 
 
+def zero_boundary_2d(arr, nx, ny):
+    '''
+    '''
+    arr[:nx,:] = 0
+    arr[-nx:,:] = 0
+    arr[:,:ny] = 0
+    arr[:,-ny:] = 0
+    return arr
+
+
 def get_neighborhood_ind(i, j, grid_shape, r_v, method = 'Moore'):
     '''
     Get the indices of the neighboring cells, depending on method and radius of vision
@@ -215,6 +224,21 @@ def get_neighborhood_ind(i, j, grid_shape, r_v, method = 'Moore'):
         mask_cut[i0,j0] = 0
     return [np.meshgrid(ik,jk)[i].flatten()[mask_cut.flatten()] for i in range(2)]
 
+def get_ind_aspect2moore(ind_old):
+    '''
+    Return Moore indices from indices defined from the aspect angle.
+    
+    Note:
+        The aspect angle directs towards index np.round(aspect*8/360).astype('int').
+        It therefore takes the form:  765
+                                      0 4
+                                      123
+        while Moore indices take the form: 012 (see get_neighborhood_ind() function).
+                                           3 4
+                                           567
+    '''
+    ind_new = np.array([3,5,6,7,4,2,1,0,3])
+    return ind_new[ind_old]
 
 
 ########################
@@ -338,11 +362,10 @@ def col_state_h(h, h0):
     return h_plot
 
 colors = [(105/255,105/255,105/255),        # 0 - scarp / erosion +++ (dimgrey)
-          (236/255,235/255,189/255),        # 1 - intact (fall green)
+#          (236/255,235/255,189/255),        # 1 - intact (fall green)
+          (216/255,228/255,188/255),        # 1 - intact (fall green)
           (195/255,176/255,145/255),        # 2 - erosion ++ (khaki)
           (186/255,135/255,89/255),         # 3 - erosion + (deer)
           (155/255,118/255,83/255),         # 4 - landslide + (dirt)
           (131/255,105/255,83/255)]         # 5 - landslide ++ (pastel brown)
 col_h = plt_col.LinearSegmentedColormap.from_list('col_h', colors, N = 6)
-
-
