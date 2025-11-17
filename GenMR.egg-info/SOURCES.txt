@@ -1,0 +1,6 @@
+pyproject.toml
+GenMR/__init__.py
+GenMR.egg-info/PKG-INFO
+GenMR.egg-info/SOURCES.txt
+GenMR.egg-info/dependency_links.txt
+GenMR.egg-info/top_level.txt
