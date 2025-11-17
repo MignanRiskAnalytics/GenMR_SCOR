@@ -764,11 +764,11 @@ class DynamicHazardFootprintGenerator:
 
     ## INTENSITY FOOTPRINT GENERATOR ##
     def generate(self, selected_perils = None, force_recompute = False):
-
+        self.force_recompute = force_recompute
         if selected_perils is None:
             selected_perils = self.src.par['perils']
 
-        print('generating footprints for:', end=' ')
+        print('generating footprints for:')
         for ID in selected_perils:
             indperil = np.where(self.stochset['ID'] == ID)[0]
             Nev_peril = len(indperil)
@@ -783,7 +783,28 @@ class DynamicHazardFootprintGenerator:
 
 
     def _run_FF(self, indperil, Nev_peril):
-        np.nan
+        pattern = re.compile(r'RS(\d+)')
+        movie = {'create': False}
+        for i in range(Nev_peril):
+            evID = self.stochset['evID'][indperil].values[i]
+            cache_file = self._cache_path(evID)
+
+            if os.path.exists(cache_file) and not self.force_recompute:
+                self.catalog_hazFootprints[evID] = np.load(cache_file)
+                print(f'{evID} (loaded from cache)')
+            else:
+                print(f'{evID} (computing)')
+                evID_trigger = re.search(pattern, evID).group()
+
+                S_trigger = self.stochset['S'][self.stochset['evID'] == evID_trigger].values
+                I_RS = S_trigger * 1e-3 / 3600    # (mm/hr) to (m/s)
+
+                FF_CA = CellularAutomaton_FF(self.soil, self.src, self.soil.grid, self.soil.topo.z, movie)
+                FF_CA.run()
+
+                FF_footprint_hmax = FF_CA.result()                    
+                self.catalog_hazFootprints[evID] = FF_footprint_hmax
+                np.save(cache_file, FF_footprint_hmax)
 
 
     def _run_LS(self, indperil, Nev_peril):
@@ -793,8 +814,8 @@ class DynamicHazardFootprintGenerator:
             evID = self.stochset['evID'][indperil].values[i]
             cache_file = self._cache_path(evID)
 
-            if os.path.exists(cache_file) and not force_recompute:
-                self.catalog_hazFootprints[evID] = np.load(f)
+            if os.path.exists(cache_file) and not self.force_recompute:
+                self.catalog_hazFootprints[evID] = np.load(cache_file)
                 print(f'{evID} (loaded from cache)')
             else:
                 print(f'{evID} (computing)')
@@ -807,18 +828,147 @@ class DynamicHazardFootprintGenerator:
                 wetness[self.soil.h == 0] = 0             # no soil case
 
                 LS_CA = CellularAutomaton_LS(self.soil, wetness, movie)
-                for _ in LS_CA:
-                    # __next__ called automatically
-                    pass
+                LS_CA.run()
 
                 LS_footprint_hmax = LS_CA.result()                    
                 self.catalog_hazFootprints[evID] = LS_footprint_hmax
                 np.save(cache_file, LS_footprint_hmax)
 
 
+## FLUVIAL FLOOD CASE ##
+class CellularAutomaton_FF:
+    def __init__(self, I_RS, src, grid, topoLayer_z, movie):
+        self.I_RS = I_RS
+        self.src = src
+        self.grid = grid
+        self.z = topoLayer_z
+        movie['path'] = 'figs/FF_CA_frames/'
+        self.movie = movie
 
+        A_catchment = src.par['FF']['A_km2'] * 1e6   # (m2)
+        self.Qp = I_RS * A_catchment                 # (m3/s)
+        self.tmax = int(src.par['RS']['duration'] * 3600)
 
+        river_xi, river_yi, _, _ = GenMR_env.calc_coord_river_dampedsine(grid, src.par['FF'])
+        self.src_indx = np.where(grid.x > river_xi[-1] - 1e-6)[0][0]
+        self.src_indy = np.where(grid.y > river_yi[-1] - 1e-6)[0][0]
 
+        # source discharge to 2 cells (hardcoded river channel width)
+        self.l_src_max = self.Qp / (2 * (grid.w * 1e3)**2)  # m/s
+
+        self.mask_offshore = np.zeros((grid.nx, grid.ny), dtype=bool)
+        for j in range(grid.ny):
+            self.mask_offshore[grid.x >= src.SS_char["x"][j], j] = True
+
+        self.FFfootprint_t = np.zeros((grid.nx, grid.ny))
+        self.FFfootprint_hmax = np.zeros((grid.nx, grid.ny))
+
+        self.c = .5
+        self.t = 0
+        self.k_movie = 0
+
+        if movie['create'] and not os.path.exists(movie['path']):
+            os.makedirs(movie['path'])
+
+    def __iter__(self):
+        self.t = 0
+        return self
+
+    def __next__(self):
+        if self.t >= self.tmax:
+            raise StopIteration
+
+        t = self.t
+
+        if t % 3600 == 0: 
+            print(t/3600, "hr /", self.tmax/3600, end = '\r', flush = True)
+
+        FF = self.FFfootprint_t
+
+        # source input (two cells)
+        FF[self.src_indx, self.src_indy]   = self.l_src_max
+        FF[self.src_indx, self.src_indy-1] = self.l_src_max
+
+        l = self.z + FF
+
+        # slopes (Mignan 2024 fig. 4.5)
+        dl_a = np.pad((l[:,1:] - l[:,:-1]), [(0,0),(1,0)])  # left
+        dl_b = np.pad((l[:-1,:] - l[1:,:]), [(0,1),(0,0)])  # bottom
+        dl_c = np.pad((l[:,:-1] - l[:,1:]), [(0,0),(0,1)])  # right
+        dl_d = np.pad((l[1:,:] - l[:-1,:]), [(1,0),(0,0)])  # top
+
+        dl_all = np.stack((dl_a, dl_b, dl_c, dl_d))
+        dl_all[dl_all < 0] = 0
+        dl_sum = np.sum(dl_all, axis=0)
+        dl_sum[dl_sum == 0] = np.inf
+
+        weight_dl = dl_all / dl_sum
+
+        lmax = np.minimum(FF, np.amax(self.c * dl_all, axis=0))
+        lmov_all = weight_dl * lmax
+
+        # incoming fluxes
+        lIN_a = np.pad(lmov_all[0,:,1:], [(0,0),(0,1)])
+        lIN_b = np.pad(lmov_all[1,:-1,:], [(1,0),(0,0)])
+        lIN_c = np.pad(lmov_all[2,:,:-1], [(0,0),(1,0)])
+        lIN_d = np.pad(lmov_all[3,1:,:], [(0,1),(0,0)])
+
+        lOUT_0 = np.sum(lmov_all, axis=0)
+
+        # update state
+        FF = FF + (lIN_a + lIN_b + lIN_c + lIN_d) - lOUT_0
+        FF = FF * self.mask_offshore
+
+        self.FFfootprint_t = FF
+        self.FFfootprint_hmax = np.maximum(self.FFfootprint_hmax, FF)
+
+        if self.movie['create']:
+            t_min = t % 60    # snapshot only every minute
+            if t_min == 0 and t / 60. >= self.movie['tmin']:
+                self._save_frame()
+
+        self.t += 1
+        return self.FFfootprint_t
+
+    def _save_frame(self):
+        k = self.k_movie
+
+        plt.rcParams['font.size'] = '20'
+        _, ax = plt.subplots(1, 1, figsize=(10,10), facecolor='white')
+
+        h_plot = copy.copy(self.FFfootprint_t)
+        h_plot[h_plot == 0] = np.nan
+        ax.contourf(self.grid.xx, self.grid.yy, h_plot, cmap = 'Blues', alpha = .9, vmin = 0, vmax = 5)
+        ax.contourf(self.grid.xx, self.grid.yy, GenMR_env.ls.hillshade(self.z, vert_exag = .1),
+                    cmap = 'gray', alpha = .1)
+
+        ax.set_xlabel('$x$ (km)')
+        ax.set_ylabel('$y$ (km)')
+        ax.set_aspect(1)
+        ax.set_xlim(self.movie['xmin'], self.movie['xmax'])
+        ax.set_ylim(self.movie['ymin'], self.movie['ymax'])
+        ax.set_title(f'FF iteration $t=${self.t/60}min', pad=10)
+
+        k_str = f"{k:04d}"
+        plt.savefig(self.movie['path'] + f'iter{k_str}.png', dpi=300, bbox_inches='tight')
+        plt.close()
+        self.k_movie += 1
+
+    def run(self):
+        for _ in self:
+            pass
+
+    def result(self):
+        return self.FFfootprint_hmax
+
+    def write_gif(self):
+        fd = self.movie['path']
+        filenames = sorted([f for f in os.listdir(fd) if f.startswith('iter')])
+        img = [imageio.imread(fd + f) for f in filenames]
+        if not os.path.exists('movs'):
+            os.makedirs('movs')
+        imageio.mimsave(f"movs/FF_CA_xrg{self.movie['xmin']}_{self.movie['xmax']}_yrg{self.movie['ymin']}_{self.movie['ymax']}.gif", \
+                        img, duration = 500, loop = 0)
 
 
 ## LANDSLIDE CASE ##
@@ -835,6 +985,7 @@ class CellularAutomaton_LS:
         self.h = self.soil.h.copy()
         self.wetness = wetness
         self.kmax = kmax
+        movie['path'] = 'figs/LS_CA_frames/'
         self.movie = movie
 
         LS_footprint = np.zeros((self.grid.nx, self.grid.ny))
@@ -913,7 +1064,6 @@ class CellularAutomaton_LS:
         self.k += 1
         return self  # return self so the user can inspect state if needed
 
-
     def _calc_stableSlope(self, h, w, par):
         slope_i = np.arange(1, 50, .1)
         FS_i = GenMR_env.calc_FS(slope_i, h, w, par)
@@ -942,6 +1092,10 @@ class CellularAutomaton_LS:
         plt.savefig(self.movie['path'] + f'iter{k_str}.png',
                     dpi=300, bbox_inches='tight')
         plt.close()
+
+    def run(self):
+        for _ in self:
+            pass
 
     def result(self):
         return self.LS_footprint_hmax
