@@ -8,7 +8,7 @@ intensity and loss footprint computation... TO DEVELOP/REWRITE
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 0.1
-:Date: 2025-11-14
+:Date: 2025-11-17
 :License: AGPL-3
 """
 
@@ -756,41 +756,69 @@ class DynamicHazardFootprintGenerator:
         self.src = src
         self.soil = soilLayer
         self.catalog_hazFootprints = {}
+        self.cache_dir = 'io/cache_dynHazFootprints'
+        os.makedirs(self.cache_dir, exist_ok = True)
+
+    def _cache_path(self, evID):
+        return os.path.join(self.cache_dir, f'{evID}.npy')
 
     ## INTENSITY FOOTPRINT GENERATOR ##
-    def generate(self):
+    def generate(self, selected_perils = None, force_recompute = False):
+
+        if selected_perils is None:
+            selected_perils = self.src.par['perils']
+
         print('generating footprints for:', end=' ')
-        for ID in self.src.par['perils']:
+        for ID in selected_perils:
             indperil = np.where(self.stochset['ID'] == ID)[0]
             Nev_peril = len(indperil)
 
-            if ID == 'LS':
-                pattern = re.compile(r'RS(\d+)')
-                movie = {'create': False}
-                for i in range(Nev_peril):
-                    evID = self.stochset['evID'][indperil].values[i]
-                    evID_trigger = re.search(pattern, evID).group()
-                    print(evID)
-                    
-                    S_trigger = self.stochset['S'][self.stochset['evID'] == evID_trigger].values
-                    hw = S_trigger * 1e-3 * self.src.par['RS']['duration']          # water column (m)
-                    wetness = hw / self.soil.h
-                    wetness[wetness > 1] = 1                  # max possible saturation
-                    wetness[self.soil.h == 0] = 0             # no soil case
-
-                    LS_CA = CellularAutomaton_LS(self.soil, wetness, movie)
-                    for _ in LS_CA:
-                        # __next__ called automatically
-                        pass
-
-                    LS_footprint_hmax = LS_CA.result()                    
-                    self.catalog_hazFootprints[evID] = LS_footprint_hmax
-
-            elif ID == 'FF':
-                np.nan
+            if ID == 'FF':
+                self._run_FF(indperil, Nev_peril)
+            elif ID == 'LS':
+                self._run_LS(indperil, Nev_peril)
 
         print('... catalogue completed')
         return self.catalog_hazFootprints
+
+
+    def _run_FF(self, indperil, Nev_peril):
+        np.nan
+
+
+    def _run_LS(self, indperil, Nev_peril):
+        pattern = re.compile(r'RS(\d+)')
+        movie = {'create': False}
+        for i in range(Nev_peril):
+            evID = self.stochset['evID'][indperil].values[i]
+            cache_file = self._cache_path(evID)
+
+            if os.path.exists(cache_file) and not force_recompute:
+                self.catalog_hazFootprints[evID] = np.load(f)
+                print(f'{evID} (loaded from cache)')
+            else:
+                print(f'{evID} (computing)')
+                evID_trigger = re.search(pattern, evID).group()
+                        
+                S_trigger = self.stochset['S'][self.stochset['evID'] == evID_trigger].values
+                hw = S_trigger * 1e-3 * self.src.par['RS']['duration']    # water column (m)
+                wetness = hw / self.soil.h
+                wetness[wetness > 1] = 1                  # max possible saturation
+                wetness[self.soil.h == 0] = 0             # no soil case
+
+                LS_CA = CellularAutomaton_LS(self.soil, wetness, movie)
+                for _ in LS_CA:
+                    # __next__ called automatically
+                    pass
+
+                LS_footprint_hmax = LS_CA.result()                    
+                self.catalog_hazFootprints[evID] = LS_footprint_hmax
+                np.save(cache_file, LS_footprint_hmax)
+
+
+
+
+
 
 
 ## LANDSLIDE CASE ##
