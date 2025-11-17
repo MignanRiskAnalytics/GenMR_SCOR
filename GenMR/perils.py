@@ -20,6 +20,9 @@ import copy
 import re
 import warnings
 
+import matplotlib
+matplotlib.use('Agg')   # avoid kernel crash
+
 import matplotlib.pyplot as plt
 import imageio
 
@@ -934,7 +937,7 @@ class CellularAutomaton_FF:
         k = self.k_movie
 
         plt.rcParams['font.size'] = '20'
-        _, ax = plt.subplots(1, 1, figsize=(10,10), facecolor='white')
+        fig, ax = plt.subplots(1, 1, figsize=(10,10), facecolor='white')
 
         h_plot = copy.copy(self.FFfootprint_t)
         h_plot[h_plot == 0] = np.nan
@@ -950,8 +953,9 @@ class CellularAutomaton_FF:
         ax.set_title(f'FF iteration $t=${self.t/60}min', pad=10)
 
         k_str = f"{k:04d}"
-        plt.savefig(self.movie['path'] + f'iter{k_str}.png', dpi=300, bbox_inches='tight')
-        plt.close()
+        fig.savefig(self.movie['path'] + f'iter{k_str}.png', dpi=300, bbox_inches='tight')
+        fig.clf()
+        plt.close(fig)
         self.k_movie += 1
 
     def run(self):
