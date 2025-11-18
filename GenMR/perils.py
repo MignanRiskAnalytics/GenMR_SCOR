@@ -20,8 +20,8 @@ import copy
 import re
 import warnings
 
-import matplotlib
-matplotlib.use('Agg')   # avoid kernel crash
+#import matplotlib
+#matplotlib.use('Agg')   # avoid kernel crash
 
 import matplotlib.pyplot as plt
 import imageio
@@ -802,7 +802,7 @@ class DynamicHazardFootprintGenerator:
                 S_trigger = self.stochset['S'][self.stochset['evID'] == evID_trigger].values
                 I_RS = S_trigger * 1e-3 / 3600    # (mm/hr) to (m/s)
 
-                FF_CA = CellularAutomaton_FF(self.soil, self.src, self.soil.grid, self.soil.topo.z, movie)
+                FF_CA = CellularAutomaton_FF(I_RS, self.src, self.soil.grid, self.soil.topo.z, movie)
                 FF_CA.run()
 
                 FF_footprint_hmax = FF_CA.result()                    
@@ -926,8 +926,9 @@ class CellularAutomaton_FF:
         self.FFfootprint_hmax = np.maximum(self.FFfootprint_hmax, FF)
 
         if self.movie['create']:
-            t_min = t % 60    # snapshot only every minute
-            if t_min == 0 and t / 60. >= self.movie['tmin']:
+            dt = 60.*10 # snapshot only every 10 minutes
+            t_min = t % dt
+            if t_min == 0 and t / dt >= self.movie['tmin']:
                 self._save_frame()
 
         self.t += 1
