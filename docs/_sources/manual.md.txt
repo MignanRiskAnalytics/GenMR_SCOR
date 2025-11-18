@@ -10,6 +10,15 @@
    :show-inheritance:
 ```
 
+## GenMR.perils module
+
+```{eval-rst}
+.. automodule:: GenMR.perils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+```
+
 ## GenMR.utils module
 
 ```{eval-rst}
