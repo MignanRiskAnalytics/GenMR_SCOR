@@ -69,6 +69,17 @@
 <li class="toctree-l4"><a class="reference internal" href="#planned-additions-v1-1-2">Planned Additions (v1.1.2)</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.CriticalInfrastructure"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.CriticalInfrastructure.Ex_S_kton"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure.Ex_S_kton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.CriticalInfrastructure.area"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure.area</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.CriticalInfrastructure.centroid"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure.centroid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.CriticalInfrastructure.distance_to_coast"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure.distance_to_coast</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.CriticalInfrastructure.distance_to_river"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure.distance_to_river</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.CriticalInfrastructure.name"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.CriticalInfrastructure.polygon"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure.polygon</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.CriticalInfrastructure.zone_type"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure.zone_type</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.EnvLayer_natLand"><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.EnvLayer_soil"><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_soil.FS_state"><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil.FS_state</span></code></a></li>
@@ -90,13 +101,16 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.CI_refinery"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.CI_refinery</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.bldg_roofpitch"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.bldg_roofpitch</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.bldg_type"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.bldg_type</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.bldg_value"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.bldg_value</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.calc_Pr_urbanise"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.calc_Pr_urbanise()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.get_S_urban"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_S_urban()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.get_d4mkd"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_d4mkd()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.get_industrialZones"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_industrialZones()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.get_state_built"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_state_built()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.industrialZones"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.industrialZones</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.infiltration"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.infiltration</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.roadNet_coord"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.roadNet_coord</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.transform_landUse"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.transform_landUse()</span></code></a></li>
@@ -296,7 +310,7 @@ defined as classes or methods.</p>
 <dd class="field-even"><p>1.1.1</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2025-11-14</p>
+<dd class="field-odd"><p>2025-11-19</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -304,6 +318,52 @@ defined as classes or methods.</p>
 </dl>
 </section>
 </section>
+<dl class="py class">
+<dt class="sig sig-object py" id="GenMR.environment.CriticalInfrastructure">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">CriticalInfrastructure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zone_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centroid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polygon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">shapely.geometry.polygon.Polygon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance_to_coast</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance_to_river</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ex_S_kton</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.CriticalInfrastructure" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="GenMR.environment.CriticalInfrastructure.Ex_S_kton">
+<span class="sig-name descname"><span class="pre">Ex_S_kton</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#GenMR.environment.CriticalInfrastructure.Ex_S_kton" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="GenMR.environment.CriticalInfrastructure.area">
+<span class="sig-name descname"><span class="pre">area</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#GenMR.environment.CriticalInfrastructure.area" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="GenMR.environment.CriticalInfrastructure.centroid">
+<span class="sig-name descname"><span class="pre">centroid</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span></em><a class="headerlink" href="#GenMR.environment.CriticalInfrastructure.centroid" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="GenMR.environment.CriticalInfrastructure.distance_to_coast">
+<span class="sig-name descname"><span class="pre">distance_to_coast</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#GenMR.environment.CriticalInfrastructure.distance_to_coast" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="GenMR.environment.CriticalInfrastructure.distance_to_river">
+<span class="sig-name descname"><span class="pre">distance_to_river</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#GenMR.environment.CriticalInfrastructure.distance_to_river" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="GenMR.environment.CriticalInfrastructure.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#GenMR.environment.CriticalInfrastructure.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="GenMR.environment.CriticalInfrastructure.polygon">
+<span class="sig-name descname"><span class="pre">polygon</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Polygon</span></em><a class="headerlink" href="#GenMR.environment.CriticalInfrastructure.polygon" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="GenMR.environment.CriticalInfrastructure.zone_type">
+<span class="sig-name descname"><span class="pre">zone_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#GenMR.environment.CriticalInfrastructure.zone_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="GenMR.environment.EnvLayer_natLand">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">EnvLayer_natLand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">soil</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_natLand" title="Link to this definition"></a></dt>
@@ -421,6 +481,11 @@ sig: standard deviation for random deviations</p>
 <p>Generate a city for land use state classification. Model that combines the SLEUTH city growth CA,
 the road network growth CA of ref, and the land use state transformation method of …</p>
 <dl class="py property">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.CI_refinery">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CI_refinery</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand.CI_refinery" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.bldg_roofpitch">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bldg_roofpitch</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand.bldg_roofpitch" title="Link to this definition"></a></dt>
 <dd></dd></dl>
@@ -451,9 +516,20 @@ the road network growth CA of ref, and the land use state transformation method 
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.get_industrialZones">
+<span class="sig-name descname"><span class="pre">get_industrialZones</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand.get_industrialZones" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.get_state_built">
 <span class="sig-name descname"><span class="pre">get_state_built</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbor_k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbor_d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_kd</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand.get_state_built" title="Link to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.industrialZones">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">industrialZones</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand.industrialZones" title="Link to this definition"></a></dt>
+<dd><p>Cached version of industrial zones.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.infiltration">
