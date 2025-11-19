@@ -23,7 +23,7 @@ Planned Additions (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.1
-:Date: 2025-11-14
+:Date: 2025-11-19
 :License: AGPL-3
 """
 
@@ -34,11 +34,18 @@ import copy
 
 import matplotlib.pyplot as plt
 import matplotlib.colors as plt_col
+import matplotlib.patches as mpatches
+from matplotlib.patches import Polygon as MplPolygon
 from matplotlib.patches import Patch
 ls = plt_col.LightSource(azdeg=45, altdeg=45)
 
-from scipy.interpolate import RegularGridInterpolator
+from shapely.geometry import Polygon, Point, LineString
 
+from scipy.interpolate import RegularGridInterpolator
+from scipy.ndimage import label
+
+from functools import cached_property
+from dataclasses import dataclass
 import networkx as netx
 
 import GenMR.utils as GenMR_utils
@@ -666,6 +673,18 @@ class EnvObj_roadNetwork():
             self.net.add_edge(list_nodes[indL[0]], self.nodeID)
             
 
+@dataclass
+class CriticalInfrastructure:
+    name: str
+    zone_type: str
+    area: float
+    centroid: tuple
+    polygon: Polygon
+    distance_to_coast: float
+    distance_to_river: float
+    Ex_S_kton: float
+
+
 class EnvLayer_urbLand:
     '''
     Generate a city for land use state classification. Model that combines the SLEUTH city growth CA, 
@@ -958,6 +977,100 @@ class EnvLayer_urbLand:
         return built_type
 
 
+    def get_industrialZones(self):
+        xx = self.grid.xx
+        yy = self.grid.yy
+        states = self.S
+
+        coast_x, coast_y = self.topo.coastline_coord
+        coastline = LineString(np.column_stack([coast_x, coast_y]))
+
+        riv_x, riv_y, _, _ = self.topo.river_coord
+        river = LineString(np.column_stack([riv_x, riv_y]))
+
+        buffer = self.grid.w * 2
+
+        vonNeumann_struct = np.array([[0,1,0],
+                                      [1,1,1],
+                                      [0,1,0]], dtype=bool)
+
+        industrial_mask = (states == 3)
+
+        labeled, n_components = label(industrial_mask, structure=vonNeumann_struct)
+
+        polygons = []
+        plt.figure(figsize=(4,4))
+
+        for comp_id in range(1, n_components + 1):
+            component_mask = (labeled == comp_id).astype(float)
+            cs = plt.contour(xx, yy, component_mask, levels=[0.5])
+            if not cs.collections:
+                continue
+
+            paths = cs.collections[0].get_paths()
+            if not paths:
+                continue
+            exterior_path = max(paths, key=lambda p: len(p.vertices))
+            vertices = exterior_path.vertices.copy()
+
+            if not np.allclose(vertices[0], vertices[-1]):
+                vertices = np.vstack([vertices, vertices[0]])
+
+            poly = Polygon(vertices)
+            area = poly.area
+            dist_coast = poly.distance(coastline)
+            dist_river = poly.distance(river)
+
+            if dist_coast <= buffer:
+                zone_type = 'industrial harbor'
+            elif dist_river <= buffer:
+                zone_type = 'riverside industrial park'
+            else:
+                zone_type = 'inland industrial park'
+
+            polygons.append({
+                "state": "industrial",
+                "zone_type": zone_type,
+                "vertices": vertices,
+                "area": area,
+                "distance_to_coast": dist_coast,
+                "distance_to_river": dist_river,
+                "closed": True,
+            })
+
+        plt.close()
+        return polygons
+
+    @cached_property
+    def industrialZones(self):
+        """Cached version of industrial zones."""
+        return self.get_industrialZones()
+
+    @cached_property
+    def CI_refinery(self):
+        zones = self.industrialZones
+        harbor_polys = [p for p in zones if p["zone_type"] == "industrial harbor"]
+
+        if len(harbor_polys) == 0:
+            raise ValueError("No industrial harbor polygons found.")
+
+        largest = max(harbor_polys, key=lambda p: p["area"])
+        poly = Polygon(largest["vertices"])
+        centroid = (poly.centroid.x, poly.centroid.y)
+
+        return CriticalInfrastructure(
+            name="CI_refinery",
+            zone_type=largest["zone_type"],
+            area=largest["area"],
+            centroid=centroid,
+            polygon=poly,
+            distance_to_coast=largest["distance_to_coast"],
+            distance_to_river=largest["distance_to_river"],
+            Ex_S_kton=None,
+        )
+
+
+
 
 #####################################
 # SOCIO-ECONOMIC ENVIRONMENT LAYERS #
@@ -970,6 +1083,24 @@ class EnvLayer_urbLand:
 ############
 # PLOTTING #
 ############
+
+lgd_industrialZone = [
+    mpatches.Patch(
+        facecolor=GenMR_utils.col_industrialZone['industrial harbor'], 
+        edgecolor='black',
+        label='Industrial Harbor'
+    ),
+    mpatches.Patch(
+        facecolor=GenMR_utils.col_industrialZone['riverside industrial park'], 
+        edgecolor='black',
+        label='Riverside Industrial Park'
+    ),
+    mpatches.Patch(
+        facecolor=GenMR_utils.col_industrialZone['inland industrial park'], 
+        edgecolor='black',
+        label='Inland Industrial Park'
+    )
+]
 
 def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
     '''
@@ -1058,6 +1189,19 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
             img = plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.built_yr, cmap = 'inferno_r', alpha = .5,\
                                 vmin = envLayer.par['city_yr0'], vmax = np.nanmax(envLayer.built_yr))
             fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'Year built')
+        elif attr == 'industrialZones':
+            for poly in envLayer.industrialZones:
+                patch = MplPolygon(
+                        poly['vertices'],
+                        closed=True,
+                        color=GenMR_utils.col_industrialZone.get(poly['zone_type'], 'gray'),
+                        alpha=1.
+                )
+                ax.add_patch(patch)
+            ax.set_xlim(envLayer.grid.xmin, envLayer.grid.xmax)
+            ax.set_ylim(envLayer.grid.ymin, envLayer.grid.ymax)
+            labels_industrialZone = [h.get_label() for h in lgd_industrialZone]
+            ax.legend(lgd_industrialZone, labels_industrialZone, loc='upper left')
         else:
             return print('No match found for attribute identifier in land layer.')
     plt.xlabel('$x$ (km)')

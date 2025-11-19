@@ -306,7 +306,7 @@ def marker_peril(peril):
     Return marker for given point source peril.
     '''
     marker = ''
-    if peril == 'AI':
+    if peril == 'AI' or peril == 'Ex':
         marker = '+'
     if peril == 'VE':
         marker = '^'
@@ -318,6 +318,7 @@ def col_peril(peril):
     col_peril_geophys = "#CD853F"  #Peru
     col_peril_hydro = "#20B2AA"    #MediumSeaGreen
     col_peril_meteo = "#4169E1"    #RoyalBlue
+    col_peril_tech = "#FF8C00"     #'Safety Orange'
     if peril == 'AI':
         col = col_peril_extra
     if peril == 'EQ' or peril == 'LS' or peril == 'VE':
@@ -326,6 +327,8 @@ def col_peril(peril):
         col = col_peril_hydro
     if peril == 'RS' or peril == 'TC' or peril == 'WS':
         col = col_peril_meteo
+    if peril == 'Ex':
+        col = col_peril_tech
     return col
 
 
@@ -369,3 +372,11 @@ colors = [(105/255,105/255,105/255),        # 0 - scarp / erosion +++ (dimgrey)
           (155/255,118/255,83/255),         # 4 - landslide + (dirt)
           (131/255,105/255,83/255)]         # 5 - landslide ++ (pastel brown)
 col_h = plt_col.LinearSegmentedColormap.from_list('col_h', colors, N = 6)
+
+
+col_industrialZone = {
+    'industrial harbor': 'royalblue',
+    'riverside industrial park': 'skyblue',
+    'inland industrial park': 'tan'
+}
+
