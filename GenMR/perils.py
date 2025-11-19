@@ -331,10 +331,10 @@ class EventSetGenerator:
 
             ## SECONDARY EVENTS ##
             if ID in self.sizeDistr['secondary']:
-                evID, Si_vec, lbdi = self._generate_secondary(ID)
+                ID_trigger, evID, Si_vec, lbdi = self._generate_secondary(ID)
                 self.ev_stoch = pd.concat([
                     self.ev_stoch,
-                    pd.DataFrame({'ID': np.repeat(ID, self.sizeDistr[evID['trigger']]['Nstoch']), 'evID': evID['evID'], 'S': Si_vec, 'lbd': lbdi})
+                    pd.DataFrame({'ID': ID_trigger, 'evID': evID, 'S': Si_vec, 'lbd': lbdi})
                 ], ignore_index=True)
 
             ## Spatial characteristics ##
@@ -375,11 +375,18 @@ class EventSetGenerator:
 
     def _generate_secondary(self, ID):
         trigger = self.sizeDistr[ID]['trigger']
-        N = self.sizeDistr[trigger]['Nstoch']
-        evID = [f"{ID}_from{trigger}{i+1}" for i in range(N)]
-        Si_vec = np.repeat(np.nan, N)
-        lbdi = np.repeat(np.nan, N)
-        return {'trigger': trigger, 'evID': evID}, Si_vec, lbdi
+        if ID == 'Ex':
+            ID_trigger = np.array([ID])
+            evID = np.array(['Ex_fromCIf'])
+            Si_vec = np.array([self.sizeDistr[ID]['S']])
+            lbdi = np.array([np.nan])
+        else:
+            N = self.sizeDistr[trigger]['Nstoch']
+            ID_trigger = np.repeat(ID, self.sizeDistr[trigger]['Nstoch'])
+            evID = [f"{ID}_from{trigger}{i+1}" for i in range(N)]
+            Si_vec = np.repeat(np.nan, N)
+            lbdi = np.repeat(np.nan, N)
+        return ID_trigger, evID, Si_vec, lbdi
 
 
     def _distribute_sizes(self, ID, Si):
@@ -448,14 +455,15 @@ class EventSetGenerator:
         elif ID == 'FF':
             trigger = self.sizeDistr[ID]['trigger']
             self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.FF_char['srcID'], self.sizeDistr[trigger]['Nstoch']))
-
         elif ID == 'LS':
             trigger = self.sizeDistr[ID]['trigger']
             self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.par['LS']['object'], self.sizeDistr[trigger]['Nstoch']))
-
         elif ID == 'SS':
             trigger = self.sizeDistr[ID]['trigger']
             self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.par['SS']['object'], self.sizeDistr[trigger]['Nstoch']))
+        elif ID == 'Ex':
+            ev_ID, ev_x, ev_y = np.array(['Ex_fromCIf']), np.array([self.src.par['Ex']['x']]), np.array([self.src.par['Ex']['y']])
+            self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.par['Ex']['object'], 1))
 
         return ev_ID, ev_x, ev_y
 
@@ -658,7 +666,7 @@ class HazardFootprintGenerator:
                     evID = self.stochset['evID'][indperil].values[i]
                     S = self.stochset['S'][indperil].values[i]
                     r = np.sqrt((self.src.grid.xx - AIcoord['x'][i])**2 + (self.src.grid.yy - AIcoord['y'][i])**2)
-                    self.catalog_hazFootprints[evID] = self.calc_I_ash_m(S, r)
+                    self.catalog_hazFootprints[evID] = self.calc_I_blast_kPa(S, r)
 
             elif ID == 'VE':
                 VEcoord = self.evchar[get_peril_evID(self.evchar['evID']) == 'VE'].reset_index(drop=True)
@@ -666,6 +674,14 @@ class HazardFootprintGenerator:
                     evID = self.stochset['evID'][indperil].values[i]
                     S = self.stochset['S'][indperil].values[i]
                     r = np.sqrt((self.src.grid.xx - VEcoord['x'][0])**2 + (self.src.grid.yy - VEcoord['y'][0])**2)
+                    self.catalog_hazFootprints[evID] = self.calc_I_ash_m(S, r)
+
+            elif ID == 'Ex':
+                Excoord = self.evchar[get_peril_evID(self.evchar['evID']) == 'Ex'].reset_index(drop=True)
+                for i in range(Nev_peril):
+                    evID = self.stochset['evID'][indperil].values[i]
+                    S = self.stochset['S'][indperil].values[i]
+                    r = np.sqrt((self.src.grid.xx - Excoord['x'][i])**2 + (self.src.grid.yy - Excoord['y'][i])**2)
                     self.catalog_hazFootprints[evID] = self.calc_I_blast_kPa(S, r)
 
             elif ID == 'EQ':
@@ -710,6 +726,8 @@ class HazardFootprintGenerator:
                     evID_trigger = re.search(pattern, evID).group()
                     I_trigger = self.catalog_hazFootprints[evID_trigger]
                     self.catalog_hazFootprints[evID] = self.model_SS_Bathtub(I_trigger, self.src, self.topo_z)
+                
+
 
         print('... catalogue completed')
         return self.catalog_hazFootprints
@@ -1153,7 +1171,7 @@ def plot_src(src, hillshading_z = '', file_ext = '-'):
     handles = []
     labels = []
 
-    fig, ax = plt.subplots(1, 2, figsize=(10,4))
+    _, ax = plt.subplots(1, 2, figsize=(10,4))
     if len(hillshading_z) != 0:
         ax[0].contourf(src.grid.xx, src.grid.yy, GenMR_env.ls.hillshade(hillshading_z, vert_exag=.1), cmap='gray', alpha = .2)
     if 'EQ' in src.par['perils']:
@@ -1186,9 +1204,14 @@ def plot_src(src, hillshading_z = '', file_ext = '-'):
         handles.append(h_tc)
         labels.append('Storm track: Tropical cyclone (TC)')
     if 'AI' in src.par['perils']:
-        h_ai = ax[0].scatter(src.AI_char['x'], src.AI_char['y'], color = GenMR_utils.col_peril('AI'), s=30, marker = '+', clip_on = False)
+        h_ai =ax[0].scatter(src.AI_char['x'], src.AI_char['y'], color = GenMR_utils.col_peril('AI'), s=30, marker = '+', clip_on = False)
         handles.append(h_ai)
         labels.append('Impact site: Asteroid impact (AI)')
+    if 'Ex' in src.par['perils']:
+        h_ex = ax[0].scatter(src.par['Ex']['x'], src.par['Ex']['y'], color = GenMR_utils.col_peril('Ex'), s=90, marker = '+', clip_on = False)
+        handles.append(h_ex)
+        labels.append('Harbor refinery: Explosion (Ex)')
+
 
     h_box, = ax[0].plot([src.grid.xmin + src.grid.xbuffer, src.grid.xmax - src.grid.xbuffer, src.grid.xmax - src.grid.xbuffer, \
                 src.grid.xmin + src.grid.xbuffer, src.grid.xmin + src.grid.xbuffer],
