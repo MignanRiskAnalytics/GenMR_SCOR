@@ -143,8 +143,13 @@
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.CellularAutomaton_LS.write_gif"><code class="docutils literal notranslate"><span class="pre">CellularAutomaton_LS.write_gif()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.CellularAutomaton_WF"><code class="docutils literal notranslate"><span class="pre">CellularAutomaton_WF</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.CellularAutomaton_WF.run"><code class="docutils literal notranslate"><span class="pre">CellularAutomaton_WF.run()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.DynamicHazardFootprintGenerator"><code class="docutils literal notranslate"><span class="pre">DynamicHazardFootprintGenerator</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.DynamicHazardFootprintGenerator.generate"><code class="docutils literal notranslate"><span class="pre">DynamicHazardFootprintGenerator.generate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.DynamicHazardFootprintGenerator.load_WF_CA_footprints"><code class="docutils literal notranslate"><span class="pre">DynamicHazardFootprintGenerator.load_WF_CA_footprints()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.EventSetGenerator"><code class="docutils literal notranslate"><span class="pre">EventSetGenerator</span></code></a><ul>
@@ -237,6 +242,11 @@
 <li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#from-numerical-models-cellular-automata">1.3.2. From numerical models (cellular automata)</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#probabilistic-risk-assessment">2. Probabilistic risk assessment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#vulnerability-curve-definition">2.1. Vulnerability curve definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#loss-footprint-catalogue-generation">2.2. Loss footprint catalogue generation</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#references">References</a></li>
@@ -608,8 +618,8 @@ The environmental layers are generated as follows:
 <p>-&gt; ADD a modifying factor with distance from city center (or built year)…</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#file_urbLandLayer = &#39;&#39;           # run the city growth model if &#39;&#39; provided</span>
-<span class="n">file_urbLandLayer</span> <span class="o">=</span> <span class="s1">&#39;envLayer_urbLand.pkl&#39;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">file_urbLandLayer</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>           <span class="c1"># run the city growth model if &#39;&#39; provided</span>
+<span class="c1">#file_urbLandLayer = &#39;envLayer_urbLand.pkl&#39;</span>
 
 <span class="n">urbLandPar</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;lores_f&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;rdm_seed&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="c1"># seed does not work -&gt; find where to put it...</span>
@@ -626,7 +636,7 @@ The environmental layers are generated as follows:
     <span class="s1">&#39;road_Rmax&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>               <span class="c1"># max. radius in terms of number of perpendicular cells</span>
     <span class="s1">&#39;road_maxslope&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>          <span class="c1"># cannot build above (degree)</span>
     <span class="s1">&#39;road_X&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>                  <span class="c1"># </span>
-    <span class="s1">&#39;bldg_res_wood2brick&#39;</span><span class="p">:</span> <span class="mf">.5</span><span class="p">,</span>    <span class="c1"># ratio of number of res. blocks made of wood relative to bricks (masonry)</span>
+    <span class="s1">&#39;bldg_RES_wood2brick&#39;</span><span class="p">:</span> <span class="mf">.5</span><span class="p">,</span>    <span class="c1"># ratio of number of RES. blocks made of wood relative to bricks (masonry)</span>
     <span class="s1">&#39;GPD_percapita_USD&#39;</span><span class="p">:</span> <span class="mf">40e3</span>     <span class="c1"># GDP per capita (USD) used to estimate construction cost for res, com, ind.</span>
 <span class="p">}</span>
 <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">save_dict2json</span><span class="p">(</span><span class="n">urbLandPar</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;par_urbLand&#39;</span><span class="p">)</span>
@@ -650,7 +660,22 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>... urbLandLayer class instance loaded
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0 1
+10 2610
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:915: RuntimeWarning: invalid value encountered in scalar power
+  pr = ((par[&#39;SLEUTH_maxslope&#39;] - np.round(slope)) / par[&#39;SLEUTH_maxslope&#39;])**expo
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>20 7538
+30 14851
+40 24982
+50 37011
+60 50350
+70 64476
+80 80213
+90 96181
 </pre></div>
 </div>
 </div>
@@ -667,7 +692,7 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f7e3569d76a9b54bffd56180f8ddf2a79ea44bed9dfa1a066edbf564c8f2b80f.png" src="../_images/f7e3569d76a9b54bffd56180f8ddf2a79ea44bed9dfa1a066edbf564c8f2b80f.png" />
+<img alt="../_images/e25dbcdeeed4138da14e01fd78cd4659dfe094c860df45b8fa5f6b28ee45f6d8.png" src="../_images/e25dbcdeeed4138da14e01fd78cd4659dfe094c860df45b8fa5f6b28ee45f6d8.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -677,7 +702,7 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/d90fca609e2ce0e1017cdaaf42340747d110073d233b97fc43de2b03a413b196.png" src="../_images/d90fca609e2ce0e1017cdaaf42340747d110073d233b97fc43de2b03a413b196.png" />
+<img alt="../_images/0fe11c31f8c345fa92aacc2e9ae3ea3722d0ef3e15d08c3b761d66af41939632.png" src="../_images/0fe11c31f8c345fa92aacc2e9ae3ea3722d0ef3e15d08c3b761d66af41939632.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -687,7 +712,7 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/21838b65b2d6ef2d4fc10eb9924df32a60754c9a5a50ae9ecf4597c86174f307.png" src="../_images/21838b65b2d6ef2d4fc10eb9924df32a60754c9a5a50ae9ecf4597c86174f307.png" />
+<img alt="../_images/8d2d942ef2c64f82760c97df1111bbdf7930f48f2adce70fbf099617e3f45d7d.png" src="../_images/8d2d942ef2c64f82760c97df1111bbdf7930f48f2adce70fbf099617e3f45d7d.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -739,7 +764,7 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/abea5a04a6ebd7db5c80c1f23c4abcfc2f94e7c2600eeb502d5a637979c9f0ae.png" src="../_images/abea5a04a6ebd7db5c80c1f23c4abcfc2f94e7c2600eeb502d5a637979c9f0ae.png" />
+<img alt="../_images/f6d7c3f9d069047dacbbe2250d0dd8f61b98ad4b9bd8338875d4bf2e094a4957.png" src="../_images/f6d7c3f9d069047dacbbe2250d0dd8f61b98ad4b9bd8338875d4bf2e094a4957.png" />
 </div>
 </div>
 <div class="cell docutils container">
