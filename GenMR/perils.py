@@ -25,6 +25,7 @@ import warnings
 
 import matplotlib.pyplot as plt
 import imageio
+from skimage import measure
 
 from GenMR import environment as GenMR_env
 from GenMR import dynamics as GenMR_dynamics
@@ -393,7 +394,7 @@ class EventSetGenerator:
         Si_n = len(Si)
         Si_ind = np.arange(Si_n)
 
-        if ID == 'EQ':
+        if ID == 'EQ' or ID == 'WF':
             qi = np.linspace(1, 11, Si_n)
             qi /= np.sum(qi)
             qi = np.sort(qi)[::-1]
@@ -434,23 +435,21 @@ class EventSetGenerator:
         if ID == 'AI':
             ev_ID, ev_x, ev_y = evID, self.src.AI_char['x'], self.src.AI_char['y']
             self.srcIDs = np.append(self.srcIDs, self.src.AI_char['srcID'])
-
         elif ID == 'EQ':
             Rup_coord, Rup_loc = self._gen_EQ_floatingRupture(evID, Si_vec, self.src)
             ev_ID, ev_x, ev_y = Rup_coord['evID'], Rup_coord['x'], Rup_coord['y']
             self.srcIDs = np.append(self.srcIDs, Rup_loc)
-
         elif ID == 'RS':
             self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.par['RS']['object'], self.sizeDistr['RS']['Nstoch']))
-
         elif ID == 'TC':
             track_coord = self._get_TCtrack_highres(evID, self.src)
             ev_ID, ev_x, ev_y = track_coord['evID'], track_coord['x'], track_coord['y']
             self.srcIDs = np.append(self.srcIDs, np.unique(self.src.TC_char['srcID']))
-
         elif ID == 'VE':
             ev_ID, ev_x, ev_y = evID, np.repeat(self.src.VE_char['x'], self.sizeDistr['VE']['Nstoch']), np.repeat(self.src.VE_char['y'], self.sizeDistr['VE']['Nstoch'])
             self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.VE_char['srcID'], self.sizeDistr['VE']['Nstoch']))
+        elif ID == 'WF':
+            self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.par['WF']['object'], self.sizeDistr['WF']['Nstoch']))
 
         elif ID == 'FF':
             trigger = self.sizeDistr[ID]['trigger']
@@ -772,10 +771,12 @@ class HazardFootprintGenerator:
 
 
 class DynamicHazardFootprintGenerator:
-    def __init__(self, stochset, src, soilLayer):
+    def __init__(self, stochset, src, soilLayer, urbLandLayer):
         self.stochset = stochset
         self.src = src
         self.soil = soilLayer
+        self.urb = urbLandLayer
+        self.grid = urbLandLayer.grid
         self.catalog_hazFootprints = {}
         self.cache_dir = 'io/cache_dynHazFootprints'
         os.makedirs(self.cache_dir, exist_ok = True)
@@ -798,6 +799,8 @@ class DynamicHazardFootprintGenerator:
                 self._run_FF(indperil, Nev_peril)
             elif ID == 'LS':
                 self._run_LS(indperil, Nev_peril)
+            elif ID == 'WF':
+                self._run_WF(indperil, Nev_peril)
 
         print('... catalogue completed')
         return self.catalog_hazFootprints
@@ -854,6 +857,53 @@ class DynamicHazardFootprintGenerator:
                 LS_footprint_hmax = LS_CA.result()                    
                 self.catalog_hazFootprints[evID] = LS_footprint_hmax
                 np.save(cache_file, LS_footprint_hmax)
+
+
+    def _run_WF(self, indperil, Nev_peril):
+        frame_path = 'figs/WF_CA_frames/'
+        if os.path.exists(frame_path) and not self.force_recompute:
+            print('Loading from cache potential footprints')
+        else:
+            print('Computing potential footprints')
+            frame_plot = False
+            WF_CA = CellularAutomaton_WF(self.src, self.urb, frame_plot)
+            WF_CA.run()
+        print('Fetching footprints from potential footprints')
+        WF_CA_footprints, WF_CA_fp_metadata = self.load_WF_CA_footprints(frame_path + 'data')
+        for item in  WF_CA_footprints:
+            item['burnt_area_ha'] = item['burnt_area_cells'] * (self.grid.w ** 2) * 100
+        WF_CA_fp_metadata['burnt_area_ha'] = WF_CA_fp_metadata['burnt_area_cells'] * (self.grid.w ** 2) * 100
+
+        WF_pool = WF_CA_footprints.copy()
+        for i in range(Nev_peril):
+            evID = self.stochset['evID'][indperil].values[i]
+            S = self.stochset['S'][indperil].values[i]
+            cache_file = self._cache_path(evID)
+            print(f'{evID} (fetched from cache)')
+            # fetch a matching footprint S from CA catalogue
+            diffs = np.array([abs(r['burnt_area_ha'] - S) for r in WF_pool])
+            min_diff = np.min(diffs)
+            candidate_idxs = np.where(diffs == min_diff)[0]
+            chosen_idx = np.random.choice(candidate_idxs)                      # add rdm seed ?
+            self.catalog_hazFootprints[evID] = WF_pool[chosen_idx]['WF_fp']
+            _ = WF_pool.pop(chosen_idx)
+            np.save(cache_file, self.catalog_hazFootprints[evID])
+
+    def load_WF_CA_footprints(self, path_WF_CA_data):
+        pattern = re.compile(r"WF_fp_event_(\d+)_(\d+)\.npy")
+        results = []
+        for fname in os.listdir(path_WF_CA_data):
+            match = pattern.match(fname)
+            if match:
+                event_id = int(match.group(1))
+                burnt_area_cells = int(match.group(2))
+                full_path = os.path.join(path_WF_CA_data, fname)
+                WF_fp = np.load(full_path)
+                results.append({'WF_CA_id': event_id, 'burnt_area_cells': burnt_area_cells, 'WF_fp': WF_fp})
+        results = sorted(results, key=lambda d: d['burnt_area_cells'], reverse = True)    
+        df = pd.DataFrame([{'WF_CA_id': r['WF_CA_id'], 'burnt_area_cells': r['burnt_area_cells']}
+            for r in results])
+        return results, df
 
 
 ## FLUVIAL FLOOD CASE ##
@@ -1133,6 +1183,120 @@ class CellularAutomaton_LS:
                         img, duration=500, loop=0)
 
 
+## WILDFIRE CASE ##
+class CellularAutomaton_WF:
+
+    def __init__(self, src, urbLandLayer, frame_plot):
+        self.src = src
+        self.urbLandLayer = urbLandLayer
+        self.frame_plot = frame_plot
+
+        self.grid = copy.copy(self.urbLandLayer.grid)
+        self.landuse_S = copy.copy(self.urbLandLayer.S)
+
+        self.indForest = np.where(self.landuse_S.flatten() == 1)[0]
+
+        self.indForest2Grass = np.random.choice(
+            self.indForest,
+            size=int(len(self.indForest) * self.src.par['WF']['ratio_grass']),
+            replace=False
+        )
+
+        landuse_S4WF_flat = self.landuse_S.flatten()
+        landuse_S4WF_flat[self.indForest2Grass] = 0
+
+        # add wood buildings to forest state:
+        self.indwoodBldg = np.where(self.urbLandLayer.bldg_type.flatten() == 'W')[0]
+        landuse_S4WF_flat[self.indwoodBldg] = 1
+
+        self.landuse_S4WF = landuse_S4WF_flat.reshape(self.landuse_S.shape)
+
+        self.path_WF_CA = 'figs/WF_CA_frames'
+        os.makedirs(self.path_WF_CA, exist_ok=True)
+        self.path_WF_CA_data = os.path.join(self.path_WF_CA, 'data')
+        os.makedirs(self.path_WF_CA_data, exist_ok=True)
+
+        self.S = np.zeros(self.landuse_S4WF.shape)
+        self.S[self.landuse_S4WF == 1] = 1
+
+        self.k = 1  # WF event counter
+        self.i = 0  # iteration
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.i >= self.src.par['WF']['nsim']:
+            raise StopIteration
+
+        if self.i % 1000 == 0:
+            print(self.i, '/', self.src.par['WF']['nsim'])
+
+        # LOADING (long-term tree growth)
+        S_flat = self.S.flatten()
+        landuse_S4WF_flat = self.landuse_S4WF.flatten()
+
+        self.indForest = np.where(self.landuse_S.flatten() == 1)[0]
+        indForest_notree = self.indForest[np.where(S_flat[self.indForest] == 0)[0]]
+
+        if len(indForest_notree) > 0:
+            new_tree_xy = np.random.choice(indForest_notree, size=self.src.par['WF']['rate_newtrees'])
+            S_flat[new_tree_xy] = 1
+            landuse_S4WF_flat[new_tree_xy] = 1
+
+        # TRIGGERING (lightning)
+        if np.random.random(1) <= self.src.par['WF']['p_lightning']:
+            lightning_xy = np.random.choice(self.indForest, size=1)  # to limit number of simulations needed
+            WF_fp = np.zeros(self.S.shape)
+            WF_fp[:, :] = np.nan
+
+            if S_flat[lightning_xy] == 1:
+                self.S = S_flat.reshape(self.S.shape)
+                self.landuse_S4WF = landuse_S4WF_flat.reshape(self.S.shape)
+
+                S_clumps = measure.label(self.S, connectivity=1)
+                clump_WF = S_clumps.flatten()[lightning_xy]
+                indWF = S_clumps == clump_WF
+
+                WF_fp[indWF] = 5
+                self.S[indWF] = 0
+                self.landuse_S4WF[indWF] = 0
+
+                burntArea_cells = np.sum(WF_fp == 5)
+
+                WF_Smin = 1e4   # hardcoded here, could be sizeDistr['WF']['Smin'] as additional input par.
+                if self.frame_plot and burntArea_cells >= WF_Smin:
+                    plt.rcParams['font.size'] = '14'
+                    _, ax = plt.subplots(1, 1, figsize=(7, 7))
+                    ax.contourf(self.grid.xx, self.grid.yy,
+                                GenMR_env.ls.hillshade(self.urbLandLayer.topo.z, vert_exag=.1),
+                                cmap='gray', alpha=.1)
+                    ax.pcolormesh(self.grid.xx, self.grid.yy, self.landuse_S4WF,
+                                  cmap=GenMR_utils.col_S, vmin=-1, vmax=5, alpha=.5)
+                    ax.pcolormesh(self.grid.xx, self.grid.yy, WF_fp,
+                                  cmap=GenMR_utils.col_S, vmin=-1, vmax=5)
+
+                    plt.savefig(f'{self.path_WF_CA}/WF_fp_event_{self.k}_{burntArea_cells}.jpg', dpi=300)
+                    plt.close()
+
+                    np.save(f'{self.path_WF_CA_data}/WF_fp_event_{self.k}_{burntArea_cells}.npy', WF_fp)
+                    self.k += 1
+                    
+                # repopulate wood buildings for next WF (i.e., independent events)
+                landuse_S4WF_flat = self.landuse_S4WF.flatten()
+                landuse_S4WF_flat[self.indwoodBldg] = 1
+                self.landuse_S4WF = landuse_S4WF_flat.reshape(self.landuse_S.shape)
+
+        # move iteration forward
+        self.i += 1
+
+        # return current state if desired
+        return self.S, self.landuse_S4WF
+
+    def run(self):
+        for _ in self:
+            pass
+
 
 
 
@@ -1263,6 +1427,7 @@ def plot_hazFootprints(catalog_hazFootprints, grid, topoLayer_z, plot_Imax, nsto
         for j in range(nplot):
             I_plt = np.copy(catalog_hazFootprints[evID_shuffled[j]])
             I_plt[I_plt >= Imax] = Imax
+            I_plt[I_plt == 0] = np.nan
             ax[i,j].contourf(grid.xx, grid.yy, I_plt, cmap = 'Reds', levels = np.linspace(0, Imax, 100))
             ax[i,j].contourf(grid.xx, grid.yy, GenMR_env.ls.hillshade(topoLayer_z, vert_exag=.1), cmap='gray', alpha = .1)
             ax[i,j].set_xlim(grid.xmin, grid.xmax)

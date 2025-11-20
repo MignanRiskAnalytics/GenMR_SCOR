@@ -882,7 +882,7 @@ class EnvLayer_urbLand:
     @property
     def bldg_type(self):
         val = np.full((self.grid.nx, self.grid.ny), np.nan, dtype = object)
-        val[self.S == 2] = np.where(np.random.random(np.sum(self.S == 2)) >= self.par['res_wood2brick_ratio'], 'M', 'W')
+        val[self.S == 2] = np.where(np.random.random(np.sum(self.S == 2)) >= self.par['bldg_RES_wood2brick'], 'M', 'W')
         val[self.S == 3] = 'S'
         val[self.S == 4] = 'RC'
         return val
@@ -1165,7 +1165,7 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
                         Patch(facecolor=(236/255., 235/255., 189/255.,.5), edgecolor='black', label='Grassland'),
                         Patch(facecolor=(34/255.,139/255.,34/255.,.5), edgecolor='black', label='Forest')]
             plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.S, cmap = GenMR_utils.col_S, \
-                                         vmin=-1, vmax=4, alpha = alpha)
+                                         vmin=-1, vmax=5, alpha = alpha)
             plt.legend(handles=legend_S, loc='upper left')   
         else:
             return print('No match found for attribute identifier in land layer.')
@@ -1178,7 +1178,7 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
                         Patch(facecolor=(10/255.,10/255.,10/255.,.5), edgecolor='black', label='Industrial'),
                         Patch(facecolor=(230/255.,230/255.,230/255.,.5), edgecolor='black', label='Commercial')]
             plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.S, cmap = GenMR_utils.col_S, \
-                                         vmin=-1, vmax=4, alpha = alpha)
+                                         vmin=-1, vmax=5, alpha = alpha)
             plt.legend(handles=legend_S, loc='upper left')
         elif attr == 'roadNet':
             plt.plot(envLayer.roadNet_coord[2], envLayer.roadNet_coord[3], color='darkred', lw = 1)
@@ -1323,7 +1323,7 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
             if topo_bool:
                 ax[i,0].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray')
             ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.S, cmap = GenMR_utils.col_S, \
-                                         vmin=-1, vmax=4, alpha = .5)
+                                         vmin=-1, vmax=5, alpha = .5)
             ax[i,0].set_xlabel('$x$ (km)')
             ax[i,0].set_ylabel('$y$ (km)')
             ax[i,0].set_title('NATURAL LAND', size = 14)
@@ -1345,7 +1345,7 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
             if topo_bool:
                 ax[i,0].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray')
             ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.S, cmap = GenMR_utils.col_S, \
-                                         vmin=-1, vmax=4, alpha = .5)
+                                         vmin=-1, vmax=5, alpha = .5)
             ax[i,0].set_xlabel('$x$ (km)')
             ax[i,0].set_ylabel('$y$ (km)')
             ax[i,0].set_title('URBAN LAND: state S', size = 14)
