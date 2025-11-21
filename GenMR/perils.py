@@ -8,7 +8,7 @@ intensity and loss footprint computation... TO DEVELOP/REWRITE
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 0.1
-:Date: 2025-11-17
+:Date: 2025-11-21
 :License: AGPL-3
 """
 
@@ -19,6 +19,7 @@ import os
 import copy
 import re
 import warnings
+from tqdm import tqdm
 
 #import matplotlib
 #matplotlib.use('Agg')   # avoid kernel crash
@@ -26,6 +27,8 @@ import warnings
 import matplotlib.pyplot as plt
 import imageio
 from skimage import measure
+
+import scipy
 
 from GenMR import environment as GenMR_env
 from GenMR import dynamics as GenMR_dynamics
@@ -1306,8 +1309,84 @@ class CellularAutomaton_WF:
 # LOSS FOOTPRINTS #
 ###################
 
+def vuln_f(I, peril):
+    if peril == 'AI' or peril == 'Ex':   # I = overpressure (kPa)
+        mu = np.log(20)
+        sig = .4
+        MDR = .5 * (1 + scipy.special.erf((np.log(I) - mu)/(sig * np.sqrt(2))))
+    if peril == 'EQ':                    # I = peak ground acceleration (m/s2)
+        mu = np.log(6)
+        sig = .6
+        MDR = .5 * (1 + scipy.special.erf((np.log(I) - mu)/(sig * np.sqrt(2))))
+    if peril == 'FF' or peril == 'SS':   # I = inundation depth (m)
+        c = .45
+        MDR = c * np.sqrt(I)
+        MDR[MDR > 1] = 1
+    if peril == 'LS':                    # I = landslide thickness (m)
+        c1 = -1.671
+        c2 = 3.189
+        c3 = 1.746
+        MDR = 1 - np.exp(c1*((I+c2)/c2 - 1)**c3)
+    if peril == 'VE':                    # I = ash thickness (m)
+        g_earth = 9.81                   # (m/s^2)
+        rho_ash = 900                    # (kg/m3)  (dry ash)
+        I_kPa = rho_ash * g_earth * I * 1e-3
+        mu = 1.6
+        sig = .4
+        MDR = .5 * (1 + scipy.special.erf((np.log(I_kPa) - mu)/(sig * np.sqrt(2))))
+    if peril == 'TC' or peril == 'To' or peril == 'WS':   # I = wind speed (m/s)
+        v_thresh = 25.7 # 50 kts
+        v_half = 74.7
+        vn = (I - v_thresh) / (v_half - v_thresh)
+        vn[vn < 0] = 0
+        MDR = vn**3 / (1+vn**3)
+    if peril == 'WF':                    # I = 1 (burnt) or 0
+        MDR = np.zeros_like(I)
+        MDR[I == 1] = 1
+    return MDR
 
+class RiskFootprintGenerator:
+    '''
+    '''
+    def __init__(self, catalog_hazFootprints, urbLandLayer, evtable):
+        self.catalog_hazFootprints = catalog_hazFootprints
+        self.expo_value = urbLandLayer.bldg_value.astype(float, copy=True)
+        self.ELT = evtable.copy()
+        self.ELT['loss'] = np.nan
+        self.evIDs_wFp = list(catalog_hazFootprints.keys())
+        self.catalog_dmgFootprints = {}
+        self.catalog_lossFootprints = {}
 
+        target_shape = self.catalog_hazFootprints[self.evIDs_wFp[0]].shape
+        for evID in self.evIDs_wFp:
+            if self.catalog_hazFootprints[evID].shape != target_shape:
+                raise ValueError(
+                    f'Hazard footprint for {evID} has shape '
+                    f'{self.catalog_hazFootprints[evID].shape}, expected {target_shape}'
+                )
+        self.hazfp_stack = np.stack(
+            [self.catalog_hazFootprints[evID] for evID in self.evIDs_wFp], axis=0
+        )
+        dmg_stack = np.zeros_like(self.hazfp_stack, dtype=float)
+        loss_stack = np.zeros_like(self.hazfp_stack, dtype=float)
+
+        for i, evID in enumerate(tqdm(self.evIDs_wFp, desc='Computing MDR & Loss')):
+            peril = evID[:2]
+            hazfp = self.hazfp_stack[i]
+            MDR = vuln_f(hazfp, peril)
+            MDR[np.isnan(self.expo_value)] = np.nan
+            MDR[MDR == 0] = np.nan
+
+            dmg_stack[i] = MDR
+
+            loss = MDR * self.expo_value
+            loss_stack[i] = loss
+
+            self.ELT.loc[self.ELT['evID'] == evID, 'loss'] = np.nansum(loss)
+
+        for i, evID in enumerate(self.evIDs_wFp):
+            self.catalog_dmgFootprints[evID] = dmg_stack[i]
+            self.catalog_lossFootprints[evID] = loss_stack[i]
 
 
 
@@ -1406,7 +1485,6 @@ def plot_src(src, hillshading_z = '', file_ext = '-'):
         plt.savefig('figs/src.' + file_ext)
 
 
-
 def plot_hazFootprints(catalog_hazFootprints, grid, topoLayer_z, plot_Imax, nstoch = 5, file_ext = '-'):
     evIDs = np.array(list(catalog_hazFootprints.keys()))
     ev_peril = get_peril_evID(evIDs)
@@ -1444,5 +1522,82 @@ def plot_hazFootprints(catalog_hazFootprints, grid, topoLayer_z, plot_Imax, nsto
     if file_ext != '-':
         plt.savefig('figs/hazFootprints.' + file_ext)
 
+    plt.pause(1)
+    plt.show()
+
+
+def plot_vulnFunctions():
+    pi_kPa = np.linspace(0, 50, 100)
+    MDR_blast = vuln_f(pi_kPa, 'AI')      # or 'Ex'
+    PGAi = np.linspace(0, 15, 100)     # m/s2
+    MDR_EQ = vuln_f(PGAi, 'EQ')
+    hwi = np.linspace(0, 7, 1000)      # m
+    MDR_flood = vuln_f(hwi, 'FF')         # or 'SS'
+    hsi = np.linspace(0, 7, 100)       # m
+    MDR_LS = vuln_f(hsi, 'LS')
+    hai = np.linspace(0, 2, 100)       # m
+    MDR_VE = vuln_f(hai, 'VE')
+    g_earth = 9.81                   # [m/s^2]
+    rho_ash = 900                    # [kg/m3]  (dry ash)
+    pi_VE_kPa = rho_ash * g_earth * hai * 1e-3
+    vi = np.linspace(0, 100, 100)      # m/s
+    MDR_WS = vuln_f(vi, 'WS')
+
+    plt.rcParams['font.size'] = '18'
+    fig, ax = plt.subplots(2,3, figsize = (20,12))
+    ax[0,0].plot(pi_kPa, MDR_blast, color = 'black')
+    ax[0,0].set_title('Blast (AI, Ex)', pad = 20)
+    ax[0,0].set_xlabel('Overpressure $P$ [kPa]')
+    ax[0,0].set_ylabel('MDR')
+    ax[0,0].set_ylim(0,1.01)
+    ax[0,0].spines['right'].set_visible(False)
+    ax[0,0].spines['top'].set_visible(False)
+
+    ax[0,1].plot(PGAi, MDR_EQ, color = 'black')
+    ax[0,1].set_title('Earthquake (EQ)', pad = 20)
+    ax[0,1].set_xlabel('PGA [m/s$^2$]')
+    ax[0,1].set_ylabel('MDR')
+    ax[0,1].set_ylim(0,1.01)
+    ax[0,1].spines['right'].set_visible(False)
+    ax[0,1].spines['top'].set_visible(False)
+
+    ax[0,2].plot(hwi, MDR_flood, color = 'black')
+    ax[0,2].set_title('Flooding (FF, SS)', pad = 20)
+    ax[0,2].set_xlabel('Inundation depth $h$ [m]')
+    ax[0,2].set_ylabel('MDR')
+    ax[0,2].set_ylim(0,1.01)
+    ax[0,2].spines['right'].set_visible(False)
+    ax[0,2].spines['top'].set_visible(False)
+
+    ax[1,0].plot(hsi, MDR_LS, color = 'black')
+    ax[1,0].set_title('Landslide (LS)', pad = 20)
+    ax[1,0].set_xlabel('Deposited height $h$ [m]')
+    ax[1,0].set_ylabel('MDR')
+    ax[1,0].set_ylim(0,1.01)
+    ax[1,0].spines['right'].set_visible(False)
+    ax[1,0].spines['top'].set_visible(False)
+
+    ax[1,1].plot(pi_VE_kPa, MDR_VE, color = 'black')
+    ax[1,1].set_title('Volcanic eruption (VE)', pad = 20)
+    ax[1,1].set_xlabel('Ash load $P$ [kPa]')
+    ax[1,1].set_ylabel('MDR')
+    ax[1,1].set_ylim(0,1.01)
+    ax[1,1].spines['right'].set_visible(False)
+    ax[1,1].spines['top'].set_visible(False)
+    ax2 = ax[1,1].twiny()
+    ax2.set_xlabel('Ash thickness $h$ [m]')
+    ax2.plot(hai, MDR_VE, color = 'white', alpha = 0)
+    ax2.spines['right'].set_visible(False)
+
+    ax[1,2].plot(vi, MDR_WS, color = 'black')
+    ax[1,2].set_title('Windstorm (WS)', pad = 20)
+    ax[1,2].set_xlabel('Maximum wind speed $v_{max}$ [m/s]')
+    ax[1,2].set_ylabel('MDR')
+    ax[1,2].set_ylim(0,1.01)
+    ax[1,2].spines['right'].set_visible(False)
+    ax[1,2].spines['top'].set_visible(False)
+
+    fig.tight_layout()
+    plt.savefig('figs/vulnFunctions.jpg', dpi = 300)
     plt.pause(1)
     plt.show()
