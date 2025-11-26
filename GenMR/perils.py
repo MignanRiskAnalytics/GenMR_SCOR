@@ -1552,6 +1552,7 @@ def plot_vulnFunctions():
     ax[0,0].set_ylim(0,1.01)
     ax[0,0].spines['right'].set_visible(False)
     ax[0,0].spines['top'].set_visible(False)
+    ax[0,0].grid()
 
     ax[0,1].plot(PGAi, MDR_EQ, color = 'black')
     ax[0,1].set_title('Earthquake (EQ)', pad = 20)
@@ -1560,6 +1561,7 @@ def plot_vulnFunctions():
     ax[0,1].set_ylim(0,1.01)
     ax[0,1].spines['right'].set_visible(False)
     ax[0,1].spines['top'].set_visible(False)
+    ax[0,1].grid()
 
     ax[0,2].plot(hwi, MDR_flood, color = 'black')
     ax[0,2].set_title('Flooding (FF, SS)', pad = 20)
@@ -1568,6 +1570,7 @@ def plot_vulnFunctions():
     ax[0,2].set_ylim(0,1.01)
     ax[0,2].spines['right'].set_visible(False)
     ax[0,2].spines['top'].set_visible(False)
+    ax[0,2].grid()
 
     ax[1,0].plot(hsi, MDR_LS, color = 'black')
     ax[1,0].set_title('Landslide (LS)', pad = 20)
@@ -1576,6 +1579,7 @@ def plot_vulnFunctions():
     ax[1,0].set_ylim(0,1.01)
     ax[1,0].spines['right'].set_visible(False)
     ax[1,0].spines['top'].set_visible(False)
+    ax[1,0].grid()
 
     ax[1,1].plot(pi_VE_kPa, MDR_VE, color = 'black')
     ax[1,1].set_title('Volcanic eruption (VE)', pad = 20)
@@ -1584,6 +1588,7 @@ def plot_vulnFunctions():
     ax[1,1].set_ylim(0,1.01)
     ax[1,1].spines['right'].set_visible(False)
     ax[1,1].spines['top'].set_visible(False)
+    ax[1,1].grid()
     ax2 = ax[1,1].twiny()
     ax2.set_xlabel('Ash thickness $h$ [m]')
     ax2.plot(hai, MDR_VE, color = 'white', alpha = 0)
@@ -1596,6 +1601,7 @@ def plot_vulnFunctions():
     ax[1,2].set_ylim(0,1.01)
     ax[1,2].spines['right'].set_visible(False)
     ax[1,2].spines['top'].set_visible(False)
+    ax[1,2].grid()
 
     fig.tight_layout()
     plt.savefig('figs/vulnFunctions.jpg', dpi = 300)

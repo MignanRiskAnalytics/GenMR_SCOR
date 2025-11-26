@@ -381,3 +381,33 @@ col_industrialZone = {
     'inland industrial park': 'tan'
 }
 
+
+##################
+## RISK METRICS ##
+##################
+
+def calc_EP(lbd):
+    nev = len(lbd)
+    EFi = np.zeros(nev)
+    for i in range(nev):
+        EFi[i] = np.sum(lbd[0:i+1])
+    EPi = 1 - np.exp(- EFi)                               # Mignan (2024:eq. 3.22)
+    return EFi, EPi
+
+def calc_riskmetrics_fromELT(ELT, q_VAR):
+    AAL = np.sum(ELT['lbd'] * ELT['L'])                   # Mignan (2024:eq. 3.18)
+    ELT = ELT.sort_values(by = 'L', ascending = False)    # losses in descending order
+    EFi, EPi = calc_EP(ELT['lbd'].values)
+    ELT['EF'], ELT['EP'] = [EFi, EPi]
+    # VaR_q and TVaR_q
+    p = 1 - q_VAR
+    ELT_asc = ELT.sort_values(by = 'L')                    # losses in ascending order
+    VaRq = ELT_asc['L'][ELT_asc['EP'] < p].iloc[0]         # Mignan (2024:eq. 3.23)
+    TVaRq = np.sum(ELT_asc['L'][ELT_asc['L'] > VaRq]) / len(ELT_asc['L'][ELT_asc['L'] > VaRq])   # derived from Mignan (2024:eq. 3.24)
+
+    L_hires = 10**np.linspace(np.log10(ELT_asc['L'].min()+1e-6), np.log10(ELT_asc['L'].max()), num = 1000)
+    EP_hires = np.interp(L_hires, ELT_asc['L'], ELT_asc['EP'])
+    VaRq_interp = L_hires[EP_hires < p][0]
+    TVaRq_interp = np.sum(L_hires[L_hires > VaRq_interp]) / len(L_hires[L_hires > VaRq_interp])
+
+    return ELT, AAL, VaRq_interp, TVaRq_interp, VaRq, TVaRq
