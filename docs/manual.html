@@ -166,6 +166,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.model_SS_Bathtub"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.model_SS_Bathtub()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.RiskFootprintGenerator"><code class="docutils literal notranslate"><span class="pre">RiskFootprintGenerator</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.Src"><code class="docutils literal notranslate"><span class="pre">Src</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.Src.par"><code class="docutils literal notranslate"><span class="pre">Src.par</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.Src.AI_char"><code class="docutils literal notranslate"><span class="pre">Src.AI_char</span></code></a></li>
@@ -184,11 +185,15 @@
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.incrementing"><code class="docutils literal notranslate"><span class="pre">incrementing()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.plot_hazFootprints"><code class="docutils literal notranslate"><span class="pre">plot_hazFootprints()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.plot_src"><code class="docutils literal notranslate"><span class="pre">plot_src()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.plot_vulnFunctions"><code class="docutils literal notranslate"><span class="pre">plot_vulnFunctions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.vuln_f"><code class="docutils literal notranslate"><span class="pre">vuln_f()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-GenMR.utils">GenMR.utils module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#genmr-utility-functions">GenMR Utility Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.add0s_iter"><code class="docutils literal notranslate"><span class="pre">add0s_iter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.calc_EP"><code class="docutils literal notranslate"><span class="pre">calc_EP()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.calc_riskmetrics_fromELT"><code class="docutils literal notranslate"><span class="pre">calc_riskmetrics_fromELT()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.cmap_peril"><code class="docutils literal notranslate"><span class="pre">cmap_peril()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.col_peril"><code class="docutils literal notranslate"><span class="pre">col_peril()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.col_state_h"><code class="docutils literal notranslate"><span class="pre">col_state_h()</span></code></a></li>
@@ -245,6 +250,7 @@
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#probabilistic-risk-assessment">2. Probabilistic risk assessment</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#vulnerability-curve-definition">2.1. Vulnerability curve definition</a></li>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#loss-footprint-catalogue-generation">2.2. Loss footprint catalogue generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#risk-metrics">2.3. Risk metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#references">References</a></li>
@@ -731,7 +737,7 @@ intensity and loss footprint computation… TO DEVELOP/REWRITE</p>
 <dd class="field-even"><p>0.1</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2025-11-17</p>
+<dd class="field-odd"><p>2025-11-21</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -891,6 +897,12 @@ vtan_y (ndarray): Tangential velocity component along y.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="GenMR.perils.RiskFootprintGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">RiskFootprintGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">catalog_hazFootprints</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">urbLandLayer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evtable</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.RiskFootprintGenerator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="GenMR.perils.Src">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">Src</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">par</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.Src" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
@@ -1018,6 +1030,16 @@ returns error message.</p>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.perils.plot_vulnFunctions">
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">plot_vulnFunctions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.plot_vulnFunctions" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.perils.vuln_f">
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">vuln_f</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">I</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">peril</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.vuln_f" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 </section>
 <section id="module-GenMR.utils">
 <span id="genmr-utils-module"></span><h2>GenMR.utils module<a class="headerlink" href="#module-GenMR.utils" title="Link to this heading"></a></h2>
@@ -1044,6 +1066,16 @@ core GenMR workflows by streamlining data handling, computation, and visualisati
 <dl class="py function">
 <dt class="sig sig-object py" id="GenMR.utils.add0s_iter">
 <span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">add0s_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.add0s_iter" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.calc_EP">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">calc_EP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lbd</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.calc_EP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.calc_riskmetrics_fromELT">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">calc_riskmetrics_fromELT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ELT</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q_VAR</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.calc_riskmetrics_fromELT" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">

@@ -163,6 +163,7 @@
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.perils.HazardFootprintGenerator.model_SS_Bathtub"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.model_SS_Bathtub()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.RiskFootprintGenerator"><code class="docutils literal notranslate"><span class="pre">RiskFootprintGenerator</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.Src"><code class="docutils literal notranslate"><span class="pre">Src</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.perils.Src.par"><code class="docutils literal notranslate"><span class="pre">Src.par</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.perils.Src.AI_char"><code class="docutils literal notranslate"><span class="pre">Src.AI_char</span></code></a></li>
@@ -181,11 +182,15 @@
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.incrementing"><code class="docutils literal notranslate"><span class="pre">incrementing()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.plot_hazFootprints"><code class="docutils literal notranslate"><span class="pre">plot_hazFootprints()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.plot_src"><code class="docutils literal notranslate"><span class="pre">plot_src()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.plot_vulnFunctions"><code class="docutils literal notranslate"><span class="pre">plot_vulnFunctions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.vuln_f"><code class="docutils literal notranslate"><span class="pre">vuln_f()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="manual.html#module-GenMR.utils">GenMR.utils module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#genmr-utility-functions">GenMR Utility Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.utils.add0s_iter"><code class="docutils literal notranslate"><span class="pre">add0s_iter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.utils.calc_EP"><code class="docutils literal notranslate"><span class="pre">calc_EP()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.utils.calc_riskmetrics_fromELT"><code class="docutils literal notranslate"><span class="pre">calc_riskmetrics_fromELT()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.utils.cmap_peril"><code class="docutils literal notranslate"><span class="pre">cmap_peril()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.utils.col_peril"><code class="docutils literal notranslate"><span class="pre">col_peril()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.utils.col_state_h"><code class="docutils literal notranslate"><span class="pre">col_state_h()</span></code></a></li>
@@ -242,6 +247,7 @@
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#probabilistic-risk-assessment">2. Probabilistic risk assessment</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#vulnerability-curve-definition">2.1. Vulnerability curve definition</a></li>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#loss-footprint-catalogue-generation">2.2. Loss footprint catalogue generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#risk-metrics">2.3. Risk metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#references">References</a></li>
@@ -345,6 +351,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="manual.html#GenMR.environment.calc_coord_river_dampedsine">calc_coord_river_dampedsine() (in module GenMR.environment)</a>
 </li>
+      <li><a href="manual.html#GenMR.utils.calc_EP">calc_EP() (in module GenMR.utils)</a>
+</li>
       <li><a href="manual.html#GenMR.perils.calc_EQ_length2magnitude">calc_EQ_length2magnitude() (in module GenMR.perils)</a>
 </li>
       <li><a href="manual.html#GenMR.perils.calc_EQ_magnitude2length">calc_EQ_magnitude2length() (in module GenMR.perils)</a>
@@ -369,6 +377,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="manual.html#GenMR.utils.calc_riskmetrics_fromELT">calc_riskmetrics_fromELT() (in module GenMR.utils)</a>
+</li>
       <li><a href="manual.html#GenMR.perils.HazardFootprintGenerator.calc_S_track">calc_S_track() (GenMR.perils.HazardFootprintGenerator static method)</a>
 </li>
       <li><a href="manual.html#GenMR.environment.calc_topo_attributes">calc_topo_attributes() (in module GenMR.environment)</a>
@@ -617,6 +627,8 @@
 </li>
       <li><a href="manual.html#GenMR.perils.plot_src">plot_src() (in module GenMR.perils)</a>
 </li>
+      <li><a href="manual.html#GenMR.perils.plot_vulnFunctions">plot_vulnFunctions() (in module GenMR.perils)</a>
+</li>
       <li><a href="manual.html#GenMR.environment.CriticalInfrastructure.polygon">polygon (GenMR.environment.CriticalInfrastructure attribute)</a>
 </li>
       <li><a href="manual.html#GenMR.utils.pooling">pooling() (in module GenMR.utils)</a>
@@ -635,10 +647,12 @@
         <li><a href="manual.html#GenMR.perils.CellularAutomaton_LS.result">(GenMR.perils.CellularAutomaton_LS method)</a>
 </li>
       </ul></li>
-      <li><a href="manual.html#GenMR.environment.EnvLayer_topo.river_coord">river_coord (GenMR.environment.EnvLayer_topo property)</a>
+      <li><a href="manual.html#GenMR.perils.RiskFootprintGenerator">RiskFootprintGenerator (class in GenMR.perils)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="manual.html#GenMR.environment.EnvLayer_topo.river_coord">river_coord (GenMR.environment.EnvLayer_topo property)</a>
+</li>
       <li><a href="manual.html#GenMR.environment.EnvLayer_urbLand.roadNet_coord">roadNet_coord (GenMR.environment.EnvLayer_urbLand property)</a>
 </li>
       <li><a href="manual.html#GenMR.perils.CellularAutomaton_FF.run">run() (GenMR.perils.CellularAutomaton_FF method)</a>
@@ -684,6 +698,10 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="manual.html#GenMR.perils.Src.VE_char">VE_char (GenMR.perils.Src property)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="manual.html#GenMR.perils.vuln_f">vuln_f() (in module GenMR.perils)</a>
 </li>
   </ul></td>
 </tr></table>
