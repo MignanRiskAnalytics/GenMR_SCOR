@@ -3,12 +3,12 @@ GenMR Utility Functions
 =======================
 
 This module provides miscellaneous utility functions for input/output management, 
-computing, and plotting within the GenMR_Basic package. These functions support 
+computing, and plotting within the GenMR package. These functions support 
 core GenMR workflows by streamlining data handling, computation, and visualisation tasks.
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
-:Version: 0.1
-:Date: 2025-10-27
+:Version: 1.1.1
+:Date: 2025-12-03
 :License: AGPL-3
 """
 
@@ -44,14 +44,6 @@ def init_io():
     os.makedirs('movs', exist_ok=True)
 
 
-_ROOT = os.path.abspath(os.path.dirname(__file__))
-def get_data(filename):
-    '''
-    Return path to package data file.
-    '''
-    return os.path.join(_ROOT, 'data', filename)
-
-
 def save_dict2json(data, filename = 'par_tmpsave'):
     '''
     Save a dictionary in a json file.
@@ -84,6 +76,13 @@ def save_class2pickle(data, filename = 'envLayer_tmpsave'):
 
 def load_json2dict(filename):
     '''
+    Load a JSON file and return its contents as a dictionary.
+    
+    Args:
+        filename (str): Path to the JSON file, relative to the current working directory.
+        
+    Returns:
+        data (dict): The dictionary obtained from the JSON file.
     '''
     wd = os.getcwd()
     file = open(wd + filename, 'rb')
@@ -93,6 +92,13 @@ def load_json2dict(filename):
 
 def load_pickle2class(filename):
     '''
+    Load a pickle file and reconstruct the original Python object.
+    
+    Args:
+        filename (str): The path to the pickle file, relative to the current working directory.
+        
+    Returns:
+        data (object): The Python object loaded from the pickle file.
     '''
     wd = os.getcwd()
     file = open(wd + filename, 'rb')
@@ -100,29 +106,15 @@ def load_pickle2class(filename):
     return data
 
 
-def add0s_iter(i):
-    if i < 10:
-        i_str = '0000' + str(i)
-    elif i < 100:
-        i_str = '000' + str(i)
-    elif i < 1000:
-        i_str = '00' + str(i)
-    elif i < 10000:
-        i_str = '0' + str(i)
-    else:
-        i_str = str(i)
-    return i_str
-
-
 
 #######################
 ## LIST MANIPULATION ##
 #######################
-def flatten_list(nestedlist):
-    '''
-    Return a flatten list from a nested list.
-    '''
-    return [item for sublist in nestedlist for item in sublist]
+#def flatten_list(nestedlist):
+#    '''
+#    Return a flatten list from a nested list.
+#    '''
+#    return [item for sublist in nestedlist for item in sublist]
 
 
 
@@ -131,8 +123,22 @@ def flatten_list(nestedlist):
 ########################
 def incrementing(xmin, xmax, xbin, method):
     '''
-    Return evenly spaced values within a given interval in linear 
-    or log space, or repeat xmax xbin times if method = 'rep'.
+    Return evenly spaced values within a given interval in linear or 
+    logarithmic space, or repeat a value a specified number of times.
+    
+    Args:
+        xmin (float): The minimum value of the interval.
+        xmax (float): The maximum value of the interval.
+        xbin (float or int): The step size (for 'lin' or 'log') or the 
+            number of repetitions (for 'rep').
+        method (str): The spacing method. Options are:
+            'lin' - linear spacing
+            'log' - logarithmic spacing
+            'rep' - repeat xmax xbin times
+        
+    Returns:
+        xi (numpy.ndarray): The array of incremented values according to 
+            the selected method.
     '''
     if method == 'lin':
         xi = np.arange(xmin, xmax + xbin, xbin)
@@ -145,7 +151,17 @@ def incrementing(xmin, xmax, xbin, method):
 
 def partitioning(IDs, w, n):
     '''
-    Return a 1D array of length n of IDs based on their weights w
+    Partition weighted IDs into a 1D array of length n.
+    
+    Args:
+        IDs (array-like): A list or array of identifiers.
+        w (array-like): The weights associated with each ID. Must be 
+            non-negative and typically normalized.
+        n (int): The number of partitions or samples to generate.
+        
+    Returns:
+        vec_IDs (numpy.ndarray): A sorted 1D array of length n 
+            containing IDs selected according to their weights.
     '''
     indsort = np.argsort(w)
     cumPr = np.cumsum(w[indsort])
@@ -158,7 +174,21 @@ def partitioning(IDs, w, n):
 
 def pooling(m, f, method = 'max'):
     '''
-    Return a downscaled matrix by applying pooling (min, mean or max) on a matrix.
+    Downscale a matrix by applying pooling (max, min, or mean) over 
+    non-overlapping f x f blocks.
+    
+    Args:
+        m (numpy.ndarray): The 2D matrix to be pooled.
+        f (int): The pooling factor, defining the size of each block.
+        method (str, optional): The pooling method to apply. Options are:
+            'max'  - maximum value in each block (default)
+            'min'  - minimum value in each block
+            'mean' - mean value in each block
+        
+    Returns:
+        m_pool (numpy.ndarray): The pooled matrix of shape 
+            (ceil(nx/f), ceil(ny/f)), where nx and ny are the 
+            dimensions of the input matrix.
     '''
     nx, ny = m.shape
     xpart = int(np.ceil(nx/float(f)))
@@ -177,6 +207,15 @@ def pooling(m, f, method = 'max'):
 
 def zero_boundary_2d(arr, nx, ny):
     '''
+    Set the outer boundary of a 2D array to zero along all four edges.
+    
+    Args:
+        arr (numpy.ndarray): The 2D array to be modified.
+        nx (int): The number of rows to zero out at the top and bottom.
+        ny (int): The number of columns to zero out at the left and right.
+        
+    Returns:
+        arr (numpy.ndarray): The input array with its boundary regions set to zero.
     '''
     arr[:nx,:] = 0
     arr[-nx:,:] = 0
@@ -187,7 +226,24 @@ def zero_boundary_2d(arr, nx, ny):
 
 def get_neighborhood_ind(i, j, grid_shape, r_v, method = 'Moore'):
     '''
-    Get the indices of the neighboring cells, depending on method and radius of vision
+    Get the indices of neighboring cells around a focal location, based on a 
+    specified neighborhood type and radius of vision.
+    
+    Args:
+        i (int): Row index of the focal cell.
+        j (int): Column index of the focal cell.
+        grid_shape (tuple): The shape of the 2D grid as (nx, ny).
+        r_v (int): The radius of vision (neighborhood radius).
+        method (str, optional): The neighborhood definition. Options are:
+            'Moore'          - all cells within a square radius r_v, excluding center
+            'vonNeumann'     - cross-shaped radius r_v (Manhattan distance)
+            'White_etal1997' - circular neighborhood based on Euclidean distance
+        
+    Returns:
+        neigh_ind (list of numpy.ndarray): A list containing two arrays:
+            neigh_ind[0] - the row indices of neighboring cells  
+            neigh_ind[1] - the column indices of neighboring cells
+            Both arrays exclude the focal cell (i, j).
     '''
     nx, ny = grid_shape
     # rv_box neighborhood
@@ -217,16 +273,28 @@ def get_neighborhood_ind(i, j, grid_shape, r_v, method = 'Moore'):
         ikk, jkk = np.meshgrid(ik, jk, indexing='ij')
         nx_mask, ny_mask = [len(ik), len(jk)]
         mask_cut = np.zeros((nx_mask, ny_mask), dtype = bool)
-        ic = int(np.floor(nx_mask/2))
-        jc = int(np.floor(nx_mask/2))
+#        ic = int(np.floor(nx_mask/2))
+#        jc = int(np.floor(nx_mask/2))
         rad = np.sqrt((ikk - ik[i0])**2 + (jkk - jk[j0])**2)
         mask_cut[rad <= r_v] = 1
         mask_cut[i0,j0] = 0
-    return [np.meshgrid(ik,jk)[i].flatten()[mask_cut.flatten()] for i in range(2)]
+    neigh_ind = [np.meshgrid(ik,jk)[i].flatten()[mask_cut.flatten()] for i in range(2)]
+    return neigh_ind
+
 
 def get_ind_aspect2moore(ind_old):
     '''
-    Return Moore indices from indices defined from the aspect angle.
+    Convert neighborhood indices defined by an aspect-angle system into 
+    standard Moore neighborhood indices.
+    
+    Args:
+        ind_old (int or array-like): Index or array of indices derived from 
+            the aspect-angle convention (0-8), where orientation is computed as 
+            np.round(aspect * 8 / 360).astype(int).
+    
+    Returns:
+        ind_new (numpy.ndarray or int): The corresponding Moore neighborhood 
+            indices, following the ordering used in get_neighborhood_ind().
     
     Note:
         The aspect angle directs towards index np.round(aspect*8/360).astype('int').
@@ -241,10 +309,26 @@ def get_ind_aspect2moore(ind_old):
     return ind_new[ind_old]
 
 
+
 ########################
 # NETWORK MANIPULATION #
 ########################
 def get_net_coord(net):
+    '''
+    Extract node and edge coordinates from a NetworkX graph for visualization.
+    
+    Args:
+        net (networkx.Graph): A NetworkX graph whose nodes contain a 
+            'pos' attribute storing (x, y) coordinates.
+            
+    Returns:
+        node_x (list): The x-coordinates of all nodes.
+        node_y (list): The y-coordinates of all nodes.
+        edge_x (list): The x-coordinates of edges, arranged as 
+            [x0, x1, None, x0, x1, None, ...] for plotting line segments.
+        edge_y (list): The y-coordinates of edges, arranged as 
+            [y0, y1, None, y0, y1, None, ...] for plotting line segments.
+    '''
     pos = netx.get_node_attributes(net, 'pos')
     node_x = [xx for xx, yy in pos.values()]
     node_y = [yy for xx, yy in pos.values()]
@@ -257,6 +341,7 @@ def get_net_coord(net):
 #######################
 # PHYSICAL PARAMETERS #
 #######################
+
 g_earth = 9.81                     # (m/s^2)
 R_earth = 6371.                    # (km)
 A_earth = 4 * np.pi * R_earth**2   # (km^2)
@@ -271,10 +356,22 @@ rho_wat = 1000.   # (kg/m^3)
 rho_atm = 1.15    # (kg/m^3)
 
 def fetch_A0(level):
+    '''
+    Fetch the predefined area value corresponding to a specified geographical level.
+    
+    Args:
+        level (str): The geographical level. Options include:
+            'global', 'CONUS', 'IT', 'JP', 'US_CA', 'US_FL'
+        
+    Returns:
+        A0 (float): The area value associated with the specified level.
+    '''
     levels = ['global', 'CONUS', 'IT', 'JP', 'US_CA', 'US_FL']
     As = [A_earth, A_CONUS, A_IT, A_JP, A_US_CA, A_US_FL]
     ind = level == levels
-    return As[ind]
+    A0 = As[ind]
+    return A0
+
 
 
 ####################
@@ -303,7 +400,19 @@ class norm_z(plt_col.Normalize):
     
 def marker_peril(peril):
     '''
-    Return marker for given point source peril.
+    Return a marker symbol corresponding to a given point-source peril.
+    
+    Args:
+        peril (str): The type of point-source peril. Options include:
+            'AI'  - Asteroid impact
+            'Ex'  - Explosion
+            'VE'  - Volcanic eruption
+        
+    Returns:
+        marker (str): The symbol used to represent the peril:
+            '+' for 'AI' or 'Ex'
+            '^' for 'VE'
+            '' (empty string) if peril is unrecognized
     '''
     marker = ''
     if peril == 'AI' or peril == 'Ex':
@@ -314,6 +423,30 @@ def marker_peril(peril):
     
 
 def col_peril(peril):
+    '''
+    Return a color code corresponding to a given point-source or natural peril.
+    
+    Args:
+        peril (str): The type of peril. Options include:
+            'AI'  - Asteroid impact
+            'EQ'  - Earthquake
+            'LS'  - Landslide
+            'VE'  - Volcanic eruption
+            'FF'  - Fluvila flood
+            'SS'  - Storm surge
+            'RS'  - Rainstorm
+            'TC'  - Tropical cyclone
+            'WS'  - Windstorm
+            'Ex'  - Explosion
+        
+    Returns:
+        col (str): The hexadecimal color code assigned to the peril:
+            '#663399' (Rebeccapurple) for 'AI'
+            '#CD853F' (Peru) for 'EQ', 'LS', 'VE'
+            '#20B2AA' (MediumSeaGreen) for 'FF', 'SS'
+            '#4169E1' (RoyalBlue) for 'RS', 'TC', 'WS'
+            '#FF8C00' (Safety Orange) for 'Ex'
+    '''
     col_peril_extra = '#663399'    #Rebeccapurple
     col_peril_geophys = "#CD853F"  #Peru
     col_peril_hydro = "#20B2AA"    #MediumSeaGreen
@@ -333,7 +466,18 @@ def col_peril(peril):
 
 
 def cmap_peril(peril):
-    #white, col_peril
+    '''
+    Create a two-color matplotlib colormap transitioning from white to the 
+    color associated with a given peril.
+    
+    Args:
+        peril (str): The type of peril for which to generate the colormap. 
+            Passed to col_peril(peril) to get the corresponding color.
+        
+    Returns:
+        cmap_peril (matplotlib.colors.LinearSegmentedColormap): A two-color 
+            colormap transitioning from white to the peril color.
+    '''
     colors = [(1,1,1), col_peril(peril)]
     cmap_peril = plt_col.LinearSegmentedColormap.from_list('peril_col', colors, N = 2)
     return cmap_peril
@@ -356,6 +500,24 @@ col_FS = plt_col.LinearSegmentedColormap.from_list('col_FS', colors, N = 3)
 
 
 def col_state_h(h, h0):
+    '''
+    Assign integer state codes to a height matrix based on erosion and 
+    landslide conditions relative to a reference height.
+    
+    Args:
+        h (numpy.ndarray): The height matrix.
+        h0 (float): The reference height for scaling the erosion/landslide thresholds.
+        
+    Returns:
+        h_plot (numpy.ndarray): An array of the same shape as `h`, where each element 
+            is an integer code representing the state:
+                0 - erosion +++ (scarp)
+                1 - intact
+                2 - erosion ++
+                3 - erosion +
+                4 - landslide +
+                5 - landslide ++
+    '''
     h_plot = np.copy(h)
     h_plot[h == 0] = 0                               # erosion +++ (scarp)
     h_plot[h == h0] = 1                              # intact
@@ -364,6 +526,7 @@ def col_state_h(h, h0):
     h_plot[np.logical_and(h > h0, h <= 2*h0)] = 4    # landslide +
     h_plot[h > 2*h0] = 5                             # landslide ++
     return h_plot
+
 
 colors = [(105/255,105/255,105/255),        # 0 - scarp / erosion +++ (dimgrey)
 #          (236/255,235/255,189/255),        # 1 - intact (fall green)
@@ -382,11 +545,26 @@ col_industrialZone = {
 }
 
 
+
 ##################
 ## RISK METRICS ##
 ##################
 
 def calc_EP(lbd):
+    '''
+    Calculate the cumulative event frequency and the exceedance probability 
+    for a series of event rates.
+    
+    Args:
+        lbd (array-like): An array of event rates (lambda) for individual events.
+        
+    Returns:
+        EFi (numpy.ndarray): Cumulative event frequencies, computed as the 
+            cumulative sum of the event rates.
+        EPi (numpy.ndarray): Exceedance probabilities corresponding to each 
+            cumulative frequency, calculated as 1 - exp(-EFi) 
+            (following Mignan, 2024:eq. 3.22).
+    '''
     nev = len(lbd)
     EFi = np.zeros(nev)
     for i in range(nev):
@@ -394,7 +572,28 @@ def calc_EP(lbd):
     EPi = 1 - np.exp(- EFi)                               # Mignan (2024:eq. 3.22)
     return EFi, EPi
 
+
 def calc_riskmetrics_fromELT(ELT, q_VAR):
+    '''
+    Calculate key risk metrics from an Event Loss Table (ELT), including 
+    Average Annual Loss (AAL), Value-at-Risk (VaR), and Tail Value-at-Risk (TVaR).
+    
+    Args:
+        ELT (pandas.DataFrame): Event Loss Table containing at least the columns:
+            'L'   - loss for each event
+            'lbd' - event rate (lambda) for each event
+        q_VAR (float): Confidence level for Value-at-Risk (e.g., 0.95 for 95% VaR)
+        
+    Returns:
+        ELT (pandas.DataFrame): The input ELT augmented with cumulative event 
+            frequency ('EF') and exceedance probability ('EP') columns.
+        AAL (float): Average Annual Loss, computed as the sum of lbd * L 
+            (Mignan 2024, eq. 3.18).
+        VaRq_interp (float): Interpolated Value-at-Risk at the given confidence level.
+        TVaRq_interp (float): Interpolated Tail Value-at-Risk at the given confidence level.
+        VaRq (float): Discrete VaR from the ELT.
+        TVaRq (float): Discrete TVaR from the ELT.
+    '''
     AAL = np.sum(ELT['lbd'] * ELT['L'])                   # Mignan (2024:eq. 3.18)
     ELT = ELT.sort_values(by = 'L', ascending = False)    # losses in descending order
     EFi, EPi = calc_EP(ELT['lbd'].values)
@@ -411,3 +610,31 @@ def calc_riskmetrics_fromELT(ELT, q_VAR):
     TVaRq_interp = np.sum(L_hires[L_hires > VaRq_interp]) / len(L_hires[L_hires > VaRq_interp])
 
     return ELT, AAL, VaRq_interp, TVaRq_interp, VaRq, TVaRq
+
+
+
+
+
+
+
+## DEPRECATED ## - to remove in future revision
+
+#_ROOT = os.path.abspath(os.path.dirname(__file__))
+#def get_data(filename):
+#    '''
+#    DEPRECATED - Return path to package data file.
+#    '''
+#    return os.path.join(_ROOT, 'data', filename)
+
+#def add0s_iter(i):
+#    if i < 10:
+#        i_str = '0000' + str(i)
+#    elif i < 100:
+#        i_str = '000' + str(i)
+#    elif i < 1000:
+#        i_str = '00' + str(i)
+#    elif i < 10000:
+#        i_str = '0' + str(i)
+#    else:
+#        i_str = str(i)
+#    return i_str

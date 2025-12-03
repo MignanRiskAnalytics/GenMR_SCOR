@@ -63,6 +63,6 @@ COMING LATER
 rationale
 manual
 Tutorial 1: Environment generation<notebooks/Tutorial1_DigitalTemplate_environment>
-Tutorial 2: Peril implementation (in construction)<notebooks/Tutorial2_DigitalTemplate_perils>
+Tutorial 2: Peril implementation<notebooks/Tutorial2_DigitalTemplate_perils>
 ```
 
