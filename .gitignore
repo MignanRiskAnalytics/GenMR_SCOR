@@ -1,5 +1,7 @@
 *.pkl
 .DS_Store
+*.egg-info/
+jupyter_execute/
 docs/source/notebooks/io/
 docs/source/notebooks/figs/FF_CA_frames/
 docs/source/notebooks/figs/LS_CA_frames/
