@@ -2,13 +2,40 @@
 GenMR Peril Implementation
 ==========================
 
-This module provides functions to define and implement perils in the GenMR digital template.
-This includes tools for full catastrophe risk modelling, such as event loss table (ELT) definition,
-intensity and loss footprint computation... TO DEVELOP/REWRITE
+This module offers functions for defining and implementing perils within the GenMR digital template.
+It provides tools for comprehensive catastrophe risk modeling, including event loss table (ELT) creation, 
+as well as intensity and loss footprint calculations.
+
+Peril models (v1.1.1)
+---------------------
+* AI: Asteroid impact
+* EQ: Earthquake
+* FF: Fluvial flood
+* LS: Landslide
+* RS: Rainstorm
+* SS: Storm surge
+* TC: Tropical cyclone
+* VE: Volcanic eruption
+* WF: Wildfire
+* Ex: Explosion (industrial)
+
+Planned peril models (v1.1.2)
+-----------------------------
+* Dr: Drought
+* HW: Heatwave
+* Li: Lightning
+* PI: Pest infestation
+* To: Tornado
+* WS: Windstorm
+* BO: Blackout
+* BI: Business interruption
+* Sf: Public service failure
+* SU: Social unrest
+
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
-:Version: 0.1
-:Date: 2025-11-21
+:Version: 1.1.1
+:Date: 2025-12-05
 :License: AGPL-3
 """
 
@@ -22,7 +49,7 @@ import warnings
 from tqdm import tqdm
 
 #import matplotlib
-#matplotlib.use('Agg')   # avoid kernel crash
+#matplotlib.use('Agg')   # avoid kernel crash (during flood modelling)
 
 import matplotlib.pyplot as plt
 import imageio
@@ -42,7 +69,20 @@ from GenMR import utils as GenMR_utils
 
 def get_peril_evID(evIDs):
     '''
-    Return the peril identifiers for an array of event identifiers
+    Extract the peril identifiers from an array of event identifiers.
+
+    Each event identifier is assumed to be a string where the first two 
+    characters correspond to the peril type.
+
+    Parameters
+    ----------
+    evIDs : array-like of str
+        Array or list of event identifiers.
+
+    Returns
+    -------
+    np.ndarray
+        Array of peril identifiers corresponding to each event ID.
     '''
     return np.array([evID[:2] for evID in evIDs])
 
@@ -50,14 +90,16 @@ def get_peril_evID(evIDs):
 class Src:
     '''
     Define the characteristics of the peril sources.
-    
-    Attributes:
-        par (dict): A dictionary with nested keys ['perils',
-                        'EQ'['x', 'y', 'w_km', 'dip_deg', 'z_km', 'mec', 'bin_km'],
-                        'FF'['riv_A_km', 'riv_lbd', 'riv_ome', 'riv_y0', 'Q_m3/s', 'A_km2'],
-                        'VE'['x', 'y']]
-    
-    
+
+    This class stores the parameters and derived attributes of different peril sources
+
+    Parameters
+    ----------
+    par : dict
+        Dictionary containing the peril source parameters, with nested keys.
+            
+    grid : RasterGrid
+        Instance of RasterGrid class defining the computational domain.
     '''
     def __init__(self, par, grid):
         '''
@@ -86,6 +128,15 @@ class Src:
     @property
     def AI_char(self):
         '''
+        Generate the characteristics of asteroid impact (AI) sources, if defined.
+
+        Returns
+        -------
+        dict
+            Dictionary containing:
+            - 'srcID' (list of str): Unique identifiers for each asteroid impact source.
+            - 'x' (ndarray): x-coordinates of asteroid impact sources.
+            - 'y' (ndarray): y-coordinates of asteroid impact sources.
         '''
         if 'AI' in self.par['perils']:
             srcID = [self.par['AI']['object'] + str(i + 1) for i in range(self.par['AI']['N'])]
@@ -97,7 +148,22 @@ class Src:
         
     def _gen_stochsrc_points(self, N, grid, rdm_seed = None):
         '''
-        Return random uniform coordinates for N points in the grid
+        Generate N random points uniformly distributed over the grid.
+
+        Parameters
+        ----------
+        N : int
+            Number of random points to generate.
+        grid : object
+            A grid object with attributes `xmin`, `xmax`, `ymin`, `ymax` defining the spatial domain.
+        rdm_seed : int, optional
+            Seed for the random number generator, for reproducibility. Default is None.
+
+        Returns
+        -------
+        tuple of ndarray
+            - x_rdm (ndarray): x-coordinates of the random points.
+            - y_rdm (ndarray): y-coordinates of the random points.
         '''
         if rdm_seed is not None:
             np.random.seed(rdm_seed)
@@ -110,14 +176,19 @@ class Src:
     @property
     def EQ_char(self):
         '''
-        Calls the function get_char_srcLine(self, par) if EQ source provided, otherwise 
-        returns error message.
-        
-        Args:
-            self
-        
-        Returns:
-            x: xxx
+        Return the characteristics of earthquake (EQ) sources.
+
+        This property calls the helper function `_get_char_srcEQline` to compute
+        the coordinates and identifiers of EQ sources if they exist. Results
+        are cached to avoid repeated computation.
+
+        Returns
+        -------
+        dict
+            A dictionary with keys:
+            - 'srcID' (list of str): Unique source identifiers for each earthquake.
+            - 'x' (ndarray): x-coordinates of the source points.
+            - 'y' (ndarray): y-coordinates of the source points.
         '''
         # Check if result already cached
         if hasattr(self, '_EQ_char_cache'):
@@ -133,14 +204,37 @@ class Src:
     
     def _get_char_srcEQline(self, par):
         '''
-        Calculate the coordinates of fault sources based on their extrema and the provided 
-        resolution , as well as lenghts and strikes of faults and fault segments.
-        
-        Args:
-            par (dict): A dictionary with keys ['x', 'y', 'w_km', 'dip_deg', 'z_km', 'mec', 'bin_km']
-        
-        Returns:
-            x: xxx
+        Calculate coordinates and properties of earthquake fault sources.
+
+        This function interpolates points along fault segments using the
+        specified bin size and computes segment strikes and lengths. It also
+        estimates the maximum earthquake magnitude from the total fault length.
+
+        Parameters
+        ----------
+        par : dict
+            Dictionary describing fault sources with the following keys:
+            - 'x' (list of list of float): x-coordinates of fault segment vertices.
+            - 'y' (list of list of float): y-coordinates of fault segment vertices.
+            - 'w_km' (list of float): Width of fault in km (optional for some calculations).
+            - 'dip_deg' (list of float): Dip angles in degrees.
+            - 'z_km' (list of float): Depth of fault in km.
+            - 'mec' (list): Moment efficiency coefficient (optional).
+            - 'bin_km' (float): Resolution distance along the fault for interpolation.
+
+        Returns
+        -------
+        dict
+            Dictionary containing the following keys:
+            - 'srcID' (ndarray of str): Unique identifiers for each source.
+            - 'x' (ndarray of float): x-coordinates of interpolated points along faults.
+            - 'y' (ndarray of float): y-coordinates of interpolated points along faults.
+            - 'fltID' (ndarray of int): Fault source index for each point.
+            - 'srcL' (ndarray of float): Total length of each fault source (km).
+            - 'srcMmax' (ndarray of float): Estimated maximum magnitude for each source.
+            - 'segID' (ndarray of int): Segment index for each interpolated point.
+            - 'strike' (ndarray of float): Strike angle (degrees) of each segment.
+            - 'segL' (ndarray of float): Length of each segment (km).
         '''
         src_xi = np.array([])
         src_yi = np.array([])
@@ -186,6 +280,18 @@ class Src:
     @property
     def FF_char(self):
         '''
+        Generate characteristics of flood (FF) sources.
+
+        This property returns the coordinates and identifiers of riverine flood sources
+        defined in the model parameters.
+
+        Returns
+        -------
+        dict
+            Dictionary containing:
+            - 'srcID' (ndarray of str): Unique identifiers for each flood source.
+            - 'x' (ndarray of float): x-coordinates of the flood source points.
+            - 'y' (ndarray of float): y-coordinates of the flood source points.
         '''
         if 'FF' in self.par['perils']:
             src_ind = np.arange(self.par['FF']['N']) + 1
@@ -201,6 +307,21 @@ class Src:
     @property
     def TC_char(self):
         '''
+        Generate characteristics of tropical cyclone (TC) sources.
+
+        This property returns the coordinates and identifiers of tropical cyclone tracks
+        defined in the model parameters. The track points are generated stochastically 
+        according to the number of cyclones (`N`), number of points per track (`npt`), 
+        maximum deviation (`max_dev`), and random seed (`rdm_seed`). Each TC source is 
+        assigned a unique identifier.
+
+        Returns
+        -------
+        dict
+            Dictionary containing:
+            - 'srcID' (ndarray of str): Unique identifiers for each tropical cyclone source.
+            - 'x' (ndarray of float): x-coordinates of the TC track points.
+            - 'y' (ndarray of float): y-coordinates of the TC track points.
         '''
         if 'TC' in self.par['perils']:
             src_ind, src_xi, src_yi = self._gen_stochsrc_TCtracks(self.par['TC']['N'], self.grid, self.par['TC']['npt'], self.par['TC']['max_dev'], self.par['rdm_seed'])
@@ -212,8 +333,33 @@ class Src:
 
     def _gen_stochsrc_TCtracks(self, N, grid, npt, max_deviation, rdm_seed = None):
         '''
-        Return coordinates of N storm tracks, defined as straight lines
-        subject to random deviation (below max_deviation) along y at npt points.
+        Generate coordinates for N stochastic tropical cyclone tracks.
+
+        Each track is approximated as a straight line with `npt` points, but 
+        a random deviation along the y-axis (bounded by `max_deviation`) is added 
+        to simulate track variability.
+
+        Parameters
+        ----------
+        N : int
+            Number of tropical cyclone tracks to generate.
+        grid : RasterGrid
+            Grid object defining the spatial domain with attributes `xmin`, `xmax`, `ymin`, `ymax`.
+        npt : int
+            Number of points along each track.
+        max_deviation : float
+            Maximum deviation along the y-axis from the straight line.
+        rdm_seed : int, optional
+            Random seed for reproducibility (default is None).
+
+        Returns
+        -------
+        ind : ndarray of int
+            Array of source indices repeated for each point along the track.
+        x : ndarray of float
+            x-coordinates of all track points.
+        y : ndarray of float
+            y-coordinates of all track points with random deviations applied.
         '''
         if rdm_seed is not None:
             np.random.seed(rdm_seed)
@@ -231,6 +377,15 @@ class Src:
     @property
     def VE_char(self):
         '''
+        Retrieve the characteristics of volcanic eruption (VE) sources.
+
+        Returns
+        -------
+        dict
+            Dictionary containing:
+            - 'srcID' (ndarray of str): Unique identifiers for each volcanic eruption source.
+            - 'x' (ndarray of float): x-coordinates of the flood source points.
+            - 'y' (ndarray of float): y-coordinates of the flood source points.
         '''
         if 'VE' in self.par['perils']:
             src_ind = np.arange(self.par['VE']['N']) + 1
@@ -252,7 +407,21 @@ class Src:
 
 def calc_EQ_length2magnitude(L):
     '''
-    Given the earthquake rupture L (km), calculate the magnitude M
+    Convert earthquake rupture length to moment magnitude.
+
+    Given the rupture length of an earthquake fault (km), this 
+    function calculates the corresponding earthquake magnitude using the 
+    empirical relation from Wells and Coppersmith (1994:fig. 2.6b).
+
+    Parameters
+    ----------
+    L : float or ndarray
+        Earthquake rupture length in kilometers.
+
+    Returns
+    -------
+    M : float or ndarray
+        Calculated moment magnitude, rounded to one decimal place.
     '''
     c1, c2 = [5., 1.22]     # reverse case, Fig. 2.6b, Wells and Coppersmith (1994)
     M = c1 + c2 * np.log10(L)
@@ -260,8 +429,22 @@ def calc_EQ_length2magnitude(L):
 
 def calc_EQ_magnitude2length(M):
     '''
-    Given the earthquake magnitude M, calculate the rupture length L (km)
-    (for floating rupture computations)
+    Convert earthquake magnitude to rupture length.
+
+    Given a moment magnitude, this function calculates the expected 
+    rupture length (in kilometers) using the empirical relation from 
+    Wells and Coppersmith (1994:fig. 2.6b). Useful for floating rupture 
+    computations.
+
+    Parameters
+    ----------
+    M : float or ndarray
+        Earthquake moment magnitude.
+
+    Returns
+    -------
+    L : float or ndarray
+        Estimated rupture length in kilometers.
     '''
     c1, c2 = [5., 1.22]     # reverse case, Fig. 2.6b, Wells and Coppersmith (1994)
     L = 10**((M - c1)/c2)
@@ -276,7 +459,27 @@ def calc_EQ_magnitude2length(M):
 ## event rates ##
 def incrementing(xmin, xmax, xbin, scale):
     '''
-    Return evenly spaced values within a given interval in linear or log scale
+    Generate an array of evenly spaced values within a specified interval.
+
+    The spacing can be either linear or logarithmic, depending on the `scale` parameter.
+
+    Parameters
+    ----------
+    xmin : float
+        The minimum value of the interval.
+    xmax : float
+        The maximum value of the interval.
+    xbin : float
+        The increment (step size) between consecutive values.
+        For logarithmic scale, this represents the step in log10 space.
+    scale : {'linear', 'log'}
+        Type of spacing. 'linear' for evenly spaced linear values, 
+        'log' for logarithmically spaced values.
+
+    Returns
+    -------
+    xi : ndarray
+        Array of values from `xmin` to `xmax` spaced according to `xbin` and `scale`.
     '''
     if scale == 'linear':
         xi = np.arange(xmin, xmax + xbin, xbin)
@@ -286,21 +489,76 @@ def incrementing(xmin, xmax, xbin, scale):
 
 def calc_Lbd_powerlaw(S, a, b):
     '''
-    Calculate the cumulative rate Lbd according to a power-law (Eq. 2.38) given event size S
+    Calculate the cumulative rate of events following a power-law distribution.
+
+    This corresponds to Mignan (2024:eq. 2.38), where the cumulative occurrence rate 
+    `Lbd` is a function of event size `S`.
+
+    Parameters
+    ----------
+    S : float or ndarray
+        Event size (e.g., magnitude, intensity, or volume).
+    a : float
+        Intercept parameter in the power-law relation (log10 scale).
+    b : float
+        Exponent parameter controlling the slope of the power-law in log10 scale.
+
+    Returns
+    -------
+    Lbd : float or ndarray
+        Cumulative rate corresponding to event size `S`.
     '''
     Lbd = 10**(a - b * np.log10(S))
     return Lbd
 
 def calc_Lbd_exponential(S, a, b):
     '''
-    Calculate the cumulative rate Lbd according to an exponential law (Eq. 2.39) given event size S
+    Calculate the cumulative rate of events following an exponential law.
+
+    This corresponds to Mignan (2024:eq. 2.39), where the cumulative occurrence rate 
+    `Lbd` decreases exponentially with event size `S`.
+
+    Parameters
+    ----------
+    S : float or ndarray
+        Event size (e.g., magnitude, intensity, or volume).
+    a : float
+        Intercept parameter in the exponential relation (log10 scale).
+    b : float
+        Exponential decay parameter controlling how fast the rate decreases with `S`.
+
+    Returns
+    -------
+    Lbd : float or ndarray
+        Cumulative rate corresponding to event size `S`.
     '''
     Lbd = 10**(a - b * S)
     return Lbd
 
 def calc_Lbd_GPD(S, mu, xi, sigma, Lbdmin):
     '''
-    Calculate the cumulative rate Lbd according to the Generalised Pareto Distribution (Eq. 2.50) given event size S
+    Calculate the cumulative rate of events following a Generalised Pareto Distribution (GPD).
+
+    This corresponds to Mignan (2024:eq. 2.50), where the cumulative occurrence rate `Lbd` is 
+    derived from the GPD parameters.
+
+    Parameters
+    ----------
+    S : float or ndarray
+        Event size (e.g., magnitude, intensity, or volume).
+    mu : float
+        Threshold parameter (location) of the GPD.
+    xi : float
+        Shape parameter of the GPD.
+    sigma : float
+        Scale parameter of the GPD.
+    Lbdmin : float
+        Minimum cumulative rate (normalization factor).
+
+    Returns
+    -------
+    Lbd : float or ndarray
+        Cumulative rate corresponding to event size `S`.
     '''
     Lbd = Lbdmin * (1 + xi * (S - mu) / sigma)**(-1 / xi)
     return Lbd
@@ -310,6 +568,27 @@ def calc_Lbd_GPD(S, mu, xi, sigma, Lbdmin):
 class EventSetGenerator:
     '''
     Generates stochastic event set based on source and size distribution parameters.
+
+    Attributes
+    ----------
+    src : object
+        Source object (e.g., instance of `Src`) containing hazard source locations and characteristics.
+    sizeDistr : object
+        Size distribution object defining the probability distribution of event magnitudes, volumes, or intensities.
+    utils : module
+        Utility module (e.g., `GenMR_utils`) providing helper functions.
+    ev_stoch : pandas.DataFrame
+        DataFrame storing stochastic event realizations with columns:
+        - 'ID': unique event identifier
+        - 'srcID': source identifier
+        - 'evID': event identifier
+        - 'S': event size
+        - 'lbd': rate or frequency
+    ev_char : pandas.DataFrame
+        DataFrame storing event characteristics with columns:
+        - 'evID': event identifier
+        - 'x': x-coordinate of event
+        - 'y': y-coordinate of event
     '''
 
     def __init__(self, src, sizeDistr, utils):
@@ -533,13 +812,30 @@ class EventSetGenerator:
 
 
 
-
-
 #####################
 # HAZARD FOOTPRINTS #
 #####################
 
 class HazardFootprintGenerator:
+    '''
+    Generate hazard footprints for a given stochastic event set.
+
+    This class takes a stochastic set of hazard events, their characteristics, the hazard source
+    information, and the topography to generate hazard footprints (e.g., spatial distribution 
+    of hazard intensity). The footprints are stored in a catalog for further analysis or visualization.
+
+    Parameters
+    ----------
+    stochset : pandas.DataFrame
+        DataFrame containing the stochastic event set with event IDs, source IDs, event sizes, 
+        and occurrence rates.
+    evchar : pandas.DataFrame
+        DataFrame with event characteristics, including event coordinates and any other metadata.
+    src : object
+        Source object containing hazard source information (e.g., locations, type, geometry).
+    topo_z : ndarray
+        2D array representing the topographic elevation grid (used for footprint modeling).
+    '''
     def __init__(self, stochset, evchar, src, topo_z):
         self.stochset = stochset
         self.evchar = evchar
@@ -550,17 +846,65 @@ class HazardFootprintGenerator:
     ## ANALYTICAL EXPRESSIONS ##
     @staticmethod
     def calc_I_shaking_ms2(S, r):
+        '''
+        Calculate peak ground acceleration (PGA) in m/s² from earthquake magnitude and distance.
+
+        Parameters
+        ----------
+        S : float
+            Earthquake magnitude.
+        r : float
+            Distance from the source to the site (km).
+
+        Returns
+        -------
+        float
+            Peak ground acceleration (m/s²).
+        '''
         PGA_g = 10 ** (-1.34 + 0.23 * S - np.log10(r))
         g_earth = 9.81
         return PGA_g * g_earth
 
     @staticmethod
     def calc_I_blast_kPa(S, r):
+        '''
+        Calculate blast overpressure in kPa from an explosive event.
+
+        Parameters
+        ----------
+        S : float
+            Explosive yield in kilotons TNT equivalent.
+        r : float
+            Distance from the explosion center (km).
+
+        Returns
+        -------
+        float
+            Blast overpressure (kPa).
+        '''
         Z = r * 1e3 / (S * 1e6) ** (1 / 3)          # size = energy in kton TNT
         return 1772 / Z**3 - 114 / Z**2 + 108 / Z
 
     @staticmethod
     def calc_I_ash_m(S, r):
+        '''
+        Calculate volcanic ash deposit thickness at a distance from the eruption.
+
+        The model assumes an exponential decay of deposit thickness with distance,
+        calibrated from historical eruptions (e.g., Mt. St. Helens 1980).
+
+        Parameters
+        ----------
+        S : float
+            Erupted volume in km³.
+        r : float
+            Distance from the volcanic vent (km).
+
+        Returns
+        -------
+        float
+            Ash deposit thickness (m).
+        '''
         # assumes h0 proportional to V - e.g h0 = 1e-3 km for V=3 km3 (1980 Mt. St. Helens)
         h0 = 1e-3 / 3 * S                           # size = volume in m3
         r_half = np.sqrt(S * np.log(2)**2 / (2 * np.pi * h0))
@@ -569,6 +913,29 @@ class HazardFootprintGenerator:
 
     @staticmethod
     def calc_I_v_ms(S, r, par):
+        '''
+        Calculate the maximum wind speed (m/s) of a tropical cyclone at a given distance.
+
+        This model accounts for atmospheric density, Coriolis effect, and storm parameters
+        following the approach in Mignan (2024:fig. 2.19).
+
+        Parameters
+        ----------
+        S : float
+            Windspeed (m/s) at point along track.
+        r : float
+            Distance from the storm center (km).
+        par : dict
+            Dictionary of cyclone parameters, including:
+            - 'lat_deg' : Latitude in degrees
+            - 'pn_mbar' : Ambient pressure in mbar
+            - 'B_Holland' : Holland B parameter for wind profile
+
+        Returns
+        -------
+        float
+            Maximum wind speed in meters per second (m/s) at distance r from the storm center.
+        '''
         rho_atm = 1.15                                       # air density (kg/m3)
         Omega = 7.2921e-5                                    # (rad/s)
         f = 2 * Omega * np.sin(par['lat_deg'] * np.pi/180)   # Coriolis parameter
@@ -582,6 +949,41 @@ class HazardFootprintGenerator:
 
     @staticmethod
     def add_v_forward(vf, vtan, track_x, track_y, grid, t_i):
+        '''
+        Combine forward and tangential wind components to compute total wind field.
+
+        This function calculates the total wind speed and its x and y components at each 
+        grid point, accounting for the forward motion of the storm along its track and 
+        the tangential wind profile.
+
+        Parameters
+        ----------
+        vf : float
+            Forward speed of the storm (m/s).
+        vtan : ndarray
+            Tangential wind speed array (m/s) at each grid point relative to storm center.
+        track_x : ndarray
+            X-coordinates of the storm track (km).
+        track_y : ndarray
+            Y-coordinates of the storm track (km).
+        grid : object
+            Grid object containing `xx` and `yy` 2D arrays for spatial coordinates.
+        t_i : int
+            Current time step index along the storm track.
+
+        Returns
+        -------
+        vtot : ndarray
+            Total wind speed at each grid point (m/s).
+        vtot_x : ndarray
+            X-component of total wind speed (m/s).
+        vtot_y : ndarray
+            Y-component of total wind speed (m/s).
+        vtan_x : ndarray
+            X-component of tangential wind (m/s).
+        vtan_y : ndarray
+            Y-component of tangential wind (m/s).
+        '''
         if t_i < len(track_x) - 1:
             dx = track_x[t_i + 1] - track_x[t_i]
             dy = track_y[t_i + 1] - track_y[t_i]
@@ -616,6 +1018,29 @@ class HazardFootprintGenerator:
 
     @staticmethod
     def calc_S_track(stochset, src, Track_coord):
+        '''
+        Calculate along-track hazard intensity for tropical cyclones (TC) 
+        accounting for decay over land after coastal landfall.
+
+        The method computes the intensity of each TC event along its track,
+        reducing the intensity after landfall based on distance from coast.
+
+        Parameters
+        ----------
+        stochset : pandas.DataFrame
+            Stochastic event set containing columns ['ID', 'evID', 'S', ...].
+        src : object
+            Source object containing storm characteristics, including `SS_char` 
+            (storm source coordinates) and `par` parameters.
+        Track_coord : pandas.DataFrame
+            DataFrame containing storm track coordinates with columns ['evID', 'x', 'y'].
+
+        Returns
+        -------
+        S_alongtrack : dict
+            Dictionary mapping each TC event ID to an array of along-track 
+            maximum intensity values (same length as track points).
+        '''
         indperil = np.where(stochset['ID'] == 'TC')[0]
         evIDs = stochset['evID'][indperil].values
         vmax_start = stochset['S'][indperil].values
@@ -638,6 +1063,31 @@ class HazardFootprintGenerator:
 
     @staticmethod
     def model_SS_Bathtub(I_trigger, src, topo_z):
+        '''
+        Simple Bathtub model to estimate storm surge (SS) height over a grid.
+
+        This method computes the storm surge height at each grid cell
+        using a "bathtub" approach: starting from the coastline, the surge
+        height is reduced inland according to topography.
+
+        Parameters
+        ----------
+        I_trigger : ndarray, shape (nx, ny)
+            Grid of triggering intensity (windspeed, m/s) along 
+            the coastline.
+        src : object
+            Source object containing:
+            - `grid`: grid coordinates with `nx`, `ny`, `x`, `y`
+            - `SS_char`: storm surge source coordinates
+            - `par['SS']['bathy']`: bathymetry decay parameter
+        topo_z : ndarray, shape (nx, ny)
+            Elevation grid of the terrain.
+
+        Returns
+        -------
+        I_SS : ndarray, shape (nx, ny)
+            Storm surge height (m) at each grid cell.
+        '''
         vmax_coastline = np.zeros(src.grid.ny)
         for j in range(src.grid.ny):
             indx = np.where(src.grid.x > src.SS_char['x'][j] - 1e-6)[0][0]
@@ -728,8 +1178,6 @@ class HazardFootprintGenerator:
                     evID_trigger = re.search(pattern, evID).group()
                     I_trigger = self.catalog_hazFootprints[evID_trigger]
                     self.catalog_hazFootprints[evID] = self.model_SS_Bathtub(I_trigger, self.src, self.topo_z)
-                
-
 
         print('... catalogue completed')
         return self.catalog_hazFootprints
@@ -739,18 +1187,33 @@ class HazardFootprintGenerator:
         '''
         Compute a single time-step (snapshot) of a tropical cyclone (TC) event.
 
-        Args:
-            evID (str): Event ID
-            t (int): Time index along the cyclone track (0 ≤ t < npt)
+        This method calculates both the symmetric and asymmetric wind fields
+        at time index `t` along the cyclone track, as well as the tangential
+        and total wind velocity components.
 
-        Returns:
-            tuple: 
-                I_sym_t (ndarray): Symmetric wind field (static storm).
-                I_asym_t (ndarray): Asymmetric wind field (storm in motion).
-                vtot_x (ndarray): Total velocity component along x.
-                vtot_y (ndarray): Total velocity component along y.
-                vtan_x (ndarray): Tangential velocity component along x.
-                vtan_y (ndarray): Tangential velocity component along y.
+        Parameters
+        ----------
+        evID : str
+            Event ID of the tropical cyclone.
+        t : int
+            Time index along the cyclone track (0 ≤ t < npt), where npt is
+            the number of points along the track.
+
+        Returns
+        -------
+        tuple of ndarray
+            I_sym_t : ndarray
+                Symmetric wind field at time step `t` (storm without motion effects).
+            I_asym_t : ndarray
+                Asymmetric wind field at time step `t` (storm including motion effects).
+            vtot_x : ndarray
+                Total wind velocity component along x-axis.
+            vtot_y : ndarray
+                Total wind velocity component along y-axis.
+            vtan_x : ndarray
+                Tangential velocity component along x-axis.
+            vtan_y : ndarray
+                Tangential velocity component along y-axis.
         '''
         Track_coord = self.evchar[get_peril_evID(self.evchar['evID']) == 'TC'].reset_index(drop=True)
         S_alongtrack = self.calc_S_track(self.stochset, self.src, Track_coord)   # always calculate for all, rewrite for one track...
@@ -774,6 +1237,23 @@ class HazardFootprintGenerator:
 
 
 class DynamicHazardFootprintGenerator:
+    '''
+    Generate dynamical hazard footprints for a given stochastic event set.
+
+    This class computes dynamic hazard footprints (e.g., landslides, fluvial floods, wildfires) 
+    over a spatial grid, using stochastic events and environmental layers.
+
+    Parameters
+    ----------
+    stochset : pandas.DataFrame
+        Stochastic event set.
+    src : Src
+        Source object defining peril sources and their characteristics.
+    soilLayer : class
+        Environmental layer object representing soil characteristics.
+    urbLandLayer : class
+        Environmental layer object representing urban land-use
+    '''
     def __init__(self, stochset, src, soilLayer, urbLandLayer):
         self.stochset = stochset
         self.src = src
@@ -911,6 +1391,24 @@ class DynamicHazardFootprintGenerator:
 
 ## FLUVIAL FLOOD CASE ##
 class CellularAutomaton_FF:
+    '''
+    Cellular Automaton model for flood (FF) propagation.
+
+    Parameters
+    ----------
+    I_RS : ndarray
+        Rainfall intensity (m) at FF source
+    src : Src
+        Hazard source object containing flood source parameters and catchment information.
+    grid : class
+        Spatial grid object with attributes such as nx, ny, x, y, and cell width.
+    topoLayer_z : ndarray
+        Topography elevation field (m) corresponding to the spatial grid.
+    movie : dict
+        Dictionary containing movie settings:
+            - 'create' (bool): whether to save CA frames.
+            - 'path' (str): folder path to store frames; hardcoded to 'figs/FF_CA_frames/'.
+    '''
     def __init__(self, I_RS, src, grid, topoLayer_z, movie):
         self.I_RS = I_RS
         self.src = src
@@ -1050,10 +1548,22 @@ class CellularAutomaton_FF:
 ## LANDSLIDE CASE ##
 class CellularAutomaton_LS:
     '''
+    Cellular Automaton model for landslide (LS) propagation.
+
+    Parameters
+    ----------
+    soilLayer : class
+        Soil layer object containing topography, soil thickness, and related properties.
+    wetness : ndarray
+        Field of soil wetness or saturation across the spatial grid.
+    movie : dict
+        Dictionary containing movie settings:
+            - 'create' (bool): whether to save CA frames.
+            - 'path' (str): folder path to store frames; hardcoded to 'figs/LS_CA_frames/'.
+    kmax : int, optional
+        Maximum number of CA iterations; default is 20.
     '''
     def __init__(self, soilLayer, wetness, movie, kmax = 20):
-        '''
-        '''
         self.soil = copy.deepcopy(soilLayer)
         self.grid = self.soil.grid
         self.z = self.soil.topo.z.copy()
@@ -1188,7 +1698,18 @@ class CellularAutomaton_LS:
 
 ## WILDFIRE CASE ##
 class CellularAutomaton_WF:
+    '''
+    Cellular Automaton model for wildfire (WF) propagation.
 
+    Parameters
+    ----------
+    src : class
+        Source object containing wildfire parameters, including spread ratio and related settings.
+    urbLandLayer : class
+        Urban land layer object containing land-use map, building types, and grid information.
+    frame_plot : bool
+        Flag indicating whether to generate CA frame plots during simulation.
+    '''
     def __init__(self, src, urbLandLayer, frame_plot):
         self.src = src
         self.urbLandLayer = urbLandLayer
@@ -1302,14 +1823,33 @@ class CellularAutomaton_WF:
 
 
 
-
-
-
 ###################
 # LOSS FOOTPRINTS #
 ###################
 
 def vuln_f(I, peril):
+    '''
+    Calculate the mean damage ratio (MDR) given hazard intensity for different perils.
+
+    Parameters
+    ----------
+    I : float or ndarray
+        Hazard intensity, interpreted according to the peril type:
+        - 'AI' or 'Ex': overpressure (kPa)
+        - 'EQ': peak ground acceleration (m/s²)
+        - 'FF' or 'SS': inundation depth (m)
+        - 'LS': landslide thickness (m)
+        - 'VE': volcanic ash thickness (m)
+        - 'TC', 'To', 'WS': wind speed (m/s)
+        - 'WF': wildfire state (1 for burnt, 0 otherwise)
+    peril : str
+        Type of peril ('AI', 'Ex', 'EQ', 'FF', 'SS', 'LS', 'VE', 'TC', 'To', 'WS', 'WF').
+
+    Returns
+    -------
+    MDR : float or ndarray
+        Mean damage ratio corresponding to the given hazard intensity and peril.
+    '''
     if peril == 'AI' or peril == 'Ex':   # I = overpressure (kPa)
         mu = np.log(20)
         sig = .4
@@ -1347,6 +1887,16 @@ def vuln_f(I, peril):
 
 class RiskFootprintGenerator:
     '''
+    Generate risk footprints (damage and loss) for a set of hazard footprints.
+
+    Parameters
+    ----------
+    catalog_hazFootprints : dict
+        Dictionary of hazard footprints with event IDs as keys and 2D arrays as values.
+    urbLandLayer : object
+        Urban land layer containing building values (attribute `bldg_value`).
+    evtable : pandas.DataFrame
+        Event table with at least a column 'evID'; a 'loss' column will be added.
     '''
     def __init__(self, catalog_hazFootprints, urbLandLayer, evtable):
         self.catalog_hazFootprints = catalog_hazFootprints
@@ -1390,25 +1940,29 @@ class RiskFootprintGenerator:
 
 
 
-
 ############
 # PLOTTING #
 ############
 
 def plot_src(src, hillshading_z = '', file_ext = '-'):
     '''
-    Plot peril sources in the spatial grid.
-    
-    Args:
-        grid (class): An instance of class RasterGrid
-        par (dict): A dictionary with nested keys ['perils',
-                        'EQ'['x', 'y', 'w_km', 'dip_deg', 'z_km', 'mec', 'bin_km'],
-                        'FF'['riv_A_km', 'riv_lbd', 'riv_ome', 'riv_y0', 'Q_m3/s', 'A_km2'],
-                        'VE'['x', 'y']]
-        file_ext (str, optional): String representing the figure format ('jpg', 'pdf', etc., '-' by default)
-    
-    Returns:
-        A plot (saved in file if file_ext not '-')
+    Plot the spatial locations of peril sources on a 2D grid.
+
+    Optionally overlays hillshading of the terrain and saves the figure.
+
+    Parameters
+    ----------
+    src : object
+        An instance of the `Src` class containing peril source definitions and grid.
+    hillshading_z : ndarray or str, optional
+        2D array of topographic elevation values for hillshading (default is '').
+    file_ext : str, optional
+        If not '-', saves the figure with this file extension (e.g., 'jpg', 'pdf').
+
+    Returns
+    -------
+    None
+        Displays the plot and optionally saves it to file.
     '''
 
     handles = []
@@ -1455,7 +2009,6 @@ def plot_src(src, hillshading_z = '', file_ext = '-'):
         handles.append(h_ex)
         labels.append('Harbor refinery: Explosion (Ex)')
 
-
     h_box, = ax[0].plot([src.grid.xmin + src.grid.xbuffer, src.grid.xmax - src.grid.xbuffer, src.grid.xmax - src.grid.xbuffer, \
                 src.grid.xmin + src.grid.xbuffer, src.grid.xmin + src.grid.xbuffer],
                [src.grid.ymin + src.grid.ybuffer, src.grid.ymin + src.grid.ybuffer, src.grid.ymax - src.grid.ybuffer, \
@@ -1469,7 +2022,6 @@ def plot_src(src, hillshading_z = '', file_ext = '-'):
     ax[0].set_ylabel('$y$ (km)')
     ax[0].set_title('Peril source coordinates', size = 14, pad = 20)
     ax[0].set_aspect(1)
-
 
     lgd_src = ax[1].legend(handles, labels,
         loc='upper left',
@@ -1486,6 +2038,24 @@ def plot_src(src, hillshading_z = '', file_ext = '-'):
 
 
 def plot_hazFootprints(catalog_hazFootprints, grid, topoLayer_z, plot_Imax, nstoch = 5, file_ext = '-'):
+    '''
+    Plot stochastic hazard footprints for multiple events and perils on a spatial grid.
+
+    Parameters
+    ----------
+    catalog_hazFootprints : dict
+        Dictionary of hazard footprints keyed by event ID. Each value is a 2D array of intensities.
+    grid : object
+        Grid object with attributes `xx`, `yy`, `xmin`, `xmax`, `ymin`, `ymax`.
+    topoLayer_z : ndarray
+        2D array of topographic elevations for hillshading.
+    plot_Imax : dict
+        Dictionary of maximum intensity values for each peril (keyed by peril code).
+    nstoch : int, optional
+        Number of stochastic realizations to plot per peril (default 5).
+    file_ext : str, optional
+        File extension to save figure (e.g., 'png', 'pdf'). If '-', figure is not saved (default '-').
+    '''
     evIDs = np.array(list(catalog_hazFootprints.keys()))
     ev_peril = get_peril_evID(evIDs)
     perils = np.unique(ev_peril)
@@ -1527,6 +2097,9 @@ def plot_hazFootprints(catalog_hazFootprints, grid, topoLayer_z, plot_Imax, nsto
 
 
 def plot_vulnFunctions():
+    '''
+    Plot vulnerability (MDR) functions for different perils.
+    '''
     pi_kPa = np.linspace(0, 50, 100)
     MDR_blast = vuln_f(pi_kPa, 'AI')      # or 'Ex'
     PGAi = np.linspace(0, 15, 100)     # m/s2

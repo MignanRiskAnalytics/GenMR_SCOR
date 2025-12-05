@@ -713,6 +713,7 @@
     "\n",
     "* Candau JT (2002), Temporal calibration sensitivity of the SLEUTH urban growth model. Master Thesis, University of California Santa Barbara, 130 pp.\n",
     "* Clarke KC, Hoppen S, Gaydos L (1997), A self-modifying cellular automaton model of historical urbanization in the San Francisco Bay area. Environment and Planning B: Planning and Design, 24, 247-261.\n",
+    "* Huizinga et al. (2017), \n",
     "* Koenig R, Bauriedel C (2009), Generating settlement structures: a method for urban planning and analysis supported by cellular automata. Environment and Planning B: Planning and Design, 36, 602-624.\n",
     "* Mignan A (2022), A Digital Template for the Generic Multi-Risk (GenMR) Framework: A Virtual Natural Environment. International Journal of Environmental Research and Public Health, 19 (23), 16097, doi: 10.3390/ijerph192316097\n",
     "* Mignan A (2024), Introduction to Catastrophe Risk Modelling - A Physics-based Approach. Cambridge University Press, doi: 10.1017/9781009437370\n",

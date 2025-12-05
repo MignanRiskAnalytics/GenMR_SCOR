@@ -23,7 +23,7 @@ Planned Additions (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.1
-:Date: 2025-11-19
+:Date: 2025-12-05
 :License: AGPL-3
 """
 
@@ -56,68 +56,48 @@ import GenMR.utils as GenMR_utils
 #####################
 
 class RasterGrid:
-    """Define the coordinates (x,y) of the square-pixels of a 2D raster grid.
-    
-    Notes:
-        If x0, xbuffer, ybuffer and/or lat_deg are not provided by the user, 
-        they are fixed to xmin, 0, 0 and 45, respectively.
+    """
+    Define the coordinates (x, y) of the square pixels of a 2D raster grid.
 
-    Args:
-        par (dict): Input, dictionary with keys ['w', 'xmin', 'x0' (opt.),
-                    'xmax', 'ymin', 'ymax', 'xbuffer' (opt.), 'ybuffer' (opt.)]
-        w (float): Pixel width in km
-        xmin (float): Minimum abcissa of buffer box
-        xmax (float): Maximum abcissa of buffer box
-        ymin (float): Minimum ordinate of buffer box
-        ymax (float): Maximum ordinate of buffer box
-        xbuffer (float): Buffer width in the x direction (default is 0.)
-        ybuffer (float): Buffer width in the y direction (default is 0.)
-        lat_deg (float): Latitude at center of the grid (default is 45.)
-        x0 (float): Abscissa of reference N-S coastline (default is xmin)
-        x (ndarray(dtype=float, ndim=1)): 1D array of unique abscissas
-        y (ndarray(dtype=float, ndim=1)): 1D array of unique ordinates
-        xx (ndarray(dtype=float, ndim=2)): 2D array of grid abscissas
-        yy (ndarray(dtype=float, ndim=2)): 2D array of grid ordinates
-        nx (int): Length of x
-        ny (int): Length of y
+    Notes
+    -----
+    If `x0`, `xbuffer`, `ybuffer`, and/or `lat_deg` are not provided by the user, 
+    they are set to defaults: `x0 = xmin`, `xbuffer = 0`, `ybuffer = 0`, `lat_deg = 45`.
 
-    Returns: 
-        class instance: A new instance of class RasterGrid
-    
-    Example:
-        Create a grid
+    Parameters
+    ----------
+    par : dict
+        Dictionary containing the input parameters:
+        - w (float)        : Pixel width in km
+        - xmin (float)     : Minimum abscissa of buffer box
+        - xmax (float)     : Maximum abscissa of buffer box
+        - ymin (float)     : Minimum ordinate of buffer box
+        - ymax (float)     : Maximum ordinate of buffer box
+        - xbuffer (float, optional) : Buffer width in x direction (default 0)
+        - ybuffer (float, optional) : Buffer width in y direction (default 0)
+        - x0 (float, optional)      : Abscissa of reference N-S coastline (default xmin)
+        - lat_deg (float, optional) : Latitude at center of grid (default 45)
 
-            >>> grid = RasterGrid({'w': 1, 'xmin': 0, 'xmax': 2, 'ymin': 0, 'ymax': 3})
-            >>> grid.x
-            array([0., 1., 2.])
-            >>> grid.y
-            array([0., 1., 2., 3.])
-            >>> grid.xx
-            array([[0., 0., 0., 0.],
-               [1., 1., 1., 1.],
-               [2., 2., 2., 2.]])
-            >>> grid.yy
-            array([[0., 1., 2., 3.],
-               [0., 1., 2., 3.],
-               [0., 1., 2., 3.]])
+    Examples
+    --------
+    Create a grid
+
+    >>> grid = RasterGrid({'w': 1, 'xmin': 0, 'xmax': 2, 'ymin': 0, 'ymax': 3})
+    >>> grid.x
+    array([0., 1., 2.])
+    >>> grid.y
+    array([0., 1., 2., 3.])
+    >>> grid.xx
+    array([[0., 0., 0., 0.],
+           [1., 1., 1., 1.],
+           [2., 2., 2., 2.]])
+    >>> grid.yy
+    array([[0., 1., 2., 3.],
+           [0., 1., 2., 3.],
+           [0., 1., 2., 3.]])
     """
     
-    def __init__(self, par):
-        """
-        Initialize RasterGrid
-        
-        Args:
-            par (dict): Dictionary of input parameters with the following keys:
-                w (float): Pixel width in km
-                xmin (float): Minimum abcissa of buffer box
-                xmax (float): Maximum abcissa of buffer box
-                ymin (float): Minimum ordinate of buffer box
-                ymax (float): Maximum ordinate of buffer box
-                xbuffer (float, optional): Buffer width in the x direction (default is 0)
-                ybuffer (float, optional): Buffer width in the y direction (default is 0)
-                x0 (float, optional): Abscissa of reference N-S coastline (default is xmin)
-        """
-        
+    def __init__(self, par):        
         self.par = par
         self.w = par['w']
         self.xmin = par['xmin']
@@ -152,19 +132,25 @@ class RasterGrid:
 
 def downscale_RasterGrid(grid, factor, appl = 'pooling'):
     '''
-    Reduce the resolution of a RasterGrid grid for specific applications.
+    Reduce the resolution of a RasterGrid for specific applications.
 
     The ``appl`` parameter controls how the downscaling is performed:
-    - ``topo``: for topography generation (with outer layer) for later upscaling.
-    - ``pooling``: for max- or mean-pooling.
+    - ``topo``    : for topography generation (with outer layer) for later upscaling.
+    - ``pooling`` : for max- or mean-pooling.
 
-    Args:
-        grid (RasterGrid): Input raster grid.
-        factor (int): Downscaling factor.
-        appl (str, optional): Application mode. Defaults to 'pooling'.
+    Parameters
+    ----------
+    grid : RasterGrid
+        Input raster grid.
+    factor : int
+        Downscaling factor; the width of each new pixel will be `factor * grid.w`.
+    appl : str, optional
+        Application mode. Options are ``'topo'`` or ``'pooling'``. Default is ``'pooling'``.
 
-    Returns:
-        RasterGrid: Downscaled raster grid.
+    Returns
+    -------
+    RasterGrid
+        Downscaled raster grid with modified pixel width and adjusted boundaries.
     '''
     w = grid.w * factor
     if appl == 'topo':
@@ -181,22 +167,51 @@ def downscale_RasterGrid(grid, factor, appl = 'pooling'):
 
 
 
-
-
-
-
 ##############################
 # NATURAL ENVIRONMENT LAYERS #
 ##############################
 class EnvLayer_topo:
     '''
-    Defines an environmental layer for the topography on a coarser grid before interpolating back to default.
+    Define an environmental layer for the topography on a coarser grid before interpolating back to default.
     The state variable is the altitude z(x,y).
-    Derived variables include slope and aspect.
-    Other characteristics include the coastline coordinates
     
-    Returns:
-        ... default resolution [m]
+    Parameters
+    ----------
+    src : object
+        Source object containing the original RasterGrid and perils information.
+    par : dict
+        Dictionary of parameters controlling topography generation. Keys include:
+        - lores_f : int
+            Downscaling factor for the raster grid.
+        - bg_tan(phi) : float
+            Background slope factor for altitude construction.
+        - th : bool
+            Include earthquake-related topography (EQ).
+        - vo : bool
+            Include volcanic eruption cone (VE).
+        - fr : bool
+            Include fractal diamondsquare topography.
+        - fr_eta : float
+            Scaling factor for fractal topography.
+        - rv : bool
+            Include river valley damped sine topography (FF).
+        - cs : bool
+            Include compound bevel topography.
+
+    Attributes
+    ----------
+    ID : str
+        Identifier of the environmental layer ('topo').
+    src : object
+        Copy of the source object passed as parameter.
+    grid : RasterGrid
+        Default-resolution grid associated with the source.
+    par : dict
+        Parameter dictionary passed at initialization.
+    z : numpy.ndarray
+        2D array of altitude values in meters at the default resolution.
+    gridlow : RasterGrid
+        Coarser downscaled grid used temporarily during topography construction (deleted after upscaling).
     '''
     def __init__(self, src, par):
         self.ID = 'topo'
@@ -245,6 +260,17 @@ class EnvLayer_topo:
     
     @property
     def coastline_coord(self):
+        '''
+        Compute the coordinates of the coastline based on the topography.
+
+        Returns
+        -------
+        xc : list of float
+            x-coordinates of the coastline points, taken as the last grid cell 
+            in each column where elevation `z <= 0`.
+        yc : ndarray of float
+            y-coordinates of the grid columns corresponding to the coastline.
+        '''
         if len(self.z) == self.grid.nx:
             xc = [self.grid.x[self.z[:,j] <= 0][-1] for j in range(self.grid.ny)]
             yc = self.grid.y
@@ -256,24 +282,52 @@ class EnvLayer_topo:
     @property
     def river_coord(self):
         '''
-        Call the function calc_coord_river_dampedsine()
-        
-        Args:
-            Self
-            
-        Returns:
-            ...
+        Compute the coordinates and identifiers of rivers using a damped sine model.
+
+        Returns
+        -------
+        river_xi : ndarray of float
+            x-coordinates of river points.
+        river_yi : ndarray of float
+            y-coordinates of river points.
+        river_zi : ndarray of float
+            Elevation values at river points.
+        river_id : ndarray of int
+            Identifier for each river segment.
         '''
         return calc_coord_river_dampedsine(self.grid, self.src.par['FF'], z = self.z)
 
     @property
     def slope(self):
+        '''
+        Compute the slope of the topography in degrees.
+
+        Uses a 3x3 kernel finite-difference method to estimate gradients 
+        of the elevation field `z(x, y)`.
+
+        Returns
+        -------
+        slope : ndarray of float
+            2D array of slope values in degrees at each grid point.
+        '''
         tan_slope, _ = calc_topo_attributes(self.z, self.grid.w)
         slope = np.arctan(tan_slope) * 180 / np.pi
         return slope
 
     @property
     def aspect(self):
+        '''
+        Compute the aspect (orientation) of the topography in degrees.
+
+        Aspect is calculated from the x- and y- gradients of the elevation 
+        field `z(x, y)` using a 3x3 kernel finite-difference method.
+
+        Returns
+        -------
+        aspect : ndarray of float
+            2D array of aspect values in degrees at each grid point.
+            Values indicate the downslope direction.
+        '''
         _, aspect = calc_topo_attributes(self.z, self.grid.w)
         return aspect
 
@@ -283,12 +337,28 @@ class EnvLayer_topo:
 
     def algo_diamondsquare(self, i, roughness, sig, rng):
         '''
-        Generate a fractal topography following the Diamond-Square algorithm
-        
-        i: iteration integer, determines size of final matrix
-        roughness: 0 < < 1, equivalent to 1-H with H: Hurst exponent with Dfractal = 3-H
-        m: initial square matrix of size 2^i+1
-        sig: standard deviation for random deviations
+        Generate a fractal topography using the Diamond-Square algorithm.
+
+        The algorithm creates a 2D height matrix with fractal properties, 
+        controlled by the roughness parameter. The final matrix size is 
+        (2^i + 1) × (2^i + 1).
+
+        Parameters
+        ----------
+        i : int
+            Number of iterations; determines the size of the final matrix as 2^i + 1.
+        roughness : float
+            Roughness parameter (0 < roughness < 1). Equivalent to 1-H, 
+            where H is the Hurst exponent (fractal dimension D = 3-H).
+        sig : float
+            Standard deviation of the random deviations added at each step.
+        rng : numpy.random.Generator
+            Random number generator used to create Gaussian noise for the surface.
+
+        Returns
+        -------
+        m : ndarray, shape (2^i + 1, 2^i + 1)
+            2D array representing the generated fractal topography.
         '''
         size = 2**i+1
         m = np.zeros((size, size))
@@ -323,6 +393,19 @@ class EnvLayer_topo:
         return m
 
     def model_th_ellipsoid(self):
+        '''
+        Generate a topography perturbation due to earthquake fault segments using ellipsoidal shapes.
+
+        Each fault segment is represented as a 3D ellipsoid based on its geometry
+        (length, width, strike, dip) and mechanical parameters.
+
+        Returns
+        -------
+        zth : ndarray, shape (gridlow.nx, gridlow.ny)
+            2D array representing the additional topography induced by 
+            all earthquake fault segments. Values are added to the existing 
+            topography during intrusion/extrusion.
+        '''
         zth = np.zeros((self.gridlow.nx, self.gridlow.ny))
         flt_x, flt_y, flt_id, seg_id, seg_strike, seg_L = (
             self.src.EQ_char[k] for k in ['x', 'y', 'fltID', 'segID', 'strike', 'segL']
@@ -369,6 +452,18 @@ class EnvLayer_topo:
         return zth
 
     def model_vo_cone(self):
+        '''
+        Generate topography perturbations for volcanic eruptions using conical shapes.
+
+        Each volcanic eruption source is represented as a truncated cone,
+        with height and base width defined in the parameters.
+
+        Returns
+        -------
+        zvo : ndarray, shape (gridlow.nx, gridlow.ny)
+            2D array of elevation contributions from all volcanic cones.
+            Values are additive to the existing topography.
+        '''
         zvo = np.zeros((self.gridlow.nx, self.gridlow.ny))
         for src_i in range(len(self.src.par['VE']['x'])):
             r = np.sqrt((self.gridlow.xx - self.src.par['VE']['x'][src_i])**2 + \
@@ -380,19 +475,45 @@ class EnvLayer_topo:
         return zvo
     
     def model_fr_diamondsquare(self):
+        '''
+        Generate fractal topography using the Diamond-Square algorithm.
+
+        The fractal surface is created on the downscaled grid (`gridlow`) 
+        with roughness determined by the Hurst exponent derived from the 
+        fractal dimension parameter `fr_Df`.
+
+        Returns
+        -------
+        zfr_cropped : ndarray, shape (gridlow.nx, gridlow.ny)
+            2D array representing the fractal elevation field (unitless or in km
+            depending on scaling). Cropped to match the low-resolution grid size.
+        '''
         # topography parameters
         H = 3 - self.par['fr_Df']         # Hurst exponent = roughness max at H = 0
         itr_i = np.arange(3,15)
         nfrac_i = 2**itr_i + 1
         nmax = max([self.gridlow.nx, self.gridlow.ny])
         itr = itr_i[nfrac_i >= nmax][0]   # true fractal -> iter=Inf. Here gives resolution of system    
-        l = 2**itr + 1
+#        l = 2**itr + 1
         rng = np.random.RandomState(self.par['fr_seed'])
         zfr = self.algo_diamondsquare(itr, 1 - H, 1, rng)
         zfr_cropped = zfr[0:self.gridlow.nx, 0:self.gridlow.ny]
         return zfr_cropped
 
     def model_rv_dampedsine(self):
+        '''
+        Generate river valley topography using a damped sine function along the x-axis.
+
+        Each river is modeled with an exponentially decaying sinusoidal profile
+        in the north-south direction and a linear slope along the west-east direction.
+        River depth is blended with the existing topography using a scaling factor.
+
+        Returns
+        -------
+        zrv : ndarray, shape (gridlow.nx, gridlow.ny)
+            2D array representing the elevation adjustments for all river valleys.
+            Values are additive to the existing low-resolution topography.
+        '''
         nriv = len(self.src.par['FF']['riv_y0'])
         for riv in range(nriv):
             zrv = np.zeros((self.gridlow.nx, self.gridlow.ny))
@@ -433,6 +554,20 @@ class EnvLayer_topo:
         return zrv
 
     def model_cs_compoundbevel(self):
+        '''
+        Generate a compound bevel topography along the coastline.
+
+        For each column in the grid, the topography is adjusted near the coastline 
+        using a linear slope (bevel) over a specified width (`cs_w_km`) and blended 
+        with the existing elevation using a scaling factor (`cs_eta`). The slope 
+        does not exceed the maximum defined by `cs_tan(phi)` or the inland elevation.
+
+        Returns
+        -------
+        zcs : ndarray, shape (gridlow.nx, gridlow.ny)
+            2D array representing the adjusted elevation with compound bevels 
+            along the coastline.
+        '''
         xc, _ = self.coastline_coord
         zcs = np.copy(self.z)
         for j in range(self.gridlow.ny):
@@ -444,6 +579,28 @@ class EnvLayer_topo:
 
 
 def calc_topo_attributes(z, w):
+    '''
+    Compute slope and aspect of a 2D topography grid using finite differences.
+
+    The topography is first converted from meters to kilometers. Gradients 
+    are computed with a 3x3 kernel (central differences) using `np.gradient`.
+    Slope is expressed in degrees, and aspect is calculated following standard 
+    geographic conventions.
+
+    Parameters
+    ----------
+    z : ndarray, shape (nx, ny)
+        2D array of elevation values in meters.
+    w : float
+        Grid spacing (pixel width) in km.
+
+    Returns
+    -------
+    tan_slope : ndarray, shape (nx, ny)
+        Tangent of the slope at each grid point (unitless).
+    aspect : ndarray, shape (nx, ny)
+        Aspect angle at each grid point in degrees, measured clockwise from north.
+    '''
     z = np.pad(z*1e-3, 1, 'edge')   # from m to km
     # 3x3 kernel method to get dz/dx, dz/dy
     dz_dy, dz_dx = np.gradient(z)
@@ -457,7 +614,38 @@ def calc_topo_attributes(z, w):
     
 class EnvLayer_soil:
     '''
-    Defines an environmental layer for the soil
+    Environmental layer representing soil properties over a raster grid.
+
+    The state variable is soil thickness `h`. Additional characteristics 
+    include water height `hw` and optional corrections for unstable soil.
+
+    Parameters
+    ----------
+    topo : EnvLayer_topo
+        The topography layer used as reference for the soil layer.
+    par : dict
+        Dictionary of parameters for the soil layer. Expected keys include:
+        - 'h0_m' : float
+            Reference soil thickness in meters.
+        - 'wat_h_m' : float
+            Water height in meters.
+        - 'corr' : str
+            Correction method for unstable soil, e.g., 'remove_unstable'.
+
+    Attributes
+    ----------
+    ID : str
+        Identifier of the layer ('soil').
+    topo : EnvLayer_topo
+        Reference topography layer.
+    par : dict
+        Parameter dictionary provided at initialization.
+    grid : RasterGrid
+        Grid associated with the topography layer.
+    h : ndarray, shape (grid.nx, grid.ny)
+        Soil thickness in meters.
+    hw : float
+        Water height in meters.
     '''
     def __init__(self, topo, par):
         self.ID = 'soil'
@@ -473,24 +661,42 @@ class EnvLayer_soil:
     @property
     def FS_value(self):
         '''
-        Return the factor of safety
+        Compute the factor of safety (FS) for slope stability.
+
+        Returns
+        -------
+        FS : numpy.ndarray
+            2D array of FS values computed using soil thickness, wetness, slope, and soil parameters.
         '''
         val = calc_FS(self.topo.slope, self.h, self.wetness, self.par)
         return val
     
     @property
     def FS_state(self):
+        '''
+        Determine the categorical FS state from FS values.
+
+        Returns
+        -------
+        FS_code : numpy.ndarray
+            2D array of integers representing soil stability:
+            - 0: stable (FS > 1.5)
+            - 1: critical (1 < FS <= 1.5)
+            - 2: unstable (FS <= 1)
+        '''
         FS = np.copy(self.FS_value)
-#        FS_code = np.zeros((self.grid.nx, self.grid.ny))
-#        FS_code[FS > 1.5] = 0                                 # stable
-#        FS_code[np.logical_and(FS > 1, FS <= 1.5)] = 1        # critical
-#        FS_code[FS <= 1] = 2                                  # unstable
         FS_code = get_FS_state(FS)
         return FS_code
 
     @property
     def wetness(self):
         '''
+        Compute the soil wetness ratio for each grid cell.
+
+        Returns
+        -------
+        wetness : numpy.ndarray
+            2D array of wetness ratio (dimensionless) in [0,1].
         '''
         wetness = np.ones((self.grid.nx, self.grid.ny))
         indno0 = np.where(self.h != 0)
@@ -501,12 +707,38 @@ class EnvLayer_soil:
         
 def calc_FS(slope, h, w, par):
     '''
-    Calculates the factor of safety using Eq. 3 of Pack et al. (1998).
-        
-    Reference:
-        Pack RT, Tarboton DG, Goodwin CN (1998), The SINMAP Approach to Terrain Stability Mapping. 
-        Proceedings of the 8th Congress of the International Association of Engineering Geology, Vancouver, BC, 
-        Canada, 21 September 1998
+    Calculate the Factor of Safety (FS) for slope stability using the SINMAP approach 
+    (Pack et al., 1998).
+
+    Parameters
+    ----------
+    slope : numpy.ndarray
+        2D array of slope angles in degrees.
+    h : numpy.ndarray
+        2D array of soil thickness (m).
+    w : numpy.ndarray
+        2D array of wetness ratio (dimensionless, typically between 0 and 1).
+    par : dict
+        Dictionary of soil and material parameters:
+        - Ceff_Pa : float
+            Effective cohesion (Pa).
+        - rho_kg/m3 : float
+            Soil density (kg/m³).
+        - phieff_deg : float
+            Effective friction angle (degrees).
+        - (optional) Other constants: g_earth, rho_wat used in calculations.
+
+    Returns
+    -------
+    FS : numpy.ndarray
+        2D array of Factor of Safety values for each grid cell.
+        Values > 1 indicate stability; values < 1 indicate potential failure.
+
+    References
+    ----------
+    Pack RT, Tarboton DG, Goodwin CN (1998), The SINMAP Approach to Terrain Stability Mapping. 
+    Proceedings of the 8th Congress of the International Association of Engineering Geology, Vancouver, BC, 
+    Canada, 21 September 1998
     '''
     FS = (par['Ceff_Pa'] / (par['rho_kg/m3'] * GenMR_utils.g_earth * h) + np.cos(slope * np.pi/180) * \
          (1 - w * GenMR_utils.rho_wat / par['rho_kg/m3']) * np.tan(par['phieff_deg'] * np.pi/180)) / \
@@ -514,16 +746,63 @@ def calc_FS(slope, h, w, par):
     return FS
 
 def get_FS_state(FS):
-        FS_code = np.zeros_like(FS)
-        FS_code[FS > 1.5] = 0                                 # stable
-        FS_code[np.logical_and(FS > 1, FS <= 1.5)] = 1        # critical
-        FS_code[FS <= 1] = 2                                  # unstable
-        return FS_code
+    '''
+    Assign a stability code based on the Factor of Safety (FS).
+
+    Parameters
+    ----------
+    FS : numpy.ndarray
+        Array of Factor of Safety values for each grid cell.
+
+    Returns
+    -------
+    FS_code : numpy.ndarray
+        Array of integer stability codes corresponding to FS:
+        - 0 : stable (FS > 1.5)
+        - 1 : critical (1 < FS <= 1.5)
+        - 2 : unstable (FS <= 1)
+    '''
+    FS_code = np.zeros_like(FS)
+    FS_code[FS > 1.5] = 0                                 # stable
+    FS_code[np.logical_and(FS > 1, FS <= 1.5)] = 1        # critical
+    FS_code[FS <= 1] = 2                                  # unstable
+    return FS_code
 
 
 class EnvLayer_natLand:
     '''
-    Defines an environmental layer for the (natural) land classification: water, forest, grassland
+    Defines an environmental layer for natural land classification, including water, forest, and grassland.
+
+    Parameters
+    ----------
+    soil : EnvLayer_soil
+        Soil layer object containing topography, soil thickness, and wetness information.
+    par : dict
+        Dictionary of parameters controlling land classification. Keys include:
+        - ve_treeline_m : float
+            Elevation threshold (m) above which forest does not grow.
+
+    Attributes
+    ----------
+    ID : str
+        Identifier of the layer, set to 'natLand'.
+    soil : EnvLayer_soil
+        Copy of the input soil layer.
+    grid : RasterGrid
+        Grid object defining the spatial domain and resolution.
+    topo : EnvLayer_topo
+        Copy of the topography layer associated with the soil layer.
+    src : object
+        Source object containing original RasterGrid and perils information.
+    par : dict
+        Dictionary of parameters controlling land classification.
+    S : numpy.ndarray
+        Integer array of land class codes:
+        - -1 : water
+        - 0  : grassland
+        - 1  : forest
+    hW : numpy.ndarray
+        River height (m) in river cells, zeros elsewhere.
     '''
     def __init__(self, soil, par):
         self.ID = 'natLand'
@@ -562,7 +841,36 @@ class EnvLayer_natLand:
 
 def calc_coord_river_dampedsine(grid, par, z = ''):
     '''
-    Calculate the (x,y,z) coordinates of the river(s) defined from a damped sine wave.
+    Calculate the (x, y, z) coordinates of river channels defined by damped sine waves.
+
+    Parameters
+    ----------
+    grid : RasterGrid
+        Raster grid object containing `x` and `y` coordinates of the spatial domain.
+    par : dict
+        Dictionary containing river parameters. Keys include:
+        - riv_y0 : list or array
+            Reference y-coordinate of each river source.
+        - riv_A_km : list or array
+            Amplitude of the damped sine wave (km).
+        - riv_lbd : list or array
+            Exponential decay coefficient of the wave.
+        - riv_ome : list or array
+            Angular frequency of the sine wave.
+    z : numpy.ndarray or str, optional
+        Elevation array of shape (nx, ny). If provided, only points with z >= 0 are included.
+        Default is empty string, which treats all points as land (z = 0).
+
+    Returns
+    -------
+    river_xi : numpy.ndarray
+        X-coordinates of river points.
+    river_yi : numpy.ndarray
+        Y-coordinates of river points.
+    river_zi : numpy.ndarray
+        Z-coordinates (elevation) of river points.
+    river_id : numpy.ndarray
+        Integer array indicating the river index for each point.
     '''
     nriv = len(par['riv_y0'])
     river_xi = np.array([])
@@ -593,7 +901,53 @@ def calc_coord_river_dampedsine(grid, par, z = ''):
 
 class EnvObj_roadNetwork():
     '''
-    Generate a road network based on the CA described in ...
+    Generate a road network on a raster grid using a cellular automaton (CA) approach.
+    Based on the approach developed by Koenig & Bauriedel (2009).
+
+    Parameters
+    ----------
+    topo : EnvLayer_topo
+        Environmental topography layer object containing elevation `z` and slope.
+    land : EnvLayer_natLand
+        Natural land classification layer, indicating vegetation, water, and land types.
+    par : dict
+        Dictionary of parameters controlling road network generation. Key entries include:
+        - city_seed : tuple(float, float)
+            Coordinates of the initial city node (x, y).
+        - road_Rmax : float
+            Maximum connection distance in units of grid cell width.
+        - road_maxslope : float
+            Maximum slope (degrees) allowed for road construction.
+
+    Attributes
+    ----------
+    topo : EnvLayer_topo
+        Copy of the input topography layer.
+    land : EnvLayer_natLand
+        Copy of the input land layer.
+    par : dict
+        Copy of the input parameter dictionary.
+    grid : RasterGrid
+        Raster grid associated with the topography layer.
+    net : networkx.Graph
+        Graph object storing nodes and edges of the road network.
+    Rmax : float
+        Maximum Euclidean distance for road connections.
+    mask : numpy.ndarray
+        Boolean array marking unbuildable locations (e.g., water, steep slopes, buffer areas).
+    S : numpy.ndarray
+        Status array of each grid cell: 0 = empty, 1 = node, 2 = node neighbor, 3 = available for node.
+    id : numpy.ndarray
+        Grid cell IDs for nodes (-1 for empty).
+    eps : numpy.ndarray
+        Random number array for stochastic CA processes, masked for invalid locations.
+    nodeID : int
+        Current maximum node ID in the network.
+
+    References
+    ----------
+    Koenig R, Bauriedel C (2009), Generating settlement structures: a method for urban planning and analysis supported by cellular automata. 
+    Environment and Planning B: Planning and Design, 36, 602-624
     '''
     def __init__(self, topo, land, par):
         self.topo = copy.copy(topo)
@@ -675,6 +1029,28 @@ class EnvObj_roadNetwork():
 
 @dataclass
 class CriticalInfrastructure:
+    '''
+    Represents a critical infrastructure facility or asset.
+
+    Parameters
+    ----------
+    name : str
+        Name or identifier of the infrastructure.
+    zone_type : str
+        Type of industrial zone.
+    area : float
+        Area of the facility.
+    centroid : tuple of float
+        Coordinates (x, y) of the facility's centroid.
+    polygon : shapely.geometry.Polygon
+        Polygon representing the infrastructure footprint.
+    distance_to_coast : float
+        Minimum distance from the infrastructure to the nearest coastline [km].
+    distance_to_river : float
+        Minimum distance from the infrastructure to the nearest river [km].
+    Ex_S_kton : float
+        Explosive or hazard-related characteristic, e.g., explosive stock in kilotons.
+    '''
     name: str
     zone_type: str
     area: float
@@ -687,8 +1063,74 @@ class CriticalInfrastructure:
 
 class EnvLayer_urbLand:
     '''
-    Generate a city for land use state classification. Model that combines the SLEUTH city growth CA, 
-    the road network growth CA of ref, and the land use state transformation method of ...
+    Generate an urban land use environmental layer.
+
+    This model combines:
+    - The SLEUTH city growth cellular automaton (CA), based on Clarke et al. (1997); Candau (2002)
+    - A road network growth CA, based on Koenig & Bauriedel (2009)
+    - Land use state transformation methods, based on White et al. (1997)
+
+    Parameters
+    ----------
+    natLand : EnvLayer_natLand
+        Natural land layer providing initial land cover, grid, and topography.
+    par : dict
+        Dictionary of parameters controlling urban growth and SLEUTH CA behavior.
+        Keys include:
+        - city_yr0 : int, initial year of the city
+        - city_seed : tuple(float, float), coordinates of the initial city center
+        - SLEUTH_maxslope : float, maximum slope allowed for urban expansion
+        - SLEUTH_disp : float, dispersion parameter
+        - SLEUTH_roadg : float, road gravity parameter
+        - lores_f : int, downscaling factor for grids used in road CA
+
+    Attributes
+    ----------
+    ID : str
+        Layer identifier, here 'urbLand'.
+    grid : RasterGrid
+        The computational grid for the urban layer.
+    topo : EnvLayer_topo
+        Topography layer used for slope calculations and urban constraints.
+    par : dict
+        Parameters controlling urban growth and CA rules (same as input `par`).
+    S : ndarray
+        Land use classification grid.
+        -1: water
+         0: grassland
+         1: forest
+         2: residential
+         3: industrial
+         4: commercial
+    year : int
+        Current simulation year.
+    urban_yes : ndarray
+        Boolean mask indicating which forest cells are eligible for urbanization.
+    disp_val : int
+        Dispersion value for SLEUTH CA.
+    max_roadsearch : int
+        Maximum search radius for road network growth.
+    roadNet : EnvObj_roadNetwork
+        Road network sublayer initialized on a coarsened grid.
+    built : ndarray
+        Boolean/int grid indicating whether a cell has built structures (0: no, 1: yes).
+    roads : ndarray
+        Grid indicating presence of roads (0: none, 1: road).
+    built_type : ndarray
+        Grid indicating type of built-up area:
+        0: commercial, 1: industry, 2: residential, 3: water, etc.
+    built_yr : ndarray
+        Grid storing the year each cell was built.
+
+    References
+    ----------
+    Candau JT (2002), Temporal calibration sensitivity of the SLEUTH urban growth model. Master Thesis, University of California Santa Barbara, 130 pp.
+    Clarke KC, Hoppen S, Gaydos L (1997), A self-modifying cellular automaton model of historical urbanization in the San Francisco Bay area.
+    Environment and Planning B: Planning and Design, 24, 247-261. 
+    Koenig R, Bauriedel C (2009), Generating settlement structures: a method for urban planning and analysis supported by cellular automata. 
+    Environment and Planning B: Planning and Design, 36, 602-624. 
+    White R, Engelen G, Uljee I (1997), The use of constrained cellular automata for high-resolution modelling of urban land-use dynamics. 
+    Environment and Planning B: Planning and Design, 24, 323-343. 
     '''
     def __init__(self, natLand, par):
         self.ID = 'urbLand'
@@ -876,11 +1318,39 @@ class EnvLayer_urbLand:
 
     @property
     def roadNet_coord(self):
+        '''
+        Return the coordinates of the road network nodes and edges for plotting.
+
+        Returns
+        -------
+        node_x : list of float
+            X-coordinates of all road network nodes.
+        node_y : list of float
+            Y-coordinates of all road network nodes.
+        edge_x : list of float
+            X-coordinates of edges, formatted for plotting line segments 
+            as [x0, x1, None, x0, x1, None, ...].
+        edge_y : list of float
+            Y-coordinates of edges, formatted similarly to `edge_x`.
+        '''
         node_x, node_y, edge_x, edge_y = GenMR_utils.get_net_coord(self.roadNet.net)
         return node_x, node_y, edge_x, edge_y
     
     @property
     def bldg_type(self):
+        '''
+        Assign building construction types based on urban land class and probability rules.
+
+        Returns
+        -------
+        val : ndarray(dtype=object, shape=(nx, ny))
+            Array storing building types for each grid cell:
+            - 'M' : masonry (residential)
+            - 'W' : wood (residential)
+            - 'S' : steel (industrial)
+            - 'RC': reinforced concrete (commercial)
+            Cells not built or outside urban areas are `nan`.
+        '''
         val = np.full((self.grid.nx, self.grid.ny), np.nan, dtype = object)
         val[self.S == 2] = np.where(np.random.random(np.sum(self.S == 2)) >= self.par['bldg_RES_wood2brick'], 'M', 'W')
         val[self.S == 3] = 'S'
@@ -889,6 +1359,18 @@ class EnvLayer_urbLand:
 
     @property
     def bldg_roofpitch(self):
+        '''
+        Assign a roof pitch type to buildings based on urban land class. Not used yet in damage assessment.
+
+        Returns
+        -------
+        val : ndarray(dtype=object, shape=(nx, ny))
+            Array storing roof pitch type for each grid cell:
+            - 'H' : high-pitch roof (residential)
+            - 'L' : low-pitch roof (industrial)
+            - 'M' : medium-pitch roof (commercial)
+            Cells not built or outside urban areas are `nan`.
+        '''
         val = np.full((self.grid.nx, self.grid.ny), np.nan, dtype = object)
         val[self.S == 2] = 'H'
         val[self.S == 3] = 'L'
@@ -897,6 +1379,24 @@ class EnvLayer_urbLand:
 
     @property
     def bldg_value(self):
+        '''
+        Estimate the replacement/building value for each urban cell according to Huizinga et al. (2017)
+
+        Returns
+        -------
+        val : ndarray(dtype=float, shape=(nx, ny))
+            Array of building values (USD) per grid cell based on:
+            - Residential (S==2)
+            - Industrial (S==3)
+            - Commercial (S==4)
+            Computed as: c1 * (GDP_percapita_USD)**c2 * (cell_area_m2)
+            Cells not built or outside urban areas are `nan`.
+
+        References
+        ----------
+        Huizinga J, de Moel H, Szewczyk W (2017), Global Flood Depth-Damage Functions. Methodology and the Database with Guidelines. 
+        JRC Technical Reports. EUR 28552 EN.
+        '''
         c1 = [24.1, 30.8, 33.6]
         c2 = [.385, .325, .357]
         val = np.full((self.grid.nx, self.grid.ny), np.nan)
@@ -905,12 +1405,32 @@ class EnvLayer_urbLand:
         val[self.S == 4] = c1[2] * self.par['GPD_percapita_USD'] **c2[2] * (self.grid.w*1e3)**2
         return val
     
-    @property
-    def infiltration(self):
-        # to add - function of built, forest, grassland -> to be used in FF model
-        return None
+#    @property
+#    def infiltration(self):
+#        # to add - function of built, forest, grassland -> to be used in FF model
+#        return None
 
     def calc_Pr_urbanise(self, slope, par):
+        '''
+        Calculate the probability of urbanisation based on local slope using the SLEUTH model.
+
+        Parameters
+        ----------
+        slope : float or ndarray
+            Local slope [degrees] at a grid cell or array of slopes.
+        par : dict
+            Dictionary of SLEUTH parameters:
+            - 'SLEUTH_maxslope' : float
+                Maximum slope that can be urbanized [degrees].
+            - 'SLEUTH_slope' : float
+                Slope influence coefficient [%].
+
+        Returns
+        -------
+        pr : float or ndarray
+            Probability of urbanisation for the given slope(s), in the range [0, 1].
+            Returns 0 if slope exceeds 'SLEUTH_maxslope'.
+        '''
         expo = par['SLEUTH_slope'] /100 /2.
         pr = ((par['SLEUTH_maxslope'] - np.round(slope)) / par['SLEUTH_maxslope'])**expo
         if slope >= par['SLEUTH_maxslope']:
@@ -918,7 +1438,42 @@ class EnvLayer_urbLand:
         return pr
     
     def transform_landUse(self):
-        # White et al. 1997 functions
+        '''
+        Return the land-use transition potential matrix from White et al. (1997).
+
+        This function constructs the **mₖd matrix**, which encodes the potentials
+        for converting existing land-use classes into new urban land-use types
+        (Commercial, Industrial, Housing) as a function of distance classes.
+
+        The formulation follows White et al. (1997), where each entry
+        ``m_kd[k, current_state, d]`` represents the potential for land of type
+        ``current_state`` to transform into target class ``k`` at distance index ``d``.
+
+        Notes
+        -----
+        - Number of target land-use classes: ``nk = 5``  
+        (`0 = C`, `1 = I`, `2 = H`, `3 = W`, `4 = R`)
+        - Number of distance classes: ``nd = 18``  
+        - Only the 3 *urbanising* target classes have potentials:
+        ``k = 0 → Commercial``, ``k = 1 → Industrial``, ``k = 2 → Housing``.
+
+        Returns
+        -------
+        m_kd : ndarray, shape (3, 5, 18)
+            Transition potential matrix where:
+            - Axis 0 → target land-use class (C, I, H)
+            - Axis 1 → current land-use class
+            - Axis 2 → distance classes (0-17)
+
+            Values are integers representing conversion strengths, with
+            positive values indicating attraction and negative values indicating
+            repulsion for conversion.
+
+        References
+        ----------
+        White R, Engelen G, Uljee I (1997), The use of constrained cellular automata for high-resolution modelling of urban land-use dynamics. 
+        Environment and Planning B: Planning and Design, 24, 323-343. 
+        '''
         nk = 5       # state 0=C, 1=I, 2=H, 3=W, 4=R
         nd = 18      # distances
         m_kd = np.zeros(shape=(3,nk,nd)) # potential to transform to Commercial, Industry, Housing
@@ -936,6 +1491,29 @@ class EnvLayer_urbLand:
         return m_kd
 
     def get_d4mkd(self, ic, jc, i_test, j_test):
+        '''
+        Return the distance-class indices for a set of test coordinates.
+
+        This computes distance classes used in the White et al. (1997) land-use
+        transition potentials. Each `(i_test[k], j_test[k])` pair is assigned to one
+        of 18 discrete distance bins based on its Euclidean distance from the
+        reference cell `(ic, jc)`.
+
+        Parameters
+        ----------
+        ic, jc : int
+            Indices of the reference grid cell.
+        i_test, j_test : array_like
+            Arrays of test cell indices for which distance classes will be computed.
+            Must be equal-length and indexable.
+
+        Returns
+        -------
+        neighbor_d : ndarray of int
+            Flattened array of distance-class indices in the range `[0, 17]`.  
+            For each test coordinate, the returned value is the index of the
+            corresponding distance bin.
+        '''
         r = np.sqrt((i_test-ic)**2 + (j_test-jc)**2)
         d = [1, np.sqrt(2), 2, np.sqrt(5), np.sqrt(8), 3, np.sqrt(10), np.sqrt(13), 4, np.sqrt(17), \
              np.sqrt(18), np.sqrt(20), 5, np.sqrt(26), np.sqrt(29), np.sqrt(32), np.sqrt(34), 6]
@@ -943,6 +1521,37 @@ class EnvLayer_urbLand:
         return neighbor_d
 
     def get_state_built(self, state0, neighbor_k, neighbor_d, m_kd):
+        '''
+        Determine the new built-type state based on transition potentials.
+
+        Computes the Commercial/Industrial/Housing (C/I/H) transition potentials
+        following White et al. (1997), using:
+        - neighbor land-use classes ``neighbor_k``
+        - distance classes ``neighbor_d``
+        - the transition matrix ``m_kd`` (shape: 3 x 5 x 18)
+
+        Parameters
+        ----------
+        state0 : int
+            Current land-use state of the cell (0=C, 1=I, 2=H, 3=W, 4=R).
+        neighbor_k : ndarray of int
+            Land-use types of neighbors. ``-1`` marks invalid neighbors.
+        neighbor_d : ndarray of int
+            Distance-class indices of the neighbors (0-17).
+        m_kd : ndarray
+            Transition potential matrix of shape (3, 5, 18), as returned by
+            :meth:`transform_landUse`.
+
+        Returns
+        -------
+        new_state : int
+            The selected new state among:
+            - 0 → Commercial
+            - 1 → Industrial
+            - 2 → Housing
+
+            If no valid neighbors exist, the function returns ``state0``.
+        '''
         alpha = 1.5
         v = 1 + (-np.log(np.random.random(3)))**alpha
         H = np.identity(3)
@@ -959,6 +1568,28 @@ class EnvLayer_urbLand:
 
     def get_S_urban(self, built, built_type):
         '''
+        Classify built land-use states using the White et al. (1997) land-use
+        transition model.
+
+        Parameters
+        ----------
+        built : ndarray of shape (nx, ny)
+            Binary grid where 1 indicates a built cell and 0 indicates
+            non-built.
+        built_type : ndarray of shape (nx, ny)
+            Integer grid encoding the preliminary building type:
+            -1 : unclassified
+             0 : commercial
+             1 : industry
+             2 : housing
+             3 : water
+             4 : road
+
+        Returns
+        -------
+        built_type : ndarray of shape (nx, ny)
+            Updated building type grid following land-use transitions from
+            White et al. (1997).
         '''
         m_kd = self.transform_landUse()
         i_built, j_built = np.where(built == 1)
@@ -978,6 +1609,33 @@ class EnvLayer_urbLand:
 
 
     def get_industrialZones(self):
+        '''
+        Extract and classify industrial zones from the current land-use grid.
+
+        Industrial areas (state ``3``) are grouped into connected components using
+        a von Neumann neighbourhood. Each component is converted into a polygon
+        via contour extraction, and the resulting polygon is classified based on
+        proximity to the coastline or river.
+
+        Returns
+        -------
+        list of dict
+            One dictionary per detected industrial zone. Each dictionary contains:
+            - ``state`` : str  
+            Always ``"industrial"``.
+            - ``zone_type`` : str  
+            One of ``"industrial harbor"``, ``"riverside industrial park"``, or ``"inland industrial park"``.
+            - ``vertices`` : (N, 2) ndarray  
+            Closed polygon vertex coordinates.
+            - ``area`` : float  
+            Polygon area.
+            - ``distance_to_coast`` : float  
+            Minimum distance to coastline.
+            - ``distance_to_river`` : float  
+            Minimum distance to river.
+            - ``closed`` : bool  
+            Always ``True``.
+        '''
         xx = self.grid.xx
         yy = self.grid.yy
         states = self.S
@@ -1048,6 +1706,21 @@ class EnvLayer_urbLand:
 
     @cached_property
     def CI_refinery(self):
+        '''
+        Identify and construct the critical infrastructure object representing  
+        the main coastal refinery.
+
+        This property selects the largest polygon classified as an
+        **industrial harbor** zone from :attr:`industrialZones`, and returns a
+        :class:`CriticalInfrastructure` instance located at its centroid.
+
+        Returns
+        -------
+        CriticalInfrastructure
+            An object describing the refinery, including its name, zone type,
+            polygon geometry, area, centroid coordinates, and distances to
+            coastline and river.
+        '''
         zones = self.industrialZones
         harbor_polys = [p for p in zones if p["zone_type"] == "industrial harbor"]
 
@@ -1104,20 +1777,37 @@ lgd_industrialZone = [
 
 def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
     '''
-    Plot the attribute of an environmental layer.
-    
-    Note:
-        The attr argument should be the string version of the variable name, 
-        e.g., z becomes 'z', slope becomes 'slope'.
-    
-    Args:
-        envLayer (class): An instance of environmental layer class
-        attr (str): The identifier of the attribute
-        hillshading_z (ndarray(dtype=float, ndim=2), optional): The elevation grid array
-        file_ext (str, optional): String representing the figure format ('jpg', 'pdf', etc., '-' by default)
-    
-    Returns:
-        A plot
+    Plot a specific attribute of an environmental layer.
+
+    This function handles plotting for multiple environmental layers including
+    topography, soil, natural land, and urban land. Optionally, hillshading
+    can be applied for topography visualization. Legends are added for categorical
+    variables, and continuous variables display colorbars.
+
+    Parameters
+    ----------
+    envLayer : object
+        Instance of an environmental layer class (e.g., EnvLayer_topo, EnvLayer_soil, EnvLayer_natLand, EnvLayer_urbLand).
+    attr : str
+        Name of the attribute to plot. Examples:
+        - Topography: 'z', 'slope', 'aspect'
+        - Soil: 'h', 'FS'
+        - Natural/Urban Land: 'S', 'roadNet', 'bldg_value', 'built_yr', 'industrialZones'
+    hillshading_z : ndarray, optional
+        2D array of elevation values for hillshading overlay. Default is empty string, meaning no hillshading.
+    file_ext : str, optional
+        File extension for saving the figure (e.g., 'jpg', 'pdf'). Default is '-' meaning the figure is not saved.
+
+    Returns
+    -------
+    None
+        Displays the plot. Optionally saves the figure if `file_ext` is not '-'.
+
+    Notes
+    -----
+    - The attribute argument `attr` must match the string name of the variable inside the `envLayer` object.
+    - Legends and colormaps are automatically selected based on the layer type and attribute.
+    - For `urban` layers, industrial zones are plotted as polygons with colors corresponding to their zone type.
     '''
     fig, ax = plt.subplots(1,1)
     alpha = 1.
@@ -1214,15 +1904,35 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
 
 def plot_EnvLayers(envLayers, file_ext = '-'):
     '''
-    Plot the listed environmental layers for a maximum of 3 attributes/properties
-    per layer.
-        
-    Args:
-        envLayers (list): The list of class instances of environmental layers
-        save_as (str, optional): String representing the figure format ('jpg' or 'pdf', '-' by default)
-    
-    Returns:
-        A plot
+    Plot multiple environmental layers with up to three attributes per layer.
+
+    This function creates a multi-panel figure where each row corresponds
+    to an environmental layer. It supports topography, soil, natural land,
+    and urban land layers. The function automatically handles legends, 
+    color maps, and optional hillshading for topography.
+
+    Parameters
+    ----------
+    envLayers : list of objects
+        List of environmental layer instances (e.g., EnvLayer_topo, EnvLayer_soil,
+        EnvLayer_natLand, EnvLayer_urbLand).
+    file_ext : str, optional
+        File extension to save the figure ('jpg', 'pdf', etc.). Default is '-' 
+        which means the figure is not saved.
+
+    Returns
+    -------
+    None
+        Displays the multi-panel plot. Optionally saves the figure if `file_ext`
+        is not '-'.
+
+    Notes
+    -----
+    - For topography layers, the three columns correspond to: altitude `z`, slope, and aspect.
+    - For soil layers, the three columns correspond to: thickness `h`, factor of safety, and an empty panel.
+    - For natural land layers, the first column shows land classes (`S`), the other two columns are empty.
+    - For urban land layers, the three columns correspond to: state `S`, road network, and building value.
+    - Legends, color maps, and hillshading are applied automatically depending on the layer type.
     '''
     nLayers = len(envLayers)
     fig, ax = plt.subplots(nLayers, 3, figsize=(20, 6*nLayers), squeeze = False)
