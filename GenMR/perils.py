@@ -685,7 +685,11 @@ class EventSetGenerator:
 
         Si_ind_vec = self.utils.partitioning(Si_ind, qi, self.sizeDistr[ID]['Nstoch'])
         Si_vec = Si[Si_ind_vec]
-        wi = 1 / np.array([np.count_nonzero(Si_ind_vec == i) for i in Si_ind])
+
+        counts = np.array([np.count_nonzero(Si_ind_vec == i) for i in Si_ind])
+        counts_safe = np.where(counts == 0, np.nan, counts)  # or np.inf
+        wi = 1 / counts_safe
+#        wi = 1 / np.array([np.count_nonzero(Si_ind_vec == i) for i in Si_ind])
         wi_vec = [wi[Si_ind == i][0] for i in Si_ind_vec]
         return Si_vec, wi_vec
 
@@ -1002,7 +1006,8 @@ class HazardFootprintGenerator:
 
         dx = grid.xx - track_x[t_i]
         dy = grid.yy - track_y[t_i]
-        alpha = np.arctan(dy / dx)
+        with np.errstate(invalid='ignore', divide='ignore'):
+            alpha = np.arctan(dy / dx)
 
         vtan_x = -vtan * np.sin(alpha)
         vtan_y = vtan * np.cos(alpha)
@@ -2100,15 +2105,15 @@ def plot_vulnFunctions():
     '''
     Plot vulnerability (MDR) functions for different perils.
     '''
-    pi_kPa = np.linspace(0, 50, 100)
+    pi_kPa = np.linspace(1e-6, 50, 100)
     MDR_blast = vuln_f(pi_kPa, 'AI')      # or 'Ex'
-    PGAi = np.linspace(0, 15, 100)     # m/s2
+    PGAi = np.linspace(1e-6, 15, 100)     # m/s2
     MDR_EQ = vuln_f(PGAi, 'EQ')
-    hwi = np.linspace(0, 7, 1000)      # m
+    hwi = np.linspace(1e-6, 7, 1000)      # m
     MDR_flood = vuln_f(hwi, 'FF')         # or 'SS'
-    hsi = np.linspace(0, 7, 100)       # m
+    hsi = np.linspace(1e-6, 7, 100)       # m
     MDR_LS = vuln_f(hsi, 'LS')
-    hai = np.linspace(0, 2, 100)       # m
+    hai = np.linspace(1e-6, 2, 100)       # m
     MDR_VE = vuln_f(hai, 'VE')
     g_earth = 9.81                   # [m/s^2]
     rho_ash = 900                    # [kg/m3]  (dry ash)

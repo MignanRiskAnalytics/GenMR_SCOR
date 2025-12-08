@@ -445,7 +445,8 @@ class EnvLayer_topo:
                     y_rot = -self.gridlow.x[i] * np.cos(strike) + self.gridlow.y[j] * np.sin(strike)
                     xc_rot = xc[seg] * np.sin(strike) + yc[seg] * np.cos(strike)
                     yc_rot = -xc[seg] * np.cos(strike) + yc[seg] * np.sin(strike)  
-                    zth_tmp = Pe * np.sqrt(1 - (x_rot-xc_rot)**2/Le**2 - (y_rot-yc_rot)**2/We**2) +zc[seg]
+                    with np.errstate(invalid='ignore', divide='ignore'):
+                        zth_tmp = Pe * np.sqrt(1 - (x_rot-xc_rot)**2/Le**2 - (y_rot-yc_rot)**2/We**2) +zc[seg]
                     if not np.isnan(zth_tmp):
                         if zth[i,j] < zth_tmp:
                             zth[i,j] = zth_tmp
@@ -740,9 +741,10 @@ def calc_FS(slope, h, w, par):
     Proceedings of the 8th Congress of the International Association of Engineering Geology, Vancouver, BC, 
     Canada, 21 September 1998
     '''
-    FS = (par['Ceff_Pa'] / (par['rho_kg/m3'] * GenMR_utils.g_earth * h) + np.cos(slope * np.pi/180) * \
-         (1 - w * GenMR_utils.rho_wat / par['rho_kg/m3']) * np.tan(par['phieff_deg'] * np.pi/180)) / \
-         np.sin(slope * np.pi/180)
+    with np.errstate(divide='ignore', invalid='ignore'):
+        FS = (par['Ceff_Pa'] / (par['rho_kg/m3'] * GenMR_utils.g_earth * h) + np.cos(slope * np.pi/180) * \
+             (1 - w * GenMR_utils.rho_wat / par['rho_kg/m3']) * np.tan(par['phieff_deg'] * np.pi/180)) / \
+             np.sin(slope * np.pi/180)
     return FS
 
 def get_FS_state(FS):
@@ -1432,9 +1434,10 @@ class EnvLayer_urbLand:
             Returns 0 if slope exceeds 'SLEUTH_maxslope'.
         '''
         expo = par['SLEUTH_slope'] /100 /2.
-        pr = ((par['SLEUTH_maxslope'] - np.round(slope)) / par['SLEUTH_maxslope'])**expo
         if slope >= par['SLEUTH_maxslope']:
             pr = 0
+        else:
+            pr = ((par['SLEUTH_maxslope'] - np.round(slope)) / par['SLEUTH_maxslope'])**expo
         return pr
     
     def transform_landUse(self):
