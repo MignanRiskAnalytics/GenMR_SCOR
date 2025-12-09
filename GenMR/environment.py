@@ -23,7 +23,7 @@ Planned Additions (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.1
-:Date: 2025-12-05
+:Date: 2025-12-08
 :License: AGPL-3
 """
 

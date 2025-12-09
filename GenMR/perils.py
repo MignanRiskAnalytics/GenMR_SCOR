@@ -35,7 +35,7 @@ Planned peril models (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.1
-:Date: 2025-12-05
+:Date: 2025-12-08
 :License: AGPL-3
 """
 
@@ -1353,7 +1353,7 @@ class DynamicHazardFootprintGenerator:
             print('Loading from cache potential footprints')
         else:
             print('Computing potential footprints')
-            frame_plot = False
+            frame_plot = True    #False
             WF_CA = CellularAutomaton_WF(self.src, self.urb, frame_plot)
             WF_CA.run()
         print('Fetching footprints from potential footprints')
@@ -1794,19 +1794,20 @@ class CellularAutomaton_WF:
                 burntArea_cells = np.sum(WF_fp == 5)
 
                 WF_Smin = 1e4   # hardcoded here, could be sizeDistr['WF']['Smin'] as additional input par.
-                if self.frame_plot and burntArea_cells >= WF_Smin:
-                    plt.rcParams['font.size'] = '14'
-                    _, ax = plt.subplots(1, 1, figsize=(7, 7))
-                    ax.contourf(self.grid.xx, self.grid.yy,
-                                GenMR_env.ls.hillshade(self.urbLandLayer.topo.z, vert_exag=.1),
-                                cmap='gray', alpha=.1)
-                    ax.pcolormesh(self.grid.xx, self.grid.yy, self.landuse_S4WF,
-                                  cmap=GenMR_utils.col_S, vmin=-1, vmax=5, alpha=.5)
-                    ax.pcolormesh(self.grid.xx, self.grid.yy, WF_fp,
-                                  cmap=GenMR_utils.col_S, vmin=-1, vmax=5)
+                if burntArea_cells >= WF_Smin:
+                    if self.frame_plot:
+                        plt.rcParams['font.size'] = '14'
+                        _, ax = plt.subplots(1, 1, figsize=(7, 7))
+                        ax.contourf(self.grid.xx, self.grid.yy,
+                                    GenMR_env.ls.hillshade(self.urbLandLayer.topo.z, vert_exag=.1),
+                                    cmap='gray', alpha=.1)
+                        ax.pcolormesh(self.grid.xx, self.grid.yy, self.landuse_S4WF,
+                                    cmap=GenMR_utils.col_S, vmin=-1, vmax=5, alpha=.5)
+                        ax.pcolormesh(self.grid.xx, self.grid.yy, WF_fp,
+                                    cmap=GenMR_utils.col_S, vmin=-1, vmax=5)
 
-                    plt.savefig(f'{self.path_WF_CA}/WF_fp_event_{self.k}_{burntArea_cells}.jpg', dpi=300)
-                    plt.close()
+                        plt.savefig(f'{self.path_WF_CA}/WF_fp_event_{self.k}_{burntArea_cells}.jpg', dpi=300)
+                        plt.close()
 
                     np.save(f'{self.path_WF_CA_data}/WF_fp_event_{self.k}_{burntArea_cells}.npy', WF_fp)
                     self.k += 1
@@ -1815,6 +1816,7 @@ class CellularAutomaton_WF:
                 landuse_S4WF_flat = self.landuse_S4WF.flatten()
                 landuse_S4WF_flat[self.indwoodBldg] = 1
                 self.landuse_S4WF = landuse_S4WF_flat.reshape(self.landuse_S.shape)
+                self.S[self.landuse_S4WF == 1] = 1
 
         # move iteration forward
         self.i += 1
@@ -1885,9 +1887,9 @@ def vuln_f(I, peril):
         vn = (I - v_thresh) / (v_half - v_thresh)
         vn[vn < 0] = 0
         MDR = vn**3 / (1+vn**3)
-    if peril == 'WF':                    # I = 1 (burnt) or 0
+    if peril == 'WF':                    # I = 5 (burnt) or 0
         MDR = np.zeros_like(I)
-        MDR[I == 1] = 1
+        MDR[I == 5] = 1
     return MDR
 
 class RiskFootprintGenerator:
