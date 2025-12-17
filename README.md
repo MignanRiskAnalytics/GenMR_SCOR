@@ -1,13 +1,12 @@
 # GenMR
 
 GenMR is an open-source Python package for research and development in catastrophe dynamics. It provides the probabilistic Generic Multi-Risk (GenMR) framework along with a digital template for multi-risk simulations in a fully parameterizable virtual environment. The catastrophe dynamics process is structured into three sequential steps:
-1. Virtual environment generation - handled by `GenMR.environment.py` (in construction)
-2. Definition of stochastic events for individual perils - handled by `GenMR.perils.py` (in construction)
+1. Virtual environment generation - handled by `GenMR.environment.py`
+2. Definition of stochastic events for individual perils - handled by `GenMR.perils.py`
 3. Simulation of chains-of-events and risk drivers - handled by `GenMR.dynamics.py` (*planned for Fall 2026*).
 
-Other modules are also planned:
-- `GenMR.utils.py` - general-purpose utilities
-- `GenMR.assess.py` - risk assessment tools
+Other module:
+- `GenMR.utils.py` - general-purpose utilities, including risk assessment tools
 
 > [!NOTE]
 > 📚 **Documentation:** Visit our [online documentation](https://mignanriskanalytics.github.io/GenMR_SCOR/) for the project rationale, tutorials, and the GenMR manual.
@@ -38,7 +37,7 @@ The GenMR framework and digital template are designed to be generic by construct
 <br>
 
 **GenMR_SCOR Project Timeline**
-1. *GenMR blueprint preparation* (v1.1.1, due Dec. 2025): Enhancement of the <a href = "https://github.com/amignan/Intro2CATriskModelling/blob/main/CATRiskModellingSandbox_tutorial.ipynb" target = "_blank">CAT Risk Modelling Sandbox</a> from Mignan (2024), Cambridge University Press, by transitioning to an object-oriented Python platform.
+1. *GenMR blueprint preparation* (v1.1.1, published in Dec. 2025): Enhancement of the <a href = "https://github.com/amignan/Intro2CATriskModelling/blob/main/CATRiskModellingSandbox_tutorial.ipynb" target = "_blank">CAT Risk Modelling Sandbox</a> from Mignan (2024), Cambridge University Press, by transitioning to an object-oriented Python platform.
 2. *Implementation of additional perils & environmental layers* (v1.1.2, due Jun. 2026): Development of climatic and socio-economic perils, which were not included in the 2024 CAT Risk Modelling Sandbox.
 3. *Implementation of Multi-Risk Core* (v1.2.1, due Sep. 2026): Modelling of chains-of-events and risk drivers within the GenMR framework.
 4. *Implementation of hydropower-dam and dam flood model* (led by UniL project partner, v1.2.2, due Mar. 2027): Reproduction of Matos et al. (2015;2017) and integration into digital template.
