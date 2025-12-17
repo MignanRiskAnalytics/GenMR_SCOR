@@ -38,7 +38,7 @@ The GenMR framework and digital template are designed to be generic by construct
 
 **GenMR_SCOR Project Timeline**
 1. *GenMR blueprint preparation* (v1.1.1, published in Dec. 2025): Enhancement of the <a href = "https://github.com/amignan/Intro2CATriskModelling/blob/main/CATRiskModellingSandbox_tutorial.ipynb" target = "_blank">CAT Risk Modelling Sandbox</a> from Mignan (2024), Cambridge University Press, by transitioning to an object-oriented Python platform.
-2. *Implementation of additional perils & environmental layers* (v1.1.2, due Jun. 2026): Development of climatic and socio-economic perils, which were not included in the 2024 CAT Risk Modelling Sandbox.
+2. *Implementation of additional perils & environmental layers* (v1.1.2, ongoing, due Jun. 2026): Development of climatic and socio-economic perils, which were not included in the 2024 CAT Risk Modelling Sandbox.
 3. *Implementation of Multi-Risk Core* (v1.2.1, due Sep. 2026): Modelling of chains-of-events and risk drivers within the GenMR framework.
 4. *Implementation of hydropower-dam and dam flood model* (led by UniL project partner, v1.2.2, due Mar. 2027): Reproduction of Matos et al. (2015;2017) and integration into digital template.
 5. *Interaction matrix encoding* (v1.2.3, due Jun. 2027): Quantitative assessment of event–event and event–environment interactions within the digital template.

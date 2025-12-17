@@ -83,8 +83,10 @@ The digital template is central to multi-risk R&D and GenMR prototyping. Every e
 One can explore the possibilities offered by the GenMR package through the following tutorials:
 - {doc}`notebooks/Tutorial1_DigitalTemplate_environment`: A step-by-step guide to building the digital template environment.
     - Version 1.1.1 includes five environmental layers: topography, soil, land use, urban surface, and road network.
+    - Version 1.1.2 (due Jun. 2026) will include three additional environmental layers: atmosphere, power grid, and population. Other layers will further be improved (e.g., crop class in land-use, electricity demand and businesses in urban area attributes).
 - {doc}`notebooks/Tutorial2_DigitalTemplate_perils`: A description of how perils can be implemented in the  digital template environment, as well as a tutorial on CAT risk modelling, covering the creation of an event loss table (ELT), event footprint catalogue, hazard maps and hazard curves, and exceedance probability (OEP) curves, applied to the previously virtual built environment.
     - Version 1.1.1 features ten perils: asteroid impacts (AI), earthquakes (EQ), fluvial floods (FF), landslides (LS), rainstorms (RS), storm surges (SS), tropical cyclones (TC), volcanic eruptions (VE), wildfires (WF), and industrial explosions (Ex).
+    - Version 1.1.2 (due Jun. 2026) will feature ten more perils: drought (Dr), heatwave (HW), lightning (Li), pest infestation (PI), tornado (To), windstorm (WS), blackout (BO), business interruption (BI), public service failure (Sf), and social unrest (SU).
 - Tutorial 3 COMING IN 2026: A tutorial on catastrophe dynamics, demonstrating how to model chains-of-events and their cascading impacts.
 
 

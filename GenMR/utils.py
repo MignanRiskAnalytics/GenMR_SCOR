@@ -7,8 +7,8 @@ computing, and plotting within the GenMR package. These functions support
 core GenMR workflows by streamlining data handling, computation, and visualisation tasks.
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
-:Version: 1.1.1
-:Date: 2025-12-03
+:Version: 1.1.2
+:Date: 2025-12-17
 :License: AGPL-3
 """
 

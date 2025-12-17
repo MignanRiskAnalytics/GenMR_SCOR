@@ -34,8 +34,8 @@ Planned peril models (v1.1.2)
 
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
-:Version: 1.1.1
-:Date: 2025-12-08
+:Version: 1.1.2
+:Date: 2025-12-17
 :License: AGPL-3
 """
 
