@@ -444,6 +444,13 @@ def fetch_A0(level):
     A0 = As[ind]
     return A0
 
+# Tornado Enhanced Fujita (EF) scale: lower bounds considered in m/s, converted from mph
+mph2ms = .44704
+map_EF2vmax = {
+    3: np.round(136 * mph2ms),
+    4: np.round(166 * mph2ms),
+    5: np.round(201 * mph2ms)
+}
 
 
 ####################
