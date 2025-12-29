@@ -180,6 +180,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../manual.html#module-GenMR.perils">GenMR.perils module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#genmr-peril-implementation">GenMR Peril Implementation</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#peril-models-v1-1-1">Peril models (v1.1.1)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#peril-models-v1-1-2">Peril models (v1.1.2)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#planned-peril-models-v1-1-2">Planned peril models (v1.1.2)</a></li>
 </ul>
 </li>
@@ -231,6 +232,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.Src.EQ_char"><code class="docutils literal notranslate"><span class="pre">Src.EQ_char</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.Src.FF_char"><code class="docutils literal notranslate"><span class="pre">Src.FF_char</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.Src.TC_char"><code class="docutils literal notranslate"><span class="pre">Src.TC_char</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.Src.To_char"><code class="docutils literal notranslate"><span class="pre">Src.To_char</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.Src.VE_char"><code class="docutils literal notranslate"><span class="pre">Src.VE_char</span></code></a></li>
 </ul>
 </li>
@@ -313,6 +315,7 @@
 <li class="toctree-l3"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#a-peril-sources">A. Peril sources</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#b-stochastic-event-set">B. Stochastic event set</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#b-1-earthquake-case">B.1. Earthquake case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#b-2-tornado-case">B.2. Tornado case</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-hazard-footprints">C. Hazard footprints</a><ul>
@@ -352,8 +355,8 @@
   <section class="tex2jax_ignore mathjax_ignore" id="tutorial-1-generating-a-virtual-environment-for-the-genmr-digital-template">
 <h1>Tutorial 1: Generating a virtual environment for the GenMR digital template<a class="headerlink" href="#tutorial-1-generating-a-virtual-environment-for-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
-<strong>Version:</strong> 1.1.1<br />
-<strong>Last Updated:</strong> 2025-12-08<br />
+<strong>Version:</strong> 1.1.2<br />
+<strong>Last Updated:</strong> 2025-12-29<br />
 <strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
 <p>The <em>digital template</em>, first described in <a class="reference external" href="https://www.mdpi.com/1660-4601/19/23/16097">Mignan (2022)</a> and used in the CAT Risk Modelling Sandbox (<a class="reference external" href="https://github.com/amignan/Intro2CATriskModelling/blob/main/CATRiskModellingSandbox_tutorial.ipynb">Mignan, 2024</a>), is a microcosm simulation of the complex Earth system for catastrophe dynamics R&amp;D, multi-risk prototyping in the Generic Multi-Risk (GenMR) framework, and catastrophe risk eduction. It is defined as a virtual environment populated by loss-generating events that interact with each other and with the environment. The virtual environment, to be built in this tutorial, is composed of <em>environmental layers</em> that consist of sets of variables <span class="math notranslate nohighlight">\(\theta(x,y)\)</span> defined in a spatial grid of coordinates <span class="math notranslate nohighlight">\((x,y)\)</span>. Each layer may be altered by <em>environmental objects</em> located within the layer. The parsimonious complex Earth system finally consists of a stack of interacting environmental layers defined in the natural, technological and socio-economic systems. The loss-generating events that populate the virtual environment will be defined in the next tutorial, and their occurrence rates and interactions in a third and final tutorial.</p>
 <p>Currently, a limited number of environmental layers and objects are available (Fig. 1, Table 1). This notebook provides a concise overview of these layers using a default parameterisation, with alternative scenarios to be introduced later in How-To Guides. The outputs generated here will serve as input for hazard and risk assessment in the subsequent tutorials.</p>
@@ -670,8 +673,8 @@ The environmental layers are generated as follows:
 <p>(<em>Note on possible future improvement:</em> adding a modifying factor with distance from city center (or built year) to distinguish the historical centre from more modern areas)</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">file_urbLandLayer</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>           <span class="c1"># run the city growth model if &#39;&#39; provided</span>
-<span class="c1">#file_urbLandLayer = &#39;envLayer_urbLand.pkl&#39;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#file_urbLandLayer = &#39;&#39;           # run the city growth model if &#39;&#39; provided</span>
+<span class="n">file_urbLandLayer</span> <span class="o">=</span> <span class="s1">&#39;envLayer_urbLand.pkl&#39;</span>
 
 <span class="n">urbLandPar</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;lores_f&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;rdm_seed&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="c1"># seed does not work -&gt; find where to put it...</span>
@@ -710,7 +713,7 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|█████████████████████████████████████████| 100/100 [41:07&lt;00:00, 24.67s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|█████████████████████████████████████████| 100/100 [39:00&lt;00:00, 23.40s/it]
 </pre></div>
 </div>
 </div>
@@ -727,7 +730,7 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/e2041b3156f855ac88f99f720b293eb9f49a6c5d78e5f2ba9d259eb9c16b911d.png" src="../_images/e2041b3156f855ac88f99f720b293eb9f49a6c5d78e5f2ba9d259eb9c16b911d.png" />
+<img alt="../_images/902fa6ee013cf6eec34d41e6f474eccf7ebc209ce4ca44b6040ac3c19ce38e08.png" src="../_images/902fa6ee013cf6eec34d41e6f474eccf7ebc209ce4ca44b6040ac3c19ce38e08.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -737,7 +740,7 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/a29ff25676a34ffc9fa97ac4a925671cdb13c8b81a929db5d305bb70fc1c55c6.png" src="../_images/a29ff25676a34ffc9fa97ac4a925671cdb13c8b81a929db5d305bb70fc1c55c6.png" />
+<img alt="../_images/11dfd690da1e4183bb6c56262af6f73aa02d454d9da83b4706c2f19fbc78a754.png" src="../_images/11dfd690da1e4183bb6c56262af6f73aa02d454d9da83b4706c2f19fbc78a754.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -747,7 +750,7 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9febf504bb8850f7981054da800fb13e3ecd62b621815efebc06ccc58cc40922.png" src="../_images/9febf504bb8850f7981054da800fb13e3ecd62b621815efebc06ccc58cc40922.png" />
+<img alt="../_images/e3c6473085bff5037e1d394373faa8890067f8483ec0fe92e92eeb957ee34086.png" src="../_images/e3c6473085bff5037e1d394373faa8890067f8483ec0fe92e92eeb957ee34086.png" />
 </div>
 </div>
 <p>Three types of industrial zones are defined in the virtual city: the industrial harbor, the riverside industrial park, and the inland industrial parks. This classification is used to automatically locate a refinery, identified as a critical infrastructure and a potential source of industrial explosions in Tutorial 2, within the largest industrial harbor sector. This is illustrated below by plotting the coordinates of the attribute <code class="docutils literal notranslate"><span class="pre">CI_refinery</span></code>.</p>
@@ -799,7 +802,7 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/bea720aa495f069137bcb0ae1f120ef7d0f93adf2bd639edaba534180ab5f043.png" src="../_images/bea720aa495f069137bcb0ae1f120ef7d0f93adf2bd639edaba534180ab5f043.png" />
+<img alt="../_images/c5ad7f29ed2c5911062e9fb75a626a00759bd7382575dd94c6309302a9870b74.png" src="../_images/c5ad7f29ed2c5911062e9fb75a626a00759bd7382575dd94c6309302a9870b74.png" />
 </div>
 </div>
 <div class="cell docutils container">

@@ -179,6 +179,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../manual.html#module-GenMR.perils">GenMR.perils module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#genmr-peril-implementation">GenMR Peril Implementation</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#peril-models-v1-1-1">Peril models (v1.1.1)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#peril-models-v1-1-2">Peril models (v1.1.2)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#planned-peril-models-v1-1-2">Planned peril models (v1.1.2)</a></li>
 </ul>
 </li>
@@ -230,6 +231,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.Src.EQ_char"><code class="docutils literal notranslate"><span class="pre">Src.EQ_char</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.Src.FF_char"><code class="docutils literal notranslate"><span class="pre">Src.FF_char</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.Src.TC_char"><code class="docutils literal notranslate"><span class="pre">Src.TC_char</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.Src.To_char"><code class="docutils literal notranslate"><span class="pre">Src.To_char</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.Src.VE_char"><code class="docutils literal notranslate"><span class="pre">Src.VE_char</span></code></a></li>
 </ul>
 </li>
@@ -312,6 +314,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#a-peril-sources">A. Peril sources</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#b-stochastic-event-set">B. Stochastic event set</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#b-1-earthquake-case">B.1. Earthquake case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#b-2-tornado-case">B.2. Tornado case</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#c-hazard-footprints">C. Hazard footprints</a><ul>
@@ -351,10 +354,10 @@
   <section class="tex2jax_ignore mathjax_ignore" id="tutorial-2-implementing-perils-in-the-genmr-digital-template">
 <h1>Tutorial 2: Implementing perils in the GenMR digital template<a class="headerlink" href="#tutorial-2-implementing-perils-in-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
-<strong>Version:</strong> 1.1.1<br />
-<strong>Last Updated:</strong> 2025-12-16<br />
+<strong>Version:</strong> 1.1.2<br />
+<strong>Last Updated:</strong> 2025-12-29<br />
 <strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
-<p>Once a virtual environment has been generated (see previous tutorial), stochastic events are modelled to populate it. Table 1 lists the perils so far considered in version 1.1.1 as well as the ones to be added in the near future (v. 1.1.2).</p>
+<p>Once a virtual environment has been generated (see previous tutorial), stochastic events are modelled to populate it. Table 1 lists the perils included in version 1.1.2 (the ones still missing to be included by June 2026).</p>
 <br>
 <center><small><b>Tab. 1.</b> List of perils with identifiers (ID) according to <a href='https://www.cambridge.org/highereducation/books/introduction-to-catastrophe-risk-modelling/A3A5B5FB990921422BFEBB07734BF869#overview' target='_blank'>Mignan (2024:tab.1.7)</a>.</small></center>
 <table class="docutils align-default">
@@ -580,7 +583,7 @@
 </tbody>
 </table>
 <p><small><span class="math notranslate nohighlight">\(^*\)</span> Rainstorm is called an ‘invisible peril’ (following <a href='https://link.springer.com/article/10.1007/s11069-014-1178-4' target='_blank'>Mignan et al., 2014</a>) since it does not cause any direct damage in the present framework. It is implemented as both the landslide and fluvial flood triggering mechanism.<br>
-<sup>†</sup> Included in current version 1.1.1 (<span style="color: green">✓</span>), planned for v.1.1.2 (<span style="color: orange">✗</span>).</small></p>
+<sup>†</sup> Included in current version (<span style="color: green">✓</span>), planned for v.1.1.2 (<span style="color: orange">✗</span>).</small></p>
 <p>This tutorial is divided into two main sections. The first introduces the definition of peril sources, an event table (containing each event’s identifier and annual rate), and a corresponding catalogue of hazard-intensity footprints. The second section covers probabilistic risk assessment, in which damage and loss footprints are generated for each event identifier (Fig. 1) and risk metrics are calculated. Before beginning these sections, the digital-template environment created in the previous tutorial is loaded.</p>
 <figure class="align-center" id="fig-digitaltemplate">
 <a class="reference internal image-reference" href="../_images/digitaltemplate_ev_rayshader.png"><img alt="../_images/digitaltemplate_ev_rayshader.png" src="../_images/digitaltemplate_ev_rayshader.png" style="width: 500px;" />
@@ -620,7 +623,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/730f7ec72312932723deefac3b807163bf1469a66f4729e7b060fd44666b34c7.png" src="../_images/730f7ec72312932723deefac3b807163bf1469a66f4729e7b060fd44666b34c7.png" />
+<img alt="../_images/6efe24919c4b9fff1f34968c6f96a9ee1a600f2782f97e2e814ef76a98f71d56.png" src="../_images/6efe24919c4b9fff1f34968c6f96a9ee1a600f2782f97e2e814ef76a98f71d56.png" />
 </div>
 </div>
 <p>Note that the configuration of the digital template environment may be changed through Tutorial 1.</p>
@@ -632,7 +635,9 @@
 <p>Source characteristics for earthquakes, volcanic eruptions, and fluvial floods were defined in Tutorial 1, as some environmental layers depend directly on these perils. Additional peril sources are now introduced. Localised peril sources, those with no direct impact on environmental layers, are parameterised first (<code class="docutils literal notranslate"><span class="pre">AI</span></code>, <code class="docutils literal notranslate"><span class="pre">SS</span></code>, <code class="docutils literal notranslate"><span class="pre">TC</span></code>, and <code class="docutils literal notranslate"><span class="pre">Ex</span></code>). Diffuse sources (<code class="docutils literal notranslate"><span class="pre">LS</span></code>, <code class="docutils literal notranslate"><span class="pre">WF</span></code>), whose hazard-intensity footprints will be generated in Section 1.3, are characterised thereafter.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;perils&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;AI&#39;</span><span class="p">,</span><span class="s1">&#39;EQ&#39;</span><span class="p">,</span><span class="s1">&#39;RS&#39;</span><span class="p">,</span><span class="s1">&#39;TC&#39;</span><span class="p">,</span><span class="s1">&#39;VE&#39;</span><span class="p">,</span><span class="s1">&#39;WF&#39;</span><span class="p">,</span> <span class="s1">&#39;FF&#39;</span><span class="p">,</span><span class="s1">&#39;LS&#39;</span><span class="p">,</span><span class="s1">&#39;SS&#39;</span><span class="p">,</span><span class="s1">&#39;Ex&#39;</span><span class="p">]</span>   <span class="c1"># IMPORTANT: primary perils come first</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;perils&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;AI&#39;</span><span class="p">,</span><span class="s1">&#39;EQ&#39;</span><span class="p">,</span><span class="s1">&#39;RS&#39;</span><span class="p">,</span><span class="s1">&#39;TC&#39;</span><span class="p">,</span><span class="s1">&#39;To&#39;</span><span class="p">,</span><span class="s1">&#39;VE&#39;</span><span class="p">,</span><span class="s1">&#39;WF&#39;</span><span class="p">,</span> <span class="s1">&#39;FF&#39;</span><span class="p">,</span><span class="s1">&#39;LS&#39;</span><span class="p">,</span><span class="s1">&#39;SS&#39;</span><span class="p">]</span>
+<span class="c1">#src.par[&#39;perils&#39;] = [&#39;AI&#39;,&#39;EQ&#39;,&#39;RS&#39;,&#39;TC&#39;,&#39;To&#39;,&#39;VE&#39;,&#39;WF&#39;, &#39;FF&#39;,&#39;LS&#39;,&#39;SS&#39;,&#39;Ex&#39;]</span>
+                              <span class="c1"># IMPORTANT: primary perils come first in src.par[&#39;perils&#39;]</span>
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;rdm_seed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">42</span>      <span class="c1"># None or integer (for stochastic sources: AI, TC)</span>
 
 
@@ -652,11 +657,18 @@
                  <span class="s1">&#39;max_dev&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>   <span class="c1"># random uniform deviation along the y-axis at each track point</span>
                  <span class="s1">&#39;bin_km&#39;</span><span class="p">:</span> <span class="mf">1.</span><span class="p">}</span>   <span class="c1"># track spatial resolution</span>
 
+<span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;To&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;vortexline&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>  <span class="c1"># random uniform vortex-line initiation points</span>
+                 <span class="c1"># beta distributions for stoch. line lengths function of EF size (3 defined: EF-3, EF-4, EF-5)</span>
+                 <span class="s1">&#39;L_alpha_beta_Lmax_EF3&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">.744</span><span class="p">,</span> <span class="mf">2.87</span><span class="p">,</span> <span class="mf">100.</span><span class="p">],</span>
+                 <span class="s1">&#39;L_alpha_beta_Lmax_EF4&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.077</span><span class="p">,</span> <span class="mf">2.36</span><span class="p">,</span> <span class="mf">100.</span><span class="p">],</span>
+                 <span class="s1">&#39;L_alpha_beta_Lmax_EF5&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.222</span><span class="p">,</span> <span class="mf">1.767</span><span class="p">,</span> <span class="mf">100.</span><span class="p">],</span>
+                 <span class="s1">&#39;bin_km&#39;</span><span class="p">:</span> <span class="mf">1.</span><span class="p">}</span>   <span class="c1"># track spatial resolution</span>
+
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;WF&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;forest&#39;</span><span class="p">}</span>
 
 <span class="c1"># WARNING: slow the first time it is called:</span>
-<span class="n">CI_x</span><span class="p">,</span> <span class="n">CI_y</span> <span class="o">=</span> <span class="n">urbLandLayer</span><span class="o">.</span><span class="n">CI_refinery</span><span class="o">.</span><span class="n">centroid</span>
-<span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;Ex&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;refinery&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">CI_x</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="n">CI_y</span><span class="p">}</span>  <span class="c1"># harbor refinery as source of explosions</span>
+<span class="c1">#CI_x, CI_y = urbLandLayer.CI_refinery.centroid</span>
+<span class="c1">#src.par[&#39;Ex&#39;] = {&#39;object&#39;: &#39;refinery&#39;, &#39;N&#39;: 1, &#39;x&#39;: CI_x, &#39;y&#39;: CI_y}  # harbor refinery as source of explosions</span>
 
 
 <span class="n">GenMR_perils</span><span class="o">.</span><span class="n">plot_src</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">hillshading_z</span> <span class="o">=</span> <span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">file_ext</span> <span class="o">=</span> <span class="s1">&#39;jpg&#39;</span><span class="p">)</span>
@@ -664,7 +676,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/73551911efec1542f4e70b7e0a41687420c5d4f219acb3e3c75d2a03421f080c.png" src="../_images/73551911efec1542f4e70b7e0a41687420c5d4f219acb3e3c75d2a03421f080c.png" />
+<img alt="../_images/48367df63deca404df015e10d1e689a3ba3ed74ccf7b9a79216324aa93ab3c78.png" src="../_images/48367df63deca404df015e10d1e689a3ba3ed74ccf7b9a79216324aa93ab3c78.png" />
 </div>
 </div>
 <p><strong>NOTE:</strong> Hazard intensity footprints are modeled based on the sources shown in the map above. For stochastic sources (<code class="docutils literal notranslate"><span class="pre">AI</span></code>, <code class="docutils literal notranslate"><span class="pre">TC</span></code>), rerunning the previous cell will produce different configurations unless <code class="docutils literal notranslate"><span class="pre">rdm_seed</span></code> is fixed.</p>
@@ -673,7 +685,7 @@
 <h3>1.2. Event table generation<a class="headerlink" href="#event-table-generation" title="Link to this heading"></a></h3>
 <p>The stochastic event set (or event table) consists of a list of events per peril, with identifier <code class="docutils literal notranslate"><span class="pre">evID</span></code>, size <code class="docutils literal notranslate"><span class="pre">S</span></code>, and rate <span class="math notranslate nohighlight">\(\lambda\)</span> (<code class="docutils literal notranslate"><span class="pre">lbd</span></code>). Two types of perils are considered: primary perils for which the rate of occurrence must be assessed and secondary perils which will be assumed in this tutorial to occur in pair with their triggers (with rate <code class="docutils literal notranslate"><span class="pre">NaN</span></code> - for conditional probabilities, see the future Tutorial 3):</p>
 <ul class="simple">
-<li><p>Primary perils: <code class="docutils literal notranslate"><span class="pre">AI</span></code>, <code class="docutils literal notranslate"><span class="pre">EQ</span></code>, <code class="docutils literal notranslate"><span class="pre">RS</span></code>, <code class="docutils literal notranslate"><span class="pre">TC</span></code>, <code class="docutils literal notranslate"><span class="pre">VE</span></code>, <code class="docutils literal notranslate"><span class="pre">WF</span></code>.</p></li>
+<li><p>Primary perils: <code class="docutils literal notranslate"><span class="pre">AI</span></code>, <code class="docutils literal notranslate"><span class="pre">EQ</span></code>, <code class="docutils literal notranslate"><span class="pre">RS</span></code>, <code class="docutils literal notranslate"><span class="pre">TC</span></code>, <code class="docutils literal notranslate"><span class="pre">To</span></code>, <code class="docutils literal notranslate"><span class="pre">VE</span></code>, <code class="docutils literal notranslate"><span class="pre">WF</span></code>.</p></li>
 <li><p>Secondary perils: <code class="docutils literal notranslate"><span class="pre">LS</span></code> and <code class="docutils literal notranslate"><span class="pre">FF</span></code> triggered by <code class="docutils literal notranslate"><span class="pre">RS</span></code>, <code class="docutils literal notranslate"><span class="pre">SS</span></code> triggered by <code class="docutils literal notranslate"><span class="pre">TC</span></code>, <code class="docutils literal notranslate"><span class="pre">Ex</span></code> triggered by damage.</p></li>
 </ul>
 <p>Event size distributions are parameterised in the dictionary <code class="docutils literal notranslate"><span class="pre">sizeDistr</span></code> with:</p>
@@ -691,40 +703,53 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">EQ_Mmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">EQ_char</span><span class="p">[</span><span class="s1">&#39;srcMmax&#39;</span><span class="p">])</span>
 
 <span class="n">sizeDistr</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;primary&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;AI&#39;</span><span class="p">,</span><span class="s1">&#39;EQ&#39;</span><span class="p">,</span><span class="s1">&#39;RS&#39;</span><span class="p">,</span><span class="s1">&#39;TC&#39;</span><span class="p">,</span><span class="s1">&#39;VE&#39;</span><span class="p">,</span><span class="s1">&#39;WF&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;primary&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;AI&#39;</span><span class="p">,</span><span class="s1">&#39;EQ&#39;</span><span class="p">,</span><span class="s1">&#39;RS&#39;</span><span class="p">,</span><span class="s1">&#39;TC&#39;</span><span class="p">,</span><span class="s1">&#39;To&#39;</span><span class="p">,</span><span class="s1">&#39;VE&#39;</span><span class="p">,</span><span class="s1">&#39;WF&#39;</span><span class="p">],</span>
     <span class="s1">&#39;secondary&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;FF&#39;</span><span class="p">,</span><span class="s1">&#39;LS&#39;</span><span class="p">,</span><span class="s1">&#39;SS&#39;</span><span class="p">,</span> <span class="s1">&#39;Ex&#39;</span><span class="p">],</span>
     <span class="c1"># primary perils</span>
     <span class="s1">&#39;AI&#39;</span><span class="p">:{</span>
         <span class="s1">&#39;Nstoch&#39;</span><span class="p">:</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;AI&#39;</span><span class="p">][</span><span class="s1">&#39;N&#39;</span><span class="p">],</span> <span class="s1">&#39;Sunit&#39;</span><span class="p">:</span> <span class="s1">&#39;Bolide energy $E$ (kton)&#39;</span><span class="p">,</span>
         <span class="s1">&#39;Smin&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;Smax&#39;</span><span class="p">:</span> <span class="mf">1e3</span><span class="p">,</span> <span class="s1">&#39;Sbin&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Sscale&#39;</span><span class="p">:</span> <span class="s1">&#39;log&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;powerlaw&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="s1">&#39;global&#39;</span><span class="p">,</span> <span class="s1">&#39;a0&#39;</span><span class="p">:</span> <span class="mf">.5677</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">.9</span>       <span class="c1"># see Mignan (2024:sect.2.3.1)</span>
+        <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;powerlaw&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="s1">&#39;global&#39;</span><span class="p">,</span> <span class="s1">&#39;a0&#39;</span><span class="p">:</span> <span class="mf">.5677</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">.9</span><span class="p">,</span>      <span class="c1"># see Mignan (2024:sect.2.3.1)</span>
+        <span class="s1">&#39;calibration_source&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span>
     <span class="p">},</span>
     <span class="s1">&#39;EQ&#39;</span><span class="p">:{</span>
         <span class="s1">&#39;Nstoch&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;Sunit&#39;</span><span class="p">:</span> <span class="s1">&#39;Magnitude $M$&#39;</span><span class="p">,</span>
         <span class="s1">&#39;Smin&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;Smax&#39;</span><span class="p">:</span> <span class="n">EQ_Mmax</span><span class="p">,</span> <span class="s1">&#39;Sbin&#39;</span><span class="p">:</span> <span class="mf">.1</span><span class="p">,</span> <span class="s1">&#39;Sscale&#39;</span><span class="p">:</span> <span class="s1">&#39;linear&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;exponential&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">1.</span>                  <span class="c1"># i.e., one M = a EQ per year (given b = 1)</span>
+        <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;exponential&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>         <span class="c1"># i.e., one M = a-value EQ per year (given b-value = 1)</span>
+        <span class="s1">&#39;calibration_source&#39;</span><span class="p">:</span> <span class="s1">&#39;user-defined&#39;</span>
     <span class="p">},</span>
     <span class="s1">&#39;RS&#39;</span><span class="p">:{</span>
         <span class="s1">&#39;Nstoch&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;Sunit&#39;</span><span class="p">:</span> <span class="s1">&#39;Water column (mm/hr)&#39;</span><span class="p">,</span>
         <span class="s1">&#39;Smin&#39;</span><span class="p">:</span> <span class="mi">75</span><span class="p">,</span> <span class="s1">&#39;Smax&#39;</span><span class="p">:</span> <span class="mi">125</span><span class="p">,</span> <span class="s1">&#39;Sbin&#39;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span> <span class="s1">&#39;Sscale&#39;</span><span class="p">:</span> <span class="s1">&#39;linear&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;GPD&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="s1">&#39;CONUS&#39;</span><span class="p">,</span> <span class="s1">&#39;mu&#39;</span><span class="p">:</span> <span class="mf">50.</span><span class="p">,</span> <span class="s1">&#39;xi&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">.051</span><span class="p">,</span> <span class="s1">&#39;sigma&#39;</span><span class="p">:</span> <span class="mf">11.8</span><span class="p">,</span> <span class="s1">&#39;Lbdmin0&#39;</span><span class="p">:</span> <span class="mf">522.</span> 
+        <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;GPD&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="s1">&#39;CONUS&#39;</span><span class="p">,</span> <span class="s1">&#39;mu&#39;</span><span class="p">:</span> <span class="mf">50.</span><span class="p">,</span> <span class="s1">&#39;xi&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">.051</span><span class="p">,</span> <span class="s1">&#39;sigma&#39;</span><span class="p">:</span> <span class="mf">11.8</span><span class="p">,</span> <span class="s1">&#39;Lbdmin0&#39;</span><span class="p">:</span> <span class="mf">522.</span><span class="p">,</span> 
             <span class="c1"># see Mignan (2024:sect.2.3.2)</span>
+        <span class="s1">&#39;calibration_source&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span>
     <span class="p">},</span>
     <span class="s1">&#39;TC&#39;</span><span class="p">:{</span>
         <span class="s1">&#39;Nstoch&#39;</span><span class="p">:</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;TC&#39;</span><span class="p">][</span><span class="s1">&#39;N&#39;</span><span class="p">],</span> <span class="s1">&#39;Sunit&#39;</span><span class="p">:</span> <span class="s1">&#39;Max. wind speed (m/s)&#39;</span><span class="p">,</span>
         <span class="s1">&#39;Smin&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span> <span class="s1">&#39;Smax&#39;</span><span class="p">:</span> <span class="mi">65</span><span class="p">,</span> <span class="s1">&#39;Sbin&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;Sscale&#39;</span><span class="p">:</span> <span class="s1">&#39;linear&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;GPD&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="s1">&#39;global&#39;</span><span class="p">,</span> <span class="s1">&#39;mu&#39;</span><span class="p">:</span> <span class="mf">33.</span><span class="p">,</span> <span class="s1">&#39;xi&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">.280</span><span class="p">,</span> <span class="s1">&#39;sigma&#39;</span><span class="p">:</span> <span class="mf">17.8</span><span class="p">,</span><span class="s1">&#39;Lbdmin0&#39;</span><span class="p">:</span> <span class="mf">43.9</span>  <span class="c1"># IBTrACS fit</span>
+        <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;GPD&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="s1">&#39;global&#39;</span><span class="p">,</span> <span class="s1">&#39;mu&#39;</span><span class="p">:</span> <span class="mf">33.</span><span class="p">,</span> <span class="s1">&#39;xi&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">.280</span><span class="p">,</span> <span class="s1">&#39;sigma&#39;</span><span class="p">:</span> <span class="mf">17.8</span><span class="p">,</span><span class="s1">&#39;Lbdmin0&#39;</span><span class="p">:</span> <span class="mf">43.9</span><span class="p">,</span>
 <span class="c1">#        , &#39;Lbdmin&#39;: .1      # overwrites Lbdmin derived from Lbdmin0 to directly choose rate(&gt;=Smin) = Lbdmin</span>
+        <span class="s1">&#39;calibration_source&#39;</span><span class="p">:</span> <span class="s1">&#39;IBTrACS&#39;</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;To&#39;</span><span class="p">:{</span>
+        <span class="s1">&#39;Nstoch&#39;</span><span class="p">:</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;To&#39;</span><span class="p">][</span><span class="s1">&#39;N&#39;</span><span class="p">],</span> <span class="s1">&#39;Sunit&#39;</span><span class="p">:</span> <span class="s1">&#39;Enhanced Fujita scale&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Smin&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;Smax&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;Sbin&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="c1"># WARNING: hardcoded, do not change, depends on &#39;L_alpha_beta_Lmax_EF*&#39;</span>
+        <span class="s1">&#39;Sscale&#39;</span><span class="p">:</span> <span class="s1">&#39;linear&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;exponential&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="s1">&#39;CONUS&#39;</span><span class="p">,</span> <span class="s1">&#39;a0&#39;</span><span class="p">:</span> <span class="mf">3.6</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">.9</span><span class="p">,</span>
+        <span class="s1">&#39;calibration_source&#39;</span><span class="p">:</span> <span class="s1">&#39;NOAA 1950-2021 tornadoes (public)&#39;</span>
     <span class="p">},</span>
     <span class="s1">&#39;VE&#39;</span><span class="p">:{</span>
         <span class="s1">&#39;Nstoch&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;Sunit&#39;</span><span class="p">:</span> <span class="s1">&#39;Ash volume (km$^3$)&#39;</span><span class="p">,</span>
         <span class="s1">&#39;Smin&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Smax&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;Sbin&#39;</span><span class="p">:</span> <span class="mf">.5</span><span class="p">,</span> <span class="s1">&#39;Sscale&#39;</span><span class="p">:</span> <span class="s1">&#39;log&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;powerlaw&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="s1">&#39;global&#39;</span><span class="p">,</span> <span class="s1">&#39;a0&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.155</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">.66</span>      <span class="c1"># see Sect. 2.3.1</span>
+        <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;powerlaw&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="s1">&#39;global&#39;</span><span class="p">,</span> <span class="s1">&#39;a0&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.155</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">.66</span><span class="p">,</span>      <span class="c1"># see Sect. 2.3.1</span>
+        <span class="s1">&#39;calibration_source&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span>
     <span class="p">},</span>
     <span class="s1">&#39;WF&#39;</span><span class="p">:{</span>
         <span class="s1">&#39;Nstoch&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;Sunit&#39;</span><span class="p">:</span> <span class="s1">&#39;Burnt area (ha)&#39;</span><span class="p">,</span>
         <span class="s1">&#39;Smin&#39;</span><span class="p">:</span> <span class="mf">1e4</span><span class="p">,</span> <span class="s1">&#39;Smax&#39;</span><span class="p">:</span> <span class="mf">1e5</span><span class="p">,</span> <span class="s1">&#39;Sbin&#39;</span><span class="p">:</span> <span class="mf">.5</span><span class="p">,</span> <span class="s1">&#39;Sscale&#39;</span><span class="p">:</span> <span class="s1">&#39;log&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;powerlaw&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="s1">&#39;global&#39;</span><span class="p">,</span> <span class="s1">&#39;a0&#39;</span><span class="p">:</span> <span class="mf">8.553</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">1.23</span>      <span class="c1"># see Sect. 2.3.1</span>
+        <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;powerlaw&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="s1">&#39;global&#39;</span><span class="p">,</span> <span class="s1">&#39;a0&#39;</span><span class="p">:</span> <span class="mf">8.553</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">1.23</span><span class="p">,</span>      <span class="c1"># see Sect. 2.3.1</span>
+        <span class="s1">&#39;calibration_source&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span>
     <span class="p">},</span>
     <span class="c1"># secondary perils - here ad-hoc Pr(peril|trigger) = 1, see tutorial 3 for probabilistic case</span>
     <span class="s1">&#39;FF&#39;</span><span class="p">:{</span><span class="s1">&#39;trigger&#39;</span><span class="p">:</span> <span class="s1">&#39;RS&#39;</span><span class="p">},</span>
@@ -1078,6 +1103,78 @@
     </tr>
     <tr>
       <th>38</th>
+      <td>To</td>
+      <td>vortexline1</td>
+      <td>To1</td>
+      <td>3.000000</td>
+      <td>2.148463e-04</td>
+    </tr>
+    <tr>
+      <th>39</th>
+      <td>To</td>
+      <td>vortexline2</td>
+      <td>To2</td>
+      <td>3.000000</td>
+      <td>2.148463e-04</td>
+    </tr>
+    <tr>
+      <th>40</th>
+      <td>To</td>
+      <td>vortexline3</td>
+      <td>To3</td>
+      <td>3.000000</td>
+      <td>2.148463e-04</td>
+    </tr>
+    <tr>
+      <th>41</th>
+      <td>To</td>
+      <td>vortexline4</td>
+      <td>To4</td>
+      <td>4.000000</td>
+      <td>2.704754e-05</td>
+    </tr>
+    <tr>
+      <th>42</th>
+      <td>To</td>
+      <td>vortexline5</td>
+      <td>To5</td>
+      <td>4.000000</td>
+      <td>2.704754e-05</td>
+    </tr>
+    <tr>
+      <th>43</th>
+      <td>To</td>
+      <td>vortexline6</td>
+      <td>To6</td>
+      <td>4.000000</td>
+      <td>2.704754e-05</td>
+    </tr>
+    <tr>
+      <th>44</th>
+      <td>To</td>
+      <td>vortexline7</td>
+      <td>To7</td>
+      <td>5.000000</td>
+      <td>3.405084e-06</td>
+    </tr>
+    <tr>
+      <th>45</th>
+      <td>To</td>
+      <td>vortexline8</td>
+      <td>To8</td>
+      <td>5.000000</td>
+      <td>3.405084e-06</td>
+    </tr>
+    <tr>
+      <th>46</th>
+      <td>To</td>
+      <td>vortexline9</td>
+      <td>To9</td>
+      <td>5.000000</td>
+      <td>3.405084e-06</td>
+    </tr>
+    <tr>
+      <th>47</th>
       <td>VE</td>
       <td>volcano1</td>
       <td>VE1</td>
@@ -1085,7 +1182,7 @@
       <td>1.793957e-06</td>
     </tr>
     <tr>
-      <th>39</th>
+      <th>48</th>
       <td>VE</td>
       <td>volcano1</td>
       <td>VE2</td>
@@ -1093,7 +1190,7 @@
       <td>8.390967e-07</td>
     </tr>
     <tr>
-      <th>40</th>
+      <th>49</th>
       <td>VE</td>
       <td>volcano1</td>
       <td>VE3</td>
@@ -1101,7 +1198,7 @@
       <td>3.924750e-07</td>
     </tr>
     <tr>
-      <th>41</th>
+      <th>50</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF1</td>
@@ -1109,7 +1206,7 @@
       <td>3.625127e-02</td>
     </tr>
     <tr>
-      <th>42</th>
+      <th>51</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF2</td>
@@ -1117,7 +1214,7 @@
       <td>3.625127e-02</td>
     </tr>
     <tr>
-      <th>43</th>
+      <th>52</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF3</td>
@@ -1125,7 +1222,7 @@
       <td>3.625127e-02</td>
     </tr>
     <tr>
-      <th>44</th>
+      <th>53</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF4</td>
@@ -1133,7 +1230,7 @@
       <td>3.625127e-02</td>
     </tr>
     <tr>
-      <th>45</th>
+      <th>54</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF5</td>
@@ -1141,7 +1238,7 @@
       <td>3.625127e-02</td>
     </tr>
     <tr>
-      <th>46</th>
+      <th>55</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF6</td>
@@ -1149,7 +1246,7 @@
       <td>3.625127e-02</td>
     </tr>
     <tr>
-      <th>47</th>
+      <th>56</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF7</td>
@@ -1157,7 +1254,7 @@
       <td>1.759354e-02</td>
     </tr>
     <tr>
-      <th>48</th>
+      <th>57</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF8</td>
@@ -1165,7 +1262,7 @@
       <td>1.759354e-02</td>
     </tr>
     <tr>
-      <th>49</th>
+      <th>58</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF9</td>
@@ -1173,7 +1270,7 @@
       <td>1.759354e-02</td>
     </tr>
     <tr>
-      <th>50</th>
+      <th>59</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF10</td>
@@ -1181,7 +1278,7 @@
       <td>1.280780e-02</td>
     </tr>
     <tr>
-      <th>51</th>
+      <th>60</th>
       <td>FF</td>
       <td>river1</td>
       <td>FF_fromRS1</td>
@@ -1189,7 +1286,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>52</th>
+      <th>61</th>
       <td>FF</td>
       <td>river1</td>
       <td>FF_fromRS2</td>
@@ -1197,7 +1294,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>53</th>
+      <th>62</th>
       <td>FF</td>
       <td>river1</td>
       <td>FF_fromRS3</td>
@@ -1205,7 +1302,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>54</th>
+      <th>63</th>
       <td>LS</td>
       <td>terrain</td>
       <td>LS_fromRS1</td>
@@ -1213,7 +1310,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>55</th>
+      <th>64</th>
       <td>LS</td>
       <td>terrain</td>
       <td>LS_fromRS2</td>
@@ -1221,7 +1318,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>56</th>
+      <th>65</th>
       <td>LS</td>
       <td>terrain</td>
       <td>LS_fromRS3</td>
@@ -1229,7 +1326,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>57</th>
+      <th>66</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC1</td>
@@ -1237,7 +1334,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>58</th>
+      <th>67</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC2</td>
@@ -1245,7 +1342,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>59</th>
+      <th>68</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC3</td>
@@ -1253,7 +1350,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>60</th>
+      <th>69</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC4</td>
@@ -1261,19 +1358,11 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>61</th>
+      <th>70</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC5</td>
       <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>62</th>
-      <td>Ex</td>
-      <td>refinery</td>
-      <td>Ex_fromCIf</td>
-      <td>1.000000</td>
       <td>NaN</td>
     </tr>
   </tbody>
@@ -1964,6 +2053,74 @@ TVaR_q [$ B.]: 287.23171766165484
 </div>
 <div class="cell_output docutils container">
 <img alt="../_images/5632b1fefab0d523657fd10397662965fc39c7036a59d131305574e491ae1a75.png" src="../_images/5632b1fefab0d523657fd10397662965fc39c7036a59d131305574e491ae1a75.png" />
+</div>
+</div>
+</section>
+<section id="b-2-tornado-case">
+<h4>B.2. Tornado case<a class="headerlink" href="#b-2-tornado-case" title="Link to this heading"></a></h4>
+<p>Change (e.g., increase) <code class="docutils literal notranslate"><span class="pre">src_test.par['To']['N']</span></code> to test the stochastic properties of the tornado vortex-lines (i.e., initiation points random uniform, random strike, length according to EF-level Beta distribution).</p>
+<p>TO IMPROVE: constrain initiation point locations (mask water mass and high altitude).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">src_test</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+<span class="n">src_test</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;To&#39;</span><span class="p">][</span><span class="s1">&#39;N&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">src_test</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;rdm_seed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">sizeDistr_test</span> <span class="o">=</span> <span class="n">sizeDistr</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">sizeDistr_test</span><span class="p">[</span><span class="s1">&#39;To&#39;</span><span class="p">][</span><span class="s1">&#39;Nstoch&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">src_test</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;To&#39;</span><span class="p">][</span><span class="s1">&#39;N&#39;</span><span class="p">]</span>
+
+<span class="n">eventSet_test</span> <span class="o">=</span> <span class="n">GenMR_perils</span><span class="o">.</span><span class="n">EventSetGenerator</span><span class="p">(</span><span class="n">src_test</span><span class="p">,</span> <span class="n">sizeDistr_test</span><span class="p">,</span> <span class="n">GenMR_utils</span><span class="p">)</span>
+<span class="n">evtable_test</span><span class="p">,</span> <span class="n">evchar_test</span> <span class="o">=</span> <span class="n">eventSet_test</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
+
+<span class="n">evchar_To</span> <span class="o">=</span> <span class="n">evchar_test</span><span class="p">[</span><span class="n">evchar_test</span><span class="p">[</span><span class="s1">&#39;evID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;To&#39;</span><span class="p">)]</span>
+<span class="n">evIDi</span> <span class="o">=</span> <span class="n">evchar_To</span><span class="p">[</span><span class="s1">&#39;evID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+<span class="n">L3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+<span class="n">L4</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+<span class="n">L5</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;22&#39;</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">ls</span><span class="o">.</span><span class="n">hillshade</span><span class="p">(</span><span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">vert_exag</span><span class="o">=</span><span class="mf">.1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.1</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">evIDi</span><span class="p">:</span>
+    <span class="n">indev</span> <span class="o">=</span> <span class="n">evchar_To</span><span class="p">[</span><span class="s1">&#39;evID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span>
+    <span class="n">x_To</span> <span class="o">=</span> <span class="n">evchar_To</span><span class="p">[</span><span class="n">indev</span><span class="p">][</span><span class="s1">&#39;x&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">y_To</span> <span class="o">=</span> <span class="n">evchar_To</span><span class="p">[</span><span class="n">indev</span><span class="p">][</span><span class="s1">&#39;y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">x_To</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">x_To</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y_To</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">y_To</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">evtable_test</span><span class="p">[</span><span class="n">evtable_test</span><span class="p">[</span><span class="s1">&#39;evID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">][</span><span class="s1">&#39;S&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="s1">&#39;orange&#39;</span>
+        <span class="n">L3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">L3</span><span class="p">,</span> <span class="n">L</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">evtable_test</span><span class="p">[</span><span class="n">evtable_test</span><span class="p">[</span><span class="s1">&#39;evID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">][</span><span class="s1">&#39;S&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="s1">&#39;red&#39;</span>
+        <span class="n">L4</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">L4</span><span class="p">,</span> <span class="n">L</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="s1">&#39;darkred&#39;</span>
+        <span class="n">L5</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">L5</span><span class="p">,</span> <span class="n">L</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_To</span><span class="p">,</span> <span class="n">y_To</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">col</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xmin</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">xmax</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">ymin</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">ymax</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Stochastic vortex lines&#39;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;To&#39;</span><span class="p">][</span><span class="s1">&#39;L_alpha_beta_Lmax_EF3&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">L3</span><span class="p">,</span> <span class="n">bins</span> <span class="o">=</span> <span class="n">bins</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;EF3&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">L4</span><span class="p">,</span> <span class="n">bins</span> <span class="o">=</span> <span class="n">bins</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;EF4&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">L5</span><span class="p">,</span> <span class="n">bins</span> <span class="o">=</span> <span class="n">bins</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;darkred&#39;</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;EF5&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Vortex line length (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Count&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Length distribution&#39;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;right&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/1f5779e883b643312b826c9fef9c6378ba0e838f0876edbd62219c0fb1732afa.png" src="../_images/1f5779e883b643312b826c9fef9c6378ba0e838f0876edbd62219c0fb1732afa.png" />
 </div>
 </div>
 </section>

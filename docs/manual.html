@@ -178,6 +178,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-GenMR.perils">GenMR.perils module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#genmr-peril-implementation">GenMR Peril Implementation</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#peril-models-v1-1-1">Peril models (v1.1.1)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#peril-models-v1-1-2">Peril models (v1.1.2)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#planned-peril-models-v1-1-2">Planned peril models (v1.1.2)</a></li>
 </ul>
 </li>
@@ -229,6 +230,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.Src.EQ_char"><code class="docutils literal notranslate"><span class="pre">Src.EQ_char</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.Src.FF_char"><code class="docutils literal notranslate"><span class="pre">Src.FF_char</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.Src.TC_char"><code class="docutils literal notranslate"><span class="pre">Src.TC_char</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.Src.To_char"><code class="docutils literal notranslate"><span class="pre">Src.To_char</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.Src.VE_char"><code class="docutils literal notranslate"><span class="pre">Src.VE_char</span></code></a></li>
 </ul>
 </li>
@@ -311,6 +313,7 @@
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#a-peril-sources">A. Peril sources</a></li>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#b-stochastic-event-set">B. Stochastic event set</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#b-1-earthquake-case">B.1. Earthquake case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#b-2-tornado-case">B.2. Tornado case</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-hazard-footprints">C. Hazard footprints</a><ul>
@@ -382,7 +385,7 @@ defined as classes or methods.</p>
 <dd class="field-even"><p>1.1.2</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2025-12-17</p>
+<dd class="field-odd"><p>2025-12-29</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -1965,6 +1968,12 @@ as well as intensity and loss footprint calculations.</p>
 <li><p>Ex: Explosion (industrial)</p></li>
 </ul>
 </section>
+<section id="peril-models-v1-1-2">
+<h4>Peril models (v1.1.2)<a class="headerlink" href="#peril-models-v1-1-2" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>To: Tornado</p></li>
+</ul>
+</section>
 <section id="planned-peril-models-v1-1-2">
 <h4>Planned peril models (v1.1.2)<a class="headerlink" href="#planned-peril-models-v1-1-2" title="Link to this heading"></a></h4>
 <ul class="simple">
@@ -1972,7 +1981,6 @@ as well as intensity and loss footprint calculations.</p>
 <li><p>HW: Heatwave</p></li>
 <li><p>Li: Lightning</p></li>
 <li><p>PI: Pest infestation</p></li>
-<li><p>To: Tornado</p></li>
 <li><p>WS: Windstorm</p></li>
 <li><p>BO: Blackout</p></li>
 <li><p>BI: Business interruption</p></li>
@@ -1987,7 +1995,7 @@ as well as intensity and loss footprint calculations.</p>
 <dd class="field-even"><p>1.1.2</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2025-12-17</p>
+<dd class="field-odd"><p>2025-12-23</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -2545,6 +2553,23 @@ assigned a unique identifier.</p>
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="GenMR.perils.Src.To_char">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">To_char</span></span><a class="headerlink" href="#GenMR.perils.Src.To_char" title="Link to this definition"></a></dt>
+<dd><p>Generate the characteristics of tornado (To) sources, if defined.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary containing:
+- ‘srcID’ (list of str): Unique identifiers for each asteroid impact source.
+- ‘x0’ (ndarray): x-coordinates of tornado source initiation points.
+- ‘y0’ (ndarray): y-coordinates of tornado source initiation points.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="GenMR.perils.Src.VE_char">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">VE_char</span></span><a class="headerlink" href="#GenMR.perils.Src.VE_char" title="Link to this definition"></a></dt>
 <dd><p>Retrieve the characteristics of volcanic eruption (VE) sources.</p>
@@ -2898,6 +2923,7 @@ Passed to <cite>col_peril(peril)</cite> to get the corresponding color.</p>
 - ‘SS’  : Storm surge
 - ‘RS’  : Rainstorm
 - ‘TC’  : Tropical cyclone
+- ‘To’  : Tornado
 - ‘WS’  : Windstorm
 - ‘Ex’  : Explosion</p>
 </dd>
@@ -2906,7 +2932,7 @@ Passed to <cite>col_peril(peril)</cite> to get the corresponding color.</p>
 - ‘#663399’ : ‘AI’ (Rebeccapurple)
 - ‘#CD853F’ : ‘EQ’, ‘LS’, ‘VE’ (Peru)
 - ‘#20B2AA’ : ‘FF’, ‘SS’ (MediumSeaGreen)
-- ‘#4169E1’ : ‘RS’, ‘TC’, ‘WS’ (RoyalBlue)
+- ‘#4169E1’ : ‘RS’, ‘TC’, ‘To’, ‘WS’ (RoyalBlue)
 - ‘#FF8C00’ : ‘Ex’ (Safety Orange)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
