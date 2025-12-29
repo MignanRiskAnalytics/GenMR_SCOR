@@ -514,6 +514,7 @@ def col_peril(peril):
         - 'SS'  : Storm surge
         - 'RS'  : Rainstorm
         - 'TC'  : Tropical cyclone
+        - 'To'  : Tornado
         - 'WS'  : Windstorm
         - 'Ex'  : Explosion
 
@@ -524,7 +525,7 @@ def col_peril(peril):
         - '#663399' : 'AI' (Rebeccapurple)
         - '#CD853F' : 'EQ', 'LS', 'VE' (Peru)
         - '#20B2AA' : 'FF', 'SS' (MediumSeaGreen)
-        - '#4169E1' : 'RS', 'TC', 'WS' (RoyalBlue)
+        - '#4169E1' : 'RS', 'TC', 'To', 'WS' (RoyalBlue)
         - '#FF8C00' : 'Ex' (Safety Orange)
     '''
     col_peril_extra = '#663399'    #Rebeccapurple
@@ -538,7 +539,7 @@ def col_peril(peril):
         col = col_peril_geophys
     if peril == 'FF' or peril == 'SS':
         col = col_peril_hydro
-    if peril == 'RS' or peril == 'TC' or peril == 'WS':
+    if peril == 'RS' or peril == 'TC' or peril == 'To' or peril == 'WS':
         col = col_peril_meteo
     if peril == 'Ex':
         col = col_peril_tech

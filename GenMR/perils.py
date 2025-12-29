@@ -19,13 +19,16 @@ Peril models (v1.1.1)
 * WF: Wildfire
 * Ex: Explosion (industrial)
 
+Peril models (v1.1.2)
+---------------------
+* To: Tornado
+
 Planned peril models (v1.1.2)
 -----------------------------
 * Dr: Drought
 * HW: Heatwave
 * Li: Lightning
 * PI: Pest infestation
-* To: Tornado
 * WS: Windstorm
 * BO: Blackout
 * BI: Business interruption
@@ -35,7 +38,7 @@ Planned peril models (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2025-12-17
+:Date: 2025-12-23
 :License: AGPL-3
 """
 
@@ -49,13 +52,14 @@ import warnings
 from tqdm import tqdm
 
 #import matplotlib
-#matplotlib.use('Agg')   # avoid kernel crash (during flood modelling)
+#matplotlib.use('Agg')   # avoid kernel crash (during flood modelling), still needed? to check
 
 import matplotlib.pyplot as plt
 import imageio
 from skimage import measure
 
 import scipy
+from scipy.stats import beta
 
 from GenMR import environment as GenMR_env
 from GenMR import dynamics as GenMR_dynamics
@@ -112,7 +116,7 @@ class Src:
                         'VE'['x', 'y']]
             grid (class): A class instance of RasterGrid
         '''
-        par['grid_A_km2'] = (grid.xmax - grid.xmin) * (grid.ymax - grid.ymin)    # virtual region area (km2)
+        par['grid_A_km2'] = (grid.xmax_nobuffer - grid.xmin_nobuffer) * (grid.ymax_nobuffer - grid.ymin_nobuffer)    # active domain
         par['EQ']['N'] = len(par['EQ']['x'])
         par['FF']['N'] = len(par['FF']['riv_A_km'])
         par['VE']['N'] = len(par['VE']['x'])
@@ -145,32 +149,6 @@ class Src:
         else:
             warnings.warn('No AI source initiated in source parameter list')
             return {'srcID': [], 'x': [], 'y': []}
-        
-    def _gen_stochsrc_points(self, N, grid, rdm_seed = None):
-        '''
-        Generate N random points uniformly distributed over the grid.
-
-        Parameters
-        ----------
-        N : int
-            Number of random points to generate.
-        grid : object
-            A grid object with attributes `xmin`, `xmax`, `ymin`, `ymax` defining the spatial domain.
-        rdm_seed : int, optional
-            Seed for the random number generator, for reproducibility. Default is None.
-
-        Returns
-        -------
-        tuple of ndarray
-            - x_rdm (ndarray): x-coordinates of the random points.
-            - y_rdm (ndarray): y-coordinates of the random points.
-        '''
-        if rdm_seed is not None:
-            np.random.seed(rdm_seed)
-        x_rdm = grid.xmin + np.random.random(N) * (grid.xmax - grid.xmin)
-        y_rdm = grid.ymin + np.random.random(N) * (grid.ymax - grid.ymin)
-        return x_rdm, y_rdm
-
 
     ## EQ characteristics ##
     @property
@@ -202,6 +180,132 @@ class Src:
             warnings.warn('No EQ source initiated in source parameter list')
             return {'srcID': [], 'x': [], 'y': []}
     
+    ## FF characteristics ##
+    @property
+    def FF_char(self):
+        '''
+        Generate characteristics of flood (FF) sources.
+
+        This property returns the coordinates and identifiers of riverine flood sources
+        defined in the model parameters.
+
+        Returns
+        -------
+        dict
+            Dictionary containing:
+            - 'srcID' (ndarray of str): Unique identifiers for each flood source.
+            - 'x' (ndarray of float): x-coordinates of the flood source points.
+            - 'y' (ndarray of float): y-coordinates of the flood source points.
+        '''
+        if 'FF' in self.par['perils']:
+            src_ind = np.arange(self.par['FF']['N']) + 1
+            srcID = np.char.add(self.par['FF']['object'], src_ind.astype(str))
+            FF_x0 = np.repeat(self.grid.xmax, self.par['FF']['N'])
+            return {'srcID': srcID, 'x': FF_x0, 'y': self.par['FF']['riv_y0']}
+        else:
+            warnings.warn('No FF source initiated in source parameter list')
+            return {'srcID': [], 'x': [], 'y': []}
+
+
+    ## TC characteristics ##
+    @property
+    def TC_char(self):
+        '''
+        Generate characteristics of tropical cyclone (TC) sources.
+
+        This property returns the coordinates and identifiers of tropical cyclone tracks
+        defined in the model parameters. The track points are generated stochastically 
+        according to the number of cyclones (`N`), number of points per track (`npt`), 
+        maximum deviation (`max_dev`), and random seed (`rdm_seed`). Each TC source is 
+        assigned a unique identifier.
+
+        Returns
+        -------
+        dict
+            Dictionary containing:
+            - 'srcID' (ndarray of str): Unique identifiers for each tropical cyclone source.
+            - 'x' (ndarray of float): x-coordinates of the TC track points.
+            - 'y' (ndarray of float): y-coordinates of the TC track points.
+        '''
+        if 'TC' in self.par['perils']:
+            src_ind, src_xi, src_yi = self._gen_stochsrc_TCtracks(self.par['TC']['N'], self.grid, self.par['TC']['npt'], self.par['TC']['max_dev'], self.par['rdm_seed'])
+            srcID = np.char.add(self.par['TC']['object'], src_ind.astype(str))
+            return {'srcID': srcID, 'x': src_xi, 'y': src_yi}
+        else:
+            warnings.warn('No TC source initiated in source parameter list')
+            return {'srcID': [], 'x': [], 'y': []}
+
+    ## To characteristics ##
+    @property
+    def To_char(self):
+        '''
+        Generate the characteristics of tornado (To) sources, if defined.
+
+        Returns
+        -------
+        dict
+            Dictionary containing:
+            - 'srcID' (list of str): Unique identifiers for each asteroid impact source.
+            - 'x0' (ndarray): x-coordinates of tornado source initiation points.
+            - 'y0' (ndarray): y-coordinates of tornado source initiation points.
+        '''
+        if 'To' in self.par['perils']:
+            srcID = [self.par['To']['object'] + str(i + 1) for i in range(self.par['To']['N'])]
+            src_xi, src_yi = self._gen_stochsrc_points(self.par['To']['N'], self.grid, self.par['rdm_seed'])
+            return {'srcID': srcID, 'x0': src_xi, 'y0': src_yi}
+        else:
+            warnings.warn('No To source initiated in source parameter list')
+            return {'srcID': [], 'x0': [], 'y0': []}
+
+    ## VE characteristics ##
+    @property
+    def VE_char(self):
+        '''
+        Retrieve the characteristics of volcanic eruption (VE) sources.
+
+        Returns
+        -------
+        dict
+            Dictionary containing:
+            - 'srcID' (ndarray of str): Unique identifiers for each volcanic eruption source.
+            - 'x' (ndarray of float): x-coordinates of the flood source points.
+            - 'y' (ndarray of float): y-coordinates of the flood source points.
+        '''
+        if 'VE' in self.par['perils']:
+            src_ind = np.arange(self.par['VE']['N']) + 1
+            srcID = np.char.add(self.par['VE']['object'], src_ind.astype(str))
+            return {'srcID': srcID, 'x': self.par['VE']['x'], 'y': self.par['VE']['y']}
+        else:
+            warnings.warn('No VE source initiated in source parameter list')
+            return {'srcID': [], 'x': [], 'y': []}
+
+
+    def _gen_stochsrc_points(self, N, grid, rdm_seed = None):
+        '''
+        Generate N random points uniformly distributed over the active domain of the grid.
+
+        Parameters
+        ----------
+        N : int
+            Number of random points to generate.
+        grid : object
+            A grid object with attributes `xmin`, `xmax`, `ymin`, `ymax` defining the spatial domain.
+        rdm_seed : int, optional
+            Seed for the random number generator, for reproducibility. Default is None.
+
+        Returns
+        -------
+        tuple of ndarray
+            - x_rdm (ndarray): x-coordinates of the random points.
+            - y_rdm (ndarray): y-coordinates of the random points.
+        '''
+        if rdm_seed is not None:
+            np.random.seed(rdm_seed)
+
+        x_rdm = grid.xmin_nobuffer + np.random.random(N) * (grid.xmax_nobuffer - grid.xmin_nobuffer)
+        y_rdm = grid.ymin_nobuffer + np.random.random(N) * (grid.ymax_nobuffer - grid.ymin_nobuffer)
+        return x_rdm, y_rdm
+
     def _get_char_srcEQline(self, par):
         '''
         Calculate coordinates and properties of earthquake fault sources.
@@ -275,62 +379,6 @@ class Src:
         srcID = np.char.add(self.par['EQ']['object'], (src_id+1).astype(str))
         return {'srcID': srcID, 'x': src_xi, 'y': src_yi, 'fltID': src_id, 'srcL': src_L, 'srcMmax': src_Mmax, 'segID': seg_id, 'strike': seg_strike, 'segL': seg_L}
 
-
-    ## FF characteristics ##
-    @property
-    def FF_char(self):
-        '''
-        Generate characteristics of flood (FF) sources.
-
-        This property returns the coordinates and identifiers of riverine flood sources
-        defined in the model parameters.
-
-        Returns
-        -------
-        dict
-            Dictionary containing:
-            - 'srcID' (ndarray of str): Unique identifiers for each flood source.
-            - 'x' (ndarray of float): x-coordinates of the flood source points.
-            - 'y' (ndarray of float): y-coordinates of the flood source points.
-        '''
-        if 'FF' in self.par['perils']:
-            src_ind = np.arange(self.par['FF']['N']) + 1
-            srcID = np.char.add(self.par['FF']['object'], src_ind.astype(str))
-            FF_x0 = np.repeat(self.grid.xmax, self.par['FF']['N'])
-            return {'srcID': srcID, 'x': FF_x0, 'y': self.par['FF']['riv_y0']}
-        else:
-            warnings.warn('No FF source initiated in source parameter list')
-            return {'srcID': [], 'x': [], 'y': []}
-
-
-    ## TC characteristics ##
-    @property
-    def TC_char(self):
-        '''
-        Generate characteristics of tropical cyclone (TC) sources.
-
-        This property returns the coordinates and identifiers of tropical cyclone tracks
-        defined in the model parameters. The track points are generated stochastically 
-        according to the number of cyclones (`N`), number of points per track (`npt`), 
-        maximum deviation (`max_dev`), and random seed (`rdm_seed`). Each TC source is 
-        assigned a unique identifier.
-
-        Returns
-        -------
-        dict
-            Dictionary containing:
-            - 'srcID' (ndarray of str): Unique identifiers for each tropical cyclone source.
-            - 'x' (ndarray of float): x-coordinates of the TC track points.
-            - 'y' (ndarray of float): y-coordinates of the TC track points.
-        '''
-        if 'TC' in self.par['perils']:
-            src_ind, src_xi, src_yi = self._gen_stochsrc_TCtracks(self.par['TC']['N'], self.grid, self.par['TC']['npt'], self.par['TC']['max_dev'], self.par['rdm_seed'])
-            srcID = np.char.add(self.par['TC']['object'], src_ind.astype(str))
-            return {'srcID': srcID, 'x': src_xi, 'y': src_yi}
-        else:
-            warnings.warn('No TC source initiated in source parameter list')
-            return {'srcID': [], 'x': [], 'y': []}
-
     def _gen_stochsrc_TCtracks(self, N, grid, npt, max_deviation, rdm_seed = None):
         '''
         Generate coordinates for N stochastic tropical cyclone tracks.
@@ -371,30 +419,6 @@ class Src:
         deviation = np.random.uniform(-max_deviation, max_deviation, size = N*npt)
         y += deviation
         return ind, x, y
-
-
-    ## VE characteristics ##
-    @property
-    def VE_char(self):
-        '''
-        Retrieve the characteristics of volcanic eruption (VE) sources.
-
-        Returns
-        -------
-        dict
-            Dictionary containing:
-            - 'srcID' (ndarray of str): Unique identifiers for each volcanic eruption source.
-            - 'x' (ndarray of float): x-coordinates of the flood source points.
-            - 'y' (ndarray of float): y-coordinates of the flood source points.
-        '''
-        if 'VE' in self.par['perils']:
-            src_ind = np.arange(self.par['VE']['N']) + 1
-            srcID = np.char.add(self.par['VE']['object'], src_ind.astype(str))
-            return {'srcID': srcID, 'x': self.par['VE']['x'], 'y': self.par['VE']['y']}
-        else:
-            warnings.warn('No VE source initiated in source parameter list')
-            return {'srcID': [], 'x': [], 'y': []}
-
 
     def __repr__(self):
         return 'Src({})'.format(self.par)
@@ -647,6 +671,10 @@ class EventSetGenerator:
             if 'a' not in self.sizeDistr[ID]:
                 rescaled = self.src.par['grid_A_km2'] / self.utils.fetch_A0(self.sizeDistr[ID]['region'])
                 self.sizeDistr[ID]['a'] = self.sizeDistr[ID]['a0'] + np.log10(rescaled)
+        if self.sizeDistr[ID]['distr'] == 'exponential':
+            if 'a' not in self.sizeDistr[ID]:
+                rescaled = self.src.par['grid_A_km2'] / self.utils.fetch_A0(self.sizeDistr[ID]['region'])
+                self.sizeDistr[ID]['a'] = self.sizeDistr[ID]['a0'] + np.log10(rescaled)
         if self.sizeDistr[ID]['distr'] == 'GPD':
             if 'Lbdmin' not in self.sizeDistr[ID]:
                 rescaled = self.src.par['grid_A_km2'] / self.utils.fetch_A0(self.sizeDistr[ID]['region'])
@@ -731,6 +759,10 @@ class EventSetGenerator:
             track_coord = self._get_TCtrack_highres(evID, self.src)
             ev_ID, ev_x, ev_y = track_coord['evID'], track_coord['x'], track_coord['y']
             self.srcIDs = np.append(self.srcIDs, np.unique(self.src.TC_char['srcID']))
+        elif ID == 'To':
+            line_coord = self._get_Toline_highres(evID, Si_vec, self.src)
+            ev_ID, ev_x, ev_y = line_coord['evID'], line_coord['x'], line_coord['y']
+            self.srcIDs = np.append(self.srcIDs, np.unique(self.src.To_char['srcID']))
         elif ID == 'VE':
             ev_ID, ev_x, ev_y = evID, np.repeat(self.src.VE_char['x'], self.sizeDistr['VE']['Nstoch']), np.repeat(self.src.VE_char['y'], self.sizeDistr['VE']['Nstoch'])
             self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.VE_char['srcID'], self.sizeDistr['VE']['Nstoch']))
@@ -813,6 +845,39 @@ class EventSetGenerator:
                 id_hires = np.append(id_hires, np.repeat(evIDi[i], len(seg_xi)+1))
         Track_coord = pd.DataFrame({'evID': id_hires, 'x': x_hires, 'y': y_hires})
         return Track_coord
+
+    def _get_Toline_highres(self, evIDi, Si, src):
+        '''
+        '''
+        Nstoch = len(evIDi)
+        theta_rdm = np.random.uniform(0., 2*np.pi, Nstoch)
+        u = np.random.uniform(0, 1, size = Nstoch)
+        dxy_step = src.par['To']['bin_km']
+
+        x_hires = np.array([])
+        y_hires = np.array([])
+        id_hires = np.array([])
+        for i in range(Nstoch):
+            if int(Si[i]) == 3:
+                # EF-3 length statistics
+                Beta_alpha, Beta_beta, Beta_lmax = src.par['To']['L_alpha_beta_Lmax_EF3']
+            if int(Si[i]) == 4:
+                # EF-4 length statistics
+                Beta_alpha, Beta_beta, Beta_lmax = src.par['To']['L_alpha_beta_Lmax_EF4']
+            if int(Si[i]) == 5:
+                # EF-5 length statistics
+                Beta_alpha, Beta_beta, Beta_lmax = src.par['To']['L_alpha_beta_Lmax_EF5']
+            Lstoch = beta.ppf(u[i], Beta_alpha, Beta_beta) * Beta_lmax
+            n_steps = int(np.ceil(Lstoch / dxy_step))
+            x0 = src.To_char['x0'][i]
+            y0 = src.To_char['y0'][i]
+            dx = dxy_step * np.sin(theta_rdm[i])
+            dy = dxy_step * np.cos(theta_rdm[i])
+            x_hires = np.append(x_hires, x0 + np.arange(n_steps) * dx)
+            y_hires = np.append(y_hires, y0 + np.arange(n_steps) * dy)
+            id_hires = np.append(id_hires, np.repeat(evIDi[i], n_steps))
+        Line_coord = pd.DataFrame({'evID': id_hires, 'x': x_hires, 'y': y_hires})
+        return Line_coord
 
 
 
@@ -2011,6 +2076,10 @@ def plot_src(src, hillshading_z = '', file_ext = '-'):
         h_ai =ax[0].scatter(src.AI_char['x'], src.AI_char['y'], color = GenMR_utils.col_peril('AI'), s=30, marker = '+', clip_on = False)
         handles.append(h_ai)
         labels.append('Impact site: Asteroid impact (AI)')
+    if 'To' in src.par['perils']:
+        h_ai =ax[0].scatter(src.To_char['x0'], src.To_char['y0'], color = GenMR_utils.col_peril('To'), s=30, marker = 'o', clip_on = False)
+        handles.append(h_ai)
+        labels.append('Vortex line seed: Tornado (To)')
     if 'Ex' in src.par['perils']:
         h_ex = ax[0].scatter(src.par['Ex']['x'], src.par['Ex']['y'], color = GenMR_utils.col_peril('Ex'), s=90, marker = '+', clip_on = False)
         handles.append(h_ex)

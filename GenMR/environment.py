@@ -23,7 +23,7 @@ Planned Additions (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2025-12-17
+:Date: 2025-12-29
 :License: AGPL-3
 """
 
@@ -120,6 +120,10 @@ class RasterGrid:
             self.lat_deg = par['lat_deg']
         else:
             self.lat_deg = 45.
+        self.xmin_nobuffer = self.xmin + self.xbuffer
+        self.xmax_nobuffer = self.xmax - self.xbuffer
+        self.ymin_nobuffer = self.ymin + self.ybuffer
+        self.ymax_nobuffer = self.ymax - self.ybuffer
         self.x = np.arange(self.xmin - self.w/2, self.xmax + self.w/2, self.w) + self.w/2
         self.y = np.arange(self.ymin - self.w/2, self.ymax + self.w/2, self.w) + self.w/2
         self.xx, self.yy = np.meshgrid(self.x, self.y, indexing='ij')
