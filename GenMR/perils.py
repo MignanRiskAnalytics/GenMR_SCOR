@@ -38,7 +38,7 @@ Planned peril models (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2025-12-23
+:Date: 2025-12-30
 :License: AGPL-3
 """
 
@@ -2307,7 +2307,7 @@ def plot_src(src, hillshading_z = '', file_ext = '-'):
         plt.savefig('figs/src.' + file_ext)
 
 
-def plot_hazFootprints(catalog_hazFootprints, grid, topoLayer_z, plot_Imax, nstoch = 5, file_ext = '-'):
+def plot_hazFootprints(catalog_hazFootprints, grid, topoLayer_z, plot_Imin, plot_Imax, nstoch = 5, file_ext = '-'):
     '''
     Plot stochastic hazard footprints for multiple events and perils on a spatial grid.
 
@@ -2319,6 +2319,8 @@ def plot_hazFootprints(catalog_hazFootprints, grid, topoLayer_z, plot_Imax, nsto
         Grid object with attributes `xx`, `yy`, `xmin`, `xmax`, `ymin`, `ymax`.
     topoLayer_z : ndarray
         2D array of topographic elevations for hillshading.
+    plot_Imin : dict
+        Dictionary of minimum intensity values for each peril (keyed by peril code).
     plot_Imax : dict
         Dictionary of maximum intensity values for each peril (keyed by peril code).
     nstoch : int, optional
@@ -2341,12 +2343,13 @@ def plot_hazFootprints(catalog_hazFootprints, grid, topoLayer_z, plot_Imax, nsto
         evID_shuffled = evIDs[indperil]
         if nev > nplot:
             np.random.shuffle(evID_shuffled)
+        Imin = plot_Imin[perils[i]]
         Imax = plot_Imax[perils[i]]
         for j in range(nplot):
             I_plt = np.copy(catalog_hazFootprints[evID_shuffled[j]])
             I_plt[I_plt >= Imax] = Imax
-            I_plt[I_plt == 0] = np.nan
-            ax[i,j].contourf(grid.xx, grid.yy, I_plt, cmap = 'Reds', levels = np.linspace(0, Imax, 100))
+            I_plt[I_plt < Imin] = np.nan
+            ax[i,j].contourf(grid.xx, grid.yy, I_plt, cmap = 'Reds', levels = np.linspace(Imin, Imax, 100))
             ax[i,j].contourf(grid.xx, grid.yy, GenMR_env.ls.hillshade(topoLayer_z, vert_exag=.1), cmap='gray', alpha = .1)
             ax[i,j].set_xlim(grid.xmin, grid.xmax)
             ax[i,j].set_ylim(grid.ymin, grid.ymax)
@@ -2438,7 +2441,7 @@ def plot_vulnFunctions():
     ax2.spines['right'].set_visible(False)
 
     ax[1,2].plot(vi, MDR_WS, color = 'black')
-    ax[1,2].set_title('Windstorm (WS)', pad = 20)
+    ax[1,2].set_title('Wind (TC, To, WS)', pad = 20)
     ax[1,2].set_xlabel('Maximum wind speed $v_{max}$ [m/s]')
     ax[1,2].set_ylabel('MDR')
     ax[1,2].set_ylim(0,1.01)

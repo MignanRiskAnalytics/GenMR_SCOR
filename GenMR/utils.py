@@ -8,7 +8,7 @@ core GenMR workflows by streamlining data handling, computation, and visualisati
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2025-12-17
+:Date: 2025-12-30
 :License: AGPL-3
 """
 
