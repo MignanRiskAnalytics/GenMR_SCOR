@@ -214,14 +214,18 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.add_v_forward"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.add_v_forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.calc4TC_I_v_ms"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc4TC_I_v_ms()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.calc4To_I_v_ms"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc4To_I_v_ms()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.calc_I_ash_m"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_I_ash_m()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.calc_I_blast_kPa"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_I_blast_kPa()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.calc_I_shaking_ms2"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_I_shaking_ms2()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.calc_I_v_ms"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_I_v_ms()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.calc_S_track"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_S_track()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.calc_lateral_distance_signed"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_lateral_distance_signed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.calc_v_from_EFscale"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_v_from_EFscale()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.generate"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.generate()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.get_TC_timeshot"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.get_TC_timeshot()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.model_SS_Bathtub"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.model_SS_Bathtub()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.model_To_analytical"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.model_To_analytical()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.RiskFootprintGenerator"><code class="docutils literal notranslate"><span class="pre">RiskFootprintGenerator</span></code></a></li>
@@ -318,6 +322,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-hazard-footprints">C. Hazard footprints</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-1-tropical-cyclone-case">C.1. Tropical cyclone case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-2-tornado-case">C.2. Tornado case</a></li>
 </ul>
 </li>
 </ul>
@@ -1995,7 +2000,7 @@ as well as intensity and loss footprint calculations.</p>
 <dd class="field-even"><p>1.1.2</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2025-12-23</p>
+<dd class="field-odd"><p>2025-12-30</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -2258,6 +2263,59 @@ the tangential wind profile.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="GenMR.perils.HazardFootprintGenerator.calc4TC_I_v_ms">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calc4TC_I_v_ms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.HazardFootprintGenerator.calc4TC_I_v_ms" title="Link to this definition"></a></dt>
+<dd><p>Calculate the maximum wind speed (m/s) of a tropical cyclone at a given distance.</p>
+<p>This model accounts for atmospheric density, Coriolis effect, and storm parameters
+following the approach in Mignan (2024:fig. 2.19).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>S</strong> (<em>float</em>) – Windspeed (m/s) at point along track.</p></li>
+<li><p><strong>r</strong> (<em>float</em>) – Distance from the storm center (km).</p></li>
+<li><p><strong>par</strong> (<em>dict</em>) – Dictionary of cyclone parameters, including:
+- ‘lat_deg’ : Latitude in degrees
+- ‘pn_mbar’ : Ambient pressure in mbar
+- ‘B_Holland’ : Holland B parameter for wind profile</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Maximum wind speed in meters per second (m/s) at distance r from the storm center.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.perils.HazardFootprintGenerator.calc4To_I_v_ms">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calc4To_I_v_ms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_pm_km</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.HazardFootprintGenerator.calc4To_I_v_ms" title="Link to this definition"></a></dt>
+<dd><p>Compute the maximum wind speed profile for a tornado based on its size (EF scale) and lateral distance from the track.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>S</strong> (<em>int</em><em> or </em><em>float</em>) – Tornado size, represented as an EF scale value (e.g., 3, 4, 5).</p></li>
+<li><p><strong>r_pm_km</strong> (<em>float</em><em> or </em><em>ndarray</em>) – Signed lateral (cross-track) distance from the tornado line in km.
+Negative values indicate the left side of the track, positive values the right.</p></li>
+<li><p><strong>par</strong> (<em>dict</em>) – <p>Dictionary of tornado parameters. Must contain:
+- ‘Rmax_m’ : float</p>
+<blockquote>
+<div><p>Radius of maximum tangential wind in meters.</p>
+</div></blockquote>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>vmax_ms</strong> – Maximum wind speed in meters per second (m/s) at distance r_pm_km from the tornado path.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="GenMR.perils.HazardFootprintGenerator.calc_I_ash_m">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calc_I_ash_m</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.HazardFootprintGenerator.calc_I_ash_m" title="Link to this definition"></a></dt>
 <dd><p>Calculate volcanic ash deposit thickness at a distance from the eruption.</p>
@@ -2320,32 +2378,6 @@ calibrated from historical eruptions (e.g., Mt. St. Helens 1980).</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="GenMR.perils.HazardFootprintGenerator.calc_I_v_ms">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calc_I_v_ms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.HazardFootprintGenerator.calc_I_v_ms" title="Link to this definition"></a></dt>
-<dd><p>Calculate the maximum wind speed (m/s) of a tropical cyclone at a given distance.</p>
-<p>This model accounts for atmospheric density, Coriolis effect, and storm parameters
-following the approach in Mignan (2024:fig. 2.19).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>S</strong> (<em>float</em>) – Windspeed (m/s) at point along track.</p></li>
-<li><p><strong>r</strong> (<em>float</em>) – Distance from the storm center (km).</p></li>
-<li><p><strong>par</strong> (<em>dict</em>) – Dictionary of cyclone parameters, including:
-- ‘lat_deg’ : Latitude in degrees
-- ‘pn_mbar’ : Ambient pressure in mbar
-- ‘B_Holland’ : Holland B parameter for wind profile</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Maximum wind speed in meters per second (m/s) at distance r from the storm center.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="GenMR.perils.HazardFootprintGenerator.calc_S_track">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calc_S_track</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stochset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Track_coord</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.HazardFootprintGenerator.calc_S_track" title="Link to this definition"></a></dt>
 <dd><p>Calculate along-track hazard intensity for tropical cyclones (TC)
@@ -2369,6 +2401,68 @@ maximum intensity values (same length as track points).</p>
 <dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.perils.HazardFootprintGenerator.calc_lateral_distance_signed">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calc_lateral_distance_signed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.HazardFootprintGenerator.calc_lateral_distance_signed" title="Link to this definition"></a></dt>
+<dd><p>Compute the signed perpendicular distance to a line segment.</p>
+<p>This function evaluates the signed lateral (cross-track) distance from
+each point of a two-dimensional mesh grid to a high-resolution line.
+The distance is defined as the perpendicular distance to the locally
+closest line segment, with the sign determined by the right-hand normal
+to the segment direction.</p>
+<p>Distances are only defined where an orthogonal projection of the grid
+point falls within the extent of at least one line segment. Points
+located beyond the tips of the line are assigned np.nan.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xx</strong> (<em>ndarray</em>) – Two-dimensional array of x-coordinates (mesh grid).</p></li>
+<li><p><strong>yy</strong> (<em>ndarray</em>) – Two-dimensional array of y-coordinates (mesh grid).</p></li>
+<li><p><strong>x</strong> (<em>array_like</em>) – One-dimensional array of x-coordinates defining the polyline vertices.</p></li>
+<li><p><strong>y</strong> (<em>array_like</em>) – One-dimensional array of y-coordinates defining the polyline vertices.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>r</strong> – Two-dimensional array of signed lateral distances to the line.
+Negative values indicate points located on the left side of the
+line direction, positive values indicate points on the right
+side, and np.nan indicates points for which no orthogonal
+projection onto the line exists.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.perils.HazardFootprintGenerator.calc_v_from_EFscale">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calc_v_from_EFscale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">EF</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.HazardFootprintGenerator.calc_v_from_EFscale" title="Link to this definition"></a></dt>
+<dd><p>Derive tornado wind velocity components from Enhanced Fujita (EF) scale.</p>
+<p>This function maps an EF intensity level (EF3–EF5) to a characteristic
+maximum wind speed derived from the official scale and decomposes this
+wind speed into tangential, radial, and forward velocity components.</p>
+<p>The decomposition follows fixed ratios inferred from Holland et al. (2006),
+assuming that the EF-based wind speed represents the tangential component and
+that proportionality holds for different EF levels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>EF</strong> (<em>int</em><em> or </em><em>float</em>) – Enhanced Fujita (EF) intensity level of the tornado (e.g., 3, 4, or 5).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>Vt</strong> (<em>float</em>) – Tangential wind velocity (m/s), assumed equal to the EF-based maximum wind speed.</p></li>
+<li><p><strong>Vr</strong> (<em>float</em>) – Radial wind velocity (m/s), defined as a fixed fraction of the tangential velocity.</p></li>
+<li><p><strong>Vf</strong> (<em>float</em>) – Forward velocity (m/s), defined as a fixed fraction of the tangential velocity.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>Holland et al. (2006), A Simple Model for Simulating Tornado Damage in Forests.
+J. Appl. Meteorologicaly Climatology, 45, 1597-1611.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2440,6 +2534,35 @@ the coastline.</p></li>
 <dd class="field-odd"><p>ndarray, shape (nx, ny)</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.perils.HazardFootprintGenerator.model_To_analytical">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_To_analytical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Rmax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Vr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Vt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Vf</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.HazardFootprintGenerator.model_To_analytical" title="Link to this definition"></a></dt>
+<dd><p>Analytical lateral wind profile for an idealized tornado vortex.</p>
+<p>This function computes the maximum near-surface wind speed as a function
+of lateral (cross-track) distance from a tornado track using an analytical,
+axisymmetric vortex model. The formulation follows Burow et al. (2020).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>ndarray</em>) – Signed lateral distance (m) from the tornado track.</p></li>
+<li><p><strong>Rmax</strong> (<em>float</em>) – Radius of maximum tangential wind (m).</p></li>
+<li><p><strong>Vr</strong> (<em>float</em>) – Radial wind velocity component at Rmax (m/s).</p></li>
+<li><p><strong>Vt</strong> (<em>float</em>) – Tangential wind velocity component at Rmax (m/s).</p></li>
+<li><p><strong>Vf</strong> (<em>float</em>) – Forward velocity of the tornado (m/s).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>vmax</strong> – Maximum near-surface wind speed (m/s).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>Burow et al. (2020), Damage analysis of three long-track tornadoes using high-resolution satellite imagery.
+Atmosphere, 11, 613</p>
 </dd></dl>
 
 </dd></dl>
@@ -2746,7 +2869,7 @@ For logarithmic scale, this represents the step in log10 space.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="GenMR.perils.plot_hazFootprints">
-<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">plot_hazFootprints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">catalog_hazFootprints</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">topoLayer_z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_Imax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nstoch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.plot_hazFootprints" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">plot_hazFootprints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">catalog_hazFootprints</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">topoLayer_z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_Imin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_Imax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nstoch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.plot_hazFootprints" title="Link to this definition"></a></dt>
 <dd><p>Plot stochastic hazard footprints for multiple events and perils on a spatial grid.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2754,6 +2877,7 @@ For logarithmic scale, this represents the step in log10 space.</p></li>
 <li><p><strong>catalog_hazFootprints</strong> (<em>dict</em>) – Dictionary of hazard footprints keyed by event ID. Each value is a 2D array of intensities.</p></li>
 <li><p><strong>grid</strong> (<em>object</em>) – Grid object with attributes <cite>xx</cite>, <cite>yy</cite>, <cite>xmin</cite>, <cite>xmax</cite>, <cite>ymin</cite>, <cite>ymax</cite>.</p></li>
 <li><p><strong>topoLayer_z</strong> (<em>ndarray</em>) – 2D array of topographic elevations for hillshading.</p></li>
+<li><p><strong>plot_Imin</strong> (<em>dict</em>) – Dictionary of minimum intensity values for each peril (keyed by peril code).</p></li>
 <li><p><strong>plot_Imax</strong> (<em>dict</em>) – Dictionary of maximum intensity values for each peril (keyed by peril code).</p></li>
 <li><p><strong>nstoch</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of stochastic realizations to plot per peril (default 5).</p></li>
 <li><p><strong>file_ext</strong> (<em>str</em><em>, </em><em>optional</em>) – File extension to save figure (e.g., ‘png’, ‘pdf’). If ‘-’, figure is not saved (default ‘-‘).</p></li>
@@ -2833,7 +2957,7 @@ core GenMR workflows by streamlining data handling, computation, and visualisati
 <dd class="field-even"><p>1.1.2</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2025-12-17</p>
+<dd class="field-odd"><p>2025-12-30</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>

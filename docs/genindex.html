@@ -211,14 +211,18 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.HazardFootprintGenerator"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.perils.HazardFootprintGenerator.add_v_forward"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.add_v_forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.perils.HazardFootprintGenerator.calc4TC_I_v_ms"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc4TC_I_v_ms()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.perils.HazardFootprintGenerator.calc4To_I_v_ms"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc4To_I_v_ms()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.perils.HazardFootprintGenerator.calc_I_ash_m"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_I_ash_m()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.perils.HazardFootprintGenerator.calc_I_blast_kPa"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_I_blast_kPa()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.perils.HazardFootprintGenerator.calc_I_shaking_ms2"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_I_shaking_ms2()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.perils.HazardFootprintGenerator.calc_I_v_ms"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_I_v_ms()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.perils.HazardFootprintGenerator.calc_S_track"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_S_track()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.perils.HazardFootprintGenerator.calc_lateral_distance_signed"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_lateral_distance_signed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.perils.HazardFootprintGenerator.calc_v_from_EFscale"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_v_from_EFscale()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.perils.HazardFootprintGenerator.generate"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.generate()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.perils.HazardFootprintGenerator.get_TC_timeshot"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.get_TC_timeshot()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.perils.HazardFootprintGenerator.model_SS_Bathtub"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.model_SS_Bathtub()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.perils.HazardFootprintGenerator.model_To_analytical"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.model_To_analytical()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.RiskFootprintGenerator"><code class="docutils literal notranslate"><span class="pre">RiskFootprintGenerator</span></code></a></li>
@@ -315,6 +319,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-hazard-footprints">C. Hazard footprints</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-1-tropical-cyclone-case">C.1. Tropical cyclone case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-2-tornado-case">C.2. Tornado case</a></li>
 </ul>
 </li>
 </ul>
@@ -414,6 +419,10 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="manual.html#GenMR.perils.HazardFootprintGenerator.calc4TC_I_v_ms">calc4TC_I_v_ms() (GenMR.perils.HazardFootprintGenerator static method)</a>
+</li>
+      <li><a href="manual.html#GenMR.perils.HazardFootprintGenerator.calc4To_I_v_ms">calc4To_I_v_ms() (GenMR.perils.HazardFootprintGenerator static method)</a>
+</li>
       <li><a href="manual.html#GenMR.environment.calc_coord_river_dampedsine">calc_coord_river_dampedsine() (in module GenMR.environment)</a>
 </li>
       <li><a href="manual.html#GenMR.utils.calc_EP">calc_EP() (in module GenMR.utils)</a>
@@ -430,7 +439,7 @@
 </li>
       <li><a href="manual.html#GenMR.perils.HazardFootprintGenerator.calc_I_shaking_ms2">calc_I_shaking_ms2() (GenMR.perils.HazardFootprintGenerator static method)</a>
 </li>
-      <li><a href="manual.html#GenMR.perils.HazardFootprintGenerator.calc_I_v_ms">calc_I_v_ms() (GenMR.perils.HazardFootprintGenerator static method)</a>
+      <li><a href="manual.html#GenMR.perils.HazardFootprintGenerator.calc_lateral_distance_signed">calc_lateral_distance_signed() (GenMR.perils.HazardFootprintGenerator static method)</a>
 </li>
       <li><a href="manual.html#GenMR.perils.calc_Lbd_exponential">calc_Lbd_exponential() (in module GenMR.perils)</a>
 </li>
@@ -438,15 +447,17 @@
 </li>
       <li><a href="manual.html#GenMR.perils.calc_Lbd_powerlaw">calc_Lbd_powerlaw() (in module GenMR.perils)</a>
 </li>
-      <li><a href="manual.html#GenMR.environment.EnvLayer_urbLand.calc_Pr_urbanise">calc_Pr_urbanise() (GenMR.environment.EnvLayer_urbLand method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="manual.html#GenMR.environment.EnvLayer_urbLand.calc_Pr_urbanise">calc_Pr_urbanise() (GenMR.environment.EnvLayer_urbLand method)</a>
+</li>
       <li><a href="manual.html#GenMR.utils.calc_riskmetrics_fromELT">calc_riskmetrics_fromELT() (in module GenMR.utils)</a>
 </li>
       <li><a href="manual.html#GenMR.perils.HazardFootprintGenerator.calc_S_track">calc_S_track() (GenMR.perils.HazardFootprintGenerator static method)</a>
 </li>
       <li><a href="manual.html#GenMR.environment.calc_topo_attributes">calc_topo_attributes() (in module GenMR.environment)</a>
+</li>
+      <li><a href="manual.html#GenMR.perils.HazardFootprintGenerator.calc_v_from_EFscale">calc_v_from_EFscale() (GenMR.perils.HazardFootprintGenerator static method)</a>
 </li>
       <li><a href="manual.html#GenMR.perils.CellularAutomaton_FF">CellularAutomaton_FF (class in GenMR.perils)</a>
 </li>
@@ -683,11 +694,13 @@
 </li>
       <li><a href="manual.html#GenMR.environment.EnvLayer_topo.model_rv_dampedsine">model_rv_dampedsine() (GenMR.environment.EnvLayer_topo method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="manual.html#GenMR.perils.HazardFootprintGenerator.model_SS_Bathtub">model_SS_Bathtub() (GenMR.perils.HazardFootprintGenerator static method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="manual.html#GenMR.environment.EnvLayer_topo.model_th_ellipsoid">model_th_ellipsoid() (GenMR.environment.EnvLayer_topo method)</a>
+</li>
+      <li><a href="manual.html#GenMR.perils.HazardFootprintGenerator.model_To_analytical">model_To_analytical() (GenMR.perils.HazardFootprintGenerator static method)</a>
 </li>
       <li><a href="manual.html#GenMR.environment.EnvLayer_topo.model_vo_cone">model_vo_cone() (GenMR.environment.EnvLayer_topo method)</a>
 </li>
