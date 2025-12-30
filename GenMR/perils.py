@@ -912,7 +912,7 @@ class HazardFootprintGenerator:
         self.topo_z = topo_z
         self.catalog_hazFootprints = {}
 
-    ## ANALYTICAL EXPRESSIONS ##
+    ## SIMPLE ANALYTICAL EXPRESSIONS ##
     @staticmethod
     def calc_I_shaking_ms2(S, r):
         '''
@@ -980,8 +980,10 @@ class HazardFootprintGenerator:
         h_m = (h0 * np.exp(-np.log(2) * r / r_half)) * 1e3
         return h_m
 
+
+    ## TROPICAL CYCLONE FUNCTIONS ##
     @staticmethod
-    def calc_I_v_ms(S, r, par):
+    def calc4TC_I_v_ms(S, r, par):
         '''
         Calculate the maximum wind speed (m/s) of a tropical cyclone at a given distance.
 
@@ -1131,6 +1133,187 @@ class HazardFootprintGenerator:
             S_alongtrack[evID] = track_vmax
         return S_alongtrack
 
+
+    ## TORNADO FUNCTIONS ##
+    @staticmethod
+    def calc_lateral_distance_signed(xx, yy, x, y):
+        '''
+        Compute the signed perpendicular distance to a line segment.
+
+        This function evaluates the signed lateral (cross-track) distance from
+        each point of a two-dimensional mesh grid to a high-resolution line.
+        The distance is defined as the perpendicular distance to the locally
+        closest line segment, with the sign determined by the right-hand normal
+        to the segment direction.
+
+        Distances are only defined where an orthogonal projection of the grid
+        point falls within the extent of at least one line segment. Points
+        located beyond the tips of the line are assigned np.nan.
+
+        Parameters
+        ----------
+        xx : ndarray
+            Two-dimensional array of x-coordinates (mesh grid).
+        yy : ndarray
+            Two-dimensional array of y-coordinates (mesh grid).
+        x : array_like
+            One-dimensional array of x-coordinates defining the polyline vertices.
+        y : array_like
+            One-dimensional array of y-coordinates defining the polyline vertices.
+
+        Returns
+        -------
+        r : ndarray
+            Two-dimensional array of signed lateral distances to the line.
+            Negative values indicate points located on the left side of the
+            line direction, positive values indicate points on the right
+            side, and np.nan indicates points for which no orthogonal
+            projection onto the line exists.
+        '''
+
+        r_out = np.full(xx.shape, np.nan)
+        r_abs = np.full(xx.shape, np.inf)
+
+        for i in range(len(x) - 1):
+            dx = x[i+1] - x[i]
+            dy = y[i+1] - y[i]
+            L = np.hypot(dx, dy)
+            if L == 0:
+                continue
+
+            tx, ty = dx / L, dy / L
+            nx, ny = ty, -tx
+            Xx = xx - x[i]
+            Xy = yy - y[i]
+            s = Xx * tx + Xy * ty
+            r = Xx * nx + Xy * ny
+
+            valid = (s >= 0) & (s <= L)
+            update = valid & (np.abs(r) < r_abs)
+            r_out[update] = r[update]
+            r_abs[update] = np.abs(r[update])
+
+        return r_out
+
+    @staticmethod
+    def calc_v_from_EFscale(EF):
+        '''
+        Derive tornado wind velocity components from Enhanced Fujita (EF) scale.
+
+        This function maps an EF intensity level (EF3–EF5) to a characteristic
+        maximum wind speed derived from the official scale and decomposes this
+        wind speed into tangential, radial, and forward velocity components.
+
+        The decomposition follows fixed ratios inferred from Holland et al. (2006),
+        assuming that the EF-based wind speed represents the tangential component and
+        that proportionality holds for different EF levels.
+
+        Parameters
+        ----------
+        EF : int or float
+            Enhanced Fujita (EF) intensity level of the tornado (e.g., 3, 4, or 5).
+
+        Returns
+        -------
+        Vt : float
+            Tangential wind velocity (m/s), assumed equal to the EF-based maximum wind speed.
+        Vr : float
+            Radial wind velocity (m/s), defined as a fixed fraction of the tangential velocity.
+        Vf : float
+            Forward velocity (m/s), defined as a fixed fraction of the tangential velocity.
+
+        References
+        ----------
+        Holland et al. (2006), A Simple Model for Simulating Tornado Damage in Forests. 
+        J. Appl. Meteorologicaly Climatology, 45, 1597-1611.
+        '''
+        
+        vf_H2006 = 15         # values from Holland (2006)
+        vmax_tan_H2006 = 60
+        vmax_rad_H2006 = 30
+
+        cr = vmax_rad_H2006 / vmax_tan_H2006
+        cf = vf_H2006 / vmax_tan_H2006
+        vmax = GenMR_utils.map_EF2vmax[int(EF)]
+        Vt = vmax
+        Vr = cr * Vt
+        Vf = cf * Vt
+        return Vt, Vr, Vf
+
+    @staticmethod
+    def model_To_analytical(x, Rmax, Vr, Vt, Vf):
+        '''
+        Analytical lateral wind profile for an idealized tornado vortex.
+
+        This function computes the maximum near-surface wind speed as a function
+        of lateral (cross-track) distance from a tornado track using an analytical,
+        axisymmetric vortex model. The formulation follows Burow et al. (2020).
+
+        Parameters
+        ----------
+        x : ndarray
+            Signed lateral distance (m) from the tornado track.
+        Rmax : float
+            Radius of maximum tangential wind (m).
+        Vr : float
+            Radial wind velocity component at Rmax (m/s).
+        Vt : float
+            Tangential wind velocity component at Rmax (m/s).
+        Vf : float
+            Forward velocity of the tornado (m/s).
+
+        Returns
+        -------
+        vmax : ndarray
+            Maximum near-surface wind speed (m/s).
+
+        References
+        ----------
+        Burow et al. (2020), Damage analysis of three long-track tornadoes using high-resolution satellite imagery. 
+        Atmosphere, 11, 613
+        '''
+        vmax = np.zeros(len(x))
+        xa = np.abs(x)
+        indin = xa <= Rmax
+        indout = xa > Rmax
+        vmax_in = np.sqrt((np.sin((np.pi*x)/(2*Rmax)) * Vt + np.cos((np.pi*x)/(2*Rmax)) * Vr + Vf)**2 +\
+                        (np.cos((np.pi*x)/(2*Rmax)) * Vt - np.sin((np.pi*x)/(2*Rmax)) * Vr)**2)
+        vmax_out = np.sqrt((Vt * Rmax / x + Vf)**2 + (Vr * Rmax / x)**2)
+        vmax[indin] = vmax_in[indin]
+        vmax[indout] = vmax_out[indout]
+        return vmax
+
+    @staticmethod
+    def calc4To_I_v_ms(S, r_pm_km, par):
+        '''
+        Compute the maximum wind speed profile for a tornado based on its size (EF scale) and lateral distance from the track.
+
+        Parameters
+        ----------
+        S : int or float
+            Tornado size, represented as an EF scale value (e.g., 3, 4, 5).
+        r_pm_km : float or ndarray
+            Signed lateral (cross-track) distance from the tornado line in km.
+            Negative values indicate the left side of the track, positive values the right.
+        par : dict
+            Dictionary of tornado parameters. Must contain:
+            - 'Rmax_m' : float
+                Radius of maximum tangential wind in meters.
+
+        Returns
+        -------
+        vmax_ms : ndarray
+            Maximum wind speed in meters per second (m/s) at distance r_pm_km from the tornado path.
+        '''
+        Vt, Vr, Vf = HazardFootprintGenerator.calc_v_from_EFscale(S)
+        r_pm_m = r_pm_km * 1e3
+        Rmax = par['Rmax_m']
+        vmax_ms = HazardFootprintGenerator.model_To_analytical(r_pm_m, Rmax, Vr, Vt, Vf)
+        vmax_ms[vmax_ms == 0] = np.nan
+        return vmax_ms
+
+
+    ## STORM SURGE FUNCTIONS ##
     @staticmethod
     def model_SS_Bathtub(I_trigger, src, topo_z):
         '''
@@ -1174,13 +1357,14 @@ class HazardFootprintGenerator:
 
         return I_SS
 
+
     ## INTENSITY FOOTPRINT GENERATOR ##
     def generate(self):
         print('generating footprints for:', end=' ')
         for ID in self.src.par['perils']:
             indperil = np.where(self.stochset['ID'] == ID)[0]
             Nev_peril = len(indperil)
-            print(ID, end=', ')
+            print(ID, end='... ')
 
             if ID == 'AI':
                 AIcoord = self.evchar[get_peril_evID(self.evchar['evID']) == 'AI'].reset_index(drop=True)
@@ -1236,10 +1420,20 @@ class HazardFootprintGenerator:
                     I_t = np.zeros((self.src.grid.nx, self.src.grid.ny, npt))
                     for j in range(npt):
                         r = np.sqrt((self.src.grid.xx - track_x[j])**2 + (self.src.grid.yy - track_y[j])**2)
-                        I_sym_t = self.calc_I_v_ms(track_S[j], r, self.src.par['TC'])
+                        I_sym_t = self.calc4TC_I_v_ms(track_S[j], r, self.src.par['TC'])
                         I_t[:, :, j], *_ = self.add_v_forward(
                             self.src.par['TC']['vforward_m/s'], I_sym_t, track_x, track_y, self.src.grid, j)
                     self.catalog_hazFootprints[evID] = np.nanmax(I_t, axis=2)
+
+            elif ID == 'To':
+                Tocoord = self.evchar[get_peril_evID(self.evchar['evID']) == 'To'].reset_index(drop=True)
+                for i in range(Nev_peril):
+                    evID = self.stochset['evID'][indperil].values[i]
+                    S = self.stochset['S'][indperil].values[i]
+                    Tocoord_evID = Tocoord[Tocoord['evID'] == evID].reset_index(drop=True)
+                    r2To = self.calc_lateral_distance_signed(self.src.grid.xx, self.src.grid.yy, Tocoord_evID['x'], Tocoord_evID['y'])
+                    vmax_flat = self.calc4To_I_v_ms(S, r2To.flatten(), self.src.par['To'])
+                    self.catalog_hazFootprints[evID] = vmax_flat.reshape(np.shape(self.src.grid.xx))
 
             elif ID == 'SS':
                 pattern = re.compile(r'TC(\d+)')
@@ -1249,7 +1443,7 @@ class HazardFootprintGenerator:
                     I_trigger = self.catalog_hazFootprints[evID_trigger]
                     self.catalog_hazFootprints[evID] = self.model_SS_Bathtub(I_trigger, self.src, self.topo_z)
 
-        print('... catalogue completed')
+        print('catalogue completed')
         return self.catalog_hazFootprints
 
     ## TC CASE ##
@@ -1298,7 +1492,7 @@ class HazardFootprintGenerator:
             raise ValueError(f"t={t} is out of range (0 ≤ t < {npt}).")
 
         r = np.sqrt((self.src.grid.xx - track_x[t])**2 + (self.src.grid.yy - track_y[t])**2)
-        I_sym_t = self.calc_I_v_ms(track_S[t], r, self.src.par['TC'])
+        I_sym_t = self.calc4TC_I_v_ms(track_S[t], r, self.src.par['TC'])
         I_asym_t, vtot_x, vtot_y, vtan_x, vtan_y = self.add_v_forward(
             self.src.par['TC']['vforward_m/s'], I_sym_t, track_x, track_y, self.src.grid, t)
 
