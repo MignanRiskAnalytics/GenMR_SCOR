@@ -360,7 +360,7 @@
 <h1>Tutorial 2: Implementing perils in the GenMR digital template<a class="headerlink" href="#tutorial-2-implementing-perils-in-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 1.1.2<br />
-<strong>Last Updated:</strong> 2025-12-30<br />
+<strong>Last Updated:</strong> 2025-01-05<br />
 <strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
 <p>Once a virtual environment has been generated (see previous tutorial), stochastic events are modelled to populate it. Table 1 lists the perils included in version 1.1.2 (the ones still missing to be included by June 2026).</p>
 <br>
@@ -493,7 +493,7 @@
 <td class="text-left"><p>Enhanced Fujita (EF) scale</p></td>
 <td class="text-left"><p>Analytical</p></td>
 <td class="text-left"><p>Max. wind speed (m/s)</p></td>
-<td class="text-left"><p><span style="color: orange">ongoing<span></p></td>
+<td class="text-left"><p><span style="color: green">✓<span></p></td>
 </tr>
 <tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">VE</span></code></p></td>
 <td class="text-left"><p>Volcanic eruption</p></td>
@@ -515,12 +515,12 @@
 </tr>
 <tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">WS</span></code></p></td>
 <td class="text-left"><p>Windstorm</p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p><span style="color: orange">✗<span></p></td>
+<td class="text-left"><p>Primary</p></td>
+<td class="text-left"><p>Area</p></td>
+<td class="text-left"><p>Max. wind speed (m/s)</p></td>
+<td class="text-left"><p>Threshold</p></td>
+<td class="text-left"><p>Max. wind speed (m/s)</p></td>
+<td class="text-left"><p><span style="color: orange">ongoing<span></p></td>
 </tr>
 <tr class="row-even"><td class="text-left"><p></p></td>
 <td class="text-left"><p><strong>TECHNOLOGICAL</strong></p></td>
@@ -641,8 +641,8 @@
 <p>Source characteristics for earthquakes, volcanic eruptions, and fluvial floods were defined in Tutorial 1, as some environmental layers depend directly on these perils. Additional peril sources are now introduced. Localised peril sources, those with no direct impact on environmental layers, are parameterised first (<code class="docutils literal notranslate"><span class="pre">AI</span></code>, <code class="docutils literal notranslate"><span class="pre">SS</span></code>, <code class="docutils literal notranslate"><span class="pre">TC</span></code>, and <code class="docutils literal notranslate"><span class="pre">Ex</span></code>). Diffuse sources (<code class="docutils literal notranslate"><span class="pre">LS</span></code>, <code class="docutils literal notranslate"><span class="pre">WF</span></code>), whose hazard-intensity footprints will be generated in Section 1.3, are characterised thereafter.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;perils&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;AI&#39;</span><span class="p">,</span><span class="s1">&#39;EQ&#39;</span><span class="p">,</span><span class="s1">&#39;RS&#39;</span><span class="p">,</span><span class="s1">&#39;TC&#39;</span><span class="p">,</span><span class="s1">&#39;To&#39;</span><span class="p">,</span><span class="s1">&#39;VE&#39;</span><span class="p">,</span><span class="s1">&#39;WF&#39;</span><span class="p">,</span> <span class="s1">&#39;FF&#39;</span><span class="p">,</span><span class="s1">&#39;LS&#39;</span><span class="p">,</span><span class="s1">&#39;SS&#39;</span><span class="p">]</span>
-<span class="c1">#src.par[&#39;perils&#39;] = [&#39;AI&#39;,&#39;EQ&#39;,&#39;RS&#39;,&#39;TC&#39;,&#39;To&#39;,&#39;VE&#39;,&#39;WF&#39;, &#39;FF&#39;,&#39;LS&#39;,&#39;SS&#39;,&#39;Ex&#39;]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;perils&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;AI&#39;</span><span class="p">,</span><span class="s1">&#39;EQ&#39;</span><span class="p">,</span><span class="s1">&#39;RS&#39;</span><span class="p">,</span><span class="s1">&#39;TC&#39;</span><span class="p">,</span><span class="s1">&#39;To&#39;</span><span class="p">,</span><span class="s1">&#39;VE&#39;</span><span class="p">,</span><span class="s1">&#39;WF&#39;</span><span class="p">,</span><span class="s1">&#39;WS&#39;</span><span class="p">,</span> <span class="s1">&#39;FF&#39;</span><span class="p">,</span><span class="s1">&#39;LS&#39;</span><span class="p">,</span><span class="s1">&#39;SS&#39;</span><span class="p">]</span>
+<span class="c1">#src.par[&#39;perils&#39;] = [&#39;AI&#39;,&#39;EQ&#39;,&#39;RS&#39;,&#39;TC&#39;,&#39;To&#39;,&#39;VE&#39;,&#39;WF&#39;,&#39;WS&#39;, &#39;FF&#39;,&#39;LS&#39;,&#39;SS&#39;,&#39;Ex&#39;]</span>
                               <span class="c1"># IMPORTANT: primary perils come first in src.par[&#39;perils&#39;]</span>
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;rdm_seed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">42</span>      <span class="c1"># None or integer (for stochastic sources: AI, TC)</span>
 
@@ -671,6 +671,8 @@
                  <span class="s1">&#39;bin_km&#39;</span><span class="p">:</span> <span class="mf">1.</span><span class="p">}</span>   <span class="c1"># line spatial resolution</span>
 
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;WF&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;forest&#39;</span><span class="p">}</span>
+<span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;WS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;atmosphere&#39;</span><span class="p">}</span>          <span class="c1"># area source instead of track source due to lack of simple model</span>
+                                                  <span class="c1"># constant vmax for all (x,y) reasonable because grid small</span>
 
 <span class="c1"># WARNING: slow the first time it is called:</span>
 <span class="c1">#CI_x, CI_y = urbLandLayer.CI_refinery.centroid</span>
@@ -691,7 +693,7 @@
 <h3>1.2. Event table generation<a class="headerlink" href="#event-table-generation" title="Link to this heading"></a></h3>
 <p>The stochastic event set (or event table) consists of a list of events per peril, with identifier <code class="docutils literal notranslate"><span class="pre">evID</span></code>, size <code class="docutils literal notranslate"><span class="pre">S</span></code>, and rate <span class="math notranslate nohighlight">\(\lambda\)</span> (<code class="docutils literal notranslate"><span class="pre">lbd</span></code>). Two types of perils are considered: primary perils for which the rate of occurrence must be assessed and secondary perils which will be assumed in this tutorial to occur in pair with their triggers (with rate <code class="docutils literal notranslate"><span class="pre">NaN</span></code> - for conditional probabilities, see the future Tutorial 3):</p>
 <ul class="simple">
-<li><p>Primary perils: <code class="docutils literal notranslate"><span class="pre">AI</span></code>, <code class="docutils literal notranslate"><span class="pre">EQ</span></code>, <code class="docutils literal notranslate"><span class="pre">RS</span></code>, <code class="docutils literal notranslate"><span class="pre">TC</span></code>, <code class="docutils literal notranslate"><span class="pre">To</span></code>, <code class="docutils literal notranslate"><span class="pre">VE</span></code>, <code class="docutils literal notranslate"><span class="pre">WF</span></code>.</p></li>
+<li><p>Primary perils: <code class="docutils literal notranslate"><span class="pre">AI</span></code>, <code class="docutils literal notranslate"><span class="pre">EQ</span></code>, <code class="docutils literal notranslate"><span class="pre">RS</span></code>, <code class="docutils literal notranslate"><span class="pre">TC</span></code>, <code class="docutils literal notranslate"><span class="pre">To</span></code>, <code class="docutils literal notranslate"><span class="pre">VE</span></code>, <code class="docutils literal notranslate"><span class="pre">WF</span></code>, <code class="docutils literal notranslate"><span class="pre">WS</span></code>.</p></li>
 <li><p>Secondary perils: <code class="docutils literal notranslate"><span class="pre">LS</span></code> and <code class="docutils literal notranslate"><span class="pre">FF</span></code> triggered by <code class="docutils literal notranslate"><span class="pre">RS</span></code>, <code class="docutils literal notranslate"><span class="pre">SS</span></code> triggered by <code class="docutils literal notranslate"><span class="pre">TC</span></code>, <code class="docutils literal notranslate"><span class="pre">Ex</span></code> triggered by damage.</p></li>
 </ul>
 <p>Event size distributions are parameterised in the dictionary <code class="docutils literal notranslate"><span class="pre">sizeDistr</span></code> with:</p>
@@ -709,7 +711,7 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">EQ_Mmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">EQ_char</span><span class="p">[</span><span class="s1">&#39;srcMmax&#39;</span><span class="p">])</span>
 
 <span class="n">sizeDistr</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;primary&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;AI&#39;</span><span class="p">,</span><span class="s1">&#39;EQ&#39;</span><span class="p">,</span><span class="s1">&#39;RS&#39;</span><span class="p">,</span><span class="s1">&#39;TC&#39;</span><span class="p">,</span><span class="s1">&#39;To&#39;</span><span class="p">,</span><span class="s1">&#39;VE&#39;</span><span class="p">,</span><span class="s1">&#39;WF&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;primary&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;AI&#39;</span><span class="p">,</span><span class="s1">&#39;EQ&#39;</span><span class="p">,</span><span class="s1">&#39;RS&#39;</span><span class="p">,</span><span class="s1">&#39;TC&#39;</span><span class="p">,</span><span class="s1">&#39;To&#39;</span><span class="p">,</span><span class="s1">&#39;VE&#39;</span><span class="p">,</span><span class="s1">&#39;WF&#39;</span><span class="p">,</span><span class="s1">&#39;WS&#39;</span><span class="p">],</span>
     <span class="s1">&#39;secondary&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;FF&#39;</span><span class="p">,</span><span class="s1">&#39;LS&#39;</span><span class="p">,</span><span class="s1">&#39;SS&#39;</span><span class="p">,</span> <span class="s1">&#39;Ex&#39;</span><span class="p">],</span>
     <span class="c1"># primary perils</span>
     <span class="s1">&#39;AI&#39;</span><span class="p">:{</span>
@@ -756,6 +758,13 @@
         <span class="s1">&#39;Smin&#39;</span><span class="p">:</span> <span class="mf">1e4</span><span class="p">,</span> <span class="s1">&#39;Smax&#39;</span><span class="p">:</span> <span class="mf">1e5</span><span class="p">,</span> <span class="s1">&#39;Sbin&#39;</span><span class="p">:</span> <span class="mf">.5</span><span class="p">,</span> <span class="s1">&#39;Sscale&#39;</span><span class="p">:</span> <span class="s1">&#39;log&#39;</span><span class="p">,</span>
         <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;powerlaw&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="s1">&#39;global&#39;</span><span class="p">,</span> <span class="s1">&#39;a0&#39;</span><span class="p">:</span> <span class="mf">8.553</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">1.23</span><span class="p">,</span>      <span class="c1"># see Sect. 2.3.1</span>
         <span class="s1">&#39;calibration_source&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;WS&#39;</span><span class="p">:{</span>
+        <span class="s1">&#39;Nstoch&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;Sunit&#39;</span><span class="p">:</span> <span class="s1">&#39;Max. wind speed (m/s)&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Smin&#39;</span><span class="p">:</span> <span class="mi">45</span><span class="p">,</span> <span class="s1">&#39;Smax&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s1">&#39;Sbin&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;Sscale&#39;</span><span class="p">:</span> <span class="s1">&#39;linear&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;GPD&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="s1">&#39;local&#39;</span><span class="p">,</span> <span class="s1">&#39;mu&#39;</span><span class="p">:</span> <span class="mf">17.</span><span class="p">,</span> <span class="s1">&#39;xi&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">.112</span><span class="p">,</span> <span class="s1">&#39;sigma&#39;</span><span class="p">:</span> <span class="mf">4.43</span><span class="p">,</span> <span class="s1">&#39;Lbdmin&#39;</span><span class="p">:</span> <span class="mf">163.25</span><span class="p">,</span> <span class="c1"># Brest loc.</span>
+        <span class="s1">&#39;calibration_source&#39;</span><span class="p">:</span> <span class="s1">&#39;Copernicus 1986-2011 Synthetic windstorm events for Europe&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;reference&#39;</span><span class="p">:</span> <span class="s1">&#39;10.24381/cds.ce973f02&#39;</span>
     <span class="p">},</span>
     <span class="c1"># secondary perils - here ad-hoc Pr(peril|trigger) = 1, see tutorial 3 for probabilistic case</span>
     <span class="s1">&#39;FF&#39;</span><span class="p">:{</span><span class="s1">&#39;trigger&#39;</span><span class="p">:</span> <span class="s1">&#39;RS&#39;</span><span class="p">},</span>
@@ -809,7 +818,7 @@
       <td>impact1</td>
       <td>AI1</td>
       <td>10.000000</td>
-      <td>1.258426e-05</td>
+      <td>4.465065e-06</td>
     </tr>
     <tr>
       <th>1</th>
@@ -817,7 +826,7 @@
       <td>impact2</td>
       <td>AI2</td>
       <td>10.000000</td>
-      <td>1.258426e-05</td>
+      <td>4.465065e-06</td>
     </tr>
     <tr>
       <th>2</th>
@@ -825,7 +834,7 @@
       <td>impact3</td>
       <td>AI3</td>
       <td>10.000000</td>
-      <td>1.258426e-05</td>
+      <td>4.465065e-06</td>
     </tr>
     <tr>
       <th>3</th>
@@ -833,7 +842,7 @@
       <td>impact4</td>
       <td>AI4</td>
       <td>100.000000</td>
-      <td>1.188199e-06</td>
+      <td>4.215888e-07</td>
     </tr>
     <tr>
       <th>4</th>
@@ -841,7 +850,7 @@
       <td>impact5</td>
       <td>AI5</td>
       <td>100.000000</td>
-      <td>1.188199e-06</td>
+      <td>4.215888e-07</td>
     </tr>
     <tr>
       <th>5</th>
@@ -849,7 +858,7 @@
       <td>impact6</td>
       <td>AI6</td>
       <td>100.000000</td>
-      <td>1.188199e-06</td>
+      <td>4.215888e-07</td>
     </tr>
     <tr>
       <th>6</th>
@@ -857,7 +866,7 @@
       <td>impact7</td>
       <td>AI7</td>
       <td>100.000000</td>
-      <td>1.188199e-06</td>
+      <td>4.215888e-07</td>
     </tr>
     <tr>
       <th>7</th>
@@ -865,7 +874,7 @@
       <td>impact8</td>
       <td>AI8</td>
       <td>1000.000000</td>
-      <td>1.994471e-07</td>
+      <td>7.076651e-08</td>
     </tr>
     <tr>
       <th>8</th>
@@ -873,7 +882,7 @@
       <td>impact9</td>
       <td>AI9</td>
       <td>1000.000000</td>
-      <td>1.994471e-07</td>
+      <td>7.076651e-08</td>
     </tr>
     <tr>
       <th>9</th>
@@ -881,7 +890,7 @@
       <td>impact10</td>
       <td>AI10</td>
       <td>1000.000000</td>
-      <td>1.994471e-07</td>
+      <td>7.076651e-08</td>
     </tr>
     <tr>
       <th>10</th>
@@ -889,7 +898,7 @@
       <td>fault1</td>
       <td>EQ1</td>
       <td>6.000000</td>
-      <td>7.692251e-03</td>
+      <td>6.855726e-03</td>
     </tr>
     <tr>
       <th>11</th>
@@ -897,7 +906,7 @@
       <td>fault2</td>
       <td>EQ2</td>
       <td>6.000000</td>
-      <td>7.692251e-03</td>
+      <td>6.855726e-03</td>
     </tr>
     <tr>
       <th>12</th>
@@ -905,7 +914,7 @@
       <td>fault1</td>
       <td>EQ3</td>
       <td>6.000000</td>
-      <td>7.692251e-03</td>
+      <td>6.855726e-03</td>
     </tr>
     <tr>
       <th>13</th>
@@ -913,7 +922,7 @@
       <td>fault1</td>
       <td>EQ4</td>
       <td>6.100000</td>
-      <td>6.110172e-03</td>
+      <td>5.445696e-03</td>
     </tr>
     <tr>
       <th>14</th>
@@ -921,7 +930,7 @@
       <td>fault1</td>
       <td>EQ5</td>
       <td>6.100000</td>
-      <td>6.110172e-03</td>
+      <td>5.445696e-03</td>
     </tr>
     <tr>
       <th>15</th>
@@ -929,7 +938,7 @@
       <td>fault1</td>
       <td>EQ6</td>
       <td>6.100000</td>
-      <td>6.110172e-03</td>
+      <td>5.445696e-03</td>
     </tr>
     <tr>
       <th>16</th>
@@ -937,7 +946,7 @@
       <td>fault1</td>
       <td>EQ7</td>
       <td>6.200000</td>
-      <td>7.280223e-03</td>
+      <td>6.488506e-03</td>
     </tr>
     <tr>
       <th>17</th>
@@ -945,7 +954,7 @@
       <td>fault1</td>
       <td>EQ8</td>
       <td>6.200000</td>
-      <td>7.280223e-03</td>
+      <td>6.488506e-03</td>
     </tr>
     <tr>
       <th>18</th>
@@ -953,7 +962,7 @@
       <td>fault1</td>
       <td>EQ9</td>
       <td>6.300000</td>
-      <td>3.855258e-03</td>
+      <td>3.436002e-03</td>
     </tr>
     <tr>
       <th>19</th>
@@ -961,7 +970,7 @@
       <td>fault1</td>
       <td>EQ10</td>
       <td>6.300000</td>
-      <td>3.855258e-03</td>
+      <td>3.436002e-03</td>
     </tr>
     <tr>
       <th>20</th>
@@ -969,7 +978,7 @@
       <td>fault1</td>
       <td>EQ11</td>
       <td>6.300000</td>
-      <td>3.855258e-03</td>
+      <td>3.436002e-03</td>
     </tr>
     <tr>
       <th>21</th>
@@ -977,7 +986,7 @@
       <td>fault1</td>
       <td>EQ12</td>
       <td>6.400000</td>
-      <td>4.593510e-03</td>
+      <td>4.093970e-03</td>
     </tr>
     <tr>
       <th>22</th>
@@ -985,7 +994,7 @@
       <td>fault1</td>
       <td>EQ13</td>
       <td>6.400000</td>
-      <td>4.593510e-03</td>
+      <td>4.093970e-03</td>
     </tr>
     <tr>
       <th>23</th>
@@ -993,7 +1002,7 @@
       <td>fault2</td>
       <td>EQ14</td>
       <td>6.500000</td>
-      <td>3.648755e-03</td>
+      <td>3.251956e-03</td>
     </tr>
     <tr>
       <th>24</th>
@@ -1001,7 +1010,7 @@
       <td>fault1</td>
       <td>EQ15</td>
       <td>6.500000</td>
-      <td>3.648755e-03</td>
+      <td>3.251956e-03</td>
     </tr>
     <tr>
       <th>25</th>
@@ -1009,7 +1018,7 @@
       <td>fault1</td>
       <td>EQ16</td>
       <td>6.600000</td>
-      <td>5.796618e-03</td>
+      <td>5.166241e-03</td>
     </tr>
     <tr>
       <th>26</th>
@@ -1017,7 +1026,7 @@
       <td>fault1</td>
       <td>EQ17</td>
       <td>6.700000</td>
-      <td>4.604417e-03</td>
+      <td>4.103691e-03</td>
     </tr>
     <tr>
       <th>27</th>
@@ -1025,7 +1034,7 @@
       <td>fault1</td>
       <td>EQ18</td>
       <td>6.800000</td>
-      <td>3.657419e-03</td>
+      <td>3.259678e-03</td>
     </tr>
     <tr>
       <th>28</th>
@@ -1033,7 +1042,7 @@
       <td>fault1</td>
       <td>EQ19</td>
       <td>6.900000</td>
-      <td>2.905191e-03</td>
+      <td>2.589254e-03</td>
     </tr>
     <tr>
       <th>29</th>
@@ -1041,7 +1050,7 @@
       <td>fault1</td>
       <td>EQ20</td>
       <td>7.000000</td>
-      <td>2.307675e-03</td>
+      <td>2.056718e-03</td>
     </tr>
     <tr>
       <th>30</th>
@@ -1049,7 +1058,7 @@
       <td>atmosphere</td>
       <td>RS1</td>
       <td>75.000000</td>
-      <td>5.249839e-03</td>
+      <td>1.681332e-03</td>
     </tr>
     <tr>
       <th>31</th>
@@ -1057,7 +1066,7 @@
       <td>atmosphere</td>
       <td>RS2</td>
       <td>100.000000</td>
-      <td>5.006848e-04</td>
+      <td>1.372905e-04</td>
     </tr>
     <tr>
       <th>32</th>
@@ -1065,7 +1074,7 @@
       <td>atmosphere</td>
       <td>RS3</td>
       <td>125.000000</td>
-      <td>3.425633e-05</td>
+      <td>7.665627e-06</td>
     </tr>
     <tr>
       <th>33</th>
@@ -1073,7 +1082,7 @@
       <td>stormtrack1</td>
       <td>TC1</td>
       <td>40.000000</td>
-      <td>6.049596e-04</td>
+      <td>4.773617e-04</td>
     </tr>
     <tr>
       <th>34</th>
@@ -1081,7 +1090,7 @@
       <td>stormtrack2</td>
       <td>TC2</td>
       <td>50.000000</td>
-      <td>3.677710e-04</td>
+      <td>2.751660e-04</td>
     </tr>
     <tr>
       <th>35</th>
@@ -1089,7 +1098,7 @@
       <td>stormtrack3</td>
       <td>TC3</td>
       <td>60.000000</td>
-      <td>9.923821e-05</td>
+      <td>6.828728e-05</td>
     </tr>
     <tr>
       <th>36</th>
@@ -1097,7 +1106,7 @@
       <td>stormtrack4</td>
       <td>TC4</td>
       <td>60.000000</td>
-      <td>9.923821e-05</td>
+      <td>6.828728e-05</td>
     </tr>
     <tr>
       <th>37</th>
@@ -1105,7 +1114,7 @@
       <td>stormtrack5</td>
       <td>TC5</td>
       <td>70.000000</td>
-      <td>8.826349e-05</td>
+      <td>5.226007e-05</td>
     </tr>
     <tr>
       <th>38</th>
@@ -1113,7 +1122,7 @@
       <td>vortexline1</td>
       <td>To1</td>
       <td>3.000000</td>
-      <td>2.148463e-04</td>
+      <td>7.623033e-05</td>
     </tr>
     <tr>
       <th>39</th>
@@ -1121,7 +1130,7 @@
       <td>vortexline2</td>
       <td>To2</td>
       <td>3.000000</td>
-      <td>2.148463e-04</td>
+      <td>7.623033e-05</td>
     </tr>
     <tr>
       <th>40</th>
@@ -1129,7 +1138,7 @@
       <td>vortexline3</td>
       <td>To3</td>
       <td>3.000000</td>
-      <td>2.148463e-04</td>
+      <td>7.623033e-05</td>
     </tr>
     <tr>
       <th>41</th>
@@ -1137,7 +1146,7 @@
       <td>vortexline4</td>
       <td>To4</td>
       <td>4.000000</td>
-      <td>2.704754e-05</td>
+      <td>9.596829e-06</td>
     </tr>
     <tr>
       <th>42</th>
@@ -1145,7 +1154,7 @@
       <td>vortexline5</td>
       <td>To5</td>
       <td>4.000000</td>
-      <td>2.704754e-05</td>
+      <td>9.596829e-06</td>
     </tr>
     <tr>
       <th>43</th>
@@ -1153,7 +1162,7 @@
       <td>vortexline6</td>
       <td>To6</td>
       <td>4.000000</td>
-      <td>2.704754e-05</td>
+      <td>9.596829e-06</td>
     </tr>
     <tr>
       <th>44</th>
@@ -1161,7 +1170,7 @@
       <td>vortexline7</td>
       <td>To7</td>
       <td>5.000000</td>
-      <td>3.405084e-06</td>
+      <td>1.208169e-06</td>
     </tr>
     <tr>
       <th>45</th>
@@ -1169,7 +1178,7 @@
       <td>vortexline8</td>
       <td>To8</td>
       <td>5.000000</td>
-      <td>3.405084e-06</td>
+      <td>1.208169e-06</td>
     </tr>
     <tr>
       <th>46</th>
@@ -1177,7 +1186,7 @@
       <td>vortexline9</td>
       <td>To9</td>
       <td>5.000000</td>
-      <td>3.405084e-06</td>
+      <td>1.208169e-06</td>
     </tr>
     <tr>
       <th>47</th>
@@ -1185,7 +1194,7 @@
       <td>volcano1</td>
       <td>VE1</td>
       <td>1.000000</td>
-      <td>1.793957e-06</td>
+      <td>1.226908e-06</td>
     </tr>
     <tr>
       <th>48</th>
@@ -1193,7 +1202,7 @@
       <td>volcano1</td>
       <td>VE2</td>
       <td>3.162278</td>
-      <td>8.390967e-07</td>
+      <td>5.738680e-07</td>
     </tr>
     <tr>
       <th>49</th>
@@ -1201,7 +1210,7 @@
       <td>volcano1</td>
       <td>VE3</td>
       <td>10.000000</td>
-      <td>3.924750e-07</td>
+      <td>2.684182e-07</td>
     </tr>
     <tr>
       <th>50</th>
@@ -1209,7 +1218,7 @@
       <td>forest</td>
       <td>WF1</td>
       <td>10000.000000</td>
-      <td>3.625127e-02</td>
+      <td>1.785761e-02</td>
     </tr>
     <tr>
       <th>51</th>
@@ -1217,7 +1226,7 @@
       <td>forest</td>
       <td>WF2</td>
       <td>10000.000000</td>
-      <td>3.625127e-02</td>
+      <td>1.785761e-02</td>
     </tr>
     <tr>
       <th>52</th>
@@ -1225,7 +1234,7 @@
       <td>forest</td>
       <td>WF3</td>
       <td>10000.000000</td>
-      <td>3.625127e-02</td>
+      <td>1.785761e-02</td>
     </tr>
     <tr>
       <th>53</th>
@@ -1233,7 +1242,7 @@
       <td>forest</td>
       <td>WF4</td>
       <td>10000.000000</td>
-      <td>3.625127e-02</td>
+      <td>1.785761e-02</td>
     </tr>
     <tr>
       <th>54</th>
@@ -1241,7 +1250,7 @@
       <td>forest</td>
       <td>WF5</td>
       <td>10000.000000</td>
-      <td>3.625127e-02</td>
+      <td>1.785761e-02</td>
     </tr>
     <tr>
       <th>55</th>
@@ -1249,7 +1258,7 @@
       <td>forest</td>
       <td>WF6</td>
       <td>10000.000000</td>
-      <td>3.625127e-02</td>
+      <td>1.785761e-02</td>
     </tr>
     <tr>
       <th>56</th>
@@ -1257,7 +1266,7 @@
       <td>forest</td>
       <td>WF7</td>
       <td>31622.776602</td>
-      <td>1.759354e-02</td>
+      <td>8.666690e-03</td>
     </tr>
     <tr>
       <th>57</th>
@@ -1265,7 +1274,7 @@
       <td>forest</td>
       <td>WF8</td>
       <td>31622.776602</td>
-      <td>1.759354e-02</td>
+      <td>8.666690e-03</td>
     </tr>
     <tr>
       <th>58</th>
@@ -1273,7 +1282,7 @@
       <td>forest</td>
       <td>WF9</td>
       <td>31622.776602</td>
-      <td>1.759354e-02</td>
+      <td>8.666690e-03</td>
     </tr>
     <tr>
       <th>59</th>
@@ -1281,10 +1290,26 @@
       <td>forest</td>
       <td>WF10</td>
       <td>100000.000000</td>
-      <td>1.280780e-02</td>
+      <td>6.309203e-03</td>
     </tr>
     <tr>
       <th>60</th>
+      <td>WS</td>
+      <td>atmosphere</td>
+      <td>WS1</td>
+      <td>45.000000</td>
+      <td>2.741867e-03</td>
+    </tr>
+    <tr>
+      <th>61</th>
+      <td>WS</td>
+      <td>atmosphere</td>
+      <td>WS2</td>
+      <td>50.000000</td>
+      <td>1.746819e-05</td>
+    </tr>
+    <tr>
+      <th>62</th>
       <td>FF</td>
       <td>river1</td>
       <td>FF_fromRS1</td>
@@ -1292,7 +1317,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>61</th>
+      <th>63</th>
       <td>FF</td>
       <td>river1</td>
       <td>FF_fromRS2</td>
@@ -1300,7 +1325,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>62</th>
+      <th>64</th>
       <td>FF</td>
       <td>river1</td>
       <td>FF_fromRS3</td>
@@ -1308,7 +1333,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>63</th>
+      <th>65</th>
       <td>LS</td>
       <td>terrain</td>
       <td>LS_fromRS1</td>
@@ -1316,7 +1341,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>64</th>
+      <th>66</th>
       <td>LS</td>
       <td>terrain</td>
       <td>LS_fromRS2</td>
@@ -1324,7 +1349,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>65</th>
+      <th>67</th>
       <td>LS</td>
       <td>terrain</td>
       <td>LS_fromRS3</td>
@@ -1332,7 +1357,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>66</th>
+      <th>68</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC1</td>
@@ -1340,7 +1365,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>67</th>
+      <th>69</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC2</td>
@@ -1348,7 +1373,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>68</th>
+      <th>70</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC3</td>
@@ -1356,7 +1381,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>69</th>
+      <th>71</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC4</td>
@@ -1364,7 +1389,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>70</th>
+      <th>72</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC5</td>
@@ -1420,6 +1445,7 @@
 </tbody>
 </table>
 <p>Storm surge (<code class="docutils literal notranslate"><span class="pre">SS</span></code>) is the only peril in this tutorial for which hazard intensity is estimated using a threshold-based approach (Bathtub model; Mignan, 2024:sec. 2.4.2). The algorithm is intentionally simple and tailored to the virtual environment used here, where the background topography exhibits a predominantly west-east gradient (see the <code class="docutils literal notranslate"><span class="pre">model_SS_Bathtub()</span></code> function). As a secondary peril triggered by <code class="docutils literal notranslate"><span class="pre">TC</span></code> events, the <code class="docutils literal notranslate"><span class="pre">SS</span></code> size along the coastline is derived from a relationship of the form <span class="math notranslate nohighlight">\(h_{max} \propto v_{max}^2\)</span> (Mignan, 2024:fig. 2.7), where <span class="math notranslate nohighlight">\(v_{max}\)</span> is the wind speed along the coastline obtained from the <code class="docutils literal notranslate"><span class="pre">TC</span></code> footprint.</p>
+<p>Note that rainstorm (<code class="docutils literal notranslate"><span class="pre">RS</span></code>) and windstorm (<code class="docutils literal notranslate"><span class="pre">WS</span></code>) footprints are considered spatially homogeneous (prior to the application of any site-specific conditions, which will be addressed subsequently) due to the relatively small size of the active domain of the digital template. Accordingly, their source classes are defined as area sources, and their intensity classes are defined using thresholds, with the threshold value corresponding to the event size <code class="docutils literal notranslate"><span class="pre">S</span></code> by construction.</p>
 <p>The catalogue of hazard footprints is generated via the <code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator(()</span></code> class and is visualised with <code class="docutils literal notranslate"><span class="pre">plot_hazFootprints()</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1436,13 +1462,20 @@
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;SS&#39;</span><span class="p">][</span><span class="s1">&#39;bathy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;New York harbor&#39;</span>  <span class="c1"># &#39;generic&#39; (Saffir-Simpson, Mignan, 2024:eq. 2.16) </span>
                                             <span class="c1"># &#39;New York harbor&#39; (eq. in Mignan, 2024:fig. 2.7)</span>
 
+
+<span class="c1">## TO ADD: site-specific conditions ##</span>
+<span class="c1"># surface friction -&gt; reduce windspeed (TC, WS)</span>
+<span class="c1"># soil amplification -&gt; increase ground shaking (EQ)</span>
+<span class="c1"># other?</span>
+
+    
 <span class="n">hazFootprints</span> <span class="o">=</span> <span class="n">GenMR_perils</span><span class="o">.</span><span class="n">HazardFootprintGenerator</span><span class="p">(</span><span class="n">evtable</span><span class="p">,</span> <span class="n">evchar</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">)</span>
 <span class="n">catalog_hazFootprints</span> <span class="o">=</span> <span class="n">hazFootprints</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>generating footprints for: AI... EQ... RS... TC... To... VE... WF... FF... LS... SS... catalogue completed
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>generating footprints for: AI... EQ... RS... TC... To... VE... WF... WS... FF... LS... SS... catalogue completed
 </pre></div>
 </div>
 </div>
@@ -1455,10 +1488,10 @@
 <span class="n">Imax_Ex_totaldestruction</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="mf">6.89476</span>  <span class="c1"># kPa (here 4 psi as threshold of total destruction)</span>
 
 <span class="n">plot_Imax</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;AI&#39;</span><span class="p">:</span> <span class="n">Imax_Ex_totaldestruction</span><span class="p">,</span> <span class="s1">&#39;EQ&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;Ex&#39;</span><span class="p">:</span> <span class="n">Imax_Ex_totaldestruction</span><span class="p">,</span> <span class="s1">&#39;LS&#39;</span><span class="p">:</span> <span class="mf">2.</span><span class="p">,</span> \
-             <span class="s1">&#39;SS&#39;</span><span class="p">:</span> <span class="mf">2.</span><span class="p">,</span> <span class="s1">&#39;TC&#39;</span><span class="p">:</span> <span class="mf">70.</span><span class="p">,</span> <span class="s1">&#39;To&#39;</span><span class="p">:</span> <span class="mf">70.</span><span class="p">,</span> <span class="s1">&#39;VE&#39;</span><span class="p">:</span> <span class="mf">.5</span><span class="p">}</span>
+             <span class="s1">&#39;SS&#39;</span><span class="p">:</span> <span class="mf">2.</span><span class="p">,</span> <span class="s1">&#39;TC&#39;</span><span class="p">:</span> <span class="mf">70.</span><span class="p">,</span> <span class="s1">&#39;To&#39;</span><span class="p">:</span> <span class="mf">70.</span><span class="p">,</span> <span class="s1">&#39;VE&#39;</span><span class="p">:</span> <span class="mf">.5</span><span class="p">,</span> <span class="s1">&#39;WS&#39;</span><span class="p">:</span> <span class="mf">70.</span><span class="p">}</span>
 <span class="n">f</span> <span class="o">=</span> <span class="mf">.1</span>
 <span class="n">plot_Imin</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;AI&#39;</span><span class="p">:</span> <span class="n">f</span><span class="o">*</span><span class="n">plot_Imax</span><span class="p">[</span><span class="s1">&#39;AI&#39;</span><span class="p">],</span> <span class="s1">&#39;EQ&#39;</span><span class="p">:</span> <span class="n">f</span><span class="o">*</span><span class="n">plot_Imax</span><span class="p">[</span><span class="s1">&#39;EQ&#39;</span><span class="p">],</span> <span class="s1">&#39;Ex&#39;</span><span class="p">:</span> <span class="n">f</span><span class="o">*</span><span class="n">plot_Imax</span><span class="p">[</span><span class="s1">&#39;Ex&#39;</span><span class="p">],</span> <span class="s1">&#39;LS&#39;</span><span class="p">:</span> <span class="n">f</span><span class="o">*</span><span class="n">plot_Imax</span><span class="p">[</span><span class="s1">&#39;LS&#39;</span><span class="p">],</span> \
-             <span class="s1">&#39;SS&#39;</span><span class="p">:</span> <span class="n">f</span><span class="o">*</span><span class="n">plot_Imax</span><span class="p">[</span><span class="s1">&#39;SS&#39;</span><span class="p">],</span> <span class="s1">&#39;TC&#39;</span><span class="p">:</span> <span class="mf">30.</span><span class="p">,</span> <span class="s1">&#39;To&#39;</span><span class="p">:</span> <span class="mf">30.</span><span class="p">,</span> <span class="s1">&#39;VE&#39;</span><span class="p">:</span> <span class="n">f</span><span class="o">*</span><span class="n">plot_Imax</span><span class="p">[</span><span class="s1">&#39;VE&#39;</span><span class="p">]}</span>
+             <span class="s1">&#39;SS&#39;</span><span class="p">:</span> <span class="n">f</span><span class="o">*</span><span class="n">plot_Imax</span><span class="p">[</span><span class="s1">&#39;SS&#39;</span><span class="p">],</span> <span class="s1">&#39;TC&#39;</span><span class="p">:</span> <span class="mf">30.</span><span class="p">,</span> <span class="s1">&#39;To&#39;</span><span class="p">:</span> <span class="mf">30.</span><span class="p">,</span> <span class="s1">&#39;VE&#39;</span><span class="p">:</span> <span class="n">f</span><span class="o">*</span><span class="n">plot_Imax</span><span class="p">[</span><span class="s1">&#39;VE&#39;</span><span class="p">],</span> <span class="s1">&#39;WS&#39;</span><span class="p">:</span> <span class="mf">30.</span><span class="p">}</span>
 
 
 <span class="c1"># nstoch (default = 5) defines the number of events per peril to be displayed by row</span>
@@ -1468,7 +1501,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/718b4e09463e11535ce484b4825054ae4c0b50815c0594a93437c2f04eed06f9.png" src="../_images/718b4e09463e11535ce484b4825054ae4c0b50815c0594a93437c2f04eed06f9.png" />
+<img alt="../_images/d8a206faf0bffc1569dd599682587d275afc14131c34cde43b22d7ab66a68f5b.png" src="../_images/d8a206faf0bffc1569dd599682587d275afc14131c34cde43b22d7ab66a68f5b.png" />
 </div>
 </div>
 <p><strong>Note:</strong> Observe the <code class="docutils literal notranslate"><span class="pre">TC</span></code> footprint boundary effect (cyclonic eye), which is due to the track artificially starting at <code class="docutils literal notranslate"><span class="pre">grid.xmin</span></code>.</p>
