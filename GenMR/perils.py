@@ -38,7 +38,7 @@ Planned peril models (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2025-12-30
+:Date: 2025-01-05
 :License: AGPL-3
 """
 
@@ -726,11 +726,11 @@ class EventSetGenerator:
         Transform the rate from cumulative (Lbd) to non-cumulative (lbd) (e.g., Eq. 2.65)
         '''
         if par['Sscale'] == 'linear':
-            S_lo = S - par['Sbin']/2
-            S_hi = S + par['Sbin']/2
+            S_lo = S
+            S_hi = S + par['Sbin']
         elif par['Sscale'] == 'log':
-            S_lo = 10**(np.log10(S) - par['Sbin']/2)
-            S_hi = 10**(np.log10(S) + par['Sbin']/2)
+            S_lo = S
+            S_hi = 10**(np.log10(S) + par['Sbin'])
         if par['distr'] == 'powerlaw':
             Lbd_lo = calc_Lbd_powerlaw(S_lo, par['a'], par['b'])
             Lbd_hi = calc_Lbd_powerlaw(S_hi, par['a'], par['b'])
@@ -738,6 +738,10 @@ class EventSetGenerator:
             Lbd_lo = calc_Lbd_exponential(S_lo, par['a'], par['b'])
             Lbd_hi = calc_Lbd_exponential(S_hi, par['a'], par['b'])
         if par['distr'] == 'GPD':
+            if par['xi'] < 0:
+                Smax = par['mu'] - par['sigma'] / par['xi']  # xi < 0
+                if np.max(S_hi) > Smax:
+                    print(f"WARNING: GPD upper endpoint exceeded: S_hi={np.max(S_hi):.3g} > Smax={Smax:.3g}")
             Lbd_lo = calc_Lbd_GPD(S_lo, par['mu'], par['xi'], par['sigma'], par['Lbdmin'])
             Lbd_hi = calc_Lbd_GPD(S_hi, par['mu'], par['xi'], par['sigma'], par['Lbdmin'])
         lbd = Lbd_lo - Lbd_hi
@@ -768,6 +772,8 @@ class EventSetGenerator:
             self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.VE_char['srcID'], self.sizeDistr['VE']['Nstoch']))
         elif ID == 'WF':
             self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.par['WF']['object'], self.sizeDistr['WF']['Nstoch']))
+        elif ID == 'WS':
+            self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.par['WS']['object'], self.sizeDistr['WS']['Nstoch']))
 
         elif ID == 'FF':
             trigger = self.sizeDistr[ID]['trigger']
