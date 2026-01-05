@@ -1441,6 +1441,15 @@ class HazardFootprintGenerator:
                     vmax_flat = self.calc4To_I_v_ms(S, r2To.flatten(), self.src.par['To'])
                     self.catalog_hazFootprints[evID] = vmax_flat.reshape(np.shape(self.src.grid.xx))
 
+            elif ID == 'WS':
+                for i in range(Nev_peril):
+                    evID = self.stochset['evID'][indperil].values[i]
+                    S = self.stochset['S'][indperil].values[i]
+                    nx, ny = np.shape(self.src.grid.xx)
+                    S_cst = np.repeat(S, nx*ny)
+                    self.catalog_hazFootprints[evID] = S_cst.reshape(nx, ny)
+
+            ## secondary perils ##
             elif ID == 'SS':
                 pattern = re.compile(r'TC(\d+)')
                 for i in range(Nev_peril):
@@ -1448,6 +1457,7 @@ class HazardFootprintGenerator:
                     evID_trigger = re.search(pattern, evID).group()
                     I_trigger = self.catalog_hazFootprints[evID_trigger]
                     self.catalog_hazFootprints[evID] = self.model_SS_Bathtub(I_trigger, self.src, self.topo_z)
+
 
         print('catalogue completed')
         return self.catalog_hazFootprints
