@@ -22,6 +22,7 @@ Peril models (v1.1.1)
 Peril models (v1.1.2)
 ---------------------
 * To: Tornado
+* WS: Windstorm
 
 Planned peril models (v1.1.2)
 -----------------------------
@@ -29,7 +30,6 @@ Planned peril models (v1.1.2)
 * HW: Heatwave
 * Li: Lightning
 * PI: Pest infestation
-* WS: Windstorm
 * BO: Blackout
 * BI: Business interruption
 * Sf: Public service failure
@@ -2367,6 +2367,10 @@ def plot_hazFootprints(catalog_hazFootprints, grid, topoLayer_z, plot_Imin, plot
             I_plt[I_plt < Imin] = np.nan
             ax[i,j].contourf(grid.xx, grid.yy, I_plt, cmap = 'Reds', levels = np.linspace(Imin, Imax, 100))
             ax[i,j].contourf(grid.xx, grid.yy, GenMR_env.ls.hillshade(topoLayer_z, vert_exag=.1), cmap='gray', alpha = .1)
+            ax[i,j].plot([grid.xmin + grid.xbuffer, grid.xmax - grid.xbuffer, grid.xmax - grid.xbuffer, grid.xmin + grid.xbuffer, grid.xmin + grid.xbuffer],
+                       [grid.ymin + grid.ybuffer, grid.ymin + grid.ybuffer, grid.ymax - grid.ybuffer, grid.ymax - grid.ybuffer, grid.ymin + grid.ybuffer], \
+                        linestyle='dotted', color='black')
+
             ax[i,j].set_xlim(grid.xmin, grid.xmax)
             ax[i,j].set_ylim(grid.ymin, grid.ymax)
             ax[i,j].set_xlabel('$x$ (km)')
