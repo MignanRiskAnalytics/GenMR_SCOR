@@ -418,6 +418,9 @@ A_US_FL = 170312.                  # (km^2)
 rho_wat = 1000.   # (kg/m^3)
 rho_atm = 1.15    # (kg/m^3)
 
+month_labels = ['January','February','March','April','May','June','July','August','September','October','November','December']
+month_labels_short = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+
 def fetch_A0(level):
     '''
     Fetch the predefined area value corresponding to a specified geographical level.

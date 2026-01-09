@@ -39,6 +39,7 @@ import copy
 
 import matplotlib.pyplot as plt
 import matplotlib.colors as plt_col
+from matplotlib.lines import Line2D
 import matplotlib.patches as mpatches
 from matplotlib.patches import Polygon as MplPolygon
 from matplotlib.patches import Patch
@@ -2013,10 +2014,11 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
     Parameters
     ----------
     envLayer : object
-        Instance of an environmental layer class (e.g., EnvLayer_topo, EnvLayer_soil, EnvLayer_natLand, EnvLayer_urbLand).
+        Instance of an environmental layer class (e.g., EnvLayer_topo, EnvLayer_atmo, EnvLayer_soil, EnvLayer_natLand, EnvLayer_urbLand).
     attr : str
         Name of the attribute to plot. Examples:
         - Topography: 'z', 'slope', 'aspect'
+        - Topography: 'T'
         - Soil: 'h', 'FS'
         - Natural/Urban Land: 'S', 'roadNet', 'bldg_value', 'built_yr', 'industrialZones'
     hillshading_z : ndarray, optional
@@ -2040,6 +2042,7 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
     if len(hillshading_z) != 0:
         plt.contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(hillshading_z, vert_exag=.1), cmap='gray')
         alpha = .5
+
     if envLayer.ID == 'topo':
         if attr == 'z':
             z_plot = np.copy(envLayer.z)
@@ -2058,6 +2061,18 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
             fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'aspect ($^\circ$)')
         else:
             return print('No match found for attribute identifier in topo layer.')
+
+    if envLayer.ID == 'atmo':
+        if attr == 'T':
+            img1 = plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.T, cmap = 'bwr', vmin=-10, vmax=20, alpha = .5)
+            month = GenMR_utils.month_labels[envLayer.par['month']-1]
+            plt.contour(envLayer.grid.xx, envLayer.grid.yy, envLayer.T, levels = [envLayer.z_freezinglevel], colors = 'blue')
+            proxy = Line2D([0], [0], color='blue', label = f'Freezing level in {month}')
+            plt.legend(handles=[proxy], loc='upper left')
+            fig.colorbar(img1, ax = ax, fraction = .04, pad = .04, label = 'temperature ($^\circ$C)')
+        else:
+            return print('No match found for attribute identifier in atmosphere layer.')
+
     if envLayer.ID == 'soil':
         if attr == 'h':
             legend_h = [Patch(facecolor=(105/255,105/255,105/255, .5), edgecolor='black', label='h=0 (scarp)'),
@@ -2075,6 +2090,7 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
             plt.legend(handles=legend_FS, loc='upper left')
         else:
             return print('No match found for attribute identifier in soil layer.')
+
     if envLayer.ID == 'natLand':
         if attr == 'S':
             legend_S = [Patch(facecolor=(0/255.,127/255.,191/255.,.5), edgecolor='black', label='Water'),
@@ -2084,7 +2100,8 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
                                          vmin=-1, vmax=5, alpha = alpha)
             plt.legend(handles=legend_S, loc='upper left')   
         else:
-            return print('No match found for attribute identifier in land layer.')
+            return print('No match found for attribute identifier in natural land layer.')
+
     if envLayer.ID == 'urbLand':
         if attr == 'S':
             legend_S = [Patch(facecolor=(0/255.,127/255.,191/255.,.5), edgecolor='black', label='Water'),
@@ -2119,7 +2136,8 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
             labels_industrialZone = [h.get_label() for h in lgd_industrialZone]
             ax.legend(lgd_industrialZone, labels_industrialZone, loc='upper left')
         else:
-            return print('No match found for attribute identifier in land layer.')
+            return print('No match found for attribute identifier in urban land layer.')
+
     plt.xlabel('$x$ (km)')
     plt.ylabel('$y$ (km)')
     plt.title('Layer:' + envLayer.ID + ' with attribute:' + attr, size = 14)
@@ -2140,7 +2158,7 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
     Parameters
     ----------
     envLayers : list of objects
-        List of environmental layer instances (e.g., EnvLayer_topo, EnvLayer_soil,
+        List of environmental layer instances (e.g., EnvLayer_topo, EnvLayer_atmo, EnvLayer_soil,
         EnvLayer_natLand, EnvLayer_urbLand).
     file_ext : str, optional
         File extension to save the figure ('jpg', 'pdf', etc.). Default is '-' 
@@ -2154,10 +2172,11 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
 
     Notes
     -----
-    - For topography layers, the three columns correspond to: altitude `z`, slope, and aspect.
-    - For soil layers, the three columns correspond to: thickness `h`, factor of safety, and an empty panel.
-    - For natural land layers, the first column shows land classes (`S`), the other two columns are empty.
-    - For urban land layers, the three columns correspond to: state `S`, road network, and building value.
+    - For topography layer, the three columns correspond to: altitude `z`, slope, and aspect.
+    - For atmospheric layer, the column correspinds to: near-surface air temperature `T`.
+    - For soil layer, the three columns correspond to: thickness `h`, factor of safety, and an empty panel.
+    - For natural land layer, the first column shows land classes (`S`), the other two columns are empty.
+    - For urban land layer, the three columns correspond to: state `S`, road network, and building value.
     - Legends, color maps, and hillshading are applied automatically depending on the layer type.
     '''
     nLayers = len(envLayers)
@@ -2200,7 +2219,7 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
                 ax[i,0].plot(coast_x, coast_y, color = 'yellow', linestyle = 'dashed')
             ax[i,0].set_xlabel('$x$ (km)')
             ax[i,0].set_ylabel('$y$ (km)')
-            ax[i,0].set_title('TOPOGRAPHY: altitude z', size = 14)
+            ax[i,0].set_title('TOPOGRAPHY: altitude $z$', size = 14)
             ax[i,0].set_aspect(1)
             fig.colorbar(img0, ax = ax[i,0], fraction = .04, pad = .04, label = 'z (m)')
 
@@ -2218,6 +2237,27 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
             ax[i,2].set_aspect(1)
             fig.colorbar(img2, ax = ax[i,2], fraction = .04, pad = .04, label = 'aspect ($^\circ$)')
 
+        ## ATMOSPHERE LAYER ##
+        if envLayer.ID == 'atmo':
+            IDs = IDs + '_atmo'
+
+            if topo_bool:
+                ax[i,0].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray')
+            img1 = ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.T, cmap = 'bwr', \
+                                         vmin=-10, vmax=20, alpha = .5)
+            month = GenMR_utils.month_labels[envLayer.par['month']-1]
+            ax[i,0].contour(envLayer.grid.xx, envLayer.grid.yy, envLayer.T, levels = [envLayer.z_freezinglevel], colors = 'blue')
+            ax[i,0].set_xlabel('$x$ (km)')
+            ax[i,0].set_ylabel('$y$ (km)')
+            ax[i,0].set_title('ATMOSPHERE: temperature $T$', size = 14)
+            ax[i,0].set_aspect(1)
+            proxy = Line2D([0], [0], color='blue', label = f'Freezing level in {month}')
+            ax[i,0].legend(handles=[proxy], loc='upper left')
+            fig.colorbar(img1, ax = ax[i,0], fraction = .04, pad = .04, label = 'temperature ($^\circ$C)')
+
+            ax[i,1].set_axis_off()
+            ax[i,2].set_axis_off()
+
         ## SOIL LAYER ##
         if envLayer.ID == 'soil':
             IDs = IDs + '_soil'
@@ -2234,7 +2274,7 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
                                          vmin=0, vmax=5, alpha = .5)
             ax[i,0].set_xlabel('$x$ (km)')
             ax[i,0].set_ylabel('$y$ (km)')
-            ax[i,0].set_title('SOIL: thickness h', size = 14)
+            ax[i,0].set_title('SOIL: thickness $h$', size = 14)
             ax[i,0].set_aspect(1)
             ax[i,0].legend(handles=legend_h, loc='upper left')
                 
