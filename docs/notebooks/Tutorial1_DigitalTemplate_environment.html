@@ -301,7 +301,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#natural-peril-definition-for-environmental-objects">1.2. Natural peril definition (for environmental objects)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#generating-the-topography-atmosphere-soil-and-natural-land-layers">1.3. Generating the topography, atmosphere, soil, and natural land layers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#environmental-layer-properties-and-attribute-plotting">1.4. Environmental layer properties (and attribute plotting)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#a-note-on-environmental-layer-downscaling">1.5. A note on environmental layer downscaling</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#technological-environment-generation">2. Technological environment generation</a><ul>
@@ -309,9 +308,13 @@
 <li class="toctree-l3"><a class="reference internal" href="#environmental-layer-properties">2.2. Environmental layer properties</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#socio-economic-environment-generation">3. Socio-economic environment generation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#appendix">Appendix</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#a-attributes-properties-of-environmental-layers">A. Attributes &amp; properties of environmental layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#a-attributes-properties-of-environmental-layers">A. Attributes &amp; properties of environmental layers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#a-1-a-note-on-environmental-layer-downscaling">A.1 A note on environmental layer downscaling</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#b-underlying-physical-processes">B. Underlying physical processes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#b-1-atmospheric-layer-temperature">B.1. Atmospheric layer: Temperature</a></li>
 </ul>
@@ -469,7 +472,7 @@ The environmental layers are generated as follows:
 <li><p><strong>Topography</strong>: Represented as elevation, <span class="math notranslate nohighlight">\(z\)</span> (m), the generic topography is defined by a west-dipping slope and a fractal dimension between 2 and 3. Environmental objects associated with peril sources modify the topography through intrusion and extrusion rules. The overall process, illustrated in Figure 2, combines methods from solid geometry and morphometry. Further details can be found in <a class="reference external" href="https://www.mdpi.com/1660-4601/19/23/16097">Mignan (2022)</a>. The main properties of the topography layer include terrain slope (<span class="math notranslate nohighlight">\(^\circ\)</span>) and aspect (<span class="math notranslate nohighlight">\(^\circ\)</span>).</p></li>
 </ul>
 <p><img alt="" src="../_images/ref_Mignan_IJERPH2022_fig2.jpg" /></p>
-<center><small><b>Fig. 2.</b> Construction of the topography layer following rules of solid geometry and morphometry, illustrating the combination of geometric primitives and terrain metrics. Redrawn from <a href='https://www.mdpi.com/1660-4601/19/23/16097' target='_blank'>Mignan (2022:fig.2)</a>.</small><br></center>
+<center><small><b>Fig. 2.</b> Construction of the topography layer following rules of solid geometry and morphometry, illustrating the combination of geometric primitives and terrain metrics. Redrawn from <a href='https://www.mdpi.com/1660-4601/19/23/16097' target='_blank'>Mignan (2022:fig.2)</a>.</small></center>
 <ul class="simple">
 <li><p><strong>Atmosphere</strong> (IN CONSTRUCTION): Characterised by the near-surface air temperature <span class="math notranslate nohighlight">\(T(z)\)</span> function of the latitude and month of the year. Properties include the freezing level <span class="math notranslate nohighlight">\(z_{freeze}\)</span> and the tropopause altitude <span class="math notranslate nohighlight">\(z_{tropopause}\)</span>. To add: water content…</p></li>
 <li><p><strong>Soil</strong>: Characterised by the soil thickness, <span class="math notranslate nohighlight">\(h\)</span> (m), which is initially spatially uniform. It can later vary through mass movement processes (using the landslide cellular automaton (CA) introduced in the next tutorial) or by a simpler rule applied here: <span class="math notranslate nohighlight">\(h = 0\)</span> (i.e., scarp) if the soil is unstable at <span class="math notranslate nohighlight">\((x,y)\)</span>. Other soil properties remain fixed parameters at this stage. A key property of the soil layer is the factor of safety, <span class="math notranslate nohighlight">\(F_S\)</span>, which indicates whether the soil is stable, critical, or unstable.</p></li>
@@ -486,6 +489,9 @@ The environmental layers are generated as follows:
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>    <span class="c1"># loading bar display</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.patches</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span> <span class="k">as</span> <span class="n">MplPolygon</span>
 
 <span class="c1">#import warnings </span>
 <span class="c1">#warnings.filterwarnings(&#39;ignore&#39;)   # commented, try to remove all warnings</span>
@@ -594,7 +600,7 @@ The environmental layers are generated as follows:
 <li><p>Coastal strip <code class="docutils literal notranslate"><span class="pre">cs</span></code>: Coastal strip of width <code class="docutils literal notranslate"><span class="pre">cs_w_km</span></code> and slope <code class="docutils literal notranslate"><span class="pre">cs_tan(phi)</span></code> (&lt; <code class="docutils literal notranslate"><span class="pre">bg_tan(phi)</span></code>) intruding the topography on the eastern side of the coastline. Remnants of the original topography remain at a ratio <code class="docutils literal notranslate"><span class="pre">cs_eta</span></code>.</p></li>
 </ul>
 <p>At the end of the process, the layer is upscaled back to the default pixel width <code class="docutils literal notranslate"><span class="pre">gridPar['w']</span></code>. Except for the background topography, all other alterations are optional (<code class="docutils literal notranslate"><span class="pre">th</span></code>, <code class="docutils literal notranslate"><span class="pre">vo</span></code>, <code class="docutils literal notranslate"><span class="pre">fr</span></code>, <code class="docutils literal notranslate"><span class="pre">rv</span></code>, <code class="docutils literal notranslate"><span class="pre">cs</span></code> true or false).</p>
-<p>The <strong>atmospheric layer</strong> (paramerized in <code class="docutils literal notranslate"><span class="pre">atmoPar</span></code>, IN CONSTRUCTION) is defined by two main variables, the near-surface air temperature <span class="math notranslate nohighlight">\(T(x,y)\)</span> (implemented) and the water content (to add). The reference near-surface temperature <span class="math notranslate nohighlight">\(T_0(z=0)\)</span> is calculated from a simple Energy Balance Climate Model (EBCM) that is function of <code class="docutils literal notranslate"><span class="pre">gridPar['lat_deg']</span></code> and the month.</p>
+<p>The <strong>atmospheric layer</strong> (paramerized in <code class="docutils literal notranslate"><span class="pre">atmoPar</span></code>, IN CONSTRUCTION) is defined by two main variables, the near-surface air temperature <span class="math notranslate nohighlight">\(T(x,y)\)</span> (implemented) and the water content (to add). The reference near-surface temperature <span class="math notranslate nohighlight">\(T_0(z=0)\)</span> is calculated from the Energy Balance Climate Model (EBCM) of North et al. (1981), which is function of <code class="docutils literal notranslate"><span class="pre">gridPar['lat_deg']</span></code> and the considered month (see Appendix for details).</p>
 <p>The <strong>soil layer</strong> (parameterized in <code class="docutils literal notranslate"><span class="pre">soilPar</span></code>) is defined by two main variables, the soil thickness <span class="math notranslate nohighlight">\(h(x,y)\)</span>, initialised at constant value <code class="docutils literal notranslate"><span class="pre">h0_m</span></code>, and the water column depth <span class="math notranslate nohighlight">\(h_w(x,y)\)</span>, initialized at <code class="docutils literal notranslate"><span class="pre">wat_h_m</span></code>. In the current version, soil parameters are kept constant (effective cohesion <code class="docutils literal notranslate"><span class="pre">Ceff_Pa</span></code>, effective friction angle <code class="docutils literal notranslate"><span class="pre">phieff_deg</span></code> and soil density <code class="docutils literal notranslate"><span class="pre">rho_kg/m3</span></code>). <span class="math notranslate nohighlight">\(h(x,y)\)</span> is then updated with the method defined in <code class="docutils literal notranslate"><span class="pre">corr</span></code> (for correction). For simplicity, locations where the factor of safety is lower than 1 get <span class="math notranslate nohighlight">\(h=0\)</span> (method <code class="docutils literal notranslate"><span class="pre">remove_unstable</span></code>). <span class="math notranslate nohighlight">\(h_w(x,y)\)</span> will be allowed to vary in the next tutorial (during rainstorms).</p>
 <p>The <strong>natural land layer</strong> (parameterized in <code class="docutils literal notranslate"><span class="pre">natLandPar</span></code>) is defined by the state <span class="math notranslate nohighlight">\(S(x,y)\)</span>, with <span class="math notranslate nohighlight">\(S = -1\)</span> (water) for <span class="math notranslate nohighlight">\(z(x,y)&lt;0\)</span> (west of coastline) and at the coordinates of the river channel(s), <span class="math notranslate nohighlight">\(S = 0\)</span> (grassland) for <span class="math notranslate nohighlight">\(z\)</span> greater than <code class="docutils literal notranslate"><span class="pre">ve_treeline_m</span></code>, and <span class="math notranslate nohighlight">\(S = 1\)</span> (forest) otherwise (<code class="docutils literal notranslate"><span class="pre">ve</span></code> for vegetation). This layer can be considered a sublayer of the land use layer to be defined in Section 2, with the state updated there where urbanized.</p>
 <div class="cell docutils container">
@@ -675,40 +681,6 @@ The environmental layers are generated as follows:
 <img alt="../_images/70464cb38d9485ae80f0f6fcfb4cf7558ffcfac11a3f55e06464a4332b9f1867.png" src="../_images/70464cb38d9485ae80f0f6fcfb4cf7558ffcfac11a3f55e06464a4332b9f1867.png" />
 <img alt="../_images/aec82bf6a793f3ca958a31564ab42ba6ae23df9d44045b6d5f33e8d564916437.png" src="../_images/aec82bf6a793f3ca958a31564ab42ba6ae23df9d44045b6d5f33e8d564916437.png" />
 <img alt="../_images/e1bd70b94a1890a544a12555752d323fdaa8a8b9e18ed548690fa5ee89e881d3.png" src="../_images/e1bd70b94a1890a544a12555752d323fdaa8a8b9e18ed548690fa5ee89e881d3.png" />
-</div>
-</div>
-</section>
-<section id="a-note-on-environmental-layer-downscaling">
-<h3>1.5. A note on environmental layer downscaling<a class="headerlink" href="#a-note-on-environmental-layer-downscaling" title="Link to this heading"></a></h3>
-<p>Different environmental processes may occur at different scales. The default resolution is defined by the pixel width <code class="docutils literal notranslate"><span class="pre">gridPar['w']</span></code>, which represents the finest one possible for environmental layers. A grid class instance can be downscaled with the function <code class="docutils literal notranslate"><span class="pre">downscale_RasterGrid()</span></code>. This was for example used to generate the topography (in <code class="docutils literal notranslate"><span class="pre">EnvLayer_topo()</span></code>). Another process defined at lower resolution will be the road network in Section 2 which will required downscaled terrain slope and water mask as inputs. Different pooling methods (minimum, mean or maximum) are available in function <code class="docutils literal notranslate"><span class="pre">pooling()</span></code>. This is illustrated below with the resolution reduced by a factor <code class="docutils literal notranslate"><span class="pre">f</span> <span class="pre">=</span> <span class="pre">50</span></code> to emphasize the impact on the layers.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="mi">50</span>
-<span class="n">grid_downscaled</span> <span class="o">=</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">downscale_RasterGrid</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">appl</span> <span class="o">=</span> <span class="s1">&#39;pooling&#39;</span><span class="p">)</span>
-<span class="n">topoLayer_downscaled</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">topoLayer</span><span class="p">)</span>
-<span class="n">topoLayer_downscaled</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid_downscaled</span>
-<span class="n">topoLayer_downscaled</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">pooling</span><span class="p">(</span><span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;mean&#39;</span><span class="p">)</span>             <span class="c1"># mean-pooling example</span>
-
-<span class="n">GenMR_env</span><span class="o">.</span><span class="n">plot_EnvLayers</span><span class="p">([</span><span class="n">topoLayer_downscaled</span><span class="p">])</span>    <span class="c1"># notice that properties are automatically recomputed</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<img alt="../_images/0fce340264863da8766c12047e6dd41227a0a85ac2c939cf7c349c3c77c2fb91.png" src="../_images/0fce340264863da8766c12047e6dd41227a0a85ac2c939cf7c349c3c77c2fb91.png" />
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">natLandLayer_downscaled</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">natLandLayer</span><span class="p">)</span>
-<span class="n">natLandLayer_downscaled</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid_downscaled</span>
-<span class="n">natLandLayer_downscaled</span><span class="o">.</span><span class="n">S</span> <span class="o">=</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">pooling</span><span class="p">(</span><span class="n">natLandLayer</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;min&#39;</span><span class="p">)</span>        <span class="c1"># min-pooling example</span>
-
-<span class="n">GenMR_env</span><span class="o">.</span><span class="n">plot_EnvLayer_attr</span><span class="p">(</span><span class="n">natLandLayer_downscaled</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<img alt="../_images/663f3b3dd16c3f05a62781c0a304e5c2a24d09beda7acfecace5fd222d0b80f0.png" src="../_images/663f3b3dd16c3f05a62781c0a304e5c2a24d09beda7acfecace5fd222d0b80f0.png" />
 </div>
 </div>
 </section>
@@ -815,11 +787,7 @@ The environmental layers are generated as follows:
 <p>Three types of industrial zones are defined in the virtual city: the industrial harbor, the riverside industrial park, and the inland industrial parks. This classification is used to automatically locate a refinery, identified as a critical infrastructure and a potential source of industrial explosions in Tutorial 2, within the largest industrial harbor sector. This is illustrated below by plotting the coordinates of the attribute <code class="docutils literal notranslate"><span class="pre">CI_refinery</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.patches</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span> <span class="k">as</span> <span class="n">MplPolygon</span>
-
-
-<span class="c1">## zoom into city and plot CI_refinery encoded in urbLandLayer (for explosion Ex source in Tutorial 2):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## zoom into city and plot CI_refinery encoded in urbLandLayer (for explosion Ex source in Tutorial 2):</span>
 <span class="n">industrialZones</span> <span class="o">=</span> <span class="n">urbLandLayer</span><span class="o">.</span><span class="n">industrialZones</span>
 <span class="n">CI_refinery</span> <span class="o">=</span> <span class="n">urbLandLayer</span><span class="o">.</span><span class="n">CI_refinery</span>
 
@@ -873,6 +841,10 @@ The environmental layers are generated as follows:
 </div>
 </section>
 </section>
+<section id="socio-economic-environment-generation">
+<h2>3. Socio-economic environment generation<a class="headerlink" href="#socio-economic-environment-generation" title="Link to this heading"></a></h2>
+<p>TO DO</p>
+</section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
 <ul class="simple">
@@ -883,6 +855,7 @@ The environmental layers are generated as follows:
 <li><p>Mignan A (2022), A Digital Template for the Generic Multi-Risk (GenMR) Framework: A Virtual Natural Environment. International Journal of Environmental Research and Public Health, 19 (23), 16097, doi: 10.3390/ijerph192316097</p></li>
 <li><p>Mignan A (2024), Introduction to Catastrophe Risk Modelling - A Physics-based Approach. Cambridge University Press, doi: 10.1017/9781009437370</p></li>
 <li><p>Morgan-Wall T (2022), rayshader: Create Maps and Visualize Data in 2D and 3D. https://www.rayshader.com.</p></li>
+<li><p>North et al. (1981), Energy Balance Climate Models. Rev. Geophys. Space Phys. 19(1), 91-121.</p></li>
 <li><p>White R, Engelen G, Uljee I (1997), The use of constrained cellular automata for high-resolution modelling of urban land-use dynamics. Environment and Planning B: Planning and Design, 24, 323-343.</p></li>
 </ul>
 </section>
@@ -1024,12 +997,119 @@ The environmental layers are generated as follows:
 </tr>
 </tbody>
 </table>
+<section id="a-1-a-note-on-environmental-layer-downscaling">
+<h4>A.1 A note on environmental layer downscaling<a class="headerlink" href="#a-1-a-note-on-environmental-layer-downscaling" title="Link to this heading"></a></h4>
+<p>Different environmental processes may occur at different scales. The default resolution is defined by the pixel width <code class="docutils literal notranslate"><span class="pre">gridPar['w']</span></code>, which represents the finest one possible for environmental layers. A grid class instance can be downscaled with the function <code class="docutils literal notranslate"><span class="pre">downscale_RasterGrid()</span></code>. This was for example used to generate the topography (in <code class="docutils literal notranslate"><span class="pre">EnvLayer_topo()</span></code>). Another process defined at lower resolution will be the road network in Section 2 which will required downscaled terrain slope and water mask as inputs. Different pooling methods (minimum, mean or maximum) are available in function <code class="docutils literal notranslate"><span class="pre">pooling()</span></code>. This is illustrated below with the resolution reduced by a factor <code class="docutils literal notranslate"><span class="pre">f</span> <span class="pre">=</span> <span class="pre">50</span></code> to emphasize the impact on the layers.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">grid_downscaled</span> <span class="o">=</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">downscale_RasterGrid</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">appl</span> <span class="o">=</span> <span class="s1">&#39;pooling&#39;</span><span class="p">)</span>
+<span class="n">topoLayer_downscaled</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">topoLayer</span><span class="p">)</span>
+<span class="n">topoLayer_downscaled</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid_downscaled</span>
+<span class="n">topoLayer_downscaled</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">pooling</span><span class="p">(</span><span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;mean&#39;</span><span class="p">)</span>             <span class="c1"># mean-pooling example</span>
+
+<span class="n">GenMR_env</span><span class="o">.</span><span class="n">plot_EnvLayers</span><span class="p">([</span><span class="n">topoLayer_downscaled</span><span class="p">])</span>    <span class="c1"># notice that properties are automatically recomputed</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/0a2eec5855ade07eba472bc057472c461647c0cf5d56b873799d01dc9b5af532.png" src="../_images/0a2eec5855ade07eba472bc057472c461647c0cf5d56b873799d01dc9b5af532.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">natLandLayer_downscaled</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">natLandLayer</span><span class="p">)</span>
+<span class="n">natLandLayer_downscaled</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid_downscaled</span>
+<span class="n">natLandLayer_downscaled</span><span class="o">.</span><span class="n">S</span> <span class="o">=</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">pooling</span><span class="p">(</span><span class="n">natLandLayer</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;min&#39;</span><span class="p">)</span>        <span class="c1"># min-pooling example</span>
+
+<span class="n">GenMR_env</span><span class="o">.</span><span class="n">plot_EnvLayer_attr</span><span class="p">(</span><span class="n">natLandLayer_downscaled</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/663f3b3dd16c3f05a62781c0a304e5c2a24d09beda7acfecace5fd222d0b80f0.png" src="../_images/663f3b3dd16c3f05a62781c0a304e5c2a24d09beda7acfecace5fd222d0b80f0.png" />
+</div>
+</div>
+</section>
 </section>
 <section id="b-underlying-physical-processes">
 <h3>B. Underlying physical processes<a class="headerlink" href="#b-underlying-physical-processes" title="Link to this heading"></a></h3>
 <p>IN CONSTRUCTION</p>
 <section id="b-1-atmospheric-layer-temperature">
 <h4>B.1. Atmospheric layer: Temperature<a class="headerlink" href="#b-1-atmospheric-layer-temperature" title="Link to this heading"></a></h4>
+<p>The reference near-surface air temperature <code class="docutils literal notranslate"><span class="pre">T0</span></code> is calculated using the Energy Balance Climate Model (EBCM) of North et al. (1981). The next cell shows how <code class="docutils literal notranslate"><span class="pre">T0</span></code> depends on the latitude of the digital template and the month considered (see future Tutorial 3 for the implementation of seasonality in CAT modelling).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lat_low</span><span class="p">,</span> <span class="n">lat_med</span><span class="p">,</span> <span class="n">lat_hig</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">45</span>
+<span class="n">lati</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">90</span><span class="p">,</span><span class="mi">91</span><span class="p">)</span>
+<span class="n">moni</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span>
+
+<span class="n">_</span><span class="p">,</span> <span class="n">T0_zonal</span><span class="p">,</span> <span class="n">GMST</span> <span class="o">=</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">EnvLayer_atmo</span><span class="o">.</span><span class="n">calc_T0_EBCM</span><span class="p">(</span><span class="n">lati</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Global mean surface temperature (GMST): </span><span class="si">{</span><span class="n">GMST</span><span class="si">}</span><span class="s1">°C&#39;</span><span class="p">)</span>
+<span class="n">GMST_from_zonal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">T0_zonal</span><span class="p">,</span> <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">lati</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Average zonal temperature = </span><span class="si">{</span><span class="n">GMST_from_zonal</span><span class="si">}</span><span class="s1">°C (= GMST, validation value)&#39;</span><span class="p">)</span>
+
+<span class="n">T0_low</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">EnvLayer_atmo</span><span class="o">.</span><span class="n">calc_T0_EBCM</span><span class="p">(</span><span class="n">lat_low</span><span class="p">,</span> <span class="n">moni</span><span class="p">)</span>
+<span class="n">T0_med</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">EnvLayer_atmo</span><span class="o">.</span><span class="n">calc_T0_EBCM</span><span class="p">(</span><span class="n">lat_med</span><span class="p">,</span> <span class="n">moni</span><span class="p">)</span>
+<span class="n">T0_hig</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">EnvLayer_atmo</span><span class="o">.</span><span class="n">calc_T0_EBCM</span><span class="p">(</span><span class="n">lat_hig</span><span class="p">,</span> <span class="n">moni</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;20&#39;</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">14</span><span class="p">))</span>
+<span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span> <span class="o">=</span> <span class="o">-</span><span class="mf">5.</span><span class="p">,</span> <span class="mf">30.</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lati</span><span class="p">,</span> <span class="n">T0_zonal</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;black&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">GMST</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;GMST&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Latitude (°)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$T_0$ (°C)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Zonal temperature&#39;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;right&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">moni</span><span class="p">,</span> <span class="n">T0_med</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">GMST</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">moni</span><span class="p">,</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">month_labels_short</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$T_0$ (°C)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Seasonal temperature (lat=</span><span class="si">{</span><span class="n">lat_med</span><span class="si">}</span><span class="s1">°)&#39;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;right&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">moni</span><span class="p">,</span> <span class="n">T0_low</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">GMST</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">moni</span><span class="p">,</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">month_labels_short</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$T_0$ (°C)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Seasonal temperature (lat=</span><span class="si">{</span><span class="n">lat_low</span><span class="si">}</span><span class="s1">°)&#39;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;right&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">moni</span><span class="p">,</span> <span class="n">T0_hig</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">GMST</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">moni</span><span class="p">,</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">month_labels_short</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$T_0$ (°C)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Seasonal temperature (lat=</span><span class="si">{</span><span class="n">lat_hig</span><span class="si">}</span><span class="s1">°)&#39;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;right&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Global mean surface temperature (GMST): 14.763157894736834°C
+Average zonal temperature = 14.76365750942746°C (= GMST, validation value)
+</pre></div>
+</div>
+<img alt="../_images/e6e492a12909531a1c17d2cbab7b8b2a8e51b3a748c90659552036abf61b849e.png" src="../_images/e6e492a12909531a1c17d2cbab7b8b2a8e51b3a748c90659552036abf61b849e.png" />
+</div>
+</div>
 </section>
 </section>
 </section>
