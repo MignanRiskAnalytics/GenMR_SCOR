@@ -66,6 +66,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-GenMR.environment">GenMR.environment module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#genmr-virtual-environment-generator">GenMR Virtual Environment Generator</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#layers-and-related-objects-v1-1-1">Layers and Related Objects (v1.1.1)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#layers-and-related-objects-v1-1-2">Layers and Related Objects (v1.1.2)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#planned-additions-v1-1-2">Planned Additions (v1.1.2)</a></li>
 </ul>
 </li>
@@ -78,6 +79,21 @@
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.CriticalInfrastructure.name"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure.name</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.CriticalInfrastructure.polygon"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure.polygon</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.CriticalInfrastructure.zone_type"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure.zone_type</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.EnvLayer_atmo"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_atmo.ID"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.ID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_atmo.topo"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.topo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_atmo.par"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.par</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_atmo.grid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.grid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_atmo.T0"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.T0</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_atmo.T"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.T</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_atmo.calc_T0_EBCM"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.calc_T0_EBCM()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_atmo.calc_T_z"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.calc_T_z()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_atmo.calc_z_freeze"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.calc_z_freeze()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_atmo.calc_z_tropopause"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.calc_z_tropopause()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_atmo.z_freezinglevel"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.z_freezinglevel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_atmo.z_tropopause"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.z_tropopause</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.EnvLayer_natLand"><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand</span></code></a><ul>
@@ -281,7 +297,7 @@
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#natural-environment-generation">1. Natural environment generation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#grid-definition">1.1. Grid definition</a></li>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#natural-peril-definition-for-environmental-objects">1.2. Natural peril definition (for environmental objects)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#generating-the-topography-soil-and-natural-land-layers">1.3. Generating the topography, soil, and natural land layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#generating-the-topography-atmosphere-soil-and-natural-land-layers">1.3. Generating the topography, atmosphere, soil, and natural land layers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#environmental-layer-properties-and-attribute-plotting">1.4. Environmental layer properties (and attribute plotting)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#a-note-on-environmental-layer-downscaling">1.5. A note on environmental layer downscaling</a></li>
 </ul>
@@ -292,7 +308,14 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#references">References</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#appendix">Appendix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#appendix">Appendix</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#a-attributes-properties-of-environmental-layers">A. Attributes &amp; properties of environmental layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#b-underlying-physical-processes">B. Underlying physical processes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#b-1-atmospheric-layer-temperature">B.1. Atmospheric layer: Temperature</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html">Tutorial 2: Peril implementation</a><ul>
@@ -367,18 +390,25 @@ defined as classes or methods.</p>
 <section id="layers-and-related-objects-v1-1-1">
 <h4>Layers and Related Objects (v1.1.1)<a class="headerlink" href="#layers-and-related-objects-v1-1-1" title="Link to this heading"></a></h4>
 <ul class="simple">
-<li><p><strong>Topography</strong> — includes tectonic hills, river valleys, and volcanic edifices
-→ properties: slope, aspect</p></li>
-<li><p><strong>Soil</strong> — includes factor of safety</p></li>
+<li><p><strong>Topography</strong> - includes tectonic hills, river valleys, and volcanic edifices
+- properties: slope, aspect</p></li>
+<li><p><strong>Soil</strong>
+- properties: factor of safety</p></li>
 <li><p><strong>Natural land</strong></p></li>
-<li><p><strong>Urban land</strong> — includes road network
-→ properties: asset value</p></li>
+<li><p><strong>Urban land</strong> - includes road network
+- properties: asset value</p></li>
+</ul>
+</section>
+<section id="layers-and-related-objects-v1-1-2">
+<h4>Layers and Related Objects (v1.1.2)<a class="headerlink" href="#layers-and-related-objects-v1-1-2" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><strong>Atmosphere</strong>
+- properties: freezing level, tropopause</p></li>
 </ul>
 </section>
 <section id="planned-additions-v1-1-2">
 <h4>Planned Additions (v1.1.2)<a class="headerlink" href="#planned-additions-v1-1-2" title="Link to this heading"></a></h4>
 <ul class="simple">
-<li><p>Atmosphere</p></li>
 <li><p>Power grid</p></li>
 <li><p>Population</p></li>
 </ul>
@@ -390,7 +420,7 @@ defined as classes or methods.</p>
 <dd class="field-even"><p>1.1.2</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2025-12-29</p>
+<dd class="field-odd"><p>2026-01-09</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -455,6 +485,215 @@ defined as classes or methods.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="GenMR.environment.CriticalInfrastructure.zone_type">
 <span class="sig-name descname"><span class="pre">zone_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#GenMR.environment.CriticalInfrastructure.zone_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_atmo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">EnvLayer_atmo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">topo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_atmo" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Environmental layer representing atmospheric properties over a raster grid.</p>
+<p>The state variable is near-surface air temperature <cite>T</cite>. IN CONSTRUCTION</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>topo</strong> (<a class="reference internal" href="#GenMR.environment.EnvLayer_topo" title="GenMR.environment.EnvLayer_topo"><em>EnvLayer_topo</em></a>) – The topography layer used as reference for the atmosphere layer.</p></li>
+<li><p><strong>par</strong> (<em>dict</em>) – <p>Dictionary of parameters for the atmosphere layer. Expected keys include:
+- ‘month’ : int</p>
+<blockquote>
+<div><p>Calendar month (1 = January, 12 = December). Used to compute the seasonal phase.</p>
+</div></blockquote>
+</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_atmo.ID">
+<span class="sig-name descname"><span class="pre">ID</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_atmo.ID" title="Link to this definition"></a></dt>
+<dd><p>Identifier of the layer (‘atmo’).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_atmo.topo">
+<span class="sig-name descname"><span class="pre">topo</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_atmo.topo" title="Link to this definition"></a></dt>
+<dd><p>Reference topography layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#GenMR.environment.EnvLayer_topo" title="GenMR.environment.EnvLayer_topo">EnvLayer_topo</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_atmo.par">
+<span class="sig-name descname"><span class="pre">par</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_atmo.par" title="Link to this definition"></a></dt>
+<dd><p>Parameter dictionary provided at initialization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_atmo.grid">
+<span class="sig-name descname"><span class="pre">grid</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_atmo.grid" title="Link to this definition"></a></dt>
+<dd><p>Grid associated with the topography layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#GenMR.environment.RasterGrid" title="GenMR.environment.RasterGrid">RasterGrid</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_atmo.T0">
+<span class="sig-name descname"><span class="pre">T0</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_atmo.T0" title="Link to this definition"></a></dt>
+<dd><p>Reference near-surface air temperature at z=0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_atmo.T">
+<span class="sig-name descname"><span class="pre">T</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_atmo.T" title="Link to this definition"></a></dt>
+<dd><p>Near-surface air temperature at z(x,y).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, shape (grid.nx, grid.ny)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_atmo.calc_T0_EBCM">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calc_T0_EBCM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.141592653589793</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_atmo.calc_T0_EBCM" title="Link to this definition"></a></dt>
+<dd><p>Calculate the zonal and seasonal surface temperature in a simple Energy Balance Climate Model (EBCM).</p>
+<p>This function implements a 1-D diffusive EBM with constant albedo, solved analytically
+following North et al. (1981). It includes:</p>
+<ul class="simple">
+<li><p>Global annual-mean temperature (T0)</p></li>
+<li><p>Annual-mean latitudinal deviations (T_zonal)</p></li>
+<li><p>Approximate seasonal variation</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lat</strong> (<em>float</em><em> or </em><em>ndarray</em>) – Latitude in degrees (−90° to 90°). Positive for Northern Hemisphere.</p></li>
+<li><p><strong>mon</strong> (<em>int</em>) – Calendar month (1 = January, 12 = December). Used to compute the seasonal phase.</p></li>
+<li><p><strong>phase</strong> (<em>float</em><em>, </em><em>optional</em>) – Phase shift of the seasonal cycle in radians. Default is π,
+which aligns Northern Hemisphere summer with month ~6 (June).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>T</strong> (<em>float or ndarray</em>) – Temperature at the given latitude and month (°C), including seasonal variation.</p></li>
+<li><p><strong>T_zonal</strong> (<em>float or ndarray</em>) – Annual-mean latitudinal temperature (zonal) at the given latitude (°C).</p></li>
+<li><p><strong>T0</strong> (<em>float</em>) – Global annual-mean temperature (°C).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>North et al. (1981), Energy Balance Climate Models. Rev. Geophys. Space Phys. 19(1), 91-121</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_atmo.calc_T_z">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calc_T_z</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lapse_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_atmo.calc_T_z" title="Link to this definition"></a></dt>
+<dd><p>Compute atmospheric temperature at height z above the surface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z</strong> (<em>float</em><em> or </em><em>ndarray</em>) – Altitude above the surface (km)</p></li>
+<li><p><strong>T0</strong> (<em>float</em><em> or </em><em>ndarray</em>) – Surface temperature (°C) at z = 0</p></li>
+<li><p><strong>lapse_rate</strong> (<em>float</em><em>, </em><em>optional</em>) – Temperature decrease with altitude (°C/km). Default is 6.5°C/km (average value).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>T</strong> – Temperature at altitude z (°C)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float or ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_atmo.calc_z_freeze">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calc_z_freeze</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lapse_rate</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_atmo.calc_z_freeze" title="Link to this definition"></a></dt>
+<dd><p>Calculate freezing level in kilometres.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>T0</strong> (<em>float</em><em> or </em><em>ndarray</em>) – Surface temperature (°C) at z = 0</p></li>
+<li><p><strong>lapse_rate</strong> (<em>float</em>) – Temperature decrease with altitude (°C/km)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>T</strong> – Temperature at altitude z (°C)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float or ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_atmo.calc_z_tropopause">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calc_z_tropopause</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Mateus_etal2022'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_atmo.calc_z_tropopause" title="Link to this definition"></a></dt>
+<dd><p>Calculate the tropopause height as a function of latitude using empirical models.</p>
+<p>This function provides approximate tropopause height based on two different
+published methods:</p>
+<ul class="simple">
+<li><p><cite>‘Son_etal2011’</cite>: Uses the minimum tropopause height from Son et al. (2011)
+and applies a correction to approximate the mean height.</p></li>
+<li><p><cite>‘Mateus_etal2022’</cite>: Uses the sigmoid fit provided by Mateus et al. (2022),
+removing seasonal (day-of-year) dependence
+as its impact is negligible.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lat</strong> (<em>float</em><em> or </em><em>ndarray</em>) – Latitude in degrees (-90° to 90°). Positive for Northern Hemisphere.</p></li>
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – Choice of empirical method. Options are:
+- <cite>‘Son_etal2011’</cite> : Uses Son et al. (2011) data with correction.
+- <cite>‘Mateus_etal2022’</cite> : Uses Mateus et al. (2022) empirical model (default).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>z_tropopause</strong> – Tropopause height in kilometers at the specified latitude(s).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float or ndarray</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<dl class="simple">
+<dt>Son et al. (2011), The fine-scale structure of the global tropopause derived from</dt><dd><p>COSMIC GPS radio occultation measurements. J. Geophys. Res. 116, D20113, doi:10.1029/2011JD016030</p>
+</dd>
+<dt>Mateus et al. (2022), Global Empirical Models for Tropopause Height Determination.</dt><dd><p>Remote Sensing 14, 4303, doi: 10.3390/rs14174303</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_atmo.z_freezinglevel">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">z_freezinglevel</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_atmo.z_freezinglevel" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_atmo.z_tropopause">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">z_tropopause</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_atmo.z_tropopause" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1891,9 +2130,10 @@ variables, and continuous variables display colorbars.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>envLayer</strong> (<em>object</em>) – Instance of an environmental layer class (e.g., EnvLayer_topo, EnvLayer_soil, EnvLayer_natLand, EnvLayer_urbLand).</p></li>
+<li><p><strong>envLayer</strong> (<em>object</em>) – Instance of an environmental layer class (e.g., EnvLayer_topo, EnvLayer_atmo, EnvLayer_soil, EnvLayer_natLand, EnvLayer_urbLand).</p></li>
 <li><p><strong>attr</strong> (<em>str</em>) – Name of the attribute to plot. Examples:
 - Topography: ‘z’, ‘slope’, ‘aspect’
+- Topography: ‘T’
 - Soil: ‘h’, ‘FS’
 - Natural/Urban Land: ‘S’, ‘roadNet’, ‘bldg_value’, ‘built_yr’, ‘industrialZones’</p></li>
 <li><p><strong>hillshading_z</strong> (<em>ndarray</em><em>, </em><em>optional</em>) – 2D array of elevation values for hillshading overlay. Default is empty string, meaning no hillshading.</p></li>
@@ -1926,7 +2166,7 @@ color maps, and optional hillshading for topography.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>envLayers</strong> (<em>list</em><em> of </em><em>objects</em>) – List of environmental layer instances (e.g., EnvLayer_topo, EnvLayer_soil,
+<li><p><strong>envLayers</strong> (<em>list</em><em> of </em><em>objects</em>) – List of environmental layer instances (e.g., EnvLayer_topo, EnvLayer_atmo, EnvLayer_soil,
 EnvLayer_natLand, EnvLayer_urbLand).</p></li>
 <li><p><strong>file_ext</strong> (<em>str</em><em>, </em><em>optional</em>) – File extension to save the figure (‘jpg’, ‘pdf’, etc.). Default is ‘-’
 which means the figure is not saved.</p></li>
@@ -1942,10 +2182,11 @@ is not ‘-‘.</p>
 </dl>
 <p class="rubric">Notes</p>
 <ul class="simple">
-<li><p>For topography layers, the three columns correspond to: altitude <cite>z</cite>, slope, and aspect.</p></li>
-<li><p>For soil layers, the three columns correspond to: thickness <cite>h</cite>, factor of safety, and an empty panel.</p></li>
-<li><p>For natural land layers, the first column shows land classes (<cite>S</cite>), the other two columns are empty.</p></li>
-<li><p>For urban land layers, the three columns correspond to: state <cite>S</cite>, road network, and building value.</p></li>
+<li><p>For topography layer, the three columns correspond to: altitude <cite>z</cite>, slope, and aspect.</p></li>
+<li><p>For atmospheric layer, the column correspinds to: near-surface air temperature <cite>T</cite>.</p></li>
+<li><p>For soil layer, the three columns correspond to: thickness <cite>h</cite>, factor of safety, and an empty panel.</p></li>
+<li><p>For natural land layer, the first column shows land classes (<cite>S</cite>), the other two columns are empty.</p></li>
+<li><p>For urban land layer, the three columns correspond to: state <cite>S</cite>, road network, and building value.</p></li>
 <li><p>Legends, color maps, and hillshading are applied automatically depending on the layer type.</p></li>
 </ul>
 </dd></dl>
@@ -1976,8 +2217,10 @@ as well as intensity and loss footprint calculations.</p>
 <section id="peril-models-v1-1-2">
 <h4>Peril models (v1.1.2)<a class="headerlink" href="#peril-models-v1-1-2" title="Link to this heading"></a></h4>
 <ul class="simple">
+<li><p>CS: Convective storm - ongoing</p></li>
+<li><p>Li: Lightning - ongoing</p></li>
 <li><p>To: Tornado</p></li>
-<li><p>WS: Windstorm</p></li>
+<li><p>WS: Windstorm - ongoing</p></li>
 </ul>
 </section>
 <section id="planned-peril-models-v1-1-2">
@@ -1985,7 +2228,6 @@ as well as intensity and loss footprint calculations.</p>
 <ul class="simple">
 <li><p>Dr: Drought</p></li>
 <li><p>HW: Heatwave</p></li>
-<li><p>Li: Lightning</p></li>
 <li><p>PI: Pest infestation</p></li>
 <li><p>BO: Blackout</p></li>
 <li><p>BI: Business interruption</p></li>
@@ -2000,7 +2242,7 @@ as well as intensity and loss footprint calculations.</p>
 <dd class="field-even"><p>1.1.2</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2025-01-05</p>
+<dd class="field-odd"><p>2025-01-06</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>

@@ -68,6 +68,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../manual.html#module-GenMR.environment">GenMR.environment module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#genmr-virtual-environment-generator">GenMR Virtual Environment Generator</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#layers-and-related-objects-v1-1-1">Layers and Related Objects (v1.1.1)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#layers-and-related-objects-v1-1-2">Layers and Related Objects (v1.1.2)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#planned-additions-v1-1-2">Planned Additions (v1.1.2)</a></li>
 </ul>
 </li>
@@ -80,6 +81,21 @@
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.CriticalInfrastructure.name"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure.name</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.CriticalInfrastructure.polygon"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure.polygon</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.CriticalInfrastructure.zone_type"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure.zone_type</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.ID"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.ID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.topo"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.topo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.par"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.par</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.grid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.grid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.T0"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.T0</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.T"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.T</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.calc_T0_EBCM"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.calc_T0_EBCM()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.calc_T_z"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.calc_T_z()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.calc_z_freeze"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.calc_z_freeze()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.calc_z_tropopause"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.calc_z_tropopause()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.z_freezinglevel"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.z_freezinglevel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.z_tropopause"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.z_tropopause</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_natLand"><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand</span></code></a><ul>
@@ -216,14 +232,18 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.add_v_forward"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.add_v_forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.calc4TC_I_v_ms"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc4TC_I_v_ms()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.calc4To_I_v_ms"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc4To_I_v_ms()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.calc_I_ash_m"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_I_ash_m()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.calc_I_blast_kPa"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_I_blast_kPa()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.calc_I_shaking_ms2"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_I_shaking_ms2()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.calc_I_v_ms"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_I_v_ms()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.calc_S_track"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_S_track()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.calc_lateral_distance_signed"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_lateral_distance_signed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.calc_v_from_EFscale"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_v_from_EFscale()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.generate"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.generate()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.get_TC_timeshot"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.get_TC_timeshot()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.model_SS_Bathtub"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.model_SS_Bathtub()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.model_To_analytical"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.model_To_analytical()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.RiskFootprintGenerator"><code class="docutils literal notranslate"><span class="pre">RiskFootprintGenerator</span></code></a></li>
@@ -279,7 +299,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#natural-environment-generation">1. Natural environment generation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#grid-definition">1.1. Grid definition</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#natural-peril-definition-for-environmental-objects">1.2. Natural peril definition (for environmental objects)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#generating-the-topography-soil-and-natural-land-layers">1.3. Generating the topography, soil, and natural land layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#generating-the-topography-atmosphere-soil-and-natural-land-layers">1.3. Generating the topography, atmosphere, soil, and natural land layers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#environmental-layer-properties-and-attribute-plotting">1.4. Environmental layer properties (and attribute plotting)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#a-note-on-environmental-layer-downscaling">1.5. A note on environmental layer downscaling</a></li>
 </ul>
@@ -290,7 +310,14 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#appendix">Appendix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#appendix">Appendix</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#a-attributes-properties-of-environmental-layers">A. Attributes &amp; properties of environmental layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#b-underlying-physical-processes">B. Underlying physical processes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#b-1-atmospheric-layer-temperature">B.1. Atmospheric layer: Temperature</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html">Tutorial 2: Peril implementation</a><ul>
@@ -320,6 +347,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-hazard-footprints">C. Hazard footprints</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-1-tropical-cyclone-case">C.1. Tropical cyclone case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-2-tornado-case">C.2. Tornado case</a></li>
 </ul>
 </li>
 </ul>
@@ -356,7 +384,7 @@
 <h1>Tutorial 1: Generating a virtual environment for the GenMR digital template<a class="headerlink" href="#tutorial-1-generating-a-virtual-environment-for-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 1.1.2<br />
-<strong>Last Updated:</strong> 2025-12-29<br />
+<strong>Last Updated:</strong> 2026-01-09<br />
 <strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
 <p>The <em>digital template</em>, first described in <a class="reference external" href="https://www.mdpi.com/1660-4601/19/23/16097">Mignan (2022)</a> and used in the CAT Risk Modelling Sandbox (<a class="reference external" href="https://github.com/amignan/Intro2CATriskModelling/blob/main/CATRiskModellingSandbox_tutorial.ipynb">Mignan, 2024</a>), is a microcosm simulation of the complex Earth system for catastrophe dynamics R&amp;D, multi-risk prototyping in the Generic Multi-Risk (GenMR) framework, and catastrophe risk eduction. It is defined as a virtual environment populated by loss-generating events that interact with each other and with the environment. The virtual environment, to be built in this tutorial, is composed of <em>environmental layers</em> that consist of sets of variables <span class="math notranslate nohighlight">\(\theta(x,y)\)</span> defined in a spatial grid of coordinates <span class="math notranslate nohighlight">\((x,y)\)</span>. Each layer may be altered by <em>environmental objects</em> located within the layer. The parsimonious complex Earth system finally consists of a stack of interacting environmental layers defined in the natural, technological and socio-economic systems. The loss-generating events that populate the virtual environment will be defined in the next tutorial, and their occurrence rates and interactions in a third and final tutorial.</p>
 <p>Currently, a limited number of environmental layers and objects are available (Fig. 1, Table 1). This notebook provides a concise overview of these layers using a default parameterisation, with alternative scenarios to be introduced later in How-To Guides. The outputs generated here will serve as input for hazard and risk assessment in the subsequent tutorials.</p>
@@ -373,6 +401,7 @@
 <th class="head text-left"><p>Properties (examples)</p></th>
 <th class="head text-left"><p>Object dependencies<span class="math notranslate nohighlight">\(^*\)</span></p></th>
 <th class="head text-left"><p>References</p></th>
+<th class="head text-left"><p>Status<sup>‡</sup></p></th>
 </tr>
 </thead>
 <tbody>
@@ -383,42 +412,66 @@
 <td class="text-left"><p>Slope, aspect</p></td>
 <td class="text-left"><p>Geological &amp; hydrological objects</p></td>
 <td class="text-left"><p>Mignan (2022)</p></td>
+<td class="text-left"><p><span style="color: green">✓<span></p></td>
 </tr>
 <tr class="row-odd"><td class="text-left"><p>Natural</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">atmoLayer</span></code></p></td>
+<td class="text-left"><p>Atmosphere</p></td>
+<td class="text-left"><p>Temperature <span class="math notranslate nohighlight">\(T\)</span></p></td>
+<td class="text-left"><p>Tropopause, freezing level</p></td>
+<td class="text-left"><p>-</p></td>
+<td class="text-left"><p>in prep.</p></td>
+<td class="text-left"><p><span style="color: orange">ongoing<span></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Natural</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">soilLayer</span></code></p></td>
 <td class="text-left"><p>Soil</p></td>
 <td class="text-left"><p>Depth <span class="math notranslate nohighlight">\(h\)</span></p></td>
 <td class="text-left"><p>Factor of safety</p></td>
 <td class="text-left"><p>-</p></td>
 <td class="text-left"><p>Mignan (2022)</p></td>
+<td class="text-left"><p><span style="color: green">✓<span></p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p>Natural</p></td>
+<tr class="row-odd"><td class="text-left"><p>Natural</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">natLandLayer</span></code></p></td>
 <td class="text-left"><p>Natural land</p></td>
 <td class="text-left"><p>State <span class="math notranslate nohighlight">\(S\)</span></p></td>
 <td class="text-left"><p>-</p></td>
 <td class="text-left"><p>-</p></td>
 <td class="text-left"><p>Mignan (2024)</p></td>
+<td class="text-left"><p><span style="color: green">✓<span></p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p>Technological</p></td>
+<tr class="row-even"><td class="text-left"><p>Technological</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">urbLandLayer</span></code></p></td>
 <td class="text-left"><p>Urban land</p></td>
 <td class="text-left"><p>State <span class="math notranslate nohighlight">\(S\)</span></p></td>
 <td class="text-left"><p>Exposure value, year built</p></td>
 <td class="text-left"><p>Road network</p></td>
 <td class="text-left"><p>Mignan (2024)</p></td>
+<td class="text-left"><p><span style="color: green">✓<span></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Socio-economic</p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p><span style="color: orange">✗</span></p></td>
 </tr>
 </tbody>
 </table>
-<center><small>* Each layer additionally depends on the previous ones.</small></center>
+<p><small>* Each layer additionally depends on the previous ones.<br>
+<sup>‡</sup> Included in current version (<span style="color: green">✓</span>), planned for v.1.1.2 (<span style="color: orange">✗</span>).</small></p>
 <br>
 The environmental layers are generated as follows:
 <ul class="simple">
 <li><p><strong>Topography</strong>: Represented as elevation, <span class="math notranslate nohighlight">\(z\)</span> (m), the generic topography is defined by a west-dipping slope and a fractal dimension between 2 and 3. Environmental objects associated with peril sources modify the topography through intrusion and extrusion rules. The overall process, illustrated in Figure 2, combines methods from solid geometry and morphometry. Further details can be found in <a class="reference external" href="https://www.mdpi.com/1660-4601/19/23/16097">Mignan (2022)</a>. The main properties of the topography layer include terrain slope (<span class="math notranslate nohighlight">\(^\circ\)</span>) and aspect (<span class="math notranslate nohighlight">\(^\circ\)</span>).</p></li>
 </ul>
 <p><img alt="" src="../_images/ref_Mignan_IJERPH2022_fig2.jpg" /></p>
-<center><small><b>Fig. 2.</b> Construction of the topography layer following rules of solid geometry and morphometry, illustrating the combination of geometric primitives and terrain metrics. Redrawn from <a href='https://www.mdpi.com/1660-4601/19/23/16097' target='_blank'>Mignan (2022:fig.2)</a>.</small></center>
+<center><small><b>Fig. 2.</b> Construction of the topography layer following rules of solid geometry and morphometry, illustrating the combination of geometric primitives and terrain metrics. Redrawn from <a href='https://www.mdpi.com/1660-4601/19/23/16097' target='_blank'>Mignan (2022:fig.2)</a>.</small><br></center>
 <ul class="simple">
+<li><p><strong>Atmosphere</strong> (IN CONSTRUCTION): Characterised by the near-surface air temperature <span class="math notranslate nohighlight">\(T(z)\)</span> function of the latitude and month of the year. Properties include the freezing level <span class="math notranslate nohighlight">\(z_{freeze}\)</span> and the tropopause altitude <span class="math notranslate nohighlight">\(z_{tropopause}\)</span>. To add: water content…</p></li>
 <li><p><strong>Soil</strong>: Characterised by the soil thickness, <span class="math notranslate nohighlight">\(h\)</span> (m), which is initially spatially uniform. It can later vary through mass movement processes (using the landslide cellular automaton (CA) introduced in the next tutorial) or by a simpler rule applied here: <span class="math notranslate nohighlight">\(h = 0\)</span> (i.e., scarp) if the soil is unstable at <span class="math notranslate nohighlight">\((x,y)\)</span>. Other soil properties remain fixed parameters at this stage. A key property of the soil layer is the factor of safety, <span class="math notranslate nohighlight">\(F_S\)</span>, which indicates whether the soil is stable, critical, or unstable.</p></li>
 <li><p><strong>Natural land</strong>: Defined by the state <span class="math notranslate nohighlight">\(S\)</span>, with <span class="math notranslate nohighlight">\(S=-1\)</span> for water, <span class="math notranslate nohighlight">\(S=0\)</span> for grassland, and <span class="math notranslate nohighlight">\(S=1\)</span> for forest. These classes represent the pre-urbanised land cover. All grid locations <span class="math notranslate nohighlight">\((x,y)\)</span> are considered forested except those above an elevation-dependent tree line (grassland), or below sea level (<span class="math notranslate nohighlight">\(z = 0\)</span>) and along river channels (water).</p></li>
 <li><p><strong>Urban land</strong>: Represents the built environment, where the state <span class="math notranslate nohighlight">\(S\)</span> overwrites the natural land classification: <span class="math notranslate nohighlight">\(S = 2\)</span> for housing, <span class="math notranslate nohighlight">\(S = 3\)</span> for industrial, and <span class="math notranslate nohighlight">\(S = 4\)</span> for commercial areas. The city is generated using a hybrid model that combines a simplified version of the SLEUTH city growth CA (Clarke et al., 1997; Candau, 2002), a road network CA (Koenig &amp; Bauriedel, 2009), and a land-use transformation function (White et al., 1997) (Fig. 3; see <a class="reference external" href="https://www.cambridge.org/highereducation/books/introduction-to-catastrophe-risk-modelling/A3A5B5FB990921422BFEBB07734BF869#overview">Mignan (2024)</a> for details). A key property of the urban-land layer is the asset value per pixel, which serves as the exposure component in the subsequent loss assessment tutorial.</p></li>
@@ -451,7 +504,7 @@ The environmental layers are generated as follows:
 <p>The generic natural environment is constrained by a predominant west–east orientation, with a coastline located at <code class="docutils literal notranslate"><span class="pre">x0</span></code>. This configuration ensures that any water mass, when present, is systematically positioned on the western side of the grid (Fig. 1). By convention, rivers flow exclusively from east to west. This directional constraint simplifies the natural environment generator while still allowing it to represent a wide range of regional configurations.</p>
 <section id="grid-definition">
 <h3>1.1. Grid definition<a class="headerlink" href="#grid-definition" title="Link to this heading"></a></h3>
-<p>All environmental layers are defined on the raster grid <code class="docutils literal notranslate"><span class="pre">RasterGrid()</span></code>. The default grid parameterisation <code class="docutils literal notranslate"><span class="pre">gridPar</span></code> (a dictionary) specifies an active domain of 100 × 100 km, with a reference north-south coastline fixed at <code class="docutils literal notranslate"><span class="pre">x0</span> <span class="pre">=</span> <span class="pre">0</span></code> (i.e., <span class="math notranslate nohighlight">\(z(x_0) = 0\)</span>). A larger computational domain, bounded by (<code class="docutils literal notranslate"><span class="pre">xmin</span></code>, <code class="docutils literal notranslate"><span class="pre">xmax</span></code>, <code class="docutils literal notranslate"><span class="pre">ymin</span></code>, <code class="docutils literal notranslate"><span class="pre">ymax</span></code>), is included to account for potential boundary effects. The active box is thus defined as (<code class="docutils literal notranslate"><span class="pre">xmin+xbuffer</span></code>, <code class="docutils literal notranslate"><span class="pre">xmax-xbuffer</span></code>, <code class="docutils literal notranslate"><span class="pre">ymin+ybuffer</span></code>, <code class="docutils literal notranslate"><span class="pre">ymax-ybuffer</span></code>). The spatial resolution is determined by the pixel width <code class="docutils literal notranslate"><span class="pre">w=0.1</span></code> km. Lower-resolution grids may be defined later for specific environmental processes. In the current version, the parameter <code class="docutils literal notranslate"><span class="pre">lat_deg</span></code> specifies the latitude at <span class="math notranslate nohighlight">\((x = 0, y = 0)\)</span>, which is used in hurricane size modelling. A <code class="docutils literal notranslate"><span class="pre">lon_deg</span></code> parameter will be added in a future release when a longitude reference becomes necessary for additional environmental processes.</p>
+<p>All environmental layers are defined on the raster grid <code class="docutils literal notranslate"><span class="pre">RasterGrid()</span></code>. The default grid parameterisation <code class="docutils literal notranslate"><span class="pre">gridPar</span></code> (a dictionary) specifies an active domain of 100 × 100 km, with a reference north-south coastline fixed at <code class="docutils literal notranslate"><span class="pre">x0</span> <span class="pre">=</span> <span class="pre">0</span></code> (i.e., <span class="math notranslate nohighlight">\(z(x_0) = 0\)</span>). A larger computational domain, bounded by (<code class="docutils literal notranslate"><span class="pre">xmin</span></code>, <code class="docutils literal notranslate"><span class="pre">xmax</span></code>, <code class="docutils literal notranslate"><span class="pre">ymin</span></code>, <code class="docutils literal notranslate"><span class="pre">ymax</span></code>), is included to account for potential boundary effects. The active box is thus defined as (<code class="docutils literal notranslate"><span class="pre">xmin+xbuffer</span></code>, <code class="docutils literal notranslate"><span class="pre">xmax-xbuffer</span></code>, <code class="docutils literal notranslate"><span class="pre">ymin+ybuffer</span></code>, <code class="docutils literal notranslate"><span class="pre">ymax-ybuffer</span></code>). The spatial resolution is determined by the pixel width <code class="docutils literal notranslate"><span class="pre">w=0.1</span></code> km. Lower-resolution grids may be defined later for specific environmental processes. In the current version, the parameter <code class="docutils literal notranslate"><span class="pre">lat_deg</span></code> specifies the latitude at <span class="math notranslate nohighlight">\((x = 0, y = 0)\)</span>, which is used in weather- and climatic-peril modelling. A <code class="docutils literal notranslate"><span class="pre">lon_deg</span></code> parameter will be added in a future release when a longitude reference becomes necessary for additional environmental processes.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gridPar</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;w&#39;</span><span class="p">:</span> <span class="mf">.1</span><span class="p">,</span>
@@ -528,8 +581,8 @@ The environmental layers are generated as follows:
 </div>
 </div>
 </section>
-<section id="generating-the-topography-soil-and-natural-land-layers">
-<h3>1.3. Generating the topography, soil, and natural land layers<a class="headerlink" href="#generating-the-topography-soil-and-natural-land-layers" title="Link to this heading"></a></h3>
+<section id="generating-the-topography-atmosphere-soil-and-natural-land-layers">
+<h3>1.3. Generating the topography, atmosphere, soil, and natural land layers<a class="headerlink" href="#generating-the-topography-atmosphere-soil-and-natural-land-layers" title="Link to this heading"></a></h3>
 <p>Environmental layers are defined as instance of classes <code class="docutils literal notranslate"><span class="pre">EnvLayer_*</span></code> (with <code class="docutils literal notranslate"><span class="pre">*</span></code> the layer ID; see Table 1). For this version of the digital template, parsimonious natural environment models with a minimal number of input parameters are favored for illustration purposes (at the cost of some simplifications). A few models will be mentioned below without going into any detail. Visit the <code class="docutils literal notranslate"><span class="pre">GenMR</span></code> reference manual for an in-depth description.</p>
 <p>The <strong>topography layer</strong> (parameterized in <code class="docutils literal notranslate"><span class="pre">topoPar</span></code>) is defined with the elevation <span class="math notranslate nohighlight">\(z(x,y)\)</span> as its main variable. It is constructed at a lower granularity with pixel width <code class="docutils literal notranslate"><span class="pre">gridPar['w']</span> <span class="pre">*</span> <span class="pre">lores_f</span></code>. The process takes several successive steps:</p>
 <ul class="simple">
@@ -541,9 +594,9 @@ The environmental layers are generated as follows:
 <li><p>Coastal strip <code class="docutils literal notranslate"><span class="pre">cs</span></code>: Coastal strip of width <code class="docutils literal notranslate"><span class="pre">cs_w_km</span></code> and slope <code class="docutils literal notranslate"><span class="pre">cs_tan(phi)</span></code> (&lt; <code class="docutils literal notranslate"><span class="pre">bg_tan(phi)</span></code>) intruding the topography on the eastern side of the coastline. Remnants of the original topography remain at a ratio <code class="docutils literal notranslate"><span class="pre">cs_eta</span></code>.</p></li>
 </ul>
 <p>At the end of the process, the layer is upscaled back to the default pixel width <code class="docutils literal notranslate"><span class="pre">gridPar['w']</span></code>. Except for the background topography, all other alterations are optional (<code class="docutils literal notranslate"><span class="pre">th</span></code>, <code class="docutils literal notranslate"><span class="pre">vo</span></code>, <code class="docutils literal notranslate"><span class="pre">fr</span></code>, <code class="docutils literal notranslate"><span class="pre">rv</span></code>, <code class="docutils literal notranslate"><span class="pre">cs</span></code> true or false).</p>
+<p>The <strong>atmospheric layer</strong> (paramerized in <code class="docutils literal notranslate"><span class="pre">atmoPar</span></code>, IN CONSTRUCTION) is defined by two main variables, the near-surface air temperature <span class="math notranslate nohighlight">\(T(x,y)\)</span> (implemented) and the water content (to add). The reference near-surface temperature <span class="math notranslate nohighlight">\(T_0(z=0)\)</span> is calculated from a simple Energy Balance Climate Model (EBCM) that is function of <code class="docutils literal notranslate"><span class="pre">gridPar['lat_deg']</span></code> and the month.</p>
 <p>The <strong>soil layer</strong> (parameterized in <code class="docutils literal notranslate"><span class="pre">soilPar</span></code>) is defined by two main variables, the soil thickness <span class="math notranslate nohighlight">\(h(x,y)\)</span>, initialised at constant value <code class="docutils literal notranslate"><span class="pre">h0_m</span></code>, and the water column depth <span class="math notranslate nohighlight">\(h_w(x,y)\)</span>, initialized at <code class="docutils literal notranslate"><span class="pre">wat_h_m</span></code>. In the current version, soil parameters are kept constant (effective cohesion <code class="docutils literal notranslate"><span class="pre">Ceff_Pa</span></code>, effective friction angle <code class="docutils literal notranslate"><span class="pre">phieff_deg</span></code> and soil density <code class="docutils literal notranslate"><span class="pre">rho_kg/m3</span></code>). <span class="math notranslate nohighlight">\(h(x,y)\)</span> is then updated with the method defined in <code class="docutils literal notranslate"><span class="pre">corr</span></code> (for correction). For simplicity, locations where the factor of safety is lower than 1 get <span class="math notranslate nohighlight">\(h=0\)</span> (method <code class="docutils literal notranslate"><span class="pre">remove_unstable</span></code>). <span class="math notranslate nohighlight">\(h_w(x,y)\)</span> will be allowed to vary in the next tutorial (during rainstorms).</p>
 <p>The <strong>natural land layer</strong> (parameterized in <code class="docutils literal notranslate"><span class="pre">natLandPar</span></code>) is defined by the state <span class="math notranslate nohighlight">\(S(x,y)\)</span>, with <span class="math notranslate nohighlight">\(S = -1\)</span> (water) for <span class="math notranslate nohighlight">\(z(x,y)&lt;0\)</span> (west of coastline) and at the coordinates of the river channel(s), <span class="math notranslate nohighlight">\(S = 0\)</span> (grassland) for <span class="math notranslate nohighlight">\(z\)</span> greater than <code class="docutils literal notranslate"><span class="pre">ve_treeline_m</span></code>, and <span class="math notranslate nohighlight">\(S = 1\)</span> (forest) otherwise (<code class="docutils literal notranslate"><span class="pre">ve</span></code> for vegetation). This layer can be considered a sublayer of the land use layer to be defined in Section 2, with the state updated there where urbanized.</p>
-<p>Note that an <code class="docutils literal notranslate"><span class="pre">atmoPar</span></code> dictionary is already defined in view of a future environmental layer to describe the atmosphere (which will later include temperature and water vapor on top of pressure <code class="docutils literal notranslate"><span class="pre">pn_mbar</span></code>).</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">topoPar</span> <span class="o">=</span> <span class="p">{</span>
@@ -556,13 +609,17 @@ The environmental layers are generated as follows:
     <span class="s1">&#39;plt_zmin_m&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">500</span><span class="p">,</span> <span class="s1">&#39;plt_zmax_m&#39;</span><span class="p">:</span> <span class="mi">4500</span>
 <span class="p">}</span>
 
+<span class="n">atmoPar</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;lat_deg&#39;</span><span class="p">:</span> <span class="n">gridPar</span><span class="p">[</span><span class="s1">&#39;lat_deg&#39;</span><span class="p">],</span> <span class="s1">&#39;month&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>  <span class="c1"># 1=Jan. to 12=Dec. - seasonality to be implemented in Tutorial 3</span>
+    <span class="s1">&#39;lapse_rate_degC/km&#39;</span><span class="p">:</span> <span class="mf">6.5</span><span class="p">,</span>
+    <span class="s1">&#39;rho_kg/m3&#39;</span><span class="p">:</span> <span class="mf">1.15</span><span class="p">,</span> <span class="s1">&#39;pn_mbar&#39;</span><span class="p">:</span> <span class="mi">1005</span>          <span class="c1"># for tropical cyclone (TC) modelling (not yet in TC function)</span>
+<span class="p">}</span>
+
 <span class="n">soilPar</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;h0_m&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;wat_h_m&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
            <span class="s1">&#39;Ceff_Pa&#39;</span><span class="p">:</span> <span class="mf">20e3</span><span class="p">,</span> <span class="s1">&#39;phieff_deg&#39;</span><span class="p">:</span> <span class="mi">27</span><span class="p">,</span> <span class="s1">&#39;rho_kg/m3&#39;</span><span class="p">:</span> <span class="mi">2650</span><span class="p">,</span>
            <span class="s1">&#39;corr&#39;</span><span class="p">:</span> <span class="s1">&#39;remove_unstable&#39;</span><span class="p">}</span>
 
 <span class="n">natLandPar</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ve_treeline_m&#39;</span><span class="p">:</span> <span class="mi">2000</span><span class="p">}</span>
-
-<span class="n">atmoPar</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;rho_kg/m3&#39;</span><span class="p">:</span> <span class="mf">1.15</span><span class="p">,</span> <span class="s1">&#39;pn_mbar&#39;</span><span class="p">:</span> <span class="mi">1005</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -572,6 +629,7 @@ The environmental layers are generated as follows:
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">grid</span> <span class="o">=</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">RasterGrid</span><span class="p">(</span><span class="n">gridPar</span><span class="p">)</span>
 <span class="n">topoLayer</span> <span class="o">=</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">EnvLayer_topo</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">topoPar</span><span class="p">)</span>
+<span class="n">atmoLayer</span> <span class="o">=</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">EnvLayer_atmo</span><span class="p">(</span><span class="n">topoLayer</span><span class="p">,</span> <span class="n">atmoPar</span><span class="p">)</span>     <span class="c1"># for now does not propagate to soil - to update</span>
 <span class="n">soilLayer</span> <span class="o">=</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">EnvLayer_soil</span><span class="p">(</span><span class="n">topoLayer</span><span class="p">,</span> <span class="n">soilPar</span><span class="p">)</span>
 <span class="n">natLandLayer</span> <span class="o">=</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">EnvLayer_natLand</span><span class="p">(</span><span class="n">soilLayer</span><span class="p">,</span> <span class="n">natLandPar</span><span class="p">)</span>
 </pre></div>
@@ -583,6 +641,7 @@ The environmental layers are generated as follows:
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">GenMR_utils</span><span class="o">.</span><span class="n">save_class2pickle</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;src&#39;</span><span class="p">)</span>
 <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">save_class2pickle</span><span class="p">(</span><span class="n">topoLayer</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;envLayer_topo&#39;</span><span class="p">)</span>
+<span class="n">GenMR_utils</span><span class="o">.</span><span class="n">save_class2pickle</span><span class="p">(</span><span class="n">atmoLayer</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;envLayer_atmo&#39;</span><span class="p">)</span>
 <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">save_class2pickle</span><span class="p">(</span><span class="n">soilLayer</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;envLayer_soil&#39;</span><span class="p">)</span>
 <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">save_class2pickle</span><span class="p">(</span><span class="n">natLandLayer</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;envLayer_natLand&#39;</span><span class="p">)</span>
 </pre></div>
@@ -595,12 +654,12 @@ The environmental layers are generated as follows:
 <p>Environmental layers can have built-in properties (Tab. 1). The function <code class="docutils literal notranslate"><span class="pre">plot_EnvLayers()</span></code> plots each environmental layer and its main properties (when the argument <code class="docutils literal notranslate"><span class="pre">file_ext</span></code> is defined as <code class="docutils literal notranslate"><span class="pre">jpg</span></code>, <code class="docutils literal notranslate"><span class="pre">pdf</span></code> or some other format accepted by <code class="docutils literal notranslate"><span class="pre">matplotlib.pyplot.savefig()</span></code>, a file is created in the folder <code class="docutils literal notranslate"><span class="pre">figs/</span></code>):</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">GenMR_env</span><span class="o">.</span><span class="n">plot_EnvLayers</span><span class="p">([</span><span class="n">topoLayer</span><span class="p">,</span> <span class="n">soilLayer</span><span class="p">,</span> <span class="n">natLandLayer</span><span class="p">],</span> <span class="n">file_ext</span> <span class="o">=</span> <span class="s1">&#39;jpg&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">GenMR_env</span><span class="o">.</span><span class="n">plot_EnvLayers</span><span class="p">([</span><span class="n">topoLayer</span><span class="p">,</span> <span class="n">atmoLayer</span><span class="p">,</span> <span class="n">soilLayer</span><span class="p">,</span> <span class="n">natLandLayer</span><span class="p">],</span> <span class="n">file_ext</span> <span class="o">=</span> <span class="s1">&#39;jpg&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/4d4ddeaffd9d06928fe339a19545367b0a368f275f73aac954e6227432cacf99.png" src="../_images/4d4ddeaffd9d06928fe339a19545367b0a368f275f73aac954e6227432cacf99.png" />
+<img alt="../_images/a095c4494a339680a731d0c60384e4478a46ae6a037398faf5315372fbdbdef2.png" src="../_images/a095c4494a339680a731d0c60384e4478a46ae6a037398faf5315372fbdbdef2.png" />
 </div>
 </div>
 <p>The function <code class="docutils literal notranslate"><span class="pre">plot_EnvLayer_attr()</span></code> plots individual attributes (incl. properties) from environmental layers. If the elevation is given in the argument <code class="docutils literal notranslate"><span class="pre">hillshading_z</span></code>, hill shading is added in the background.</p>
@@ -829,6 +888,9 @@ The environmental layers are generated as follows:
 </section>
 <section id="appendix">
 <h2>Appendix<a class="headerlink" href="#appendix" title="Link to this heading"></a></h2>
+<section id="a-attributes-properties-of-environmental-layers">
+<h3>A. Attributes &amp; properties of environmental layers<a class="headerlink" href="#a-attributes-properties-of-environmental-layers" title="Link to this heading"></a></h3>
+<br>
 <center><small><b>Tab. A1.</b> Full list of attributes and properties in environmental layers <code>EnvLayer_ID</code>.</small></center>
 <br>
 <table class="docutils align-default">
@@ -865,88 +927,111 @@ The environmental layers are generated as follows:
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">aspect</span></code></p></td>
 <td class="text-left"><p>Azimuth that the terrain surface faces (<span class="math notranslate nohighlight">\(^\circ\)</span>)</p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil</span></code></p></td>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">atmoLayer</span></code></p></td>
+<td class="text-left"><p>Near-surface air temperature</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">T</span></code></p></td>
+<td class="text-left"><p>Main variable (<span class="math notranslate nohighlight">\(^\circ\)</span>C)</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">atmoLayer</span></code></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">atmoLayer</span></code></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil</span></code></p></td>
 <td class="text-left"><p>Soil thickness</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">h</span></code></p></td>
 <td class="text-left"><p>Main variable (m)</p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil</span></code></p></td>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil</span></code></p></td>
 <td class="text-left"><p>Water column</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">hw</span></code></p></td>
 <td class="text-left"><p>Water height in soil (m)</p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil</span></code></p></td>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil</span></code></p></td>
 <td class="text-left"><p>Factor of safety value</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">FS_value</span></code></p></td>
 <td class="text-left"><p>Describes the stability level of the soil</p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil</span></code></p></td>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil</span></code></p></td>
 <td class="text-left"><p>Factor of safety state</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">FS_state</span></code></p></td>
 <td class="text-left"><p>stable (<span class="math notranslate nohighlight">\(=0\)</span>), critical (<span class="math notranslate nohighlight">\(=1\)</span>), unstable (<span class="math notranslate nohighlight">\(=2\)</span>)</p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil</span></code></p></td>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil</span></code></p></td>
 <td class="text-left"><p>Wetness</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">wetness</span></code></p></td>
 <td class="text-left"><p>Ratio between <code class="docutils literal notranslate"><span class="pre">hw</span></code> and <code class="docutils literal notranslate"><span class="pre">h</span></code></p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand</span></code></p></td>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand</span></code></p></td>
 <td class="text-left"><p>Land class</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">S</span></code></p></td>
 <td class="text-left"><p>Main variable, water (<span class="math notranslate nohighlight">\(=-1\)</span>), grassland (<span class="math notranslate nohighlight">\(=0\)</span>), forest (<span class="math notranslate nohighlight">\(=1\)</span>)</p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand</span></code></p></td>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand</span></code></p></td>
 <td class="text-left"><p>Water column</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">hW</span></code></p></td>
 <td class="text-left"><p>Water level above soil (in river)</p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand</span></code></p></td>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand</span></code></p></td>
 <td class="text-left"><p>Occupancy class</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">S</span></code></p></td>
 <td class="text-left"><p>Main varable, residential (<span class="math notranslate nohighlight">\(=2\)</span>), industrial (<span class="math notranslate nohighlight">\(=3\)</span>), commercial (<span class="math notranslate nohighlight">\(=4\)</span>)</p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand</span></code></p></td>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand</span></code></p></td>
 <td class="text-left"><p>Built year</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">built_yr</span></code></p></td>
 <td class="text-left"><p>Year in which the city block has been built</p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand</span></code></p></td>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand</span></code></p></td>
 <td class="text-left"><p>Object coordinates</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">roadNet_coord</span></code></p></td>
 <td class="text-left"><p>Coordinates of the road network</p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand</span></code></p></td>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand</span></code></p></td>
 <td class="text-left"><p>Building type</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">bldg_type</span></code></p></td>
 <td class="text-left"><p>Wood (<code class="docutils literal notranslate"><span class="pre">W</span></code>), masonry (<code class="docutils literal notranslate"><span class="pre">M</span></code>), reinforced concrete (<code class="docutils literal notranslate"><span class="pre">RC</span></code>), steel (<code class="docutils literal notranslate"><span class="pre">S</span></code>)</p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand</span></code></p></td>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand</span></code></p></td>
 <td class="text-left"><p>Building roof pitch</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">bldg_roofpitch</span></code></p></td>
 <td class="text-left"><p>Low (<code class="docutils literal notranslate"><span class="pre">L</span></code>), medium (<code class="docutils literal notranslate"><span class="pre">M</span></code>), high (<code class="docutils literal notranslate"><span class="pre">H</span></code>)</p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand</span></code></p></td>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand</span></code></p></td>
 <td class="text-left"><p>Building value</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">bldg_value</span></code></p></td>
 <td class="text-left"><p>Construction cost (currency unit)</p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand</span></code></p></td>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand</span></code></p></td>
 <td class="text-left"><p>Industrial zone type</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">industrialZones</span></code></p></td>
 <td class="text-left"><p>Harbor, riverside, inland</p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand</span></code></p></td>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand</span></code></p></td>
 <td class="text-left"><p>Refinery</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">CI_refinery</span></code></p></td>
 <td class="text-left"><p>Refinery coordinates</p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p></p></td>
+<tr class="row-odd"><td class="text-left"><p></p></td>
 <td class="text-left"><p></p></td>
 <td class="text-left"><p></p></td>
 <td class="text-left"><p></p></td>
 </tr>
 </tbody>
 </table>
+</section>
+<section id="b-underlying-physical-processes">
+<h3>B. Underlying physical processes<a class="headerlink" href="#b-underlying-physical-processes" title="Link to this heading"></a></h3>
+<p>IN CONSTRUCTION</p>
+<section id="b-1-atmospheric-layer-temperature">
+<h4>B.1. Atmospheric layer: Temperature<a class="headerlink" href="#b-1-atmospheric-layer-temperature" title="Link to this heading"></a></h4>
+</section>
+</section>
 </section>
 </section>
 

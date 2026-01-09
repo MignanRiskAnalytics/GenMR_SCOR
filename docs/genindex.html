@@ -63,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="manual.html#module-GenMR.environment">GenMR.environment module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#genmr-virtual-environment-generator">GenMR Virtual Environment Generator</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#layers-and-related-objects-v1-1-1">Layers and Related Objects (v1.1.1)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="manual.html#layers-and-related-objects-v1-1-2">Layers and Related Objects (v1.1.2)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#planned-additions-v1-1-2">Planned Additions (v1.1.2)</a></li>
 </ul>
 </li>
@@ -75,6 +76,21 @@
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.CriticalInfrastructure.name"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure.name</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.CriticalInfrastructure.polygon"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure.polygon</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.CriticalInfrastructure.zone_type"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure.zone_type</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_atmo"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_atmo.ID"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.ID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_atmo.topo"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.topo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_atmo.par"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.par</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_atmo.grid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.grid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_atmo.T0"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.T0</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_atmo.T"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.T</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_atmo.calc_T0_EBCM"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.calc_T0_EBCM()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_atmo.calc_T_z"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.calc_T_z()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_atmo.calc_z_freeze"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.calc_z_freeze()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_atmo.calc_z_tropopause"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.calc_z_tropopause()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_atmo.z_freezinglevel"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.z_freezinglevel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_atmo.z_tropopause"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.z_tropopause</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_natLand"><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand</span></code></a><ul>
@@ -278,7 +294,7 @@
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#natural-environment-generation">1. Natural environment generation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#grid-definition">1.1. Grid definition</a></li>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#natural-peril-definition-for-environmental-objects">1.2. Natural peril definition (for environmental objects)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#generating-the-topography-soil-and-natural-land-layers">1.3. Generating the topography, soil, and natural land layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#generating-the-topography-atmosphere-soil-and-natural-land-layers">1.3. Generating the topography, atmosphere, soil, and natural land layers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#environmental-layer-properties-and-attribute-plotting">1.4. Environmental layer properties (and attribute plotting)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#a-note-on-environmental-layer-downscaling">1.5. A note on environmental layer downscaling</a></li>
 </ul>
@@ -289,7 +305,14 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#references">References</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#appendix">Appendix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#appendix">Appendix</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#a-attributes-properties-of-environmental-layers">A. Attributes &amp; properties of environmental layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#b-underlying-physical-processes">B. Underlying physical processes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#b-1-atmospheric-layer-temperature">B.1. Atmospheric layer: Temperature</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html">Tutorial 2: Peril implementation</a><ul>
@@ -447,17 +470,25 @@
 </li>
       <li><a href="manual.html#GenMR.perils.calc_Lbd_powerlaw">calc_Lbd_powerlaw() (in module GenMR.perils)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="manual.html#GenMR.environment.EnvLayer_urbLand.calc_Pr_urbanise">calc_Pr_urbanise() (GenMR.environment.EnvLayer_urbLand method)</a>
 </li>
       <li><a href="manual.html#GenMR.utils.calc_riskmetrics_fromELT">calc_riskmetrics_fromELT() (in module GenMR.utils)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="manual.html#GenMR.perils.HazardFootprintGenerator.calc_S_track">calc_S_track() (GenMR.perils.HazardFootprintGenerator static method)</a>
+</li>
+      <li><a href="manual.html#GenMR.environment.EnvLayer_atmo.calc_T0_EBCM">calc_T0_EBCM() (GenMR.environment.EnvLayer_atmo static method)</a>
+</li>
+      <li><a href="manual.html#GenMR.environment.EnvLayer_atmo.calc_T_z">calc_T_z() (GenMR.environment.EnvLayer_atmo static method)</a>
 </li>
       <li><a href="manual.html#GenMR.environment.calc_topo_attributes">calc_topo_attributes() (in module GenMR.environment)</a>
 </li>
       <li><a href="manual.html#GenMR.perils.HazardFootprintGenerator.calc_v_from_EFscale">calc_v_from_EFscale() (GenMR.perils.HazardFootprintGenerator static method)</a>
+</li>
+      <li><a href="manual.html#GenMR.environment.EnvLayer_atmo.calc_z_freeze">calc_z_freeze() (GenMR.environment.EnvLayer_atmo static method)</a>
+</li>
+      <li><a href="manual.html#GenMR.environment.EnvLayer_atmo.calc_z_tropopause">calc_z_tropopause() (GenMR.environment.EnvLayer_atmo static method)</a>
 </li>
       <li><a href="manual.html#GenMR.perils.CellularAutomaton_FF">CellularAutomaton_FF (class in GenMR.perils)</a>
 </li>
@@ -503,6 +534,8 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="manual.html#GenMR.environment.EnvLayer_atmo">EnvLayer_atmo (class in GenMR.environment)</a>
+</li>
       <li><a href="manual.html#GenMR.environment.EnvLayer_natLand">EnvLayer_natLand (class in GenMR.environment)</a>
 </li>
       <li><a href="manual.html#GenMR.environment.EnvLayer_soil">EnvLayer_soil (class in GenMR.environment)</a>
@@ -584,10 +617,10 @@
 </li>
       <li><a href="manual.html#GenMR.utils.get_ind_aspect2moore">get_ind_aspect2moore() (in module GenMR.utils)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="manual.html#GenMR.environment.EnvLayer_urbLand.get_industrialZones">get_industrialZones() (GenMR.environment.EnvLayer_urbLand method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="manual.html#GenMR.utils.get_neighborhood_ind">get_neighborhood_ind() (in module GenMR.utils)</a>
 </li>
       <li><a href="manual.html#GenMR.utils.get_net_coord">get_net_coord() (in module GenMR.utils)</a>
@@ -600,9 +633,11 @@
 </li>
       <li><a href="manual.html#GenMR.perils.HazardFootprintGenerator.get_TC_timeshot">get_TC_timeshot() (GenMR.perils.HazardFootprintGenerator method)</a>
 </li>
-      <li><a href="manual.html#GenMR.environment.EnvLayer_natLand.grid">grid (GenMR.environment.EnvLayer_natLand attribute)</a>
+      <li><a href="manual.html#GenMR.environment.EnvLayer_atmo.grid">grid (GenMR.environment.EnvLayer_atmo attribute)</a>
 
       <ul>
+        <li><a href="manual.html#GenMR.environment.EnvLayer_natLand.grid">(GenMR.environment.EnvLayer_natLand attribute)</a>
+</li>
         <li><a href="manual.html#GenMR.environment.EnvLayer_soil.grid">(GenMR.environment.EnvLayer_soil attribute)</a>
 </li>
         <li><a href="manual.html#GenMR.environment.EnvLayer_topo.grid">(GenMR.environment.EnvLayer_topo attribute)</a>
@@ -636,9 +671,11 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="manual.html#GenMR.environment.EnvLayer_natLand.ID">ID (GenMR.environment.EnvLayer_natLand attribute)</a>
+      <li><a href="manual.html#GenMR.environment.EnvLayer_atmo.ID">ID (GenMR.environment.EnvLayer_atmo attribute)</a>
 
       <ul>
+        <li><a href="manual.html#GenMR.environment.EnvLayer_natLand.ID">(GenMR.environment.EnvLayer_natLand attribute)</a>
+</li>
         <li><a href="manual.html#GenMR.environment.EnvLayer_soil.ID">(GenMR.environment.EnvLayer_soil attribute)</a>
 </li>
         <li><a href="manual.html#GenMR.environment.EnvLayer_topo.ID">(GenMR.environment.EnvLayer_topo attribute)</a>
@@ -737,9 +774,11 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="manual.html#GenMR.environment.EnvLayer_natLand.par">par (GenMR.environment.EnvLayer_natLand attribute)</a>
+      <li><a href="manual.html#GenMR.environment.EnvLayer_atmo.par">par (GenMR.environment.EnvLayer_atmo attribute)</a>
 
       <ul>
+        <li><a href="manual.html#GenMR.environment.EnvLayer_natLand.par">(GenMR.environment.EnvLayer_natLand attribute)</a>
+</li>
         <li><a href="manual.html#GenMR.environment.EnvLayer_soil.par">(GenMR.environment.EnvLayer_soil attribute)</a>
 </li>
         <li><a href="manual.html#GenMR.environment.EnvLayer_topo.par">(GenMR.environment.EnvLayer_topo attribute)</a>
@@ -845,13 +884,19 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="manual.html#GenMR.environment.EnvLayer_atmo.T">T (GenMR.environment.EnvLayer_atmo attribute)</a>
+</li>
+      <li><a href="manual.html#GenMR.environment.EnvLayer_atmo.T0">T0 (GenMR.environment.EnvLayer_atmo attribute)</a>
+</li>
       <li><a href="manual.html#GenMR.perils.Src.TC_char">TC_char (GenMR.perils.Src property)</a>
 </li>
       <li><a href="manual.html#GenMR.perils.Src.To_char">To_char (GenMR.perils.Src property)</a>
 </li>
-      <li><a href="manual.html#GenMR.environment.EnvLayer_natLand.topo">topo (GenMR.environment.EnvLayer_natLand attribute)</a>
+      <li><a href="manual.html#GenMR.environment.EnvLayer_atmo.topo">topo (GenMR.environment.EnvLayer_atmo attribute)</a>
 
       <ul>
+        <li><a href="manual.html#GenMR.environment.EnvLayer_natLand.topo">(GenMR.environment.EnvLayer_natLand attribute)</a>
+</li>
         <li><a href="manual.html#GenMR.environment.EnvLayer_soil.topo">(GenMR.environment.EnvLayer_soil attribute)</a>
 </li>
         <li><a href="manual.html#GenMR.environment.EnvLayer_urbLand.topo">(GenMR.environment.EnvLayer_urbLand attribute)</a>
@@ -919,8 +964,12 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="manual.html#GenMR.environment.EnvLayer_topo.z">z (GenMR.environment.EnvLayer_topo attribute)</a>
 </li>
+      <li><a href="manual.html#GenMR.environment.EnvLayer_atmo.z_freezinglevel">z_freezinglevel (GenMR.environment.EnvLayer_atmo property)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="manual.html#GenMR.environment.EnvLayer_atmo.z_tropopause">z_tropopause (GenMR.environment.EnvLayer_atmo property)</a>
+</li>
       <li><a href="manual.html#GenMR.utils.zero_boundary_2d">zero_boundary_2d() (in module GenMR.utils)</a>
 </li>
       <li><a href="manual.html#GenMR.environment.CriticalInfrastructure.zone_type">zone_type (GenMR.environment.CriticalInfrastructure attribute)</a>

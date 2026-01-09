@@ -67,6 +67,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../manual.html#module-GenMR.environment">GenMR.environment module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#genmr-virtual-environment-generator">GenMR Virtual Environment Generator</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#layers-and-related-objects-v1-1-1">Layers and Related Objects (v1.1.1)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#layers-and-related-objects-v1-1-2">Layers and Related Objects (v1.1.2)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#planned-additions-v1-1-2">Planned Additions (v1.1.2)</a></li>
 </ul>
 </li>
@@ -79,6 +80,21 @@
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.CriticalInfrastructure.name"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure.name</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.CriticalInfrastructure.polygon"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure.polygon</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.CriticalInfrastructure.zone_type"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure.zone_type</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.ID"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.ID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.topo"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.topo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.par"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.par</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.grid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.grid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.T0"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.T0</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.T"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.T</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.calc_T0_EBCM"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.calc_T0_EBCM()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.calc_T_z"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.calc_T_z()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.calc_z_freeze"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.calc_z_freeze()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.calc_z_tropopause"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.calc_z_tropopause()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.z_freezinglevel"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.z_freezinglevel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.z_tropopause"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.z_tropopause</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_natLand"><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand</span></code></a><ul>
@@ -282,7 +298,7 @@
 <li class="toctree-l2"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#natural-environment-generation">1. Natural environment generation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#grid-definition">1.1. Grid definition</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#natural-peril-definition-for-environmental-objects">1.2. Natural peril definition (for environmental objects)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#generating-the-topography-soil-and-natural-land-layers">1.3. Generating the topography, soil, and natural land layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#generating-the-topography-atmosphere-soil-and-natural-land-layers">1.3. Generating the topography, atmosphere, soil, and natural land layers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#environmental-layer-properties-and-attribute-plotting">1.4. Environmental layer properties (and attribute plotting)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#a-note-on-environmental-layer-downscaling">1.5. A note on environmental layer downscaling</a></li>
 </ul>
@@ -293,7 +309,14 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#references">References</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#appendix">Appendix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#appendix">Appendix</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#a-attributes-properties-of-environmental-layers">A. Attributes &amp; properties of environmental layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#b-underlying-physical-processes">B. Underlying physical processes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#b-1-atmospheric-layer-temperature">B.1. Atmospheric layer: Temperature</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial 2: Peril implementation</a><ul>
@@ -396,7 +419,16 @@
 <td class="text-left"><p>Overpressure (kPa)</p></td>
 <td class="text-left"><p><span style="color: green">✓<span></p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">Dr</span></code></p></td>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">CS</span></code></p></td>
+<td class="text-left"><p>Convertive storm</p></td>
+<td class="text-left"><p>Primary (invisible<span class="math notranslate nohighlight">\(^*\)</span>)</p></td>
+<td class="text-left"><p>Area?</p></td>
+<td class="text-left"><p>Cloud top height (km)</p></td>
+<td class="text-left"><p>Uniform</p></td>
+<td class="text-left"><p>Cloud top height (km)</p></td>
+<td class="text-left"><p><span style="color: orange">ongoing<span></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">Dr</span></code></p></td>
 <td class="text-left"><p>Drought</p></td>
 <td class="text-left"><p></p></td>
 <td class="text-left"><p></p></td>
@@ -405,7 +437,7 @@
 <td class="text-left"><p></p></td>
 <td class="text-left"><p><span style="color: orange">✗<span></p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EQ</span></code></p></td>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EQ</span></code></p></td>
 <td class="text-left"><p>Earthquake</p></td>
 <td class="text-left"><p>Primary</p></td>
 <td class="text-left"><p>Line</p></td>
@@ -414,7 +446,7 @@
 <td class="text-left"><p>Peak ground acceleration (m/s<span class="math notranslate nohighlight">\(^2\)</span>)</p></td>
 <td class="text-left"><p><span style="color: green">✓<span></p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">FF</span></code></p></td>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">FF</span></code></p></td>
 <td class="text-left"><p>Fluvial flood</p></td>
 <td class="text-left"><p>Secondary (to <code class="docutils literal notranslate"><span class="pre">RS</span></code>)</p></td>
 <td class="text-left"><p>Point</p></td>
@@ -423,7 +455,7 @@
 <td class="text-left"><p>Inundation depth (m)</p></td>
 <td class="text-left"><p><span style="color: green">✓<span></p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">HW</span></code></p></td>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">HW</span></code></p></td>
 <td class="text-left"><p>Heatwave</p></td>
 <td class="text-left"><p></p></td>
 <td class="text-left"><p></p></td>
@@ -432,16 +464,16 @@
 <td class="text-left"><p></p></td>
 <td class="text-left"><p><span style="color: orange">✗<span></p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">Li</span></code></p></td>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">Li</span></code></p></td>
 <td class="text-left"><p>Lightning</p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p><span style="color: orange">✗<span></p></td>
+<td class="text-left"><p>Secondary (to <code class="docutils literal notranslate"><span class="pre">CS</span></code>, invisible<span class="math notranslate nohighlight">\(^*\)</span>)</p></td>
+<td class="text-left"><p>Point</p></td>
+<td class="text-left"><p>-</p></td>
+<td class="text-left"><p>-</p></td>
+<td class="text-left"><p>-</p></td>
+<td class="text-left"><p><span style="color: orange">ongoing<span></p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">LS</span></code></p></td>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">LS</span></code></p></td>
 <td class="text-left"><p>Landslide</p></td>
 <td class="text-left"><p>Secondary (to <code class="docutils literal notranslate"><span class="pre">RS</span></code>)</p></td>
 <td class="text-left"><p>Diffuse</p></td>
@@ -450,7 +482,7 @@
 <td class="text-left"><p>Thickness (m)</p></td>
 <td class="text-left"><p><span style="color: green">✓<span></p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">PI</span></code></p></td>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">PI</span></code></p></td>
 <td class="text-left"><p>Pest infestation</p></td>
 <td class="text-left"><p></p></td>
 <td class="text-left"><p></p></td>
@@ -459,16 +491,16 @@
 <td class="text-left"><p></p></td>
 <td class="text-left"><p><span style="color: orange">✗<span></p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">RS</span></code></p></td>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">RS</span></code></p></td>
 <td class="text-left"><p>Rainstorm</p></td>
 <td class="text-left"><p>Primary (invisible<span class="math notranslate nohighlight">\(^*\)</span>)</p></td>
 <td class="text-left"><p>Area</p></td>
 <td class="text-left"><p>Rain intensity (mm/hr)</p></td>
-<td class="text-left"><p>Threshold</p></td>
-<td class="text-left"><p>-</p></td>
+<td class="text-left"><p>Uniform</p></td>
+<td class="text-left"><p>Rain intensity (mm/hr)</p></td>
 <td class="text-left"><p><span style="color: green">✓<span></p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">SS</span></code></p></td>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">SS</span></code></p></td>
 <td class="text-left"><p>Storm surge</p></td>
 <td class="text-left"><p>Secondary (to <code class="docutils literal notranslate"><span class="pre">TC</span></code>)</p></td>
 <td class="text-left"><p>Line</p></td>
@@ -477,7 +509,7 @@
 <td class="text-left"><p>Inundation depth (m)</p></td>
 <td class="text-left"><p><span style="color: green">✓<span></p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">TC</span></code></p></td>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">TC</span></code></p></td>
 <td class="text-left"><p>Tropical cyclone</p></td>
 <td class="text-left"><p>Primary</p></td>
 <td class="text-left"><p>Track</p></td>
@@ -486,7 +518,7 @@
 <td class="text-left"><p>Max. wind speed (m/s)</p></td>
 <td class="text-left"><p><span style="color: green">✓<span></p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">To</span></code></p></td>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">To</span></code></p></td>
 <td class="text-left"><p>Tornado</p></td>
 <td class="text-left"><p>Primary</p></td>
 <td class="text-left"><p>Line</p></td>
@@ -495,7 +527,7 @@
 <td class="text-left"><p>Max. wind speed (m/s)</p></td>
 <td class="text-left"><p><span style="color: green">✓<span></p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">VE</span></code></p></td>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">VE</span></code></p></td>
 <td class="text-left"><p>Volcanic eruption</p></td>
 <td class="text-left"><p>Primary</p></td>
 <td class="text-left"><p>Point</p></td>
@@ -504,7 +536,7 @@
 <td class="text-left"><p>Ash load (kPa)</p></td>
 <td class="text-left"><p><span style="color: green">✓<span></p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">WF</span></code></p></td>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">WF</span></code></p></td>
 <td class="text-left"><p>Wildfire</p></td>
 <td class="text-left"><p>Primary</p></td>
 <td class="text-left"><p>Diffuse</p></td>
@@ -513,16 +545,16 @@
 <td class="text-left"><p>Burnt/not burnt</p></td>
 <td class="text-left"><p><span style="color: green">✓<span></p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">WS</span></code></p></td>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">WS</span></code></p></td>
 <td class="text-left"><p>Windstorm</p></td>
 <td class="text-left"><p>Primary</p></td>
 <td class="text-left"><p>Area</p></td>
 <td class="text-left"><p>Max. wind speed (m/s)</p></td>
-<td class="text-left"><p>Threshold</p></td>
+<td class="text-left"><p>Uniform</p></td>
 <td class="text-left"><p>Max. wind speed (m/s)</p></td>
 <td class="text-left"><p><span style="color: orange">ongoing<span></p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p></p></td>
+<tr class="row-odd"><td class="text-left"><p></p></td>
 <td class="text-left"><p><strong>TECHNOLOGICAL</strong></p></td>
 <td class="text-left"><p></p></td>
 <td class="text-left"><p></p></td>
@@ -531,7 +563,7 @@
 <td class="text-left"><p></p></td>
 <td class="text-left"><p></p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">BO</span></code></p></td>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">BO</span></code></p></td>
 <td class="text-left"><p>Blackout</p></td>
 <td class="text-left"><p></p></td>
 <td class="text-left"><p></p></td>
@@ -540,7 +572,7 @@
 <td class="text-left"><p></p></td>
 <td class="text-left"><p><span style="color: orange">✗<span></p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">Ex</span></code></p></td>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">Ex</span></code></p></td>
 <td class="text-left"><p>Explosion (industrial)</p></td>
 <td class="text-left"><p>Secondary (to <code class="docutils literal notranslate"><span class="pre">dg</span></code>)</p></td>
 <td class="text-left"><p>Point</p></td>
@@ -549,7 +581,7 @@
 <td class="text-left"><p>Overpressure <span class="math notranslate nohighlight">\(P\)</span> (kPa)</p></td>
 <td class="text-left"><p><span style="color: green">✓<span></p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p></p></td>
+<tr class="row-even"><td class="text-left"><p></p></td>
 <td class="text-left"><p><strong>SOCIO-ECONOMIC</strong></p></td>
 <td class="text-left"><p></p></td>
 <td class="text-left"><p></p></td>
@@ -558,7 +590,7 @@
 <td class="text-left"><p></p></td>
 <td class="text-left"><p></p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">BI</span></code></p></td>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">BI</span></code></p></td>
 <td class="text-left"><p>Business interruption</p></td>
 <td class="text-left"><p></p></td>
 <td class="text-left"><p></p></td>
@@ -567,7 +599,7 @@
 <td class="text-left"><p></p></td>
 <td class="text-left"><p><span style="color: orange">✗<span></p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">Sf</span></code></p></td>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">Sf</span></code></p></td>
 <td class="text-left"><p>Public service failure</p></td>
 <td class="text-left"><p></p></td>
 <td class="text-left"><p></p></td>
@@ -576,7 +608,7 @@
 <td class="text-left"><p></p></td>
 <td class="text-left"><p><span style="color: orange">✗<span></p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">SU</span></code></p></td>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">SU</span></code></p></td>
 <td class="text-left"><p>Social unrest</p></td>
 <td class="text-left"><p></p></td>
 <td class="text-left"><p></p></td>
@@ -649,6 +681,8 @@
 
 <span class="c1"># define new perils</span>
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;AI&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;impact&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">}</span>     <span class="c1"># random uniform asteroid impacts (point sources)</span>
+<span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;CS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;supercell&#39;</span><span class="p">,</span>           <span class="c1"># as trigger of lightnings and tornadoes</span>
+                 <span class="s1">&#39;R_km&#39;</span><span class="p">:</span> <span class="mf">10.</span><span class="p">}</span>                     <span class="c1"># path conditioned on tornado path (better constrained)</span>
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;LS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;terrain&#39;</span><span class="p">}</span>
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;RS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;atmosphere&#39;</span><span class="p">,</span>          <span class="c1"># as trigger of landslides</span>
                  <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">24</span><span class="p">}</span>                  <span class="c1"># (hr) to calc. soil wetness that triggers LS &amp; FF discharge</span>
@@ -700,7 +734,7 @@
 <ul class="simple">
 <li><p>Event size incrementation according <code class="docutils literal notranslate"><span class="pre">Smin</span></code>, <code class="docutils literal notranslate"><span class="pre">Smax</span></code> and <code class="docutils literal notranslate"><span class="pre">Sbin</span></code> with binning in <code class="docutils literal notranslate"><span class="pre">linear</span></code> or <code class="docutils literal notranslate"><span class="pre">log</span></code> scale.</p></li>
 <li><p>Event size distribution modelled by one of 3 functions: power-law (<code class="docutils literal notranslate"><span class="pre">powerlaw</span></code>, Mignan, 2024:eq. 2.38), exponential law (<code class="docutils literal notranslate"><span class="pre">exponential</span></code>, Mignan, 2024:eq. 2.39), or Generalised Pareto Distribution (<code class="docutils literal notranslate"><span class="pre">GPD</span></code>, Mignan, 2024:eq. 2.50).</p></li>
-<li><p>Rates of the digital template are for most perils simply calibrated by taking the ratio of the region area to the area used to obtain event productivity parameters in the Mignan (2024) textbook (e.g., global or continental United States, CONUS). This is a simplification assuming a homogeneous spatial distribution of events but is used as a straightforward way to define rates for the present virtual region.</p></li>
+<li><p>Rates of the digital template are for most perils simply calibrated by taking the ratio of the region area to the area used to obtain event productivity parameters in the Mignan (2024) textbook (e.g., global or continental United States, CONUS). This is a simplification assuming a homogeneous spatial distribution of events but is used as a straightforward way to define rates for the present virtual region. Contradictions may also arise, such as between tropical cyclones (TC) and windstorms (WS), which are not expected to occur within the same latitude range. However, the purpose of this tutorial is to define and illustrate all possible perils. The mutual exclusivity of TC and WS in the same region will be addressed in Tutorial 3. If you wish to avoid this issue in the current tutorial, simply remove either <code class="docutils literal notranslate"><span class="pre">TC</span></code> or <code class="docutils literal notranslate"><span class="pre">WS</span></code> from <code class="docutils literal notranslate"><span class="pre">sizedistr['primary']</span></code> - <em>possible improvement: include latitude dependence of peril rate</em>).</p></li>
 </ul>
 <p>All calculations take place in the <code class="docutils literal notranslate"><span class="pre">EventSetGenerator()</span></code> class.</p>
 <p><strong>NOTE 1:</strong> The maximum possible event size, <code class="docutils literal notranslate"><span class="pre">Smax</span></code>, is defined by the user for all perils except earthquakes. For earthquakes, the maximum magnitude is constrained by the maximum fault length (<code class="docutils literal notranslate"><span class="pre">src.EQ_char['srcMmax']</span></code>) according to an empirical relationship (Mignan, 2024:fig. 2.6b).</p>
@@ -718,51 +752,59 @@
         <span class="s1">&#39;Nstoch&#39;</span><span class="p">:</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;AI&#39;</span><span class="p">][</span><span class="s1">&#39;N&#39;</span><span class="p">],</span> <span class="s1">&#39;Sunit&#39;</span><span class="p">:</span> <span class="s1">&#39;Bolide energy $E$ (kton)&#39;</span><span class="p">,</span>
         <span class="s1">&#39;Smin&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;Smax&#39;</span><span class="p">:</span> <span class="mf">1e3</span><span class="p">,</span> <span class="s1">&#39;Sbin&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Sscale&#39;</span><span class="p">:</span> <span class="s1">&#39;log&#39;</span><span class="p">,</span>
         <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;powerlaw&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="s1">&#39;global&#39;</span><span class="p">,</span> <span class="s1">&#39;a0&#39;</span><span class="p">:</span> <span class="mf">.5677</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">.9</span><span class="p">,</span>      <span class="c1"># see Mignan (2024:sect.2.3.1)</span>
-        <span class="s1">&#39;calibration_source&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span>
+        <span class="s1">&#39;calibration_source&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;reference&#39;</span><span class="p">:</span> <span class="s1">&#39;to_add&#39;</span>
     <span class="p">},</span>
     <span class="s1">&#39;EQ&#39;</span><span class="p">:{</span>
         <span class="s1">&#39;Nstoch&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;Sunit&#39;</span><span class="p">:</span> <span class="s1">&#39;Magnitude $M$&#39;</span><span class="p">,</span>
         <span class="s1">&#39;Smin&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;Smax&#39;</span><span class="p">:</span> <span class="n">EQ_Mmax</span><span class="p">,</span> <span class="s1">&#39;Sbin&#39;</span><span class="p">:</span> <span class="mf">.1</span><span class="p">,</span> <span class="s1">&#39;Sscale&#39;</span><span class="p">:</span> <span class="s1">&#39;linear&#39;</span><span class="p">,</span>
         <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;exponential&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>         <span class="c1"># i.e., one M = a-value EQ per year (given b-value = 1)</span>
-        <span class="s1">&#39;calibration_source&#39;</span><span class="p">:</span> <span class="s1">&#39;user-defined&#39;</span>
+        <span class="s1">&#39;calibration_source&#39;</span><span class="p">:</span> <span class="s1">&#39;user-defined&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;reference&#39;</span><span class="p">:</span> <span class="s1">&#39;none&#39;</span>
     <span class="p">},</span>
     <span class="s1">&#39;RS&#39;</span><span class="p">:{</span>
         <span class="s1">&#39;Nstoch&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;Sunit&#39;</span><span class="p">:</span> <span class="s1">&#39;Water column (mm/hr)&#39;</span><span class="p">,</span>
         <span class="s1">&#39;Smin&#39;</span><span class="p">:</span> <span class="mi">75</span><span class="p">,</span> <span class="s1">&#39;Smax&#39;</span><span class="p">:</span> <span class="mi">125</span><span class="p">,</span> <span class="s1">&#39;Sbin&#39;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span> <span class="s1">&#39;Sscale&#39;</span><span class="p">:</span> <span class="s1">&#39;linear&#39;</span><span class="p">,</span>
         <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;GPD&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="s1">&#39;CONUS&#39;</span><span class="p">,</span> <span class="s1">&#39;mu&#39;</span><span class="p">:</span> <span class="mf">50.</span><span class="p">,</span> <span class="s1">&#39;xi&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">.051</span><span class="p">,</span> <span class="s1">&#39;sigma&#39;</span><span class="p">:</span> <span class="mf">11.8</span><span class="p">,</span> <span class="s1">&#39;Lbdmin0&#39;</span><span class="p">:</span> <span class="mf">522.</span><span class="p">,</span> 
             <span class="c1"># see Mignan (2024:sect.2.3.2)</span>
-        <span class="s1">&#39;calibration_source&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span>
+        <span class="s1">&#39;calibration_source&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;reference&#39;</span><span class="p">:</span> <span class="s1">&#39;to_add&#39;</span>
     <span class="p">},</span>
     <span class="s1">&#39;TC&#39;</span><span class="p">:{</span>
         <span class="s1">&#39;Nstoch&#39;</span><span class="p">:</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;TC&#39;</span><span class="p">][</span><span class="s1">&#39;N&#39;</span><span class="p">],</span> <span class="s1">&#39;Sunit&#39;</span><span class="p">:</span> <span class="s1">&#39;Max. wind speed (m/s)&#39;</span><span class="p">,</span>
         <span class="s1">&#39;Smin&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span> <span class="s1">&#39;Smax&#39;</span><span class="p">:</span> <span class="mi">65</span><span class="p">,</span> <span class="s1">&#39;Sbin&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;Sscale&#39;</span><span class="p">:</span> <span class="s1">&#39;linear&#39;</span><span class="p">,</span>
         <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;GPD&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="s1">&#39;global&#39;</span><span class="p">,</span> <span class="s1">&#39;mu&#39;</span><span class="p">:</span> <span class="mf">33.</span><span class="p">,</span> <span class="s1">&#39;xi&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">.280</span><span class="p">,</span> <span class="s1">&#39;sigma&#39;</span><span class="p">:</span> <span class="mf">17.8</span><span class="p">,</span><span class="s1">&#39;Lbdmin0&#39;</span><span class="p">:</span> <span class="mf">43.9</span><span class="p">,</span>
 <span class="c1">#        , &#39;Lbdmin&#39;: .1      # overwrites Lbdmin derived from Lbdmin0 to directly choose rate(&gt;=Smin) = Lbdmin</span>
-        <span class="s1">&#39;calibration_source&#39;</span><span class="p">:</span> <span class="s1">&#39;IBTrACS&#39;</span>
+        <span class="s1">&#39;calibration_source&#39;</span><span class="p">:</span> <span class="s1">&#39;IBTrACS&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;reference&#39;</span><span class="p">:</span> <span class="s1">&#39;to_add&#39;</span>
     <span class="p">},</span>
     <span class="s1">&#39;To&#39;</span><span class="p">:{</span>
         <span class="s1">&#39;Nstoch&#39;</span><span class="p">:</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;To&#39;</span><span class="p">][</span><span class="s1">&#39;N&#39;</span><span class="p">],</span> <span class="s1">&#39;Sunit&#39;</span><span class="p">:</span> <span class="s1">&#39;Enhanced Fujita scale&#39;</span><span class="p">,</span>
         <span class="s1">&#39;Smin&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;Smax&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;Sbin&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="c1"># WARNING: hardcoded, do not change, depends on &#39;L_alpha_beta_Lmax_EF*&#39;</span>
         <span class="s1">&#39;Sscale&#39;</span><span class="p">:</span> <span class="s1">&#39;linear&#39;</span><span class="p">,</span>
         <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;exponential&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="s1">&#39;CONUS&#39;</span><span class="p">,</span> <span class="s1">&#39;a0&#39;</span><span class="p">:</span> <span class="mf">3.6</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">.9</span><span class="p">,</span>
-        <span class="s1">&#39;calibration_source&#39;</span><span class="p">:</span> <span class="s1">&#39;NOAA 1950-2021 tornadoes (public)&#39;</span>
+        <span class="s1">&#39;calibration_source&#39;</span><span class="p">:</span> <span class="s1">&#39;NOAA 1950-2021 tornadoes (public)&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;reference&#39;</span><span class="p">:</span> <span class="s1">&#39;to_add&#39;</span>
     <span class="p">},</span>
     <span class="s1">&#39;VE&#39;</span><span class="p">:{</span>
         <span class="s1">&#39;Nstoch&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;Sunit&#39;</span><span class="p">:</span> <span class="s1">&#39;Ash volume (km$^3$)&#39;</span><span class="p">,</span>
         <span class="s1">&#39;Smin&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Smax&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;Sbin&#39;</span><span class="p">:</span> <span class="mf">.5</span><span class="p">,</span> <span class="s1">&#39;Sscale&#39;</span><span class="p">:</span> <span class="s1">&#39;log&#39;</span><span class="p">,</span>
         <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;powerlaw&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="s1">&#39;global&#39;</span><span class="p">,</span> <span class="s1">&#39;a0&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.155</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">.66</span><span class="p">,</span>      <span class="c1"># see Sect. 2.3.1</span>
-        <span class="s1">&#39;calibration_source&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span>
+        <span class="s1">&#39;calibration_source&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;reference&#39;</span><span class="p">:</span> <span class="s1">&#39;to_add&#39;</span>
     <span class="p">},</span>
     <span class="s1">&#39;WF&#39;</span><span class="p">:{</span>
         <span class="s1">&#39;Nstoch&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;Sunit&#39;</span><span class="p">:</span> <span class="s1">&#39;Burnt area (ha)&#39;</span><span class="p">,</span>
         <span class="s1">&#39;Smin&#39;</span><span class="p">:</span> <span class="mf">1e4</span><span class="p">,</span> <span class="s1">&#39;Smax&#39;</span><span class="p">:</span> <span class="mf">1e5</span><span class="p">,</span> <span class="s1">&#39;Sbin&#39;</span><span class="p">:</span> <span class="mf">.5</span><span class="p">,</span> <span class="s1">&#39;Sscale&#39;</span><span class="p">:</span> <span class="s1">&#39;log&#39;</span><span class="p">,</span>
         <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;powerlaw&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="s1">&#39;global&#39;</span><span class="p">,</span> <span class="s1">&#39;a0&#39;</span><span class="p">:</span> <span class="mf">8.553</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">1.23</span><span class="p">,</span>      <span class="c1"># see Sect. 2.3.1</span>
-        <span class="s1">&#39;calibration_source&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span>
+        <span class="s1">&#39;calibration_source&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;reference&#39;</span><span class="p">:</span> <span class="s1">&#39;to_add&#39;</span>
     <span class="p">},</span>
     <span class="s1">&#39;WS&#39;</span><span class="p">:{</span>
         <span class="s1">&#39;Nstoch&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;Sunit&#39;</span><span class="p">:</span> <span class="s1">&#39;Max. wind speed (m/s)&#39;</span><span class="p">,</span>
         <span class="s1">&#39;Smin&#39;</span><span class="p">:</span> <span class="mi">45</span><span class="p">,</span> <span class="s1">&#39;Smax&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s1">&#39;Sbin&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;Sscale&#39;</span><span class="p">:</span> <span class="s1">&#39;linear&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;GPD&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="s1">&#39;local&#39;</span><span class="p">,</span> <span class="s1">&#39;mu&#39;</span><span class="p">:</span> <span class="mf">17.</span><span class="p">,</span> <span class="s1">&#39;xi&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">.112</span><span class="p">,</span> <span class="s1">&#39;sigma&#39;</span><span class="p">:</span> <span class="mf">4.43</span><span class="p">,</span> <span class="s1">&#39;Lbdmin&#39;</span><span class="p">:</span> <span class="mf">163.25</span><span class="p">,</span> <span class="c1"># Brest loc.</span>
+        <span class="s1">&#39;distr&#39;</span><span class="p">:</span> <span class="s1">&#39;GPD&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="s1">&#39;local&#39;</span><span class="p">,</span> <span class="s1">&#39;mu&#39;</span><span class="p">:</span> <span class="mf">17.</span><span class="p">,</span> <span class="s1">&#39;xi&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">.112</span><span class="p">,</span> <span class="s1">&#39;sigma&#39;</span><span class="p">:</span> <span class="mf">4.43</span><span class="p">,</span> <span class="s1">&#39;Lbdmin&#39;</span><span class="p">:</span> <span class="mf">163.25</span><span class="p">,</span>
+        <span class="c1"># GPD params. for Brest (France) location for illustration purposes (consider making it func. of lat.)</span>
         <span class="s1">&#39;calibration_source&#39;</span><span class="p">:</span> <span class="s1">&#39;Copernicus 1986-2011 Synthetic windstorm events for Europe&#39;</span><span class="p">,</span>
         <span class="s1">&#39;reference&#39;</span><span class="p">:</span> <span class="s1">&#39;10.24381/cds.ce973f02&#39;</span>
     <span class="p">},</span>
@@ -1449,14 +1491,16 @@
 <p>The catalogue of hazard footprints is generated via the <code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator(()</span></code> class and is visualised with <code class="docutils literal notranslate"><span class="pre">plot_hazFootprints()</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># additional atmospheric source parameters -&gt; To move to atmospheric layer in v.1.1.2</span>
-<span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;TC&#39;</span><span class="p">][</span><span class="s1">&#39;vforward_m/s&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>          <span class="c1"># forward storm speed [m/s]    </span>
-<span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;TC&#39;</span><span class="p">][</span><span class="s1">&#39;pn_mbar&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1005</span>             <span class="c1"># ambient pressure [mbar]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;TC&#39;</span><span class="p">][</span><span class="s1">&#39;vforward_m/s&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">10.</span>         <span class="c1"># forward storm speed (m/s)</span>
+<span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;TC&#39;</span><span class="p">][</span><span class="s1">&#39;pn_mbar&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1005.</span>            <span class="c1"># ambient pressure (mbar)</span>
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;TC&#39;</span><span class="p">][</span><span class="s1">&#39;B_Holland&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>              <span class="c1"># Holland&#39;s parameter (see Fig. 2.10 of textbook)</span>
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;TC&#39;</span><span class="p">][</span><span class="s1">&#39;lat_deg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">lat_deg</span>     <span class="c1"># average latitude of digital template (see Tutorial 1)</span>
 
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;To&#39;</span><span class="p">][</span><span class="s1">&#39;Rmax_m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">300.</span>              <span class="c1"># user-defined, independent of EF scale since no model available</span>
                                             <span class="c1"># high value used for illustration</span>
+
+<span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;CS&#39;</span><span class="p">][</span><span class="s1">&#39;vforward_m/s&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">20.</span>         <span class="c1"># forward storm speed (m/s)</span>
+<span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;CS&#39;</span><span class="p">][</span><span class="s1">&#39;lat_deg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">lat_deg</span>     <span class="c1"># average latitude of digital template (see Tutorial 1)</span>
 
 <span class="c1"># virtual region bathymetry characteristics for SS height given storm wind speed</span>
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;SS&#39;</span><span class="p">][</span><span class="s1">&#39;bathy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;New York harbor&#39;</span>  <span class="c1"># &#39;generic&#39; (Saffir-Simpson, Mignan, 2024:eq. 2.16) </span>
