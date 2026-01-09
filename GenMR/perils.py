@@ -52,11 +52,14 @@ import re
 import warnings
 from tqdm import tqdm
 
+from collections import defaultdict
+
 #import matplotlib
 #matplotlib.use('Agg')   # avoid kernel crash (during flood modelling), still needed? to check
 
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
+from shapely.geometry import LineString
 import imageio
 from skimage import measure
 
@@ -793,6 +796,23 @@ class EventSetGenerator:
             self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.par['WS']['object'], self.sizeDistr['WS']['Nstoch']))
 
         elif ID == 'CS':
+            # retrieve tornado path lines
+            lines = defaultdict(list)
+            ev_char_To = self.ev_char[self.ev_char['evID'].str[:2] == 'To'].reset_index(drop = True)
+            for evID_To, x, y in zip(ev_char_To['evID'], ev_char_To['x'], ev_char_To['y']):
+                lines[evID_To].append((x, y))
+
+            ev_ID_list, ev_x_list, ev_y_list = [], [], []
+            for i, (evID_To, coords) in enumerate(lines.items()):
+                line = LineString(coords)
+                x, y = line.buffer(self.src.par['CS']['R_km']).exterior.xy
+                ev_ID_list.append(np.repeat(evID[i], len(x)))
+                ev_x_list.append(np.asarray(x))
+                ev_y_list.append(np.asarray(y))
+            ev_ID = np.concatenate(ev_ID_list)
+            ev_x = np.concatenate(ev_x_list)
+            ev_y = np.concatenate(ev_y_list)
+
             self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.par['CS']['object'], self.sizeDistr['CS']['Nstoch']))
 
         elif ID == 'FF':
@@ -894,6 +914,7 @@ class EventSetGenerator:
                 # EF-5 length statistics
                 Beta_alpha, Beta_beta, Beta_lmax = src.par['To']['L_alpha_beta_Lmax_EF5']
             Lstoch = beta.ppf(u[i], Beta_alpha, Beta_beta) * Beta_lmax
+            Lstoch = max(Lstoch, 2 * dxy_step)
             n_steps = int(np.ceil(Lstoch / dxy_step))
             x0 = src.To_char['x0'][i]
             y0 = src.To_char['y0'][i]
