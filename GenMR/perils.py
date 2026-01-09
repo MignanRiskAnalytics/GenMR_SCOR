@@ -24,7 +24,7 @@ Peril models (v1.1.2)
 * CS: Convective storm - ongoing
 * Li: Lightning - ongoing
 * To: Tornado
-* WS: Windstorm - ongoing
+* WS: Windstorm
 
 Planned peril models (v1.1.2)
 -----------------------------
@@ -39,7 +39,7 @@ Planned peril models (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2025-01-06
+:Date: 2025-01-09
 :License: AGPL-3
 """
 
@@ -56,6 +56,7 @@ from tqdm import tqdm
 #matplotlib.use('Agg')   # avoid kernel crash (during flood modelling), still needed? to check
 
 import matplotlib.pyplot as plt
+from matplotlib.patches import Circle
 import imageio
 from skimage import measure
 
@@ -145,7 +146,7 @@ class Src:
         '''
         if 'AI' in self.par['perils']:
             srcID = [self.par['AI']['object'] + str(i + 1) for i in range(self.par['AI']['N'])]
-            src_xi, src_yi = self._gen_stochsrc_points(self.par['AI']['N'], self.grid, self.par['rdm_seed'])
+            src_xi, src_yi = self._gen_stochsrc_points(self.par['AI']['N'], self.grid, rdm_seed = self.par['rdm_seed'])
             return {'srcID': srcID, 'x': src_xi, 'y': src_yi}
         else:
             warnings.warn('No AI source initiated in source parameter list')
@@ -252,7 +253,7 @@ class Src:
         '''
         if 'To' in self.par['perils']:
             srcID = [self.par['To']['object'] + str(i + 1) for i in range(self.par['To']['N'])]
-            src_xi, src_yi = self._gen_stochsrc_points(self.par['To']['N'], self.grid, self.par['rdm_seed'])
+            src_xi, src_yi = self._gen_stochsrc_points(self.par['To']['N'], self.grid, xmax_bypass=self.par['To']['seed_xmax'], rdm_seed=self.par['rdm_seed'])
             return {'srcID': srcID, 'x0': src_xi, 'y0': src_yi}
         else:
             warnings.warn('No To source initiated in source parameter list')
@@ -281,7 +282,7 @@ class Src:
             return {'srcID': [], 'x': [], 'y': []}
 
 
-    def _gen_stochsrc_points(self, N, grid, rdm_seed = None):
+    def _gen_stochsrc_points(self, N, grid, xmax_bypass = np.nan, rdm_seed = None):
         '''
         Generate N random points uniformly distributed over the active domain of the grid.
 
@@ -303,7 +304,10 @@ class Src:
         if rdm_seed is not None:
             np.random.seed(rdm_seed)
 
-        x_rdm = grid.xmin_nobuffer + np.random.random(N) * (grid.xmax_nobuffer - grid.xmin_nobuffer)
+        if np.isnan(xmax_bypass):
+            x_rdm = grid.xmin_nobuffer + np.random.random(N) * (grid.xmax_nobuffer - grid.xmin_nobuffer)
+        else:
+            x_rdm = grid.xmin_nobuffer + np.random.random(N) * (xmax_bypass - grid.xmin_nobuffer)
         y_rdm = grid.ymin_nobuffer + np.random.random(N) * (grid.ymax_nobuffer - grid.ymin_nobuffer)
         return x_rdm, y_rdm
 
@@ -637,6 +641,18 @@ class EventSetGenerator:
                     pd.DataFrame({'ID': np.repeat(ID, self.sizeDistr[ID]['Nstoch']), 'evID': evID, 'S': Si_vec, 'lbd': lbdi})
                 ], ignore_index=True)
 
+            ## SPECIAL EVENTS ##
+            if ID in self.sizeDistr['special']:
+                if ID == 'CS':
+                    ev_stoch_To = self.ev_stoch[self.ev_stoch['ID'] == 'To'].reset_index(drop = True)
+                    evID = 'CS_to' + ev_stoch_To['evID'].values
+                    Si_vec = np.repeat(self.src.par['CS']['S'], self.sizeDistr['CS']['Nstoch'])
+                    lbdi = np.repeat(np.nan, self.sizeDistr['CS']['Nstoch'])
+                    self.ev_stoch = pd.concat([
+                        self.ev_stoch,
+                        pd.DataFrame({'ID': np.repeat('CS', self.sizeDistr['CS']['Nstoch']), 'evID': evID, 'S': Si_vec, 'lbd': lbdi})
+                    ], ignore_index=True)
+
             ## SECONDARY EVENTS ##
             if ID in self.sizeDistr['secondary']:
                 ID_trigger, evID, Si_vec, lbdi = self._generate_secondary(ID)
@@ -775,6 +791,9 @@ class EventSetGenerator:
             self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.par['WF']['object'], self.sizeDistr['WF']['Nstoch']))
         elif ID == 'WS':
             self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.par['WS']['object'], self.sizeDistr['WS']['Nstoch']))
+
+        elif ID == 'CS':
+            self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.par['CS']['object'], self.sizeDistr['CS']['Nstoch']))
 
         elif ID == 'FF':
             trigger = self.sizeDistr[ID]['trigger']
@@ -2254,11 +2273,13 @@ def plot_src(src, hillshading_z = '', file_ext = '-'):
     _, ax = plt.subplots(1, 2, figsize=(10,4))
     if len(hillshading_z) != 0:
         ax[0].contourf(src.grid.xx, src.grid.yy, GenMR_env.ls.hillshade(hillshading_z, vert_exag=.1), cmap='gray', alpha = .2)
+
     if 'EQ' in src.par['perils']:
         for src_i in range(len(src.par['EQ']['x'])):
             h_eq, = ax[0].plot(src.par['EQ']['x'][src_i], src.par['EQ']['y'][src_i], color = GenMR_utils.col_peril('EQ'))
         handles.append(h_eq)
         labels.append('Fault segment: Earthquake (EQ)')
+
     if 'FF' in src.par['perils']:
         river_xi, river_yi, _, river_id = GenMR_env.calc_coord_river_dampedsine(src.grid, src.par['FF'])
         for src_i in range(len(src.par['FF']['riv_y0'])):
@@ -2269,28 +2290,42 @@ def plot_src(src, hillshading_z = '', file_ext = '-'):
         labels.append('River upstream point: Fluvial Flood (FF)')
         handles.append(h_riv)
         labels.append('River bed')
+
     if 'VE' in src.par['perils']:
         h_ve = ax[0].scatter(src.par['VE']['x'], src.par['VE']['x'], color = GenMR_utils.col_peril('VE'), s=75, marker='^')
         handles.append(h_ve)
         labels.append('Volcano: Volcanic Eruption (VE)')
+
     if 'SS' in src.par['perils']:
         h_ss, = ax[0].plot(src.SS_char['x'], src.SS_char['y'], color = GenMR_utils.col_peril('SS'))
         handles.append(h_ss)
         labels.append('Coastline: Storm surge (SS)')
+
     if 'TC' in src.par['perils']:
         for src_id in np.unique(src.TC_char['srcID']):
             indsrc = np.where(src.TC_char['srcID'] == src_id)[0]
             h_tc, = ax[0].plot(src.TC_char['x'][indsrc], src.TC_char['y'][indsrc], color = GenMR_utils.col_peril('TC'))
         handles.append(h_tc)
         labels.append('Storm track: Tropical cyclone (TC)')
+
     if 'AI' in src.par['perils']:
         h_ai =ax[0].scatter(src.AI_char['x'], src.AI_char['y'], color = GenMR_utils.col_peril('AI'), s=30, marker = '+', clip_on = False)
         handles.append(h_ai)
         labels.append('Impact site: Asteroid impact (AI)')
+
     if 'To' in src.par['perils']:
-        h_ai =ax[0].scatter(src.To_char['x0'], src.To_char['y0'], color = GenMR_utils.col_peril('To'), s=30, marker = 'o', clip_on = False)
+        h_ai =ax[0].scatter(src.To_char['x0'], src.To_char['y0'], color = GenMR_utils.col_peril('To'), s=20, marker = 'o', clip_on = False)
         handles.append(h_ai)
         labels.append('Vortex line seed: Tornado (To)')
+        # CS conditional on To
+        if 'CS' in src.par['perils']:
+            for i in range(src.par['To']['N']):
+                circle = Circle((src.To_char['x0'][i], src.To_char['y0'][i]), src.par['CS']['R_km'], fill = False, color = GenMR_utils.col_peril('CS'), \
+                                 linewidth = 1, linestyle = 'dashed')
+                h_cs = ax[0].add_patch(circle)
+            handles.append(h_cs)
+            labels.append('Super-cell seed: Convective storm (CS)')
+
     if 'Ex' in src.par['perils']:
         h_ex = ax[0].scatter(src.par['Ex']['x'], src.par['Ex']['y'], color = GenMR_utils.col_peril('Ex'), s=90, marker = '+', clip_on = False)
         handles.append(h_ex)

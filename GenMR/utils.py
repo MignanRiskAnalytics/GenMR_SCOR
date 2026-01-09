@@ -549,10 +549,12 @@ def col_peril(peril):
         col = col_peril_geophys
     if peril == 'FF' or peril == 'SS':
         col = col_peril_hydro
-    if peril == 'RS' or peril == 'TC' or peril == 'To' or peril == 'WS':
+    if peril == 'CS' or peril == 'RS' or peril == 'TC' or peril == 'To' or peril == 'WS':
         col = col_peril_meteo
     if peril == 'Ex':
         col = col_peril_tech
+    if peril == 'Ex':
+        col = 'red'
     return col
 
 
