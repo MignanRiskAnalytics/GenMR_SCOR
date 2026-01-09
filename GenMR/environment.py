@@ -8,22 +8,27 @@ defined as classes or methods.
 
 Layers and Related Objects (v1.1.1)
 -----------------------------------
-* **Topography** — includes tectonic hills, river valleys, and volcanic edifices  
-  → properties: slope, aspect
-* **Soil** — includes factor of safety
+* **Topography** - includes tectonic hills, river valleys, and volcanic edifices  
+  - properties: slope, aspect
+* **Soil**
+  - properties: factor of safety
 * **Natural land**
-* **Urban land** — includes road network  
-  → properties: asset value
+* **Urban land** - includes road network  
+  - properties: asset value
+
+Layers and Related Objects (v1.1.2)
+-----------------------------------
+* **Atmosphere**
+  - properties: freezing level, tropopause
 
 Planned Additions (v1.1.2)
 ---------------------------
-* Atmosphere
 * Power grid
 * Population
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2025-12-29
+:Date: 2026-01-09
 :License: AGPL-3
 """
 
@@ -174,6 +179,8 @@ def downscale_RasterGrid(grid, factor, appl = 'pooling'):
 ##############################
 # NATURAL ENVIRONMENT LAYERS #
 ##############################
+
+## TOPOGRAPHY ##
 class EnvLayer_topo:
     '''
     Define an environmental layer for the topography on a coarser grid before interpolating back to default.
@@ -612,11 +619,218 @@ def calc_topo_attributes(z, w):
     dz_dx = dz_dx[1:-1,1:-1] / w
     dz_dy = (dz_dy[1:-1,1:-1] / w) * (-1)
     tan_slope = np.sqrt(dz_dx**2 + dz_dy**2)
-    slope = np.arctan(tan_slope) * 180 / np.pi
+#    slope = np.arctan(tan_slope) * 180 / np.pi
     aspect = 180 - np.arctan(dz_dy/dz_dx)*180/np.pi + 90 * (dz_dx + 1e-6) / (np.abs(dz_dx) + 1e-6)
     return tan_slope, aspect
 
+
+
+## ATMOSPHERE ##
+class EnvLayer_atmo:
+    '''
+    Environmental layer representing atmospheric properties over a raster grid.
+
+    The state variable is near-surface air temperature `T`. IN CONSTRUCTION
+
+    Parameters
+    ----------
+    topo : EnvLayer_topo
+        The topography layer used as reference for the atmosphere layer.
+    par : dict
+        Dictionary of parameters for the atmosphere layer. Expected keys include:
+        - 'month' : int
+            Calendar month (1 = January, 12 = December). Used to compute the seasonal phase.
+
+    Attributes
+    ----------
+    ID : str
+        Identifier of the layer ('atmo').
+    topo : EnvLayer_topo
+        Reference topography layer.
+    par : dict
+        Parameter dictionary provided at initialization.
+    grid : RasterGrid
+        Grid associated with the topography layer.
+    T0 : float
+        Reference near-surface air temperature at z=0.
+    T : ndarray, shape (grid.nx, grid.ny)
+        Near-surface air temperature at z(x,y).
+    '''
+    def __init__(self, topo, par):
+        self.ID = 'atmo'
+        self.topo = copy.copy(topo)
+        self.par = par
+        self.grid = self.topo.grid
+        self.T0, _, _ = self.calc_T0_EBCM(self.par['lat_deg'], self.par['month'], phase = np.pi) # phase hardcoded
+        topo_z_corr = self.topo.z.copy() * 1e-3  # m to km
+        topo_z_corr[topo_z_corr < 0.] = 0        # water surface at z=0
+        self.T = self.calc_T_z(topo_z_corr, self.T0, lapse_rate = self.par['lapse_rate_degC/km'])
+
+    @property
+    def z_tropopause(self):
+        return self.calc_z_tropopause(self.par['lat_deg'])
+    @property
+    def z_freezinglevel(self):
+        return self.calc_z_freeze(self.T0, self.par['lapse_rate_degC/km'])
     
+    
+    @staticmethod
+    def calc_T0_EBCM(lat, mon, phase = np.pi):
+        '''
+        Calculate the zonal and seasonal surface temperature in a simple Energy Balance Climate Model (EBCM).
+
+        This function implements a 1-D diffusive EBM with constant albedo, solved analytically 
+        following North et al. (1981). It includes:
+
+        - Global annual-mean temperature (T0)
+        - Annual-mean latitudinal deviations (T_zonal)
+        - Approximate seasonal variation
+
+        Parameters
+        ----------
+        lat : float or ndarray
+            Latitude in degrees (−90° to 90°). Positive for Northern Hemisphere.
+        mon : int
+            Calendar month (1 = January, 12 = December). Used to compute the seasonal phase.
+        phase : float, optional
+            Phase shift of the seasonal cycle in radians. Default is π, 
+            which aligns Northern Hemisphere summer with month ~6 (June).
+
+        Returns
+        -------
+        T : float or ndarray
+            Temperature at the given latitude and month (°C), including seasonal variation.
+        T_zonal : float or ndarray
+            Annual-mean latitudinal temperature (zonal) at the given latitude (°C).
+        T0 : float
+            Global annual-mean temperature (°C).
+
+        References
+        ----------
+        North et al. (1981), Energy Balance Climate Models. Rev. Geophys. Space Phys. 19(1), 91-121
+        '''
+
+        S0 = 1366  # Solar constant (W/m2): irradiance on flat surface perp. to the Sun’s rays at mean Earth–Sun dist.
+        A = 211    # (W/m2) - value from Graves et al. (1993:tab.3) as used in North & Stevens (2006)
+        B = 1.90   # (W/m2/°C) - value from Graves et al. (1993:tab.3) as used in North & Stevens (2006)
+        ap = .7    # Earth coalbedo = 1 - albedo
+        S2 = -.477
+        D = .649   # (W/m2/°C)
+
+        Q = S0/4.  # because of ratio of a sphere’s area to that of a disk (Adisk = π R**2, Asphere=4π R**2)
+
+        x = np.sin(np.radians(lat))
+
+        # global mean
+        T0 = (Q * ap - A) / B               # eq.8, also eq.31
+
+        # zonal deviation (analytic)
+        P2 = .5 * (3 * x**2 - 1)            # second Legendre polynomial
+        T2 = (Q * ap * S2) / (B + 6*D)      # deriv. from combining eqs.28 and 30 -> T2=Q*H2/(B+6D) (delta_kronecker=0)
+
+        T_zonal = T0 + T2 * P2              # eq.32, see also eq.25 - no seasonality implemented
+
+        # temporal effect (seasonality)
+        t = (mon - .5)/12                   # time as fraction of year [0,1]
+        P1 = x                              # first Legendre polynomial
+        T = T0 + T0 * np.cos(2*np.pi * t - phase) * P1 + T2 * P2      # eq.168
+
+        return T, T_zonal, T0
+
+
+    @staticmethod
+    def calc_T_z(z, T0, lapse_rate = 6.5):
+        '''
+        Compute atmospheric temperature at height z above the surface.
+
+        Parameters
+        ----------
+        z : float or ndarray
+            Altitude above the surface (km)
+        T0 : float or ndarray
+            Surface temperature (°C) at z = 0
+        lapse_rate : float, optional
+            Temperature decrease with altitude (°C/km). Default is 6.5°C/km (average value).
+
+        Returns
+        -------
+        T : float or ndarray
+            Temperature at altitude z (°C)
+        '''
+        T_z = T0 - lapse_rate * z
+        return T_z
+
+        
+    @staticmethod
+    def calc_z_tropopause(lat, method = 'Mateus_etal2022'):
+        '''
+        Calculate the tropopause height as a function of latitude using empirical models.
+
+        This function provides approximate tropopause height based on two different
+        published methods:
+
+        - `'Son_etal2011'`: Uses the minimum tropopause height from Son et al. (2011)
+          and applies a correction to approximate the mean height.
+        - `'Mateus_etal2022'`: Uses the sigmoid fit provided by Mateus et al. (2022),
+          removing seasonal (day-of-year) dependence
+          as its impact is negligible.
+
+        Parameters
+        ----------
+        lat : float or ndarray
+            Latitude in degrees (-90° to 90°). Positive for Northern Hemisphere.
+        method : str, optional
+            Choice of empirical method. Options are:
+            - `'Son_etal2011'` : Uses Son et al. (2011) data with correction.
+            - `'Mateus_etal2022'` : Uses Mateus et al. (2022) empirical model (default).
+
+        Returns
+        -------
+        z_tropopause : float or ndarray
+            Tropopause height in kilometers at the specified latitude(s).
+
+        References
+        ----------
+        Son et al. (2011), The fine-scale structure of the global tropopause derived from 
+          COSMIC GPS radio occultation measurements. J. Geophys. Res. 116, D20113, doi:10.1029/2011JD016030
+        Mateus et al. (2022), Global Empirical Models for Tropopause Height Determination.
+          Remote Sensing 14, 4303, doi: 10.3390/rs14174303
+        '''
+        if method == 'Son_etal2011':
+            z_corr = 5.    # km - to be consistent with 'Mateus_etal2022'
+            z_min_tropopause = 7.5 + 2.5 * np.cos(2*np.radians(lat))
+            z_tropopause = z_min_tropopause + z_corr
+        if method == 'Mateus_etal2022':
+            # param. values for northern hemisphere, PVU=3.5 (tab.3)
+            a0, a1, a2, a3, a4, a5 = 8.499, 7.823, 26.73, -1.58, .098, -.126
+            #doy = (mon-.5) / 12 * 365.
+            z_tropopause = a0 + a1 / (1 + np.exp(-(lat - a2)/a3))**a4 #+ a5 * np.cos(2*np.pi * (doy))
+        return z_tropopause   # km
+
+    
+    @staticmethod
+    def calc_z_freeze(T0, lapse_rate):
+        '''
+        Calculate freezing level in kilometres.
+
+        Parameters
+        ----------
+        T0 : float or ndarray
+            Surface temperature (°C) at z = 0
+        lapse_rate : float
+            Temperature decrease with altitude (°C/km)
+
+        Returns
+        -------
+        T : float or ndarray
+            Temperature at altitude z (°C)
+        '''
+        z_freeze = T0 / lapse_rate
+        return z_freeze
+
+
+
+## SOIL ##
 class EnvLayer_soil:
     '''
     Environmental layer representing soil properties over a raster grid.
@@ -775,6 +989,8 @@ def get_FS_state(FS):
     return FS_code
 
 
+
+## NATURAL LAND ##
 class EnvLayer_natLand:
     '''
     Defines an environmental layer for natural land classification, including water, forest, and grassland.
@@ -905,6 +1121,7 @@ def calc_coord_river_dampedsine(grid, par, z = ''):
 # TECHNOLOGICAL ENVIRONMENT LAYERS #
 ####################################
 
+## ROAD NETWORK ##
 class EnvObj_roadNetwork():
     '''
     Generate a road network on a raster grid using a cellular automaton (CA) approach.
@@ -1067,6 +1284,8 @@ class CriticalInfrastructure:
     Ex_S_kton: float
 
 
+
+## URBAN LAND ##
 class EnvLayer_urbLand:
     '''
     Generate an urban land use environmental layer.
