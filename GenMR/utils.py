@@ -8,7 +8,7 @@ core GenMR workflows by streamlining data handling, computation, and visualisati
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2025-12-30
+:Date: 2026-01-12
 :License: AGPL-3
 """
 
@@ -21,6 +21,8 @@ import pickle
 
 import matplotlib.pyplot as plt
 import matplotlib.colors as plt_col
+
+from shapely.geometry import Point
 
 import networkx as netx
 
@@ -367,6 +369,24 @@ def get_ind_aspect2moore(ind_old):
 
 
 
+######################
+## SAMPLING METHODS ##
+######################
+def sample_points_in_polygon(poly, n):
+    '''
+    Uniform random sampling inside a shapely Polygon.
+    '''
+    minx, miny, maxx, maxy = poly.bounds
+    points = []
+    while len(points) < n:
+        x = np.random.uniform(minx, maxx)
+        y = np.random.uniform(miny, maxy)
+        if poly.contains(Point(x, y)):
+            points.append((x, y))
+    return np.array(points)
+
+
+
 ########################
 # NETWORK MANIPULATION #
 ########################
@@ -553,7 +573,7 @@ def col_peril(peril):
         col = col_peril_meteo
     if peril == 'Ex':
         col = col_peril_tech
-    if peril == 'Ex':
+    if peril == 'Ex' or peril == 'Li':
         col = 'red'
     return col
 

@@ -21,8 +21,8 @@ Peril models (v1.1.1)
 
 Peril models (v1.1.2)
 ---------------------
-* CS: Convective storm - ongoing
-* Li: Lightning - ongoing
+* CS: Convective storm
+* Li: Lightning
 * To: Tornado
 * WS: Windstorm
 
@@ -39,7 +39,7 @@ Planned peril models (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2025-01-09
+:Date: 2025-01-12
 :License: AGPL-3
 """
 
@@ -59,7 +59,8 @@ from collections import defaultdict
 
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
-from shapely.geometry import LineString
+from shapely.geometry import LineString, Polygon
+
 import imageio
 from skimage import measure
 
@@ -801,7 +802,6 @@ class EventSetGenerator:
             ev_char_To = self.ev_char[self.ev_char['evID'].str[:2] == 'To'].reset_index(drop = True)
             for evID_To, x, y in zip(ev_char_To['evID'], ev_char_To['x'], ev_char_To['y']):
                 lines[evID_To].append((x, y))
-
             ev_ID_list, ev_x_list, ev_y_list = [], [], []
             for i, (evID_To, coords) in enumerate(lines.items()):
                 line = LineString(coords)
@@ -812,12 +812,17 @@ class EventSetGenerator:
             ev_ID = np.concatenate(ev_ID_list)
             ev_x = np.concatenate(ev_x_list)
             ev_y = np.concatenate(ev_y_list)
-
             self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.par['CS']['object'], self.sizeDistr['CS']['Nstoch']))
 
         elif ID == 'FF':
             trigger = self.sizeDistr[ID]['trigger']
             self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.FF_char['srcID'], self.sizeDistr[trigger]['Nstoch']))
+        elif ID == 'Li':
+            trigger = self.sizeDistr[ID]['trigger']
+            Si_CS = self.ev_stoch[self.ev_stoch['ID'] == 'CS']['S'].values
+            pointSet_coord = self._get_LipointSet(evID, Si_CS)
+            ev_ID, ev_x, ev_y = pointSet_coord['evID'], pointSet_coord['x'], pointSet_coord['y']
+            self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.par['Li']['object'], self.sizeDistr[trigger]['Nstoch']))
         elif ID == 'LS':
             trigger = self.sizeDistr[ID]['trigger']
             self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.par['LS']['object'], self.sizeDistr[trigger]['Nstoch']))
@@ -925,6 +930,31 @@ class EventSetGenerator:
             id_hires = np.append(id_hires, np.repeat(evIDi[i], n_steps))
         Line_coord = pd.DataFrame({'evID': id_hires, 'x': x_hires, 'y': y_hires})
         return Line_coord
+
+    def _get_LipointSet(self, evIDi, Si_trigger):
+        '''
+        '''
+        lbd_Li_strike, _ = GenMR_dynamics.calc_lbd_CS2Li(Si_trigger, self.src.par['CS']['lat_deg'])    # strikes/min/storm
+        CS_char = self.ev_char[self.ev_char['evID'].str[:2] == 'CS']                                   # to get CS footprint
+        evIDs_CS = CS_char['evID'].unique()
+        To_char = self.ev_char[self.ev_char['evID'].str[:2] == 'To']                                   # to get CS length = To length
+        To_L_details = (To_char.groupby('evID').agg(x0=('x', 'first'),y0=('y', 'first'), x1=('x', 'last'), y1=('y', 'last'))
+                        .assign(L_km=lambda df: np.hypot(df.x1 - df.x0, df.y1 - df.y0)).reset_index())
+        L_km_CS = To_L_details['L_km'].values
+        Dt_min_CS = L_km_CS / (self.src.par['CS']['vforward_m/s'] * 1e-3 * 60.)                        # storm duration as path length / speed from start to end
+        x_Li, y_Li, evID_Li = [], [], []
+        for i, evID_CS in enumerate(evIDs_CS):
+            CS_coord = CS_char[CS_char['evID'] == evID_CS][['x', 'y']].values
+            footprint_CS = Polygon(CS_coord)
+#            N_Li = np.random.poisson(lbd_Li_strike * Dt_min_CS.iloc[i])       # no stochasticity in Tutorial 2 
+            N_Li = int(lbd_Li_strike[i] * Dt_min_CS[i])
+            pts = GenMR_utils.sample_points_in_polygon(footprint_CS, N_Li)
+            x_Li.extend(pts[:, 0])
+            y_Li.extend(pts[:, 1])
+            evID_Li.extend(np.repeat(evIDi[i], N_Li))
+        PointSet_coord = pd.DataFrame({'evID': evID_Li, 'x': x_Li, 'y': y_Li})
+
+        return PointSet_coord
 
 
 
