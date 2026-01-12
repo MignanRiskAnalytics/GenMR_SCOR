@@ -287,6 +287,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.norm_z"><code class="docutils literal notranslate"><span class="pre">norm_z</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.partitioning"><code class="docutils literal notranslate"><span class="pre">partitioning()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.pooling"><code class="docutils literal notranslate"><span class="pre">pooling()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.sample_points_in_polygon"><code class="docutils literal notranslate"><span class="pre">sample_points_in_polygon()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.save_class2pickle"><code class="docutils literal notranslate"><span class="pre">save_class2pickle()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.save_dict2json"><code class="docutils literal notranslate"><span class="pre">save_dict2json()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.zero_boundary_2d"><code class="docutils literal notranslate"><span class="pre">zero_boundary_2d()</span></code></a></li>
@@ -300,7 +301,6 @@
 <li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#natural-peril-definition-for-environmental-objects">1.2. Natural peril definition (for environmental objects)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#generating-the-topography-atmosphere-soil-and-natural-land-layers">1.3. Generating the topography, atmosphere, soil, and natural land layers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#environmental-layer-properties-and-attribute-plotting">1.4. Environmental layer properties (and attribute plotting)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#a-note-on-environmental-layer-downscaling">1.5. A note on environmental layer downscaling</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#technological-environment-generation">2. Technological environment generation</a><ul>
@@ -308,9 +308,13 @@
 <li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#environmental-layer-properties">2.2. Environmental layer properties</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#socio-economic-environment-generation">3. Socio-economic environment generation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#references">References</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#appendix">Appendix</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#a-attributes-properties-of-environmental-layers">A. Attributes &amp; properties of environmental layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#a-attributes-properties-of-environmental-layers">A. Attributes &amp; properties of environmental layers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#a-1-a-note-on-environmental-layer-downscaling">A.1 A note on environmental layer downscaling</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#b-underlying-physical-processes">B. Underlying physical processes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#b-1-atmospheric-layer-temperature">B.1. Atmospheric layer: Temperature</a></li>
 </ul>
@@ -341,7 +345,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#a-peril-sources">A. Peril sources</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#b-stochastic-event-set">B. Stochastic event set</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#b-1-earthquake-case">B.1. Earthquake case</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#b-2-tornado-case">B.2. Tornado case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#b-2-lightning-case">B.2. Lightning case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#b-3-tornado-case">B.3. Tornado case</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#c-hazard-footprints">C. Hazard footprints</a><ul>
@@ -383,7 +388,7 @@
 <h1>Tutorial 2: Implementing perils in the GenMR digital template<a class="headerlink" href="#tutorial-2-implementing-perils-in-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 1.1.2<br />
-<strong>Last Updated:</strong> 2025-01-05<br />
+<strong>Last Updated:</strong> 2025-01-12<br />
 <strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
 <p>Once a virtual environment has been generated (see previous tutorial), stochastic events are modelled to populate it. Table 1 lists the perils included in version 1.1.2 (the ones still missing to be included by June 2026).</p>
 <br>
@@ -422,11 +427,11 @@
 <tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">CS</span></code></p></td>
 <td class="text-left"><p>Convertive storm</p></td>
 <td class="text-left"><p>Primary (invisible<span class="math notranslate nohighlight">\(^*\)</span>)</p></td>
-<td class="text-left"><p>Area?</p></td>
+<td class="text-left"><p>Area</p></td>
 <td class="text-left"><p>Cloud top height (km)</p></td>
 <td class="text-left"><p>Uniform</p></td>
 <td class="text-left"><p>Cloud top height (km)</p></td>
-<td class="text-left"><p><span style="color: orange">ongoing<span></p></td>
+<td class="text-left"><p><span style="color: green">✓<span></p></td>
 </tr>
 <tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">Dr</span></code></p></td>
 <td class="text-left"><p>Drought</p></td>
@@ -619,7 +624,7 @@
 </tr>
 </tbody>
 </table>
-<p><small><span class="math notranslate nohighlight">\(^*\)</span> Rainstorm is called an ‘invisible peril’ (following <a href='https://link.springer.com/article/10.1007/s11069-014-1178-4' target='_blank'>Mignan et al., 2014</a>) since it does not cause any direct damage in the present framework. It is implemented as both the landslide and fluvial flood triggering mechanism.<br>
+<p><small><span class="math notranslate nohighlight">\(^*\)</span> An event that does not cause any direct damage, at least in the present framework (following <a href='https://link.springer.com/article/10.1007/s11069-014-1178-4' target='_blank'>Mignan et al., 2014</a>). Still implemented as triggering mechanism.<br>
 <sup>†</sup> Most perils are considered primary perils in this tutorial for sake of simplicity. Several will be considered secondary perils in Tutorial 3.<br>
 <sup>‡</sup> Included in current version (<span style="color: green">✓</span>), planned for v.1.1.2 (<span style="color: orange">✗</span>).</small></p>
 <p>This tutorial is divided into two main sections. The first introduces the definition of peril sources, an event table (containing each event’s identifier and annual rate), and a corresponding catalogue of hazard-intensity footprints. The second section covers probabilistic risk assessment, in which damage and loss footprints are generated for each event identifier (Fig. 1) and risk metrics are calculated. Before beginning these sections, the digital-template environment created in the previous tutorial is loaded.</p>
@@ -648,20 +653,22 @@
 <span class="c1"># load inputs (i.e., outputs from Tutorial 1)</span>
 <span class="n">file_src</span> <span class="o">=</span> <span class="s1">&#39;src.pkl&#39;</span>
 <span class="n">file_topoLayer</span> <span class="o">=</span> <span class="s1">&#39;envLayer_topo.pkl&#39;</span>
+<span class="n">file_atmoLayer</span> <span class="o">=</span> <span class="s1">&#39;envLayer_atmo.pkl&#39;</span>
 <span class="n">file_soilLayer</span> <span class="o">=</span> <span class="s1">&#39;envLayer_soil.pkl&#39;</span>
 <span class="n">file_urbLandLayer</span> <span class="o">=</span> <span class="s1">&#39;envLayer_urbLand.pkl&#39;</span>
 <span class="n">src</span> <span class="o">=</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">load_pickle2class</span><span class="p">(</span><span class="s1">&#39;/io/&#39;</span> <span class="o">+</span> <span class="n">file_src</span><span class="p">)</span>
 <span class="n">grid</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">grid</span><span class="p">)</span>
 <span class="n">topoLayer</span> <span class="o">=</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">load_pickle2class</span><span class="p">(</span><span class="s1">&#39;/io/&#39;</span> <span class="o">+</span> <span class="n">file_topoLayer</span><span class="p">)</span>
+<span class="n">atmoLayer</span> <span class="o">=</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">load_pickle2class</span><span class="p">(</span><span class="s1">&#39;/io/&#39;</span> <span class="o">+</span> <span class="n">file_atmoLayer</span><span class="p">)</span>
 <span class="n">soilLayer</span> <span class="o">=</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">load_pickle2class</span><span class="p">(</span><span class="s1">&#39;/io/&#39;</span> <span class="o">+</span> <span class="n">file_soilLayer</span><span class="p">)</span>
 <span class="n">urbLandLayer</span> <span class="o">=</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">load_pickle2class</span><span class="p">(</span><span class="s1">&#39;/io/&#39;</span> <span class="o">+</span> <span class="n">file_urbLandLayer</span><span class="p">)</span>
 
-<span class="n">GenMR_env</span><span class="o">.</span><span class="n">plot_EnvLayers</span><span class="p">([</span><span class="n">topoLayer</span><span class="p">,</span> <span class="n">soilLayer</span><span class="p">,</span> <span class="n">urbLandLayer</span><span class="p">],</span> <span class="n">file_ext</span> <span class="o">=</span> <span class="s1">&#39;jpg&#39;</span><span class="p">)</span>
+<span class="n">GenMR_env</span><span class="o">.</span><span class="n">plot_EnvLayers</span><span class="p">([</span><span class="n">topoLayer</span><span class="p">,</span> <span class="n">atmoLayer</span><span class="p">,</span> <span class="n">soilLayer</span><span class="p">,</span> <span class="n">urbLandLayer</span><span class="p">],</span> <span class="n">file_ext</span> <span class="o">=</span> <span class="s1">&#39;jpg&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/6efe24919c4b9fff1f34968c6f96a9ee1a600f2782f97e2e814ef76a98f71d56.png" src="../_images/6efe24919c4b9fff1f34968c6f96a9ee1a600f2782f97e2e814ef76a98f71d56.png" />
+<img alt="../_images/e5a63e02bfd60269f9ecd80133d2915def0de409c4f44bb3399ffcf0884007da.png" src="../_images/e5a63e02bfd60269f9ecd80133d2915def0de409c4f44bb3399ffcf0884007da.png" />
 </div>
 </div>
 <p>Note that the configuration of the digital template environment may be changed through Tutorial 1.</p>
@@ -670,19 +677,29 @@
 <p>A list of stochastic events will be defined, consisting of both primary and secondary events. Because event interactions will be addressed in the next tutorial, only simple ad-hoc one-to-one interactions are introduced here to illustrate how secondary event footprints can be generated (e.g., a storm surge from a tropical cyclone or a landslide triggered by a rainstorm). Conditional probabilities of occurrence will be examined in Tutorial 3. In this tutorial, only primary events have assigned annual rates.</p>
 <section id="peril-source-definition">
 <h3>1.1. Peril source definition<a class="headerlink" href="#peril-source-definition" title="Link to this heading"></a></h3>
-<p>Source characteristics for earthquakes, volcanic eruptions, and fluvial floods were defined in Tutorial 1, as some environmental layers depend directly on these perils. Additional peril sources are now introduced. Localised peril sources, those with no direct impact on environmental layers, are parameterised first (<code class="docutils literal notranslate"><span class="pre">AI</span></code>, <code class="docutils literal notranslate"><span class="pre">SS</span></code>, <code class="docutils literal notranslate"><span class="pre">TC</span></code>, and <code class="docutils literal notranslate"><span class="pre">Ex</span></code>). Diffuse sources (<code class="docutils literal notranslate"><span class="pre">LS</span></code>, <code class="docutils literal notranslate"><span class="pre">WF</span></code>), whose hazard-intensity footprints will be generated in Section 1.3, are characterised thereafter.</p>
+<p>Source characteristics for earthquakes, volcanic eruptions, and fluvial floods were defined in Tutorial 1, as some environmental layers depend directly on these perils. Additional peril sources are now introduced. Note that only perils listed in <code class="docutils literal notranslate"><span class="pre">src.par['perils']</span></code> will be modelled.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;perils&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;AI&#39;</span><span class="p">,</span><span class="s1">&#39;EQ&#39;</span><span class="p">,</span><span class="s1">&#39;RS&#39;</span><span class="p">,</span><span class="s1">&#39;TC&#39;</span><span class="p">,</span><span class="s1">&#39;To&#39;</span><span class="p">,</span><span class="s1">&#39;VE&#39;</span><span class="p">,</span><span class="s1">&#39;WF&#39;</span><span class="p">,</span><span class="s1">&#39;WS&#39;</span><span class="p">,</span> <span class="s1">&#39;FF&#39;</span><span class="p">,</span><span class="s1">&#39;LS&#39;</span><span class="p">,</span><span class="s1">&#39;SS&#39;</span><span class="p">]</span>
-<span class="c1">#src.par[&#39;perils&#39;] = [&#39;AI&#39;,&#39;EQ&#39;,&#39;RS&#39;,&#39;TC&#39;,&#39;To&#39;,&#39;VE&#39;,&#39;WF&#39;,&#39;WS&#39;, &#39;FF&#39;,&#39;LS&#39;,&#39;SS&#39;,&#39;Ex&#39;]</span>
-                              <span class="c1"># IMPORTANT: primary perils come first in src.par[&#39;perils&#39;]</span>
-<span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;rdm_seed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">42</span>      <span class="c1"># None or integer (for stochastic sources: AI, TC)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;perils&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;AI&#39;</span><span class="p">,</span><span class="s1">&#39;EQ&#39;</span><span class="p">,</span><span class="s1">&#39;RS&#39;</span><span class="p">,</span><span class="s1">&#39;TC&#39;</span><span class="p">,</span><span class="s1">&#39;To&#39;</span><span class="p">,</span><span class="s1">&#39;VE&#39;</span><span class="p">,</span><span class="s1">&#39;WF&#39;</span><span class="p">,</span><span class="s1">&#39;WS&#39;</span><span class="p">,</span>  <span class="s1">&#39;CS&#39;</span><span class="p">,</span>  <span class="s1">&#39;FF&#39;</span><span class="p">,</span><span class="s1">&#39;Li&#39;</span><span class="p">,</span><span class="s1">&#39;LS&#39;</span><span class="p">,</span><span class="s1">&#39;SS&#39;</span><span class="p">]</span>
+                    <span class="c1"># IMPORTANT: primary perils come first in src.par[&#39;perils&#39;]</span>
+                    <span class="c1"># not included in this run: &#39;Ex&#39; (slow to load)</span>
 
+
+<span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;rdm_seed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">42</span>      <span class="c1"># None or integer (for stochastic sources: AI, TC)</span>
+<span class="k">if</span> <span class="s1">&#39;To&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;perils&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="s1">&#39;CS&#39;</span> <span class="ow">in</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;perils&#39;</span><span class="p">]:</span>
+    <span class="c1"># convective storm char. depend on tornado char.</span>
+    <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;perils&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;CS&#39;</span><span class="p">)</span>
 
 <span class="c1"># define new perils</span>
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;AI&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;impact&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">}</span>     <span class="c1"># random uniform asteroid impacts (point sources)</span>
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;CS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;supercell&#39;</span><span class="p">,</span>           <span class="c1"># as trigger of lightnings and tornadoes</span>
-                 <span class="s1">&#39;R_km&#39;</span><span class="p">:</span> <span class="mf">10.</span><span class="p">}</span>                     <span class="c1"># path conditioned on tornado path (better constrained)</span>
+                 <span class="s1">&#39;R_km&#39;</span><span class="p">:</span> <span class="mf">10.</span><span class="p">,</span>                     <span class="c1"># path conditioned on tornado path (better constrained)</span>
+                 <span class="s1">&#39;dH_CS2tropopause_km&#39;</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>       <span class="c1"># distance between cloud top and tropopause (km)</span>
+                 <span class="s1">&#39;lat_deg&#39;</span><span class="p">:</span> <span class="n">grid</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;lat_deg&#39;</span><span class="p">],</span>
+                 <span class="s1">&#39;vforward_m/s&#39;</span><span class="p">:</span> <span class="mf">20.</span>              <span class="c1"># forward storm speed (m/s)</span>
+                <span class="p">}</span>
+<span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;CS&#39;</span><span class="p">][</span><span class="s1">&#39;S&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">atmoLayer</span><span class="o">.</span><span class="n">z_tropopause</span> <span class="o">-</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;CS&#39;</span><span class="p">][</span><span class="s1">&#39;dH_CS2tropopause_km&#39;</span><span class="p">]</span> <span class="c1"># size as cloud top height (km)</span>
+<span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;Li&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;supercell&#39;</span><span class="p">}</span>
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;LS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;terrain&#39;</span><span class="p">}</span>
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;RS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;atmosphere&#39;</span><span class="p">,</span>          <span class="c1"># as trigger of landslides</span>
                  <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">24</span><span class="p">}</span>                  <span class="c1"># (hr) to calc. soil wetness that triggers LS &amp; FF discharge</span>
@@ -698,6 +715,8 @@
                  <span class="s1">&#39;bin_km&#39;</span><span class="p">:</span> <span class="mf">1.</span><span class="p">}</span>   <span class="c1"># track spatial resolution</span>
 
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;To&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;vortexline&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>  <span class="c1"># random uniform vortex-line initiation points</span>
+                 <span class="s1">&#39;seed_xmax&#39;</span><span class="p">:</span> <span class="mf">30.</span><span class="p">,</span>                <span class="c1"># initiates within [xmin+xbuffer, seed_xmax], i.e. warmer area</span>
+                 <span class="s1">&#39;thetaE_sigma&#39;</span><span class="p">:</span> <span class="mf">15.</span><span class="p">,</span>             <span class="c1"># pathline angle std dev. </span>
                  <span class="c1"># beta distributions for stoch. line lengths function of EF size (3 defined: EF-3, EF-4, EF-5)</span>
                  <span class="s1">&#39;L_alpha_beta_Lmax_EF3&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">.744</span><span class="p">,</span> <span class="mf">2.87</span><span class="p">,</span> <span class="mf">100.</span><span class="p">],</span>
                  <span class="s1">&#39;L_alpha_beta_Lmax_EF4&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.077</span><span class="p">,</span> <span class="mf">2.36</span><span class="p">,</span> <span class="mf">100.</span><span class="p">],</span>
@@ -718,7 +737,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/48367df63deca404df015e10d1e689a3ba3ed74ccf7b9a79216324aa93ab3c78.png" src="../_images/48367df63deca404df015e10d1e689a3ba3ed74ccf7b9a79216324aa93ab3c78.png" />
+<img alt="../_images/b1b15f50444a0c18bfbd4601ab6e10294a67b3aae4f4c6255a4a85e412cc1daf.png" src="../_images/b1b15f50444a0c18bfbd4601ab6e10294a67b3aae4f4c6255a4a85e412cc1daf.png" />
 </div>
 </div>
 <p><strong>NOTE:</strong> Hazard intensity footprints are modeled based on the sources shown in the map above. For stochastic sources (<code class="docutils literal notranslate"><span class="pre">AI</span></code>, <code class="docutils literal notranslate"><span class="pre">TC</span></code>, <code class="docutils literal notranslate"><span class="pre">To</span></code>), rerunning the previous cell will produce different configurations unless <code class="docutils literal notranslate"><span class="pre">rdm_seed</span></code> is fixed. For <code class="docutils literal notranslate"><span class="pre">To</span></code>, the full stochastic source (line) can only be parameterised in <code class="docutils literal notranslate"><span class="pre">EventSetGenerator()</span></code> since its length depends on the event size distribution.</p>
@@ -728,7 +747,8 @@
 <p>The stochastic event set (or event table) consists of a list of events per peril, with identifier <code class="docutils literal notranslate"><span class="pre">evID</span></code>, size <code class="docutils literal notranslate"><span class="pre">S</span></code>, and rate <span class="math notranslate nohighlight">\(\lambda\)</span> (<code class="docutils literal notranslate"><span class="pre">lbd</span></code>). Two types of perils are considered: primary perils for which the rate of occurrence must be assessed and secondary perils which will be assumed in this tutorial to occur in pair with their triggers (with rate <code class="docutils literal notranslate"><span class="pre">NaN</span></code> - for conditional probabilities, see the future Tutorial 3):</p>
 <ul class="simple">
 <li><p>Primary perils: <code class="docutils literal notranslate"><span class="pre">AI</span></code>, <code class="docutils literal notranslate"><span class="pre">EQ</span></code>, <code class="docutils literal notranslate"><span class="pre">RS</span></code>, <code class="docutils literal notranslate"><span class="pre">TC</span></code>, <code class="docutils literal notranslate"><span class="pre">To</span></code>, <code class="docutils literal notranslate"><span class="pre">VE</span></code>, <code class="docutils literal notranslate"><span class="pre">WF</span></code>, <code class="docutils literal notranslate"><span class="pre">WS</span></code>.</p></li>
-<li><p>Secondary perils: <code class="docutils literal notranslate"><span class="pre">LS</span></code> and <code class="docutils literal notranslate"><span class="pre">FF</span></code> triggered by <code class="docutils literal notranslate"><span class="pre">RS</span></code>, <code class="docutils literal notranslate"><span class="pre">SS</span></code> triggered by <code class="docutils literal notranslate"><span class="pre">TC</span></code>, <code class="docutils literal notranslate"><span class="pre">Ex</span></code> triggered by damage.</p></li>
+<li><p>Special perils: <code class="docutils literal notranslate"><span class="pre">CS</span></code> (primary peril depending on characteristics of <code class="docutils literal notranslate"><span class="pre">To</span></code> secondary peril)</p></li>
+<li><p>Secondary perils: <code class="docutils literal notranslate"><span class="pre">Li</span></code> triggered by <code class="docutils literal notranslate"><span class="pre">CS</span></code>, <code class="docutils literal notranslate"><span class="pre">LS</span></code> and <code class="docutils literal notranslate"><span class="pre">FF</span></code> triggered by <code class="docutils literal notranslate"><span class="pre">RS</span></code>, <code class="docutils literal notranslate"><span class="pre">SS</span></code> triggered by <code class="docutils literal notranslate"><span class="pre">TC</span></code>, <code class="docutils literal notranslate"><span class="pre">Ex</span></code> triggered by damage.</p></li>
 </ul>
 <p>Event size distributions are parameterised in the dictionary <code class="docutils literal notranslate"><span class="pre">sizeDistr</span></code> with:</p>
 <ul class="simple">
@@ -745,8 +765,10 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">EQ_Mmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">EQ_char</span><span class="p">[</span><span class="s1">&#39;srcMmax&#39;</span><span class="p">])</span>
 
 <span class="n">sizeDistr</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># WARNING: all src.par[&#39;perils&#39;] modelled, do not remove perils below if listed in src.par[&#39;perils&#39;]</span>
     <span class="s1">&#39;primary&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;AI&#39;</span><span class="p">,</span><span class="s1">&#39;EQ&#39;</span><span class="p">,</span><span class="s1">&#39;RS&#39;</span><span class="p">,</span><span class="s1">&#39;TC&#39;</span><span class="p">,</span><span class="s1">&#39;To&#39;</span><span class="p">,</span><span class="s1">&#39;VE&#39;</span><span class="p">,</span><span class="s1">&#39;WF&#39;</span><span class="p">,</span><span class="s1">&#39;WS&#39;</span><span class="p">],</span>
-    <span class="s1">&#39;secondary&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;FF&#39;</span><span class="p">,</span><span class="s1">&#39;LS&#39;</span><span class="p">,</span><span class="s1">&#39;SS&#39;</span><span class="p">,</span> <span class="s1">&#39;Ex&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;special&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;CS&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;secondary&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;FF&#39;</span><span class="p">,</span><span class="s1">&#39;Li&#39;</span><span class="p">,</span><span class="s1">&#39;LS&#39;</span><span class="p">,</span><span class="s1">&#39;SS&#39;</span><span class="p">,</span> <span class="s1">&#39;Ex&#39;</span><span class="p">],</span>
     <span class="c1"># primary perils</span>
     <span class="s1">&#39;AI&#39;</span><span class="p">:{</span>
         <span class="s1">&#39;Nstoch&#39;</span><span class="p">:</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;AI&#39;</span><span class="p">][</span><span class="s1">&#39;N&#39;</span><span class="p">],</span> <span class="s1">&#39;Sunit&#39;</span><span class="p">:</span> <span class="s1">&#39;Bolide energy $E$ (kton)&#39;</span><span class="p">,</span>
@@ -808,8 +830,13 @@
         <span class="s1">&#39;calibration_source&#39;</span><span class="p">:</span> <span class="s1">&#39;Copernicus 1986-2011 Synthetic windstorm events for Europe&#39;</span><span class="p">,</span>
         <span class="s1">&#39;reference&#39;</span><span class="p">:</span> <span class="s1">&#39;10.24381/cds.ce973f02&#39;</span>
     <span class="p">},</span>
+    <span class="c1"># special perils</span>
+    <span class="s1">&#39;CS&#39;</span><span class="p">:{</span>                <span class="c1"># CS triggers To but To param better constrained, backpropagating to CS</span>
+        <span class="s1">&#39;Nstoch&#39;</span><span class="p">:</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;To&#39;</span><span class="p">][</span><span class="s1">&#39;N&#39;</span><span class="p">]</span>
+    <span class="p">},</span>
     <span class="c1"># secondary perils - here ad-hoc Pr(peril|trigger) = 1, see tutorial 3 for probabilistic case</span>
     <span class="s1">&#39;FF&#39;</span><span class="p">:{</span><span class="s1">&#39;trigger&#39;</span><span class="p">:</span> <span class="s1">&#39;RS&#39;</span><span class="p">},</span>
+    <span class="s1">&#39;Li&#39;</span><span class="p">:{</span><span class="s1">&#39;trigger&#39;</span><span class="p">:</span> <span class="s1">&#39;CS&#39;</span><span class="p">},</span>
     <span class="s1">&#39;LS&#39;</span><span class="p">:{</span><span class="s1">&#39;trigger&#39;</span><span class="p">:</span> <span class="s1">&#39;RS&#39;</span><span class="p">},</span>
     <span class="s1">&#39;SS&#39;</span><span class="p">:{</span><span class="s1">&#39;trigger&#39;</span><span class="p">:</span> <span class="s1">&#39;TC&#39;</span><span class="p">},</span>
     <span class="s1">&#39;Ex&#39;</span><span class="p">:{</span><span class="s1">&#39;trigger&#39;</span><span class="p">:</span> <span class="s1">&#39;dg&#39;</span><span class="p">,</span>     <span class="c1"># &#39;dg&#39; label indicates event triggered by damage caused by any peril (tutorial 3)</span>
@@ -860,7 +887,7 @@
       <td>impact1</td>
       <td>AI1</td>
       <td>10.000000</td>
-      <td>4.465065e-06</td>
+      <td>2.657777e-06</td>
     </tr>
     <tr>
       <th>1</th>
@@ -868,7 +895,7 @@
       <td>impact2</td>
       <td>AI2</td>
       <td>10.000000</td>
-      <td>4.465065e-06</td>
+      <td>2.657777e-06</td>
     </tr>
     <tr>
       <th>2</th>
@@ -876,7 +903,7 @@
       <td>impact3</td>
       <td>AI3</td>
       <td>10.000000</td>
-      <td>4.465065e-06</td>
+      <td>2.657777e-06</td>
     </tr>
     <tr>
       <th>3</th>
@@ -884,7 +911,7 @@
       <td>impact4</td>
       <td>AI4</td>
       <td>100.000000</td>
-      <td>4.215888e-07</td>
+      <td>2.509457e-07</td>
     </tr>
     <tr>
       <th>4</th>
@@ -892,7 +919,7 @@
       <td>impact5</td>
       <td>AI5</td>
       <td>100.000000</td>
-      <td>4.215888e-07</td>
+      <td>2.509457e-07</td>
     </tr>
     <tr>
       <th>5</th>
@@ -900,7 +927,7 @@
       <td>impact6</td>
       <td>AI6</td>
       <td>100.000000</td>
-      <td>4.215888e-07</td>
+      <td>2.509457e-07</td>
     </tr>
     <tr>
       <th>6</th>
@@ -908,7 +935,7 @@
       <td>impact7</td>
       <td>AI7</td>
       <td>100.000000</td>
-      <td>4.215888e-07</td>
+      <td>2.509457e-07</td>
     </tr>
     <tr>
       <th>7</th>
@@ -916,7 +943,7 @@
       <td>impact8</td>
       <td>AI8</td>
       <td>1000.000000</td>
-      <td>7.076651e-08</td>
+      <td>4.212292e-08</td>
     </tr>
     <tr>
       <th>8</th>
@@ -924,7 +951,7 @@
       <td>impact9</td>
       <td>AI9</td>
       <td>1000.000000</td>
-      <td>7.076651e-08</td>
+      <td>4.212292e-08</td>
     </tr>
     <tr>
       <th>9</th>
@@ -932,7 +959,7 @@
       <td>impact10</td>
       <td>AI10</td>
       <td>1000.000000</td>
-      <td>7.076651e-08</td>
+      <td>4.212292e-08</td>
     </tr>
     <tr>
       <th>10</th>
@@ -1100,7 +1127,7 @@
       <td>atmosphere</td>
       <td>RS1</td>
       <td>75.000000</td>
-      <td>1.681332e-03</td>
+      <td>1.000793e-03</td>
     </tr>
     <tr>
       <th>31</th>
@@ -1108,7 +1135,7 @@
       <td>atmosphere</td>
       <td>RS2</td>
       <td>100.000000</td>
-      <td>1.372905e-04</td>
+      <td>8.172054e-05</td>
     </tr>
     <tr>
       <th>32</th>
@@ -1116,7 +1143,7 @@
       <td>atmosphere</td>
       <td>RS3</td>
       <td>125.000000</td>
-      <td>7.665627e-06</td>
+      <td>4.562873e-06</td>
     </tr>
     <tr>
       <th>33</th>
@@ -1124,7 +1151,7 @@
       <td>stormtrack1</td>
       <td>TC1</td>
       <td>40.000000</td>
-      <td>4.773617e-04</td>
+      <td>2.841439e-04</td>
     </tr>
     <tr>
       <th>34</th>
@@ -1132,7 +1159,7 @@
       <td>stormtrack2</td>
       <td>TC2</td>
       <td>50.000000</td>
-      <td>2.751660e-04</td>
+      <td>1.637893e-04</td>
     </tr>
     <tr>
       <th>35</th>
@@ -1140,7 +1167,7 @@
       <td>stormtrack3</td>
       <td>TC3</td>
       <td>60.000000</td>
-      <td>6.828728e-05</td>
+      <td>4.064719e-05</td>
     </tr>
     <tr>
       <th>36</th>
@@ -1148,7 +1175,7 @@
       <td>stormtrack4</td>
       <td>TC4</td>
       <td>60.000000</td>
-      <td>6.828728e-05</td>
+      <td>4.064719e-05</td>
     </tr>
     <tr>
       <th>37</th>
@@ -1156,7 +1183,7 @@
       <td>stormtrack5</td>
       <td>TC5</td>
       <td>70.000000</td>
-      <td>5.226007e-05</td>
+      <td>3.110718e-05</td>
     </tr>
     <tr>
       <th>38</th>
@@ -1164,7 +1191,7 @@
       <td>vortexline1</td>
       <td>To1</td>
       <td>3.000000</td>
-      <td>7.623033e-05</td>
+      <td>4.537519e-05</td>
     </tr>
     <tr>
       <th>39</th>
@@ -1172,7 +1199,7 @@
       <td>vortexline2</td>
       <td>To2</td>
       <td>3.000000</td>
-      <td>7.623033e-05</td>
+      <td>4.537519e-05</td>
     </tr>
     <tr>
       <th>40</th>
@@ -1180,7 +1207,7 @@
       <td>vortexline3</td>
       <td>To3</td>
       <td>3.000000</td>
-      <td>7.623033e-05</td>
+      <td>4.537519e-05</td>
     </tr>
     <tr>
       <th>41</th>
@@ -1188,7 +1215,7 @@
       <td>vortexline4</td>
       <td>To4</td>
       <td>4.000000</td>
-      <td>9.596829e-06</td>
+      <td>5.712399e-06</td>
     </tr>
     <tr>
       <th>42</th>
@@ -1196,7 +1223,7 @@
       <td>vortexline5</td>
       <td>To5</td>
       <td>4.000000</td>
-      <td>9.596829e-06</td>
+      <td>5.712399e-06</td>
     </tr>
     <tr>
       <th>43</th>
@@ -1204,7 +1231,7 @@
       <td>vortexline6</td>
       <td>To6</td>
       <td>4.000000</td>
-      <td>9.596829e-06</td>
+      <td>5.712399e-06</td>
     </tr>
     <tr>
       <th>44</th>
@@ -1212,7 +1239,7 @@
       <td>vortexline7</td>
       <td>To7</td>
       <td>5.000000</td>
-      <td>1.208169e-06</td>
+      <td>7.191484e-07</td>
     </tr>
     <tr>
       <th>45</th>
@@ -1220,7 +1247,7 @@
       <td>vortexline8</td>
       <td>To8</td>
       <td>5.000000</td>
-      <td>1.208169e-06</td>
+      <td>7.191484e-07</td>
     </tr>
     <tr>
       <th>46</th>
@@ -1228,7 +1255,7 @@
       <td>vortexline9</td>
       <td>To9</td>
       <td>5.000000</td>
-      <td>1.208169e-06</td>
+      <td>7.191484e-07</td>
     </tr>
     <tr>
       <th>47</th>
@@ -1236,7 +1263,7 @@
       <td>volcano1</td>
       <td>VE1</td>
       <td>1.000000</td>
-      <td>1.226908e-06</td>
+      <td>7.303024e-07</td>
     </tr>
     <tr>
       <th>48</th>
@@ -1244,7 +1271,7 @@
       <td>volcano1</td>
       <td>VE2</td>
       <td>3.162278</td>
-      <td>5.738680e-07</td>
+      <td>3.415881e-07</td>
     </tr>
     <tr>
       <th>49</th>
@@ -1252,7 +1279,7 @@
       <td>volcano1</td>
       <td>VE3</td>
       <td>10.000000</td>
-      <td>2.684182e-07</td>
+      <td>1.597728e-07</td>
     </tr>
     <tr>
       <th>50</th>
@@ -1260,7 +1287,7 @@
       <td>forest</td>
       <td>WF1</td>
       <td>10000.000000</td>
-      <td>1.785761e-02</td>
+      <td>1.062953e-02</td>
     </tr>
     <tr>
       <th>51</th>
@@ -1268,7 +1295,7 @@
       <td>forest</td>
       <td>WF2</td>
       <td>10000.000000</td>
-      <td>1.785761e-02</td>
+      <td>1.062953e-02</td>
     </tr>
     <tr>
       <th>52</th>
@@ -1276,7 +1303,7 @@
       <td>forest</td>
       <td>WF3</td>
       <td>10000.000000</td>
-      <td>1.785761e-02</td>
+      <td>1.062953e-02</td>
     </tr>
     <tr>
       <th>53</th>
@@ -1284,7 +1311,7 @@
       <td>forest</td>
       <td>WF4</td>
       <td>10000.000000</td>
-      <td>1.785761e-02</td>
+      <td>1.062953e-02</td>
     </tr>
     <tr>
       <th>54</th>
@@ -1292,7 +1319,7 @@
       <td>forest</td>
       <td>WF5</td>
       <td>10000.000000</td>
-      <td>1.785761e-02</td>
+      <td>1.062953e-02</td>
     </tr>
     <tr>
       <th>55</th>
@@ -1300,7 +1327,7 @@
       <td>forest</td>
       <td>WF6</td>
       <td>10000.000000</td>
-      <td>1.785761e-02</td>
+      <td>1.062953e-02</td>
     </tr>
     <tr>
       <th>56</th>
@@ -1308,7 +1335,7 @@
       <td>forest</td>
       <td>WF7</td>
       <td>31622.776602</td>
-      <td>8.666690e-03</td>
+      <td>5.158744e-03</td>
     </tr>
     <tr>
       <th>57</th>
@@ -1316,7 +1343,7 @@
       <td>forest</td>
       <td>WF8</td>
       <td>31622.776602</td>
-      <td>8.666690e-03</td>
+      <td>5.158744e-03</td>
     </tr>
     <tr>
       <th>58</th>
@@ -1324,7 +1351,7 @@
       <td>forest</td>
       <td>WF9</td>
       <td>31622.776602</td>
-      <td>8.666690e-03</td>
+      <td>5.158744e-03</td>
     </tr>
     <tr>
       <th>59</th>
@@ -1332,7 +1359,7 @@
       <td>forest</td>
       <td>WF10</td>
       <td>100000.000000</td>
-      <td>6.309203e-03</td>
+      <td>3.755478e-03</td>
     </tr>
     <tr>
       <th>60</th>
@@ -1352,6 +1379,78 @@
     </tr>
     <tr>
       <th>62</th>
+      <td>CS</td>
+      <td>supercell</td>
+      <td>CS_toTo1</td>
+      <td>13.811900</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>63</th>
+      <td>CS</td>
+      <td>supercell</td>
+      <td>CS_toTo2</td>
+      <td>13.811900</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>64</th>
+      <td>CS</td>
+      <td>supercell</td>
+      <td>CS_toTo3</td>
+      <td>13.811900</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>65</th>
+      <td>CS</td>
+      <td>supercell</td>
+      <td>CS_toTo4</td>
+      <td>13.811900</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>66</th>
+      <td>CS</td>
+      <td>supercell</td>
+      <td>CS_toTo5</td>
+      <td>13.811900</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>67</th>
+      <td>CS</td>
+      <td>supercell</td>
+      <td>CS_toTo6</td>
+      <td>13.811900</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>68</th>
+      <td>CS</td>
+      <td>supercell</td>
+      <td>CS_toTo7</td>
+      <td>13.811900</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>69</th>
+      <td>CS</td>
+      <td>supercell</td>
+      <td>CS_toTo8</td>
+      <td>13.811900</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>70</th>
+      <td>CS</td>
+      <td>supercell</td>
+      <td>CS_toTo9</td>
+      <td>13.811900</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>71</th>
       <td>FF</td>
       <td>river1</td>
       <td>FF_fromRS1</td>
@@ -1359,7 +1458,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>63</th>
+      <th>72</th>
       <td>FF</td>
       <td>river1</td>
       <td>FF_fromRS2</td>
@@ -1367,7 +1466,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>64</th>
+      <th>73</th>
       <td>FF</td>
       <td>river1</td>
       <td>FF_fromRS3</td>
@@ -1375,7 +1474,79 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>65</th>
+      <th>74</th>
+      <td>Li</td>
+      <td>supercell</td>
+      <td>Li_fromCS1</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>75</th>
+      <td>Li</td>
+      <td>supercell</td>
+      <td>Li_fromCS2</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>76</th>
+      <td>Li</td>
+      <td>supercell</td>
+      <td>Li_fromCS3</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>77</th>
+      <td>Li</td>
+      <td>supercell</td>
+      <td>Li_fromCS4</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>78</th>
+      <td>Li</td>
+      <td>supercell</td>
+      <td>Li_fromCS5</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>79</th>
+      <td>Li</td>
+      <td>supercell</td>
+      <td>Li_fromCS6</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>80</th>
+      <td>Li</td>
+      <td>supercell</td>
+      <td>Li_fromCS7</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>81</th>
+      <td>Li</td>
+      <td>supercell</td>
+      <td>Li_fromCS8</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>82</th>
+      <td>Li</td>
+      <td>supercell</td>
+      <td>Li_fromCS9</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>83</th>
       <td>LS</td>
       <td>terrain</td>
       <td>LS_fromRS1</td>
@@ -1383,7 +1554,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>66</th>
+      <th>84</th>
       <td>LS</td>
       <td>terrain</td>
       <td>LS_fromRS2</td>
@@ -1391,7 +1562,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>67</th>
+      <th>85</th>
       <td>LS</td>
       <td>terrain</td>
       <td>LS_fromRS3</td>
@@ -1399,7 +1570,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>68</th>
+      <th>86</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC1</td>
@@ -1407,7 +1578,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>69</th>
+      <th>87</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC2</td>
@@ -1415,7 +1586,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>70</th>
+      <th>88</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC3</td>
@@ -1423,7 +1594,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>71</th>
+      <th>89</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC4</td>
@@ -1431,7 +1602,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>72</th>
+      <th>90</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC5</td>
@@ -1441,6 +1612,57 @@
   </tbody>
 </table>
 </div></div></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">evchar</span></code> dataframe contains the coordinates of the events defined in <code class="docutils literal notranslate"><span class="pre">evtable</span></code>. The following code cell allows the user to plot stochastic events via their <code class="docutils literal notranslate"><span class="pre">evID</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#print(&#39;total list of modelled events, by evID:&#39;, evtable[&#39;evID&#39;].unique())</span>
+
+<span class="c1">## SELECT EVENTS ##</span>
+<span class="n">evID_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;AI1&#39;</span><span class="p">,</span><span class="s1">&#39;EQ1&#39;</span><span class="p">,</span><span class="s1">&#39;TC1&#39;</span><span class="p">,</span><span class="s1">&#39;CS_toTo1&#39;</span><span class="p">,</span> <span class="s1">&#39;To1&#39;</span><span class="p">,</span><span class="s1">&#39;Li_fromCS1&#39;</span><span class="p">,</span><span class="s1">&#39;VE1&#39;</span><span class="p">]</span>
+<span class="c1">#evID_list = evtable[&#39;evID&#39;].values</span>
+<span class="c1">###################</span>
+
+<span class="n">n_evID</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">evID_list</span><span class="p">)</span>
+
+<span class="n">max_cols</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">ncols</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">n_evID</span><span class="p">,</span> <span class="n">max_cols</span><span class="p">)</span>
+<span class="n">nrows</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">n_evID</span> <span class="o">/</span> <span class="n">ncols</span><span class="p">))</span>
+
+<span class="n">evID_coords</span> <span class="o">=</span> <span class="n">evchar</span><span class="p">[</span><span class="n">evchar</span><span class="p">[</span><span class="s1">&#39;evID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">evID_list</span><span class="p">)]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;16&#39;</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">ncols</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">nrows</span><span class="p">),</span> <span class="n">squeeze</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_evID</span><span class="p">):</span>
+    <span class="n">peril_evID</span> <span class="o">=</span> <span class="n">evID_list</span><span class="p">[</span><span class="n">i</span><span class="p">][:</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">peril_evID</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;AI&#39;</span><span class="p">,</span> <span class="s1">&#39;VE&#39;</span><span class="p">,</span> <span class="s1">&#39;Li&#39;</span><span class="p">]:</span>
+        <span class="n">plot_type</span> <span class="o">=</span> <span class="s1">&#39;scatter&#39;</span>
+    <span class="k">elif</span>  <span class="n">peril_evID</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;EQ&#39;</span><span class="p">,</span> <span class="s1">&#39;TC&#39;</span><span class="p">,</span> <span class="s1">&#39;To&#39;</span><span class="p">,</span> <span class="s1">&#39;CS&#39;</span><span class="p">,</span> <span class="s1">&#39;SS&#39;</span><span class="p">]:</span>
+        <span class="n">plot_type</span> <span class="o">=</span> <span class="s1">&#39;plot&#39;</span>
+    <span class="n">coords2plt</span> <span class="o">=</span> <span class="n">evID_coords</span><span class="p">[</span><span class="n">evID_coords</span><span class="p">[</span><span class="s1">&#39;evID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">evID_list</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">ls</span><span class="o">.</span><span class="n">hillshade</span><span class="p">(</span><span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">vert_exag</span><span class="o">=</span><span class="mf">.1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s1">&#39;plot&#39;</span><span class="p">:</span>
+        <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">coords2plt</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="n">coords2plt</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;darkred&#39;</span><span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s1">&#39;scatter&#39;</span><span class="p">:</span>
+        <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">coords2plt</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="n">coords2plt</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;darkred&#39;</span><span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xmin</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">xmax</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">ymin</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">ymax</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">evID_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_evID</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ax</span><span class="p">)):</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+    
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/a31bf48d09b492f7e97f2f7fa8dc638c6662188ef8ed61f72d87edafc279cac2.png" src="../_images/a31bf48d09b492f7e97f2f7fa8dc638c6662188ef8ed61f72d87edafc279cac2.png" />
+</div>
 </div>
 </section>
 <section id="intensity-footprint-catalogue-generation">
@@ -1469,17 +1691,22 @@
 <td class="text-left"><p>Peak ground acceleration PGA (m/s<span class="math notranslate nohighlight">\(^2\)</span>)</p></td>
 <td class="text-left"><p>Eq. 2.54</p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">TC</span></code></p></td>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">Li</span></code></p></td>
+<td class="text-left"><p>-</p></td>
+<td class="text-left"><p>Lightning strike count (/convective storm)</p></td>
+<td class="text-left"><p>to add</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">TC</span></code></p></td>
 <td class="text-left"><p>Maximum wind speed <span class="math notranslate nohighlight">\(v_{max}\)</span> (m/s)</p></td>
 <td class="text-left"><p>Wind speed <span class="math notranslate nohighlight">\(v\)</span> (m/s)</p></td>
 <td class="text-left"><p>Eq. 2.24</p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">To</span></code></p></td>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">To</span></code></p></td>
 <td class="text-left"><p>Enhanced Fujita (EF) scale to max. wind speed (m/s)</p></td>
 <td class="text-left"><p>Max. wind speed <span class="math notranslate nohighlight">\(v_{max}\)</span> (m/s)</p></td>
 <td class="text-left"><p>Eq. 2.59</p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">VE</span></code></p></td>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">VE</span></code></p></td>
 <td class="text-left"><p>Erupted volume <span class="math notranslate nohighlight">\(V\)</span> (km<span class="math notranslate nohighlight">\(^3\)</span>)</p></td>
 <td class="text-left"><p>Ash load <span class="math notranslate nohighlight">\(P\)</span> (kPa), converted from thickness (m)</p></td>
 <td class="text-left"><p>Eq. 2.61</p></td>
@@ -1499,27 +1726,22 @@
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;To&#39;</span><span class="p">][</span><span class="s1">&#39;Rmax_m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">300.</span>              <span class="c1"># user-defined, independent of EF scale since no model available</span>
                                             <span class="c1"># high value used for illustration</span>
 
-<span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;CS&#39;</span><span class="p">][</span><span class="s1">&#39;vforward_m/s&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">20.</span>         <span class="c1"># forward storm speed (m/s)</span>
-<span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;CS&#39;</span><span class="p">][</span><span class="s1">&#39;lat_deg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">lat_deg</span>     <span class="c1"># average latitude of digital template (see Tutorial 1)</span>
-
 <span class="c1"># virtual region bathymetry characteristics for SS height given storm wind speed</span>
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;SS&#39;</span><span class="p">][</span><span class="s1">&#39;bathy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;New York harbor&#39;</span>  <span class="c1"># &#39;generic&#39; (Saffir-Simpson, Mignan, 2024:eq. 2.16) </span>
                                             <span class="c1"># &#39;New York harbor&#39; (eq. in Mignan, 2024:fig. 2.7)</span>
-
 
 <span class="c1">## TO ADD: site-specific conditions ##</span>
 <span class="c1"># surface friction -&gt; reduce windspeed (TC, WS)</span>
 <span class="c1"># soil amplification -&gt; increase ground shaking (EQ)</span>
 <span class="c1"># other?</span>
 
-    
 <span class="n">hazFootprints</span> <span class="o">=</span> <span class="n">GenMR_perils</span><span class="o">.</span><span class="n">HazardFootprintGenerator</span><span class="p">(</span><span class="n">evtable</span><span class="p">,</span> <span class="n">evchar</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">)</span>
 <span class="n">catalog_hazFootprints</span> <span class="o">=</span> <span class="n">hazFootprints</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>generating footprints for: AI... EQ... RS... TC... To... VE... WF... WS... FF... LS... SS... catalogue completed
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>generating footprints for: AI... EQ... RS... TC... To... VE... WF... WS... CS... FF... Li... LS... SS... catalogue completed
 </pre></div>
 </div>
 </div>
@@ -1545,7 +1767,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/d8a206faf0bffc1569dd599682587d275afc14131c34cde43b22d7ab66a68f5b.png" src="../_images/d8a206faf0bffc1569dd599682587d275afc14131c34cde43b22d7ab66a68f5b.png" />
+<img alt="../_images/b1c9b036b91654c7e20a9b2e301a574252f425f636871ce38ee45926fdddaa02.png" src="../_images/b1c9b036b91654c7e20a9b2e301a574252f425f636871ce38ee45926fdddaa02.png" />
 </div>
 </div>
 <p><strong>Note:</strong> Observe the <code class="docutils literal notranslate"><span class="pre">TC</span></code> footprint boundary effect (cyclonic eye), which is due to the track artificially starting at <code class="docutils literal notranslate"><span class="pre">grid.xmin</span></code>.</p>
@@ -2159,8 +2381,54 @@ TVaR_q [$ B.]: 287.23171766165484
 </div>
 </div>
 </section>
-<section id="b-2-tornado-case">
-<h4>B.2. Tornado case<a class="headerlink" href="#b-2-tornado-case" title="Link to this heading"></a></h4>
+<section id="b-2-lightning-case">
+<h4>B.2. Lightning case<a class="headerlink" href="#b-2-lightning-case" title="Link to this heading"></a></h4>
+<p>Lightning is triggered by convective storms. For a given <code class="docutils literal notranslate"><span class="pre">CS*</span></code> event, the corresponding <code class="docutils literal notranslate"><span class="pre">Li_fromCS*</span></code> event represents a set of lightning strikes, whose occurrence rate depends on the storm size (i.e., the cloud top height) and latitude. As shown below, lightning strikes are sampled from a spatially uniform random distribution within the storm footprint.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">CS_coords</span> <span class="o">=</span> <span class="n">evchar</span><span class="p">[</span><span class="n">evchar</span><span class="p">[</span><span class="s1">&#39;evID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;CS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">Li_coords</span> <span class="o">=</span> <span class="n">evchar</span><span class="p">[</span><span class="n">evchar</span><span class="p">[</span><span class="s1">&#39;evID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Li&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">CS_list</span> <span class="o">=</span> <span class="n">CS_coords</span><span class="p">[</span><span class="s1">&#39;evID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+<span class="n">Li_list</span> <span class="o">=</span> <span class="n">Li_coords</span><span class="p">[</span><span class="s1">&#39;evID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+<span class="n">n_evID</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">CS_list</span><span class="p">)</span>
+<span class="n">max_cols</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">ncols</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">n_evID</span><span class="p">,</span> <span class="n">max_cols</span><span class="p">)</span>
+<span class="n">nrows</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">n_evID</span> <span class="o">/</span> <span class="n">ncols</span><span class="p">))</span>
+
+
+
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;16&#39;</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">ncols</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">nrows</span><span class="p">),</span> <span class="n">squeeze</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_evID</span><span class="p">):</span>
+    <span class="n">CS2plt</span> <span class="o">=</span> <span class="n">CS_coords</span><span class="p">[</span><span class="n">CS_coords</span><span class="p">[</span><span class="s1">&#39;evID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">CS_list</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+    <span class="n">Li2plt</span> <span class="o">=</span> <span class="n">Li_coords</span><span class="p">[</span><span class="n">Li_coords</span><span class="p">[</span><span class="s1">&#39;evID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">Li_list</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">ls</span><span class="o">.</span><span class="n">hillshade</span><span class="p">(</span><span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">vert_exag</span><span class="o">=</span><span class="mf">.1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.1</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">CS2plt</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="n">CS2plt</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">color</span> <span class="o">=</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">col_peril</span><span class="p">(</span><span class="s1">&#39;CS&#39;</span><span class="p">),</span> <span class="n">linestyle</span> <span class="o">=</span> <span class="s1">&#39;dashed&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">Li2plt</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="n">Li2plt</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">color</span> <span class="o">=</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">col_peril</span><span class="p">(</span><span class="s1">&#39;Li&#39;</span><span class="p">),</span> <span class="n">marker</span> <span class="o">=</span> <span class="s1">&#39;+&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xmin</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">xmax</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">ymin</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">ymax</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">Li_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_evID</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ax</span><span class="p">)):</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+    
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/cfd7f2e25ed6264152edaeb8c39c0c5dbf9e4878dc02cd7e3fe7a8d164b4b80d.png" src="../_images/cfd7f2e25ed6264152edaeb8c39c0c5dbf9e4878dc02cd7e3fe7a8d164b4b80d.png" />
+</div>
+</div>
+</section>
+<section id="b-3-tornado-case">
+<h4>B.3. Tornado case<a class="headerlink" href="#b-3-tornado-case" title="Link to this heading"></a></h4>
 <p>Change (e.g., increase) <code class="docutils literal notranslate"><span class="pre">src_test.par['To']['N']</span></code> to test the stochastic properties of the tornado vortex-lines (i.e., initiation points random uniform, random strike, length according to EF-level Beta distribution).</p>
 <p>TO IMPROVE: constrain initiation point locations (mask water mass and high altitude).</p>
 <div class="cell docutils container">
