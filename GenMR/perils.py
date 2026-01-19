@@ -22,6 +22,7 @@ Peril models (v1.1.1)
 Peril models (v1.1.2)
 ---------------------
 * CS: Convective storm
+* HW: Heatwave - in construction
 * Li: Lightning
 * To: Tornado
 * WS: Windstorm
@@ -29,7 +30,6 @@ Peril models (v1.1.2)
 Planned peril models (v1.1.2)
 -----------------------------
 * Dr: Drought
-* HW: Heatwave
 * PI: Pest infestation
 * BO: Blackout
 * BI: Business interruption
@@ -39,7 +39,7 @@ Planned peril models (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-01-12
+:Date: 2026-01-13
 :License: AGPL-3
 """
 
