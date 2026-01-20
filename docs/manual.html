@@ -239,9 +239,15 @@
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.calc_lateral_distance_signed"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_lateral_distance_signed()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.calc_v_from_EFscale"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_v_from_EFscale()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.generate"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.generate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.get_HW_atloc"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.get_HW_atloc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.get_HW_footprint"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.get_HW_footprint()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.get_TC_timeshot"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.get_TC_timeshot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.model_HW_threshold"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.model_HW_threshold()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.model_SS_Bathtub"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.model_SS_Bathtub()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.model_To_analytical"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.model_To_analytical()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.pdf_T_advectivemodel"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.pdf_T_advectivemodel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.sample_T_advectivemodel"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.sample_T_advectivemodel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.sample_T_daily"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.sample_T_daily()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.RiskFootprintGenerator"><code class="docutils literal notranslate"><span class="pre">RiskFootprintGenerator</span></code></a></li>
@@ -351,6 +357,7 @@
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-hazard-footprints">C. Hazard footprints</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-1-tropical-cyclone-case">C.1. Tropical cyclone case</a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-2-tornado-case">C.2. Tornado case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-3-heatwave-case-threshold-model">C.3. Heatwave case (threshold model)</a></li>
 </ul>
 </li>
 </ul>
@@ -2223,6 +2230,8 @@ as well as intensity and loss footprint calculations.</p>
 <h4>Peril models (v1.1.2)<a class="headerlink" href="#peril-models-v1-1-2" title="Link to this heading"></a></h4>
 <ul class="simple">
 <li><p>CS: Convective storm</p></li>
+<li><p>Dr: Drought - in construction</p></li>
+<li><p>HW: Heatwave</p></li>
 <li><p>Li: Lightning</p></li>
 <li><p>To: Tornado</p></li>
 <li><p>WS: Windstorm</p></li>
@@ -2231,8 +2240,6 @@ as well as intensity and loss footprint calculations.</p>
 <section id="planned-peril-models-v1-1-2">
 <h4>Planned peril models (v1.1.2)<a class="headerlink" href="#planned-peril-models-v1-1-2" title="Link to this heading"></a></h4>
 <ul class="simple">
-<li><p>Dr: Drought</p></li>
-<li><p>HW: Heatwave</p></li>
 <li><p>PI: Pest infestation</p></li>
 <li><p>BO: Blackout</p></li>
 <li><p>BI: Business interruption</p></li>
@@ -2247,7 +2254,7 @@ as well as intensity and loss footprint calculations.</p>
 <dd class="field-even"><p>1.1.2</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2026-01-12</p>
+<dd class="field-odd"><p>2026-01-20</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -2461,7 +2468,7 @@ over a spatial grid, using stochastic events and environmental layers.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="GenMR.perils.HazardFootprintGenerator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">HazardFootprintGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stochset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evchar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">topo_z</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.HazardFootprintGenerator" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">HazardFootprintGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stochset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evchar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">topo_z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atmoLayer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_recompute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.HazardFootprintGenerator" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Generate hazard footprints for a given stochastic event set.</p>
 <p>This class takes a stochastic set of hazard events, their characteristics, the hazard source
@@ -2718,6 +2725,61 @@ J. Appl. Meteorologicaly Climatology, 45, 1597-1611.</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="GenMR.perils.HazardFootprintGenerator.get_HW_atloc">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_HW_atloc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T_daily</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T_th</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Dt_HW</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.HazardFootprintGenerator.get_HW_atloc" title="Link to this definition"></a></dt>
+<dd><p>Identify heatwave events and extract their durations and indices.</p>
+<p>A heatwave is defined as a contiguous sequence of days with
+T_daily &gt;= T_th lasting at least Dt_HW days.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>T_daily</strong> (<em>ndarray</em>) – Daily temperatures (°C).</p></li>
+<li><p><strong>T_th</strong> (<em>float</em>) – Heatwave temperature threshold (°C).</p></li>
+<li><p><strong>Dt_HW</strong> (<em>int</em>) – Minimum number of consecutive days to define a heatwave.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>events</strong> (<em>list of tuple</em>) – List of (start_index, end_index) pairs for each heatwave,
+where indices are inclusive and zero-based.</p></li>
+<li><p><strong>durations</strong> (<em>list of int</em>) – Durations (in days) of all detected heatwaves.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.perils.HazardFootprintGenerator.get_HW_footprint">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_HW_footprint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T_map_daily</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Tth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">35.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.HazardFootprintGenerator.get_HW_footprint" title="Link to this definition"></a></dt>
+<dd><p>Identify the spatial heatwave footprint over a month from daily temperature fields.</p>
+<p>A heatwave at a given grid cell is defined as a contiguous sequence of days
+during which the daily temperature exceeds a threshold Tth for at least
+Dt consecutive days. The heatwave footprint is the spatial extent of
+all grid cells that experience at least one such heatwave during the month.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>T_map_daily</strong> (<em>ndarray</em>) – Daily temperature field with shape (Ndays, nx, ny), where Ndays
+is the number of days in the month and (nx, ny) define the spatial grid.</p></li>
+<li><p><strong>Tth</strong> (<em>float</em><em>, </em><em>optional</em>) – Heatwave temperature threshold (°C). Default is 35°C.</p></li>
+<li><p><strong>Dt</strong> (<em>int</em><em>, </em><em>optional</em>) – Minimum number of consecutive days above Tth required to define
+a heatwave event. Default is 3 days.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>HW_fp_maxT</strong> (<em>ndarray</em>) – Two-dimensional array with shape (nx, ny) containing the maximum
+temperature (°C) reached during heatwave days at each grid cell.</p></li>
+<li><p><strong>HW_duration</strong> (<em>int</em>) – Total heatwave duration in days (i.e, event size), defined as the number of days during
+which at least one grid cell is in a heatwave state.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="GenMR.perils.HazardFootprintGenerator.get_TC_timeshot">
 <span class="sig-name descname"><span class="pre">get_TC_timeshot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.HazardFootprintGenerator.get_TC_timeshot" title="Link to this definition"></a></dt>
 <dd><p>Compute a single time-step (snapshot) of a tropical cyclone (TC) event.</p>
@@ -2751,6 +2813,81 @@ the number of points along the track.</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>tuple of ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.perils.HazardFootprintGenerator.model_HW_threshold">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_HW_threshold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atmoLayer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_HW_stochset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_HW_stochset_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nsim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Tmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">40</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_HWprocess</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.HazardFootprintGenerator.model_HW_threshold" title="Link to this definition"></a></dt>
+<dd><p>Generate a stochastic catalog of heatwave (HW) footprint events based on
+large-scale advective temperature anomalies and daily correlated temperature
+variability.</p>
+<p>The function performs Monte Carlo simulations of heatwave events by combining:
+(i) yearly-scale advective temperature anomalies,
+(ii) daily-scale stochastic temperature variability, and
+(iii) spatial temperature fields. Heatwave events are identified using a
+temperature threshold and minimum duration criterion, and qualifying events
+are stored as spatial footprint arrays on disk.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>src</strong> (<em>dict</em>) – <p>Source dictionary containing model parameters in <code class="docutils literal notranslate"><span class="pre">src.par['HW']</span></code>.
+Required keys include:
+- <code class="docutils literal notranslate"><span class="pre">T_th</span></code> : float</p>
+<blockquote>
+<div><p>Heatwave temperature threshold (°C).</p>
+</div></blockquote>
+<ul>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">Dt_da</span></code><span class="classifier">int</span></dt><dd><p>Minimum duration (days) to define a heatwave.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">Dt_max_da</span></code><span class="classifier">int</span></dt><dd><p>Maximum duration (days) of simulated daily temperatures.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">sigmaT_daily</span></code><span class="classifier">float</span></dt><dd><p>Standard deviation of daily temperature variability (°C).</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">sigmaT_yearly</span></code><span class="classifier">float</span></dt><dd><p>Standard deviation of yearly temperature variability (°C).</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">corrT</span></code><span class="classifier">float</span></dt><dd><p>Temporal correlation coefficient of daily temperatures.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">lat_deg</span></code><span class="classifier">float</span></dt><dd><p>Latitude (degrees) used in the advective temperature model.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p></li>
+<li><p><strong>atmoLayer</strong> (<em>class</em>) – Atmospheric environmental layer.</p></li>
+<li><p><strong>path_HW_stochset</strong> (<em>str</em>) – Path where diagnostic figures of heatwave processes are saved.</p></li>
+<li><p><strong>path_HW_stochset_data</strong> (<em>str</em>) – Path where heatwave footprint arrays (<code class="docutils literal notranslate"><span class="pre">.npy</span></code> files) are stored.</p></li>
+<li><p><strong>Nsim</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of Monte Carlo simulations to perform. Default is 10000.</p></li>
+<li><p><strong>Tmin</strong> (<em>float</em><em>, </em><em>optional</em>) – Minimum temperature used for histogram binning in diagnostic plots (°C).
+Default is 10.</p></li>
+<li><p><strong>Tmax</strong> (<em>float</em><em>, </em><em>optional</em>) – Maximum temperature used for histogram binning in diagnostic plots (°C).
+Default is 40.</p></li>
+<li><p><strong>plot_HWprocess</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, diagnostic plots illustrating the heatwave generation process
+are produced and saved for each detected event. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Heatwave footprint events are written to disk as <code class="docutils literal notranslate"><span class="pre">.npy</span></code> files.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2810,6 +2947,112 @@ axisymmetric vortex model. The formulation follows Burow et al. (2020).</p>
 <p class="rubric">References</p>
 <p>Burow et al. (2020), Damage analysis of three long-track tornadoes using high-resolution satellite imagery.
 Atmosphere, 11, 613</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.perils.HazardFootprintGenerator.pdf_T_advectivemodel">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pdf_T_advectivemodel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.HazardFootprintGenerator.pdf_T_advectivemodel" title="Link to this definition"></a></dt>
+<dd><p>Compute a probability density function (PDF) of temperature using a simple advective
+three-Gaussian model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>T</strong> (<em>ndarray</em>) – Array of temperature values (°C) where the PDF is evaluated.</p></li>
+<li><p><strong>mu0</strong> (<em>float</em>) – Mean surface temperature (°C) at the location of interest.</p></li>
+<li><p><strong>lat</strong> (<em>float</em>) – Latitude (°) of the location. Determines the relative weights and shifts
+of warm/cold advective anomalies according to Tamarin-Brodsky et al. (2022).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>pdf</strong> (<em>ndarray</em>) – Temperature probability density function evaluated at <cite>T</cite>.</p></li>
+<li><p><strong>sigma_pdf</strong> (<em>float</em>) – Effective standard deviation of the PDF, including contributions from
+advective warm/cold anomalies.</p></li>
+<li><p><strong>components</strong> (<em>dict</em>) – Dictionary with individual Gaussian components and smoothing parameter:
+- ‘pdf0’ : Gaussian centered at <cite>mu0</cite>
+- ‘pdf_c’ : Gaussian for cold advection
+- ‘pdf_w’ : Gaussian for warm advection
+- ‘sigma_hat’ : smoothing standard deviation used for all three components</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>Tamarin-Brodsky et al. (2022), A Simple Model for Interpreting Temperature Variability and Its
+Higher-Order Changes. J. Climate 35, 387-403.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.perils.HazardFootprintGenerator.sample_T_advectivemodel">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample_T_advectivemodel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu0_stoch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.HazardFootprintGenerator.sample_T_advectivemodel" title="Link to this definition"></a></dt>
+<dd><p>Sample stochastic temperatures from the 3-Gaussian advective PDF.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mu0_stoch</strong> (<em>ndarray</em>) – Array of mean surface temperatures (°C) at the location(s). Each entry is
+treated independently to generate a stochastic temperature sample.</p></li>
+<li><p><strong>lat</strong> (<em>float</em>) – Latitude (°) of the region.</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em>, </em><em>optional</em>) – Random seed for reproducibility.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>T_stoch</strong> – Array of length Nsim containing stochastic temperature realizations (°C).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.perils.HazardFootprintGenerator.sample_T_daily">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample_T_daily</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T_adv_stoch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_daily</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ndays</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.HazardFootprintGenerator.sample_T_daily" title="Link to this definition"></a></dt>
+<dd><p>Generate a daily temperature time series for a month around a given stochastic monthly mean,
+with temporal correlation.</p>
+<p>The daily temperatures are generated using a first-order autoregressive
+[AR(1)] process. This introduces temporal autocorrelation between consecutive
+days, which is essential for representing multi-day heatwaves.</p>
+<p>Autocorrelation means that temperature on a given day is statistically
+dependent on the temperature of the previous day. A positive autocorrelation
+(rho &gt; 0) increases the persistence of warm or cold anomalies, allowing
+sequences of consecutive hot days to occur.</p>
+<p>Mathematically, the daily temperature evolves as:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>T_d = rho * T_{d-1}</dt><dd><ul class="simple">
+<li><p>(1 - rho) * T_adv_stoch</p></li>
+<li><p>sqrt(1 - rho^2) * ε_d</p></li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p>T_adv_stoch is the stochastic monthly temperature (equilibrium mean),</p></li>
+<li><p>rho is the lag-1 autocorrelation coefficient (0 ≤ rho &lt; 1),</p></li>
+<li><p>ε_d is Gaussian white noise with standard deviation sigma_daily.</p></li>
+</ul>
+</dd>
+</dl>
+<p>The scaling factor sqrt(1 - rho^2) ensures that the stationary daily
+temperature variance is equal to sigma_daily², independently of rho.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>T_adv_stoch</strong> (<em>float</em>) – Stochastic monthly temperature (°C) for the month.</p></li>
+<li><p><strong>sigma_daily</strong> (<em>float</em>) – Standard deviation of daily fluctuations around T_adv_stoch (°C).</p></li>
+<li><p><strong>Ndays</strong> (<em>int</em>) – Number of days in the month (default=30).</p></li>
+<li><p><strong>rho</strong> (<em>float</em>) – Temporal correlation coefficient (0=independent, 1=perfectly correlated).</p></li>
+<li><p><strong>seed</strong> (<em>int</em>) – Random seed for reproducibility.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>T_daily</strong> – Array of length Ndays containing daily temperatures (°C) for the month.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
