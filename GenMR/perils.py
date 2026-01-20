@@ -22,14 +22,14 @@ Peril models (v1.1.1)
 Peril models (v1.1.2)
 ---------------------
 * CS: Convective storm
-* HW: Heatwave - in construction
+* Dr: Drought - in construction
+* HW: Heatwave
 * Li: Lightning
 * To: Tornado
 * WS: Windstorm
 
 Planned peril models (v1.1.2)
 -----------------------------
-* Dr: Drought
 * PI: Pest infestation
 * BO: Blackout
 * BI: Business interruption
@@ -39,7 +39,7 @@ Planned peril models (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-01-13
+:Date: 2026-01-20
 :License: AGPL-3
 """
 
@@ -65,7 +65,7 @@ import imageio
 from skimage import measure
 
 import scipy
-from scipy.stats import beta
+from scipy.stats import beta, norm
 
 from GenMR import environment as GenMR_env
 from GenMR import dynamics as GenMR_dynamics
@@ -993,14 +993,20 @@ class HazardFootprintGenerator:
     topo_z : ndarray
         2D array representing the topographic elevation grid (used for footprint modeling).
     '''
-    def __init__(self, stochset, evchar, src, topo_z):
+    def __init__(self, stochset, evchar, src, topo_z, atmoLayer, force_recompute = False):
         self.stochset = stochset
         self.evchar = evchar
         self.src = src
         self.topo_z = topo_z
+        self.atmoLayer = atmoLayer
         self.catalog_hazFootprints = {}
+        self.force_recompute = force_recompute
         self.cache_dir = 'io/cache_thresholdHazFootprints'
         os.makedirs(self.cache_dir, exist_ok = True)
+        self.rate_HW = np.full(len(src.par['HW']['Si_da']), np.nan)
+
+    def _cache_path(self, evID):
+        return os.path.join(self.cache_dir, f'{evID}.npy')
 
     ## SIMPLE ANALYTICAL EXPRESSIONS ##
     @staticmethod
@@ -1104,7 +1110,6 @@ class HazardFootprintGenerator:
         B = par['B_Holland']
         R = 51.6 * np.exp(-.0223 * S + .0281 * par['lat_deg'])   # see caption of Mignan (2024:fig.2.19)
         pc = pn - 1 / B * (rho_atm * np.exp(1) * S**2)
-
         v_ms = (B * R**B * (pn - pc) * np.exp(-(R / r)**B) / (rho_atm * r**B) + r**2 * f**2 / 4) ** 0.5 - r * f / 2
         return v_ms
 
@@ -1154,25 +1159,20 @@ class HazardFootprintGenerator:
         else:
             dx = track_x[t_i] - track_x[t_i - 1]
             dy = track_y[t_i] - track_y[t_i - 1]
-
         beta = np.arctan(dy / dx)
         if dx > 0:
             vf_x, vf_y = vf * np.cos(beta), vf * np.sin(beta)
         else:
             vf_x, vf_y = -vf * np.cos(beta), -vf * np.sin(beta)
-
         dx = grid.xx - track_x[t_i]
         dy = grid.yy - track_y[t_i]
         with np.errstate(invalid='ignore', divide='ignore'):
             alpha = np.arctan(dy / dx)
-
         vtan_x = -vtan * np.sin(alpha)
         vtan_y = vtan * np.cos(alpha)
-
         indneg = np.where(grid.xx < track_x[t_i])
         vtan_x[indneg] = vtan[indneg] * np.sin(alpha[indneg])
         vtan_y[indneg] = -vtan[indneg] * np.cos(alpha[indneg])
-
         vtot_x = vtan_x + vf_x
         vtot_y = vtan_y + vf_y
         vtot = np.sqrt(vtot_x**2 + vtot_y**2)
@@ -1207,19 +1207,16 @@ class HazardFootprintGenerator:
         evIDs = stochset['evID'][indperil].values
         vmax_start = stochset['S'][indperil].values
         S_alongtrack = {}
-
         for i, evID in enumerate(evIDs):
             indtrack = np.where(Track_coord['evID'] == evID)[0]
             track_x = Track_coord['x'][indtrack].values
             track_y = Track_coord['y'][indtrack].values
             npt = len(indtrack)
             track_vmax = np.repeat(vmax_start[i], npt)
-
             d = [np.min(np.sqrt((track_x[j] - src.SS_char['x'])**2 + (track_y[j] - src.SS_char['y'])**2)) for j in range(npt)]
             indcoast = np.where(d == np.min(d))[0]
             d2coast = track_x[indcoast[0]:] - track_x[indcoast[0]]
             track_vmax[indcoast[0]:] = vmax_start[i] * np.exp(-.1 / src.par['TC']['vforward_m/s'] * d2coast)
-
             S_alongtrack[evID] = track_vmax
         return S_alongtrack
 
@@ -1260,29 +1257,24 @@ class HazardFootprintGenerator:
             side, and np.nan indicates points for which no orthogonal
             projection onto the line exists.
         '''
-
         r_out = np.full(xx.shape, np.nan)
         r_abs = np.full(xx.shape, np.inf)
-
         for i in range(len(x) - 1):
             dx = x[i+1] - x[i]
             dy = y[i+1] - y[i]
             L = np.hypot(dx, dy)
             if L == 0:
                 continue
-
             tx, ty = dx / L, dy / L
             nx, ny = ty, -tx
             Xx = xx - x[i]
             Xy = yy - y[i]
             s = Xx * tx + Xy * ty
             r = Xx * nx + Xy * ny
-
             valid = (s >= 0) & (s <= L)
             update = valid & (np.abs(r) < r_abs)
             r_out[update] = r[update]
             r_abs[update] = np.abs(r[update])
-
         return r_out
 
     @staticmethod
@@ -1317,11 +1309,9 @@ class HazardFootprintGenerator:
         Holland et al. (2006), A Simple Model for Simulating Tornado Damage in Forests. 
         J. Appl. Meteorologicaly Climatology, 45, 1597-1611.
         '''
-        
         vf_H2006 = 15         # values from Holland (2006)
         vmax_tan_H2006 = 60
         vmax_rad_H2006 = 30
-
         cr = vmax_rad_H2006 / vmax_tan_H2006
         cf = vf_H2006 / vmax_tan_H2006
         vmax = GenMR_utils.map_EF2vmax[int(EF)]
@@ -1435,20 +1425,393 @@ class HazardFootprintGenerator:
         for j in range(src.grid.ny):
             indx = np.where(src.grid.x > src.SS_char['x'][j] - 1e-6)[0][0]
             vmax_coastline[j] = I_trigger[indx, j]
-
         S_SS = GenMR_dynamics.calc_S_TC2SS(vmax_coastline, src.par['SS']['bathy'])
         I_SS = np.zeros((src.grid.nx, src.grid.ny))
-
         for j in range(src.grid.ny):
             I_alongx = S_SS[j] - topo_z[:, j]
             I_alongx[I_alongx < 0] = 0
             I_alongx[src.grid.x < src.SS_char['x'][j]] = 0
             I_SS[:, j] = I_alongx
-
         return I_SS
 
 
+    ## HEATWAVE FUNCTIONS ##
+    @staticmethod
+    def pdf_T_advectivemodel(T, mu0, lat):
+        '''
+        Compute a probability density function (PDF) of temperature using a simple advective 
+        three-Gaussian model.
+
+        Parameters
+        ----------
+        T : ndarray
+            Array of temperature values (°C) where the PDF is evaluated.
+        mu0 : float
+            Mean surface temperature (°C) at the location of interest.
+        lat : float
+            Latitude (°) of the location. Determines the relative weights and shifts 
+            of warm/cold advective anomalies according to Tamarin-Brodsky et al. (2022).
+
+        Returns
+        -------
+        pdf : ndarray
+            Temperature probability density function evaluated at `T`.
+        sigma_pdf : float
+            Effective standard deviation of the PDF, including contributions from 
+            advective warm/cold anomalies.
+        components : dict
+            Dictionary with individual Gaussian components and smoothing parameter:
+            - 'pdf0' : Gaussian centered at `mu0`
+            - 'pdf_c' : Gaussian for cold advection
+            - 'pdf_w' : Gaussian for warm advection
+            - 'sigma_hat' : smoothing standard deviation used for all three components
+        
+        References
+        ----------
+        Tamarin-Brodsky et al. (2022), A Simple Model for Interpreting Temperature Variability and Its 
+        Higher-Order Changes. J. Climate 35, 387-403.
+        '''
+        if np.abs(lat) <= 40.:                  # WARNING: only defined down to 30° degree lat. in article
+            dT_warm, dT_cold = 3.3, 4.9         # pp. 395-396, fig.7d-f
+            w_warm, w_cold = .25, .17
+        elif np.abs(lat) >= 55:
+            dT_warm, dT_cold = 5.8, 2.5
+            w_warm, w_cold = .1, .24
+        else:  # 40-55° range
+            dT_warm, dT_cold = 4, 4.2
+            w_warm, w_cold = 1/3, 1/3
+        mu_warm = mu0 + dT_warm
+        mu_cold = mu0 - dT_cold
+        w0 = 1. - w_warm - w_cold
+        sigma_hat = .25 * (dT_warm + dT_cold)                        # for smoothed pdf, weakly multimodal
+        pdf0 = w0 * norm.pdf(T, mu0, sigma_hat)
+        pdf_c = w_cold * norm.pdf(T, mu_cold, sigma_hat)
+        pdf_w = w_warm * norm.pdf(T, mu_warm, sigma_hat)
+        pdf = pdf0 + pdf_c + pdf_w
+        sigma_pdf = np.sqrt(sigma_hat**2 + dT_warm*dT_cold*(1-w0))   # eq.16 (in supplement)
+        components = {'pdf0': pdf0, 'pdf_c': pdf_c, 'pdf_w': pdf_w, 'sigma_hat': sigma_hat}
+        return pdf, sigma_pdf, components
+
+    @staticmethod
+    def sample_T_advectivemodel(mu0_stoch, lat, seed = None):
+        '''
+        Sample stochastic temperatures from the 3-Gaussian advective PDF.
+
+        Parameters
+        ----------
+        mu0_stoch : ndarray
+            Array of mean surface temperatures (°C) at the location(s). Each entry is
+            treated independently to generate a stochastic temperature sample.
+        lat : float
+            Latitude (°) of the region.
+        seed : int, optional
+            Random seed for reproducibility.
+
+        Returns
+        -------
+        T_stoch : ndarray
+            Array of length Nsim containing stochastic temperature realizations (°C).
+        '''
+        if seed is not None:
+            np.random.seed(seed)
+        Nsim = len(mu0_stoch)
+        Ti = np.linspace(-30, 50, 801)
+        T_stoch = np.empty(Nsim)
+        for i, T0_sampled in enumerate(mu0_stoch):
+            pdf, _, _ = HazardFootprintGenerator.pdf_T_advectivemodel(Ti, T0_sampled, lat)
+            pdf = pdf / pdf.sum()
+            T_stoch[i] = np.random.choice(Ti, p = pdf)
+        return T_stoch
+
+    @staticmethod
+    def sample_T_daily(T_adv_stoch, sigma_daily, Ndays=30, rho=0.7, seed=None):
+        '''
+        Generate a daily temperature time series for a month around a given stochastic monthly mean,
+        with temporal correlation.
+
+        The daily temperatures are generated using a first-order autoregressive
+        [AR(1)] process. This introduces temporal autocorrelation between consecutive
+        days, which is essential for representing multi-day heatwaves.
+
+        Autocorrelation means that temperature on a given day is statistically
+        dependent on the temperature of the previous day. A positive autocorrelation
+        (rho > 0) increases the persistence of warm or cold anomalies, allowing
+        sequences of consecutive hot days to occur.
+
+        Mathematically, the daily temperature evolves as:
+
+            T_d = rho * T_{d-1}
+                + (1 - rho) * T_adv_stoch
+                + sqrt(1 - rho^2) * ε_d
+
+        where:
+            - T_adv_stoch is the stochastic monthly temperature (equilibrium mean),
+            - rho is the lag-1 autocorrelation coefficient (0 ≤ rho < 1),
+            - ε_d is Gaussian white noise with standard deviation sigma_daily.
+
+        The scaling factor sqrt(1 - rho^2) ensures that the stationary daily
+        temperature variance is equal to sigma_daily², independently of rho.
+
+        Parameters
+        ----------
+        T_adv_stoch : float
+            Stochastic monthly temperature (°C) for the month.
+        sigma_daily : float
+            Standard deviation of daily fluctuations around T_adv_stoch (°C).
+        Ndays : int
+            Number of days in the month (default=30).
+        rho : float
+            Temporal correlation coefficient (0=independent, 1=perfectly correlated).
+        seed : int
+            Random seed for reproducibility.
+
+        Returns
+        -------
+        T_daily : ndarray
+            Array of length Ndays containing daily temperatures (°C) for the month.
+        '''
+        if seed is not None:
+            np.random.seed(seed)
+        T_daily = np.empty(Ndays)
+        T_daily[0] = T_adv_stoch
+        for d in range(1, Ndays):
+            epsilon = np.random.normal(0, sigma_daily)
+            T_daily[d] = rho*T_daily[d-1] + (1-rho)*T_adv_stoch + np.sqrt(1-rho**2)*epsilon
+        return T_daily
+
+    @staticmethod
+    def get_HW_atloc(T_daily, T_th, Dt_HW):
+        '''
+        Identify heatwave events and extract their durations and indices.
+
+        A heatwave is defined as a contiguous sequence of days with
+        T_daily >= T_th lasting at least Dt_HW days.
+
+        Parameters
+        ----------
+        T_daily : ndarray
+            Daily temperatures (°C).
+        T_th : float
+            Heatwave temperature threshold (°C).
+        Dt_HW : int
+            Minimum number of consecutive days to define a heatwave.
+
+        Returns
+        -------
+        events : list of tuple
+            List of (start_index, end_index) pairs for each heatwave,
+            where indices are inclusive and zero-based.
+        durations : list of int
+            Durations (in days) of all detected heatwaves.
+        '''
+        is_hot = T_daily >= T_th
+        durations = []
+        events = []
+        start = None
+        for i, hot in enumerate(is_hot):
+            if hot and start is None:
+                start = i
+            elif not hot and start is not None:
+                length = i - start
+                if length >= Dt_HW:
+                    durations.append(length)
+                    events.append((start, i - 1))
+                start = None
+        if start is not None:
+            length = len(T_daily) - start
+            if length >= Dt_HW:
+                durations.append(length)
+                events.append((start, len(T_daily) - 1))
+        return events, durations
+
+    @staticmethod
+    def get_HW_footprint(T_map_daily, Tth = 35., Dt = 3):
+        '''
+        Identify the spatial heatwave footprint over a month from daily temperature fields.
+
+        A heatwave at a given grid cell is defined as a contiguous sequence of days
+        during which the daily temperature exceeds a threshold Tth for at least
+        Dt consecutive days. The heatwave footprint is the spatial extent of
+        all grid cells that experience at least one such heatwave during the month.
+
+        Parameters
+        ----------
+        T_map_daily : ndarray
+            Daily temperature field with shape (Ndays, nx, ny), where Ndays
+            is the number of days in the month and (nx, ny) define the spatial grid.
+        Tth : float, optional
+            Heatwave temperature threshold (°C). Default is 35°C.
+        Dt : int, optional
+            Minimum number of consecutive days above Tth required to define
+            a heatwave event. Default is 3 days.
+
+        Returns
+        -------
+        HW_fp_maxT : ndarray
+            Two-dimensional array with shape (nx, ny) containing the maximum
+            temperature (°C) reached during heatwave days at each grid cell.
+        HW_duration : int
+            Total heatwave duration in days (i.e, event size), defined as the number of days during
+            which at least one grid cell is in a heatwave state.
+        '''
+        Ndays, nx, ny = T_map_daily.shape
+        HW_fp = np.zeros_like(T_map_daily, dtype = bool)
+        is_hot = T_map_daily >= Tth
+        for i in range(nx):
+            for j in range(ny):
+                start = None
+                for t in range(Ndays):
+                    if is_hot[t, i, j] and start is None:
+                        start = t
+                    elif not is_hot[t, i, j] and start is not None:
+                        if t - start >= Dt:
+                            HW_fp[start:t, i, j] = True
+                        start = None
+                if start is not None and Ndays - start >= Dt:
+                    HW_fp[start:Ndays, i, j] = True
+
+#        HW_fp_tcollapse = HW_fp.any(axis = 0)
+        HW_fp_maxT = np.full((nx, ny), np.nan)
+        for i in range(nx):
+            for j in range(ny):
+                if HW_fp[:, i, j].any():
+                    HW_fp_maxT[i, j] = T_map_daily[HW_fp[:, i, j], i, j].max()
+        HW_duration = HW_fp.any(axis=(1, 2)).sum()
+        return HW_fp_maxT, HW_duration
+
+    @staticmethod
+    def model_HW_threshold(src, atmoLayer, path_HW_stochset, path_HW_stochset_data, \
+                        Nsim = 10000, Tmin = 10, Tmax = 40, plot_HWprocess = False):
+        '''
+        Generate a stochastic catalog of heatwave (HW) footprint events based on
+        large-scale advective temperature anomalies and daily correlated temperature
+        variability.
+
+        The function performs Monte Carlo simulations of heatwave events by combining:
+        (i) yearly-scale advective temperature anomalies,
+        (ii) daily-scale stochastic temperature variability, and
+        (iii) spatial temperature fields. Heatwave events are identified using a
+        temperature threshold and minimum duration criterion, and qualifying events
+        are stored as spatial footprint arrays on disk.
+
+        Parameters
+        ----------
+        src : dict
+            Source dictionary containing model parameters in ``src.par['HW']``.
+            Required keys include:
+            - ``T_th`` : float
+                Heatwave temperature threshold (°C).
+            - ``Dt_da`` : int
+                Minimum duration (days) to define a heatwave.
+            - ``Dt_max_da`` : int
+                Maximum duration (days) of simulated daily temperatures.
+            - ``sigmaT_daily`` : float
+                Standard deviation of daily temperature variability (°C).
+            - ``sigmaT_yearly`` : float
+                Standard deviation of yearly temperature variability (°C).
+            - ``corrT`` : float
+                Temporal correlation coefficient of daily temperatures.
+            - ``lat_deg`` : float
+                Latitude (degrees) used in the advective temperature model.
+
+        atmoLayer : class
+            Atmospheric environmental layer.
+
+        path_HW_stochset : str
+            Path where diagnostic figures of heatwave processes are saved.
+
+        path_HW_stochset_data : str
+            Path where heatwave footprint arrays (``.npy`` files) are stored.
+
+        Nsim : int, optional
+            Number of Monte Carlo simulations to perform. Default is 10000.
+
+        Tmin : float, optional
+            Minimum temperature used for histogram binning in diagnostic plots (°C).
+            Default is 10.
+
+        Tmax : float, optional
+            Maximum temperature used for histogram binning in diagnostic plots (°C).
+            Default is 40.
+
+        plot_HWprocess : bool, optional
+            If True, diagnostic plots illustrating the heatwave generation process
+            are produced and saved for each detected event. Default is False.
+
+        Returns
+        -------
+        None
+            Heatwave footprint events are written to disk as ``.npy`` files.
+        '''
+        T_th_HW, Dt_HW = src.par['HW']['T_th'], src.par['HW']['Dt_da']
+        Ndays = src.par['HW']['Dt_max_da']
+        dayi = np.arange(src.par['HW']['Dt_max_da'])+1
+        Ti = np.arange(Tmin, Tmax, 1)
+        Tmin_compute = T_th_HW - src.par['HW']['sigmaT_daily']
+        T0 = np.max(atmoLayer.T)
+
+        T0_sim = np.random.normal(T0, src.par['HW']['sigmaT_yearly'], Nsim)
+        Tadv_sim = HazardFootprintGenerator.sample_T_advectivemodel(T0_sim, src.par['HW']['lat_deg'])
+        DTadv_sim = Tadv_sim - T0
+
+        nx, ny = atmoLayer.T.shape
+        catalog_hazFootprints_HW = {}
+        k = 1
+        for sim in range(Nsim):
+            if sim % 1000:
+                print(f'{sim}/{Nsim}', end = '\r', flush = True)
+            if Tadv_sim[sim] > Tmin_compute:
+                T_map_mean = atmoLayer.T + DTadv_sim[sim]
+                T_daily_stoch = HazardFootprintGenerator.sample_T_daily(Tadv_sim[sim], src.par['HW']['sigmaT_daily'], \
+                                            Ndays = Ndays, rho = src.par['HW']['corrT'])    
+                dT_daily_stoch = T_daily_stoch - Tadv_sim[sim]
+
+                T_map_daily_stoch = np.empty((Ndays, nx, ny))
+                for t in range(Ndays):
+                    T_map_daily_stoch[t] = T_map_mean + dT_daily_stoch[t]
+
+                HW_ti_stoch, _ = HazardFootprintGenerator.get_HW_atloc(T_daily_stoch, T_th_HW, Dt_HW)
+                HW_fp_stoch, HW_S_stoch = HazardFootprintGenerator.get_HW_footprint(T_map_daily_stoch, Tth = T_th_HW, Dt = Dt_HW)
+                if HW_S_stoch >= Dt_HW:
+                    evID = 'HW' + str(k)
+                    catalog_hazFootprints_HW[evID] = HW_fp_stoch
+                    np.save(f'{path_HW_stochset_data}/HW_fp_event_{evID}_{HW_S_stoch}.npy', HW_fp_stoch)
+                    k += 1
+                    if plot_HWprocess:
+                        plt.rcParams['font.size'] = '16'
+                        fig, ax = plt.subplots(1,3, figsize=(20,6))
+                        ax[0].hist(Tadv_sim, bins = Ti, color = 'darkgrey')
+                        ax[0].axvline(Tadv_sim[sim], color = 'black', linestyle = 'solid')
+                        ax[0].axvline(T_th_HW, color = 'darkred', linestyle = 'dashed')
+                        ax[0].set_xlabel('$T$ (°C)')
+                        ax[0].set_ylabel('Density')
+                        ax[0].set_title('Baseline+advection variability', pad = 20)
+                        ax[0].spines['right'].set_visible(False)
+                        ax[0].spines['top'].set_visible(False)
+                        ax[1].plot(dayi, T_daily_stoch, color = 'black')
+                        for start, end in HW_ti_stoch:
+                            ax[1].axvspan(dayi[start] - .5, dayi[end] + .5, color='darkred', alpha = .2)
+                        ax[1].axhline(Tadv_sim[sim], color = 'black', linestyle = 'dotted')
+                        ax[1].axhline(T_th_HW, color = 'darkred', linestyle = 'dashed')
+                        ax[1].set_ylim(T_th_HW-5, T_th_HW+5)
+                        ax[1].set_xlabel('Day of the month')
+                        ax[1].set_ylabel('$T$ (°C)')
+                        ax[1].set_title(f'Daily temp. at {Tadv_sim[sim]:.1f}°C', pad = 20)
+                        ax[1].spines['right'].set_visible(False)
+                        ax[1].spines['top'].set_visible(False)
+#                        ax[2].contourf(atmoLayer.grid.xx, atmoLayer.grid.yy, HW_fp_stoch.astype(int), cmap = 'Reds', alpha = .5, levels = [.5, 1.5])
+                        ax[2].contourf(atmoLayer.grid.xx, atmoLayer.grid.yy, HW_fp_stoch, cmap = 'Reds')
+                        ax[2].set_xlabel('$x$ (km)')
+                        ax[2].set_ylabel('$y$ (km)')
+                        ax[2].set_title(f'Heatwave fp. {evID} ({HW_S_stoch}da)', pad = 20)
+                        ax[2].set_aspect(1)
+                        fig.tight_layout()
+                        plt.savefig(f'{path_HW_stochset}/char_{evID}.jpg')
+                        plt.close()
+
+    ###################################
     ## INTENSITY FOOTPRINT GENERATOR ##
+    ###################################
     def generate(self):
         print('generating footprints for:', end=' ')
         for ID in self.src.par['perils']:
@@ -1496,6 +1859,9 @@ class HazardFootprintGenerator:
                     z = np.array(self.src.par['EQ']['z_km'])[self.src.par['EQ']['ID'] == srcID]
                     r = np.sqrt(dmin**2 + z**2)
                     self.catalog_hazFootprints[evID] = self.calc_I_shaking_ms2(S, r)
+
+            elif ID == 'HW':
+                self._run_HW(Nev_peril, self.atmoLayer)
 
             elif ID == 'TC':
                 TCcoord = self.evchar[get_peril_evID(self.evchar['evID']) == 'TC'].reset_index(drop=True)
@@ -1598,369 +1964,72 @@ class HazardFootprintGenerator:
 
         return I_sym_t, I_asym_t, vtot_x, vtot_y, vtan_x, vtan_y
 
+    ## HW CASE ##
+    def _load_HW_footprints(self, path_HW_data):
+        pattern = re.compile(r"HW_fp_event_(HW\d+)_(\d+)\.npy")
+        results = []
+        for fname in os.listdir(path_HW_data):
+            match = pattern.match(fname)
+            if match:
+                evID = match.group(1)
+                S_raw = int(match.group(2))
+                full_path = os.path.join(path_HW_data, fname)
+                HW_fp = np.load(full_path)
+                results.append({'evID': evID, 'S_raw': S_raw, 'HW_fp': HW_fp})
+        df = pd.DataFrame([{'evID': r['evID'], 'S_raw': r['S_raw']} for r in results])
+        return results, df              
 
+    def _map2upperTail(self, size, Si):
+        '''
+        Map event size to upper-tail size class Si.
+        Returns the smallest Si >= size.
+        '''
+        Si = np.asarray(Si)
+        idx = np.searchsorted(Si, size, side='left')
+        if idx >= len(Si):
+            return Si[-1]
+        return Si[idx]
 
-## HEATWAVE CASE ##
-def pdf_T_advectivemodel(T, mu0, lat):
-    '''
-    Compute a probability density function (PDF) of temperature using a simple advective 
-    three-Gaussian model.
+    def _run_HW(self, Nev_peril, atmoLayer_T):
+        path_HW_stochset = 'figs/HW_stochset_tmp/'
+        Nsim = 100000   # WARNING: hard-coded, high enough to get reasonable estimates of rate(Si)
 
-    Parameters
-    ----------
-    T : ndarray
-        Array of temperature values (°C) where the PDF is evaluated.
-    mu0 : float
-        Mean surface temperature (°C) at the location of interest.
-    lat : float
-        Latitude (°) of the location. Determines the relative weights and shifts 
-        of warm/cold advective anomalies according to Tamarin-Brodsky et al. (2022).
+        Si = self.src.par['HW']['Si_da']
+        evIDi = [f"HW{i+1}" for i in range(len(Si))]
 
-    Returns
-    -------
-    pdf : ndarray
-        Temperature probability density function evaluated at `T`.
-    sigma_pdf : float
-        Effective standard deviation of the PDF, including contributions from 
-        advective warm/cold anomalies.
-    components : dict
-        Dictionary with individual Gaussian components and smoothing parameter:
-        - 'pdf0' : Gaussian centered at `mu0`
-        - 'pdf_c' : Gaussian for cold advection
-        - 'pdf_w' : Gaussian for warm advection
-        - 'sigma_hat' : smoothing standard deviation used for all three components
-    
-    References
-    ----------
-    Tamarin-Brodsky et al. (2022), A Simple Model for Interpreting Temperature Variability and Its 
-    Higher-Order Changes. J. Climate 35, 387-403.
-    '''
-    if np.abs(lat) <= 40.:                  # WARNING: only defined down to 30° degree lat. in article
-        dT_warm, dT_cold = 3.3, 4.9         # pp. 395-396, fig.7d-f
-        w_warm, w_cold = .25, .17
-    elif np.abs(lat) >= 55:
-        dT_warm, dT_cold = 5.8, 2.5
-        w_warm, w_cold = .1, .24
-    else:  # 40-55° range
-        dT_warm, dT_cold = 4, 4.2
-        w_warm, w_cold = 1/3, 1/3
-    mu_warm = mu0 + dT_warm
-    mu_cold = mu0 - dT_cold
-    w0 = 1. - w_warm - w_cold
-    sigma_hat = .25 * (dT_warm + dT_cold)                        # for smoothed pdf, weakly multimodal
-    pdf0 = w0 * norm.pdf(T, mu0, sigma_hat)
-    pdf_c = w_cold * norm.pdf(T, mu_cold, sigma_hat)
-    pdf_w = w_warm * norm.pdf(T, mu_warm, sigma_hat)
-    pdf = pdf0 + pdf_c + pdf_w
-    sigma_pdf = np.sqrt(sigma_hat**2 + dT_warm*dT_cold*(1-w0))   # eq.16 (in supplement)
-    components = {'pdf0': pdf0, 'pdf_c': pdf_c, 'pdf_w': pdf_w, 'sigma_hat': sigma_hat}
-    return pdf, sigma_pdf, components
+        cache_files = {evID: self._cache_path(evID) for evID in evIDi}
+        all_cached = (not self.force_recompute and all(os.path.exists(path) for path in cache_files.values()) and os.path.exists(path_HW_stochset))
+        if all_cached:
+            for evID, path in cache_files.items():
+                self.catalog_hazFootprints[evID] = np.load(path)
+            print('(loading from cache)')
+        else:
+            print('(computing)')
+            os.makedirs(path_HW_stochset, exist_ok = True)
+            path_HW_stochset_data = os.path.join(path_HW_stochset, 'data')
+            os.makedirs(path_HW_stochset_data, exist_ok = True)
+            HazardFootprintGenerator.model_HW_threshold(self.src, atmoLayer_T, path_HW_stochset, path_HW_stochset_data, \
+                            Nsim = Nsim, plot_HWprocess = True)
+            
+            print('Fetching footprints from potential footprints')
+            HW_footprints, HW_fp_metadata = self._load_HW_footprints(path_HW_stochset + 'data')
+            # Pool largest footprint per Si - for Tutorial 2
+            Si2evID = dict(zip(Si, evIDi))
+            HW_fp_metadata['S'] = HW_fp_metadata['S_raw'].apply(lambda s: self._map2upperTail(s, Si))    
+            HW_fp_metadata['fp_S'] = [np.sum(~np.isnan(HW_footprints[i]['HW_fp'])) for i in HW_fp_metadata.index]
+                                    # fp_S as footprint spatial extent, proxy to temperature amplitude above threshold
+            lbdi = (HW_fp_metadata.groupby('S').size().reindex(Si, fill_value=0) / Nsim)
+            lbdi = lbdi.rename(index = Si2evID)
 
-def sample_T_advectivemodel(mu0_stoch, lat, seed = None):
-    '''
-    Sample stochastic temperatures from the 3-Gaussian advective PDF.
+            self.rate_HW = lbdi
 
-    Parameters
-    ----------
-    mu0_stoch : ndarray
-        Array of mean surface temperatures (°C) at the location(s). Each entry is
-        treated independently to generate a stochastic temperature sample.
-    lat : float
-        Latitude (°) of the region.
-    seed : int, optional
-        Random seed for reproducibility.
+            for i in range(Nev_peril):
+                df_Si = HW_fp_metadata[HW_fp_metadata['S'] == Si[i]]
+                indmax = df_Si['fp_S'].idxmax()
+                self.catalog_hazFootprints[evIDi[i]] = HW_footprints[indmax]['HW_fp']
+                cache_file = self._cache_path(evIDi[i])
+                np.save(cache_file, HW_footprints[indmax]['HW_fp'])
 
-    Returns
-    -------
-    T_stoch : ndarray
-        Array of length Nsim containing stochastic temperature realizations (°C).
-    '''
-    if seed is not None:
-        np.random.seed(seed)
-    Nsim = len(mu0_stoch)
-    Ti = np.linspace(-30, 50, 801)
-    T_stoch = np.empty(Nsim)
-    for i, T0_sampled in enumerate(mu0_stoch):
-        pdf, _, _ = pdf_T_advectivemodel(Ti, T0_sampled, lat)
-        pdf = pdf / pdf.sum()
-        T_stoch[i] = np.random.choice(Ti, p = pdf)
-    return T_stoch
-
-def sample_T_daily(T_adv_stoch, sigma_daily, Ndays=30, rho=0.7, seed=None):
-    '''
-    Generate a daily temperature time series for a month around a given stochastic monthly mean,
-    with temporal correlation.
-
-    The daily temperatures are generated using a first-order autoregressive
-    [AR(1)] process. This introduces temporal autocorrelation between consecutive
-    days, which is essential for representing multi-day heatwaves.
-
-    Autocorrelation means that temperature on a given day is statistically
-    dependent on the temperature of the previous day. A positive autocorrelation
-    (rho > 0) increases the persistence of warm or cold anomalies, allowing
-    sequences of consecutive hot days to occur.
-
-    Mathematically, the daily temperature evolves as:
-
-        T_d = rho * T_{d-1}
-              + (1 - rho) * T_adv_stoch
-              + sqrt(1 - rho^2) * ε_d
-
-    where:
-        - T_adv_stoch is the stochastic monthly temperature (equilibrium mean),
-        - rho is the lag-1 autocorrelation coefficient (0 ≤ rho < 1),
-        - ε_d is Gaussian white noise with standard deviation sigma_daily.
-
-    The scaling factor sqrt(1 - rho^2) ensures that the stationary daily
-    temperature variance is equal to sigma_daily², independently of rho.
-
-    Parameters
-    ----------
-    T_adv_stoch : float
-        Stochastic monthly temperature (°C) for the month.
-    sigma_daily : float
-        Standard deviation of daily fluctuations around T_adv_stoch (°C).
-    Ndays : int
-        Number of days in the month (default=30).
-    rho : float
-        Temporal correlation coefficient (0=independent, 1=perfectly correlated).
-    seed : int
-        Random seed for reproducibility.
-
-    Returns
-    -------
-    T_daily : ndarray
-        Array of length Ndays containing daily temperatures (°C) for the month.
-    '''
-    if seed is not None:
-        np.random.seed(seed)
-    T_daily = np.empty(Ndays)
-    T_daily[0] = T_adv_stoch
-    for d in range(1, Ndays):
-        epsilon = np.random.normal(0, sigma_daily)
-        T_daily[d] = rho*T_daily[d-1] + (1-rho)*T_adv_stoch + np.sqrt(1-rho**2)*epsilon
-    return T_daily
-
-def get_HW_atloc(T_daily, T_th, Dt_HW):
-    '''
-    Identify heatwave events and extract their durations and indices.
-
-    A heatwave is defined as a contiguous sequence of days with
-    T_daily >= T_th lasting at least Dt_HW days.
-
-    Parameters
-    ----------
-    T_daily : ndarray
-        Daily temperatures (°C).
-    T_th : float
-        Heatwave temperature threshold (°C).
-    Dt_HW : int
-        Minimum number of consecutive days to define a heatwave.
-
-    Returns
-    -------
-    events : list of tuple
-        List of (start_index, end_index) pairs for each heatwave,
-        where indices are inclusive and zero-based.
-    durations : list of int
-        Durations (in days) of all detected heatwaves.
-    '''
-    is_hot = T_daily >= T_th
-    durations = []
-    events = []
-    start = None
-    for i, hot in enumerate(is_hot):
-        if hot and start is None:
-            start = i
-        elif not hot and start is not None:
-            length = i - start
-            if length >= Dt_HW:
-                durations.append(length)
-                events.append((start, i - 1))
-            start = None
-    if start is not None:
-        length = len(T_daily) - start
-        if length >= Dt_HW:
-            durations.append(length)
-            events.append((start, len(T_daily) - 1))
-    return events, durations
-
-def get_HW_footprint(T_map_daily, Tth = 35., Dt = 3):
-    '''
-    Identify the spatial heatwave footprint over a month from daily temperature fields.
-
-    A heatwave at a given grid cell is defined as a contiguous sequence of days
-    during which the daily temperature exceeds a threshold Tth for at least
-    Dt consecutive days. The heatwave footprint is the spatial extent of
-    all grid cells that experience at least one such heatwave during the month.
-
-    Parameters
-    ----------
-    T_map_daily : ndarray
-        Daily temperature field with shape (Ndays, nx, ny), where Ndays
-        is the number of days in the month and (nx, ny) define the spatial grid.
-    Tth : float, optional
-        Heatwave temperature threshold (°C). Default is 35°C.
-    Dt : int, optional
-        Minimum number of consecutive days above Tth required to define
-        a heatwave event. Default is 3 days.
-
-    Returns
-    -------
-    HW_fp_tcollapse : ndarray of bool
-        Two-dimensional boolean array with shape (nx, ny).
-        A value of True indicates that the corresponding grid cell
-        experienced at least one heatwave event during the month.
-    HW_duration : int
-        Total heatwave duration in days (i.e, event size), defined as the number of days during
-        which at least one grid cell is in a heatwave state.
-    '''
-    Ndays, nx, ny = T_map_daily.shape
-    HW_fp = np.zeros_like(T_map_daily, dtype = bool)
-    is_hot = T_map_daily >= Tth
-    for i in range(nx):
-        for j in range(ny):
-            start = None
-            for t in range(Ndays):
-                if is_hot[t, i, j] and start is None:
-                    start = t
-                elif not is_hot[t, i, j] and start is not None:
-                    if t - start >= Dt:
-                        HW_fp[start:t, i, j] = True
-                    start = None
-            if start is not None and Ndays - start >= Dt:
-                HW_fp[start:Ndays, i, j] = True
-    HW_fp_tcollapse = HW_fp.any(axis = 0)
-    HW_duration = HW_fp.any(axis=(1, 2)).sum()
-    return HW_fp_tcollapse, HW_duration
-
-def model_HW_threshold(src, atmoLayer, path_HW_stochset, path_HW_stochset_data, \
-                       Nsim = 10000, Tmin = 10, Tmax = 40, plot_HWprocess = False):
-    '''
-    Generate a stochastic catalog of heatwave (HW) footprint events based on
-    large-scale advective temperature anomalies and daily correlated temperature
-    variability.
-
-    The function performs Monte Carlo simulations of heatwave events by combining:
-    (i) yearly-scale advective temperature anomalies,
-    (ii) daily-scale stochastic temperature variability, and
-    (iii) spatial temperature fields. Heatwave events are identified using a
-    temperature threshold and minimum duration criterion, and qualifying events
-    are stored as spatial footprint arrays on disk.
-
-    Parameters
-    ----------
-    src : dict
-        Source dictionary containing model parameters in ``src.par['HW']``.
-        Required keys include:
-        - ``T_th`` : float
-            Heatwave temperature threshold (°C).
-        - ``Dt_da`` : int
-            Minimum duration (days) to define a heatwave.
-        - ``Dt_max_da`` : int
-            Maximum duration (days) of simulated daily temperatures.
-        - ``sigmaT_daily`` : float
-            Standard deviation of daily temperature variability (°C).
-        - ``sigmaT_yearly`` : float
-            Standard deviation of yearly temperature variability (°C).
-        - ``corrT`` : float
-            Temporal correlation coefficient of daily temperatures.
-        - ``lat_deg`` : float
-            Latitude (degrees) used in the advective temperature model.
-
-    atmoLayer : class
-        Atmospheric environmental layer.
-
-    path_HW_stochset : str
-        Path where diagnostic figures of heatwave processes are saved.
-
-    path_HW_stochset_data : str
-        Path where heatwave footprint arrays (``.npy`` files) are stored.
-
-    Nsim : int, optional
-        Number of Monte Carlo simulations to perform. Default is 10000.
-
-    Tmin : float, optional
-        Minimum temperature used for histogram binning in diagnostic plots (°C).
-        Default is 10.
-
-    Tmax : float, optional
-        Maximum temperature used for histogram binning in diagnostic plots (°C).
-        Default is 40.
-
-    plot_HWprocess : bool, optional
-        If True, diagnostic plots illustrating the heatwave generation process
-        are produced and saved for each detected event. Default is False.
-
-    Returns
-    -------
-    None
-        Heatwave footprint events are written to disk as ``.npy`` files.
-    '''
-    T_th_HW, Dt_HW = src.par['HW']['T_th'], src.par['HW']['Dt_da']
-    Ndays = src.par['HW']['Dt_max_da']
-    dayi = np.arange(src.par['HW']['Dt_max_da'])+1
-    Ti = np.arange(Tmin, Tmax, 1)
-    Tmin_compute = T_th_HW - src.par['HW']['sigmaT_daily']
-    T0 = np.max(atmoLayer.T)
-
-    T0_sim = np.random.normal(T0, src.par['HW']['sigmaT_yearly'], Nsim)
-    Tadv_sim = sample_T_advectivemodel(T0_sim, src.par['HW']['lat_deg'])
-    DTadv_sim = Tadv_sim - T0
-
-    nx, ny = atmoLayer.T.shape
-    catalog_hazFootprints_HW = {}
-    k = 1
-    for sim in range(Nsim):
-        if sim % 1000:
-            print(f'{sim}/{Nsim}', end = '\r', flush = True)
-        if Tadv_sim[sim] > Tmin_compute:
-            T_map_mean = atmoLayer.T + DTadv_sim[sim]
-            T_daily_stoch = sample_T_daily(Tadv_sim[sim], src.par['HW']['sigmaT_daily'], \
-                                           Ndays = Ndays, rho = src.par['HW']['corrT'])    
-            dT_daily_stoch = T_daily_stoch - Tadv_sim[sim]
-
-            T_map_daily_stoch = np.empty((Ndays, nx, ny))
-            for t in range(Ndays):
-                T_map_daily_stoch[t] = T_map_mean + dT_daily_stoch[t]
-
-            HW_ti_stoch, _ = get_HW_atloc(T_daily_stoch, T_th_HW, Dt_HW)
-            HW_fp_stoch, HW_S_stoch = get_HW_footprint(T_map_daily_stoch, Tth = T_th_HW, Dt = Dt_HW)
-            if HW_S_stoch >= Dt_HW:
-                evID = 'HW' + str(k)
-                catalog_hazFootprints_HW[evID] = HW_fp_stoch
-                np.save(f'{path_HW_stochset_data}/HW_fp_event_{evID}_{HW_S_stoch}.npy', HW_fp_stoch)
-                k += 1
-                if plot_HWprocess:
-                    plt.rcParams['font.size'] = '16'
-                    fig, ax = plt.subplots(1,3, figsize=(20,6))
-                    ax[0].hist(Tadv_sim, bins = Ti, color = 'darkgrey')
-                    ax[0].axvline(Tadv_sim[sim], color = 'black', linestyle = 'solid')
-                    ax[0].axvline(T_th_HW, color = 'darkred', linestyle = 'dashed')
-                    ax[0].set_xlabel('$T$ (°C)')
-                    ax[0].set_ylabel('Density')
-                    ax[0].set_title('Baseline+advection variability', pad = 20)
-                    ax[0].spines['right'].set_visible(False)
-                    ax[0].spines['top'].set_visible(False)
-                    ax[1].plot(dayi, T_daily_stoch, color = 'black')
-                    for start, end in HW_ti_stoch:
-                        ax[1].axvspan(dayi[start] - .5, dayi[end] + .5, color='darkred', alpha = .2)
-                    ax[1].axhline(Tadv_sim[sim], color = 'black', linestyle = 'dotted')
-                    ax[1].axhline(T_th_HW, color = 'darkred', linestyle = 'dashed')
-                    ax[1].set_ylim(T_th_HW-5, T_th_HW+5)
-                    ax[1].set_xlabel('Day of the month')
-                    ax[1].set_ylabel('$T$ (°C)')
-                    ax[1].set_title(f'Daily temp. at {Tadv_sim[sim]:.1f}°C', pad = 20)
-                    ax[1].spines['right'].set_visible(False)
-                    ax[1].spines['top'].set_visible(False)
-                    ax[2].contourf(atmoLayer.grid.xx, atmoLayer.grid.yy, HW_fp_stoch.astype(int), cmap = 'Reds', alpha = .5, levels = [.5, 1.5])
-                    ax[2].set_xlabel('$x$ (km)')
-                    ax[2].set_ylabel('$y$ (km)')
-                    ax[2].set_title(f'Heatwave fp. {evID} ({HW_S_stoch}da)', pad = 20)
-                    ax[2].set_aspect(1)
-                    fig.tight_layout()
-                    plt.savefig(f'{path_HW_stochset}/char_{evID}.jpg')
-                    plt.close()
 
 
 class DynamicHazardFootprintGenerator:
