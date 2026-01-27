@@ -873,7 +873,8 @@ class EnvLayer_soil:
         self.par = par
         self.grid = self.topo.grid
         self.h = np.repeat(self.par['h0_m'], self.grid.nx * self.grid.ny).reshape(self.grid.nx, self.grid.ny)
-        self.hw = self.par['wat_h_m']
+        self.hw = self.par['hw0_m']
+        
         if self.par['corr'] == 'remove_unstable':
             # fix h = 0 (scarp) for unstable soil FS<1
             self.h[self.FS_value <= 1] = 0

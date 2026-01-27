@@ -8,7 +8,7 @@ core GenMR workflows by streamlining data handling, computation, and visualisati
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-01-12
+:Date: 2026-01-27
 :License: AGPL-3
 """
 
@@ -440,6 +440,30 @@ rho_atm = 1.15    # (kg/m^3)
 
 month_labels = ['January','February','March','April','May','June','July','August','September','October','November','December']
 month_labels_short = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+
+def get_ndays_inMonth(leap_year = False):
+    '''
+    Return number of days for each month in a 1D array.
+
+    Parameters
+    ----------
+    months : ndarray
+        1D array of month numbers (1–12)
+    leap_year : bool, optional
+        If True, February has 29 days (default: False)
+
+    Returns
+    -------
+    days : ndarray
+        Number of days per month
+    '''
+    months = np.arange(1,13)
+    days = np.full_like(months, 31)
+    days[np.isin(months, [4, 6, 9, 11])] = 30
+    days[months == 2] = 29 if leap_year else 28
+    if np.any((months < 1) | (months > 12)):
+        raise ValueError('months must be in the range 1–12')
+    return days
 
 def fetch_A0(level):
     '''
