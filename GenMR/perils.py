@@ -39,7 +39,7 @@ Planned peril models (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-01-20
+:Date: 2026-01-28
 :License: AGPL-3
 """
 
@@ -656,6 +656,14 @@ class EventSetGenerator:
                         self.ev_stoch,
                         pd.DataFrame({'ID': np.repeat('CS', self.sizeDistr['CS']['Nstoch']), 'evID': evID, 'S': Si_vec, 'lbd': lbdi})
                     ], ignore_index=True)
+                if ID == 'Dr':
+                    evID = [f"{ID}{i+1}" for i in range(self.sizeDistr['Dr']['Nstoch'])]
+                    Si_vec = self.src.par['Dr']['Si_mo']
+                    lbdi = np.repeat(np.nan, self.sizeDistr['Dr']['Nstoch'])
+                    self.ev_stoch = pd.concat([
+                        self.ev_stoch,
+                        pd.DataFrame({'ID': np.repeat('Dr', self.sizeDistr['Dr']['Nstoch']), 'evID': evID, 'S': Si_vec, 'lbd': lbdi})
+                    ], ignore_index=True)
                 if ID == 'HW':
                     evID = [f"{ID}{i+1}" for i in range(self.sizeDistr['HW']['Nstoch'])]
                     Si_vec = self.src.par['HW']['Si_da']
@@ -822,6 +830,8 @@ class EventSetGenerator:
             ev_x = np.concatenate(ev_x_list)
             ev_y = np.concatenate(ev_y_list)
             self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.par['CS']['object'], self.sizeDistr['CS']['Nstoch']))
+        elif ID == 'Dr':
+            self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.par['Dr']['object'], self.sizeDistr['Dr']['Nstoch']))
         elif ID == 'HW':
             self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.par['HW']['object'], self.sizeDistr['HW']['Nstoch']))
 
@@ -1758,7 +1768,7 @@ class HazardFootprintGenerator:
         catalog_hazFootprints_HW = {}
         k = 1
         for sim in range(Nsim):
-            if sim % 1000:
+            if sim % 1000 == 0:
                 print(f'{sim}/{Nsim}', end = '\r', flush = True)
             if Tadv_sim[sim] > Tmin_compute:
                 T_map_mean = atmoLayer.T + DTadv_sim[sim]
@@ -1808,6 +1818,11 @@ class HazardFootprintGenerator:
                         fig.tight_layout()
                         plt.savefig(f'{path_HW_stochset}/char_{evID}.jpg')
                         plt.close()
+
+
+    ## DROUGHT FUNCTIONS ##
+
+
 
     ###################################
     ## INTENSITY FOOTPRINT GENERATOR ##
