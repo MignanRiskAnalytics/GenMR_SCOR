@@ -90,6 +90,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_atmo.T"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.T</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_atmo.calc_T0_EBCM"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.calc_T0_EBCM()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_atmo.calc_T_z"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.calc_T_z()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_atmo.calc_p_hydrostatic"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.calc_p_hydrostatic()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_atmo.calc_z_freeze"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.calc_z_freeze()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_atmo.calc_z_tropopause"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.calc_z_tropopause()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_atmo.z_freezinglevel"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.z_freezinglevel</span></code></a></li>
@@ -265,11 +266,18 @@
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_Lbd_GPD"><code class="docutils literal notranslate"><span class="pre">calc_Lbd_GPD()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_Lbd_exponential"><code class="docutils literal notranslate"><span class="pre">calc_Lbd_exponential()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_Lbd_powerlaw"><code class="docutils literal notranslate"><span class="pre">calc_Lbd_powerlaw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_PET"><code class="docutils literal notranslate"><span class="pre">calc_PET()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_e0"><code class="docutils literal notranslate"><span class="pre">calc_e0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_lbd_Dr"><code class="docutils literal notranslate"><span class="pre">calc_lbd_Dr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_qsat"><code class="docutils literal notranslate"><span class="pre">calc_qsat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.gen_precipitation"><code class="docutils literal notranslate"><span class="pre">gen_precipitation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.get_Dr"><code class="docutils literal notranslate"><span class="pre">get_Dr()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.get_peril_evID"><code class="docutils literal notranslate"><span class="pre">get_peril_evID()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.incrementing"><code class="docutils literal notranslate"><span class="pre">incrementing()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.plot_hazFootprints"><code class="docutils literal notranslate"><span class="pre">plot_hazFootprints()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.plot_src"><code class="docutils literal notranslate"><span class="pre">plot_src()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.plot_vulnFunctions"><code class="docutils literal notranslate"><span class="pre">plot_vulnFunctions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.update_soil_moisture"><code class="docutils literal notranslate"><span class="pre">update_soil_moisture()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.vuln_f"><code class="docutils literal notranslate"><span class="pre">vuln_f()</span></code></a></li>
 </ul>
 </li>
@@ -282,12 +290,14 @@
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.col_state_h"><code class="docutils literal notranslate"><span class="pre">col_state_h()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.fetch_A0"><code class="docutils literal notranslate"><span class="pre">fetch_A0()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_ind_aspect2moore"><code class="docutils literal notranslate"><span class="pre">get_ind_aspect2moore()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_ndays_inMonth"><code class="docutils literal notranslate"><span class="pre">get_ndays_inMonth()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_neighborhood_ind"><code class="docutils literal notranslate"><span class="pre">get_neighborhood_ind()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_net_coord"><code class="docutils literal notranslate"><span class="pre">get_net_coord()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.incrementing"><code class="docutils literal notranslate"><span class="pre">incrementing()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.init_io"><code class="docutils literal notranslate"><span class="pre">init_io()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.load_json2dict"><code class="docutils literal notranslate"><span class="pre">load_json2dict()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.load_pickle2class"><code class="docutils literal notranslate"><span class="pre">load_pickle2class()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.map2upperTail"><code class="docutils literal notranslate"><span class="pre">map2upperTail()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.marker_peril"><code class="docutils literal notranslate"><span class="pre">marker_peril()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.norm_z"><code class="docutils literal notranslate"><span class="pre">norm_z</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.partitioning"><code class="docutils literal notranslate"><span class="pre">partitioning()</span></code></a></li>
@@ -636,6 +646,54 @@ which aligns Northern Hemisphere summer with month ~6 (June).</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float or ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_atmo.calc_p_hydrostatic">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calc_p_hydrostatic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z_m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lapse_rate_m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T0_deg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0_kPa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0_m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_atmo.calc_p_hydrostatic" title="Link to this definition"></a></dt>
+<dd><p>Hydrostatic atmospheric pressure assuming a constant temperature lapse rate.</p>
+<p>Pressure is computed from the hydrostatic balance under the assumptions of:
+- ideal gas behavior,
+- constant gravitational acceleration,
+- a linear temperature profile with height.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z_m</strong> (<em>ndarray</em>) – Geometric height above the reference level z0 (m).</p></li>
+<li><p><strong>lapse_rate_m</strong> (<em>float</em>) – Temperature lapse rate (K/m-1 or °C/m).</p></li>
+<li><p><strong>T0_deg</strong> (<em>float</em>) – Air temperature at the reference level z0 (°C).</p></li>
+<li><p><strong>p0_kPa</strong> (<em>float</em>) – Atmospheric pressure at the reference level z0 (kPa) with synoptic-scale pressure variations
+prescribed through p0.</p></li>
+<li><p><strong>z0_m</strong> (<em>float</em><em>, </em><em>optional</em>) – Reference altitude (m). Default is 0 m.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>p_kPa</strong> – Atmospheric pressure at height z_m (kPa).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The temperature profile is assumed to be</p>
+<blockquote>
+<div><p>T(z) = T0 - Γ (z - z0)</p>
+</div></blockquote>
+<p>where Γ is the constant lapse rate.</p>
+<p>Under hydrostatic balance and the ideal gas law,</p>
+<blockquote>
+<div><p>dp/dz = -ρ g
+ρ = p / (R_d T)</p>
+</div></blockquote>
+<p>which yields the analytical solution</p>
+<blockquote>
+<div><p>p(z) = p0 * [ T(z) / T0 ]^( g / (R_d Γ) )</p>
+</div></blockquote>
+<dl class="simple">
+<dt>where:</dt><dd><p>g   = 9.80665 m s⁻² (gravitational acceleration)
+R_d = 287.05 J kg⁻¹ K⁻¹ (gas constant for dry air)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2254,7 +2312,7 @@ as well as intensity and loss footprint calculations.</p>
 <dd class="field-even"><p>1.1.2</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2026-01-20</p>
+<dd class="field-odd"><p>2026-01-28</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -3314,6 +3372,161 @@ derived from the GPD parameters.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="GenMR.perils.calc_PET">
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">calc_PET</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T_monthly</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat_deg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cloudy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.calc_PET" title="Link to this definition"></a></dt>
+<dd><p>Estimate the monthly potential evapotranspiration (PET) according to Thornthwaite (1948),
+which assumes a clear sky. When cloudy = True,</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>T_monthly</strong> (<em>array_like</em>) – Mean monthly air temperature (°C), length = 12</p></li>
+<li><p><strong>lat_deg</strong> (<em>float</em>) – Latitude (°)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>PET</strong> – Monthly potential evapotranspiration (mm/month)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>Thornthwaite (1948), An approach toward a rational classification of climate.
+Geographical Review, 38(1), 55–94.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.perils.calc_e0">
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">calc_e0</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.calc_e0" title="Link to this definition"></a></dt>
+<dd><p>Estimate the saturation vapor pressure from the Clausius–Clapeyron equation
+under typical atmospheric conditions neglecting temperature dependence of the latent heat
+according to the August–Roche–Magnus formula.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> (<em>float</em><em> or </em><em>array_like</em>) – Mean monthly air temperature (°C), length = 12</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>e0</strong> – Saturation vapor pressure (kPa)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float or ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.perils.calc_lbd_Dr">
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">calc_lbd_Dr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">par</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atmo_par</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">soil_par</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nsim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.calc_lbd_Dr" title="Link to this definition"></a></dt>
+<dd><p>Estimate drought event rates via Monte Carlo simulation.</p>
+<p>This function performs simulations of monthly soil water balance driven by
+stochastic temperature variability and atmospheric circulation regimes.
+For each simulated year, it identifies at most one drought event and maps its
+severity to an upper-tail discretization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>par</strong> (<em>dict</em>) – Drought source parameters.</p></li>
+<li><p><strong>atmo_par</strong> (<em>dict</em>) – Atmospheric parameters from the atmospheric environmental layer.</p></li>
+<li><p><strong>soil_par</strong> (<em>dict</em>) – Soil parameters from the soil environmental layer.</p></li>
+<li><p><strong>Nsim</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of Monte Carlo simulations (years). Default is 1e6.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>lbdi</strong> – Estimated event rates</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.perils.calc_qsat">
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">calc_qsat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T_degC</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_kPa</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.calc_qsat" title="Link to this definition"></a></dt>
+<dd><p>Compute the saturation specific humidity as a function of air temperature
+and ambient pressure.</p>
+<p>The saturation specific humidity is derived from the saturation mixing
+ratio, which follows directly from the ideal gas law applied to moist air.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>T_degC</strong> (<em>float</em><em> or </em><em>array_like</em>) – Air temperature (°C).</p></li>
+<li><p><strong>p_kPa</strong> (<em>float</em><em> or </em><em>array_like</em>) – Ambient atmospheric pressure (kPa).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>q_s</strong> – Saturation specific humidity (kg/kg), defined as the ratio of the
+mass of water vapor to the total mass of moist air.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float or ndarray</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>Wallace and Hobbs (2006), Atmospheric Science: An Introductory Survey (2nd ed.). Academic Press, 483 pp.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.perils.gen_precipitation">
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">gen_precipitation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Ti</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.gen_precipitation" title="Link to this definition"></a></dt>
+<dd><p>Compute column-integrated precipitation from large-scale condensation.</p>
+<p>Precipitation is diagnosed by vertically integrating the condensation
+rate induced by upward motion in a moist atmosphere. Condensation is
+computed from the vertical gradient of saturation specific humidity and
+a prescribed vertical velocity profile, and converted to surface
+precipitation using a constant precipitation efficiency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Ti</strong> (<em>array_like</em>) – Near-surface air temperature (°C).</p></li>
+<li><p><strong>w</strong> (<em>array_like</em>) – Vertical velocity profile (positive upward, m/s).</p></li>
+<li><p><strong>par</strong> (<em>dict</em>) – <p>Dictionary of physical parameters with required keys:</p>
+<dl class="simple">
+<dt>lapse_rate<span class="classifier">float</span></dt><dd><p>Environmental lapse rate (K/km).</p>
+</dd>
+<dt>p0<span class="classifier">float</span></dt><dd><p>Surface pressure (kPa).</p>
+</dd>
+<dt>eta_rain<span class="classifier">float</span></dt><dd><p>Precipitation efficiency (dimensionless).</p>
+</dd>
+<dt>zmax_km<span class="classifier">float</span></dt><dd><p>Tropopause altitude (km).</p>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>rain</strong> – Daily precipitation rate for each temperature profile (mm/day).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.perils.get_Dr">
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">get_Dr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">S_t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Dr_th</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.get_Dr" title="Link to this definition"></a></dt>
+<dd><p>Identify drought events and extract their durations and indices.</p>
+<p>A drought is defined as a contiguous sequence of months with S_t &lt; Dr_th.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>S_t</strong> (<em>ndarray</em>) – Monthly soil moisture (mm), length = 12</p></li>
+<li><p><strong>Dr_th</strong> (<em>float</em>) – Soil moisture threshold to define drought (mm)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>events</strong> (<em>list of tuple</em>) – List of (start_index, end_index) pairs for each drought,
+where indices are inclusive and zero-based.</p></li>
+<li><p><strong>durations</strong> (<em>list of int</em>) – Durations (in months) of all detected droughts.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="GenMR.perils.get_peril_evID">
 <span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">get_peril_evID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evIDs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.get_peril_evID" title="Link to this definition"></a></dt>
 <dd><p>Extract the peril identifiers from an array of event identifiers.</p>
@@ -3405,6 +3618,28 @@ For logarithmic scale, this represents the step in log10 space.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="GenMR.perils.update_soil_moisture">
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">update_soil_moisture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">P</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ET</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Smax</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.update_soil_moisture" title="Link to this definition"></a></dt>
+<dd><p>Monthly soil water balance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>P</strong> (<em>ndarray</em>) – Monthly precipitation (mm/month)</p></li>
+<li><p><strong>ET</strong> (<em>ndarray</em>) – Monthly evapotranspiration (mm/month)</p></li>
+<li><p><strong>S0</strong> (<em>float</em>) – Initial soil moisture (mm)</p></li>
+<li><p><strong>Smax</strong> (<em>float</em>) – Maximum soil water storage (mm)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>S</strong> – Soil moisture storage per month (mm)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="GenMR.perils.vuln_f">
 <span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">vuln_f</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">I</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">peril</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.vuln_f" title="Link to this definition"></a></dt>
 <dd><p>Calculate the mean damage ratio (MDR) given hazard intensity for different perils.</p>
@@ -3447,7 +3682,7 @@ core GenMR workflows by streamlining data handling, computation, and visualisati
 <dd class="field-even"><p>1.1.2</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2026-01-12</p>
+<dd class="field-odd"><p>2026-01-27</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -3644,6 +3879,26 @@ used in <cite>get_neighborhood_ind()</cite>.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.get_ndays_inMonth">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">get_ndays_inMonth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">leap_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.get_ndays_inMonth" title="Link to this definition"></a></dt>
+<dd><p>Return number of days for each month in a 1D array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>months</strong> (<em>ndarray</em>) – 1D array of month numbers (1–12)</p></li>
+<li><p><strong>leap_year</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, February has 29 days (default: False)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>days</strong> – Number of days per month</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="GenMR.utils.get_neighborhood_ind">
 <span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">get_neighborhood_ind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Moore'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.get_neighborhood_ind" title="Link to this definition"></a></dt>
 <dd><p>Get the indices of neighboring cells around a focal cell in a 2D grid,
@@ -3765,6 +4020,13 @@ logarithmic space, or repeat a value a specified number of times.</p>
 <dd class="field-odd"><p>object</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.map2upperTail">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">map2upperTail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Si</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.map2upperTail" title="Link to this definition"></a></dt>
+<dd><p>Map event size to upper-tail size class Si.
+Returns the smallest Si &gt;= size.</p>
 </dd></dl>
 
 <dl class="py function">
