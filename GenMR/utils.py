@@ -368,6 +368,17 @@ def get_ind_aspect2moore(ind_old):
     return ind_new[ind_old]
 
 
+def map2upperTail(size, Si):
+    '''
+    Map event size to upper-tail size class Si.
+    Returns the smallest Si >= size.
+    '''
+    Si = np.asarray(Si)
+    idx = np.searchsorted(Si, size, side='left')
+    if idx >= len(Si):
+        return Si[-1]
+    return Si[idx]
+
 
 ######################
 ## SAMPLING METHODS ##

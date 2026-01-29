@@ -830,6 +830,70 @@ class EnvLayer_atmo:
         return z_freeze
 
 
+    @staticmethod
+    def calc_p_hydrostatic(z_m, lapse_rate_m, T0_deg, p0_kPa, z0_m = 0.):
+        '''
+        Hydrostatic atmospheric pressure assuming a constant temperature lapse rate.
+
+        Pressure is computed from the hydrostatic balance under the assumptions of:
+        - ideal gas behavior,
+        - constant gravitational acceleration,
+        - a linear temperature profile with height.
+
+        Parameters
+        ----------
+        z_m : ndarray
+            Geometric height above the reference level z0 (m).
+        lapse_rate_m : float
+            Temperature lapse rate (K/m-1 or °C/m).
+        T0_deg : float
+            Air temperature at the reference level z0 (°C).
+        p0_kPa : float
+            Atmospheric pressure at the reference level z0 (kPa) with synoptic-scale pressure variations 
+            prescribed through p0.
+        z0_m : float, optional
+            Reference altitude (m). Default is 0 m.
+
+        Returns
+        -------
+        p_kPa : ndarray
+            Atmospheric pressure at height z_m (kPa).
+
+        Notes
+        -----
+        The temperature profile is assumed to be
+
+            T(z) = T0 - Γ (z - z0)
+
+        where Γ is the constant lapse rate.
+
+        Under hydrostatic balance and the ideal gas law,
+
+            dp/dz = -ρ g
+            ρ = p / (R_d T)
+
+        which yields the analytical solution
+
+            p(z) = p0 * [ T(z) / T0 ]^( g / (R_d Γ) )
+
+        where:
+            g   = 9.80665 m s⁻² (gravitational acceleration)
+            R_d = 287.05 J kg⁻¹ K⁻¹ (gas constant for dry air)
+
+        '''
+        g = 9.80665       # standard Gravity (m/s2)
+        R_d = 287.05      # specific gas constant for dry air  (J/kg/K)
+        
+        T0_K = T0_deg + 273.15
+        T_z = T0_K - lapse_rate_m * (z_m - z0_m)
+
+        if np.any(T_z <= 0):
+            raise ValueError('Computed temperature is non-physical (T <= 0 K)')
+
+        exponent = g / (R_d * lapse_rate_m)
+        p_Pa = p0_kPa * 1e3 * (T_z / T0_K) ** exponent
+        p_kPa = p_Pa * 1e-3
+        return p_kPa
 
 ## SOIL ##
 class EnvLayer_soil:

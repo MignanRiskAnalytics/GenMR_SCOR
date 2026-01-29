@@ -50,7 +50,7 @@ import os
 import copy
 import re
 import warnings
-from tqdm import tqdm
+from tqdm import tqdm, trange
 
 from collections import defaultdict
 
@@ -978,6 +978,294 @@ class EventSetGenerator:
         return PointSet_coord
 
 
+## Dr CASE ## NB: consider moving some of the following functions to atmospheric layer class
+def calc_e0(T):
+    '''
+    Estimate the saturation vapor pressure from the Clausius–Clapeyron equation 
+    under typical atmospheric conditions neglecting temperature dependence of the latent heat
+    according to the August–Roche–Magnus formula.
+    
+    Parameters
+    ----------
+    T : float or array_like
+        Mean monthly air temperature (°C), length = 12
+
+    Returns
+    -------
+    e0 : float or ndarray
+        Saturation vapor pressure (kPa)
+    '''
+    e0_hPa = 6.1094 * np.exp((17.625 * T)/(T + 243.04))    # e.g., Lawrence (2005:eq.6)
+    e0_kPa = e0_hPa / 10
+    return e0_kPa
+
+def calc_qsat(T_degC, p_kPa):
+    '''
+    Compute the saturation specific humidity as a function of air temperature
+    and ambient pressure.
+
+    The saturation specific humidity is derived from the saturation mixing
+    ratio, which follows directly from the ideal gas law applied to moist air.
+
+    Parameters
+    ----------
+    T_degC : float or array_like
+        Air temperature (°C).
+    p_kPa : float or array_like
+        Ambient atmospheric pressure (kPa).
+
+    Returns
+    -------
+    q_s : float or ndarray
+        Saturation specific humidity (kg/kg), defined as the ratio of the
+        mass of water vapor to the total mass of moist air.
+
+    References
+    ----------
+    Wallace and Hobbs (2006), Atmospheric Science: An Introductory Survey (2nd ed.). Academic Press, 483 pp.
+    '''
+    e_s = calc_e0(T_degC)               # saturation vapor pressure (kPa), August–Roche–Magnus formula
+    Rd_Rv = .622                        # spe. gas constant for dry air / ... for water vapor (eq.3.14)
+    w_s = Rd_Rv * e_s / (p_kPa - e_s)   # saturation mixing ratio (eq.3.63)
+    q_s = w_s / (1. + w_s)              # just after eq.3.57
+    return q_s
+
+def gen_precipitation(Ti, w, par):
+    '''
+    Compute column-integrated precipitation from large-scale condensation.
+
+    Precipitation is diagnosed by vertically integrating the condensation
+    rate induced by upward motion in a moist atmosphere. Condensation is
+    computed from the vertical gradient of saturation specific humidity and
+    a prescribed vertical velocity profile, and converted to surface
+    precipitation using a constant precipitation efficiency.
+
+    Parameters
+    ----------
+    Ti : array_like
+        Near-surface air temperature (°C).
+
+    w : array_like
+        Vertical velocity profile (positive upward, m/s).
+
+    par : dict
+        Dictionary of physical parameters with required keys:
+
+        lapse_rate : float
+            Environmental lapse rate (K/km).
+        p0 : float
+            Surface pressure (kPa).
+        eta_rain : float
+            Precipitation efficiency (dimensionless).
+        zmax_km : float
+            Tropopause altitude (km).
+
+    Returns
+    -------
+    rain : ndarray
+        Daily precipitation rate for each temperature profile (mm/day).
+    '''
+    z_tropopause_m = np.round(par['zmax_km'], decimals = 1) * 1e3
+    zi_m = np.arange(0,z_tropopause_m,100)    # atmosphere profile
+
+    nT, nz = len(Ti), len(zi_m)
+    pz = np.zeros((nT,nz))
+    qsat = np.zeros((nT,nz))
+    rain = np.zeros(nT)
+    for i in range(nT):
+        pz[i,:] = GenMR_env.EnvLayer_atmo.calc_p_hydrostatic(zi_m, par['lapse_rate'] * 1e-3, Ti[i], par['p0'])
+        Tz = GenMR_env.EnvLayer_atmo.calc_T_z(zi_m * 1e-3, Ti[i], lapse_rate = par['lapse_rate'])
+        qsat[i,:] = calc_qsat(Tz, pz[i,:])
+        dqsdz = np.gradient(qsat[i,:], zi_m)
+        C = np.maximum(0., -w * dqsdz)                                   # condensation rate kg/kg/s
+        rho = (pz[i,:] * 1e3)/(287.05 * (Tz + 273.15))                   # air density from ideal gas law
+        rain[i] = par['eta_rain'] * np.trapz(rho * C, zi_m) *86400       # precipitation mass flux (mm/day)
+    return rain
+
+def calc_PET(T_monthly, lat_deg, cloudy = False):  # WARNING: replace with FAO 56 Penman-Monteith equation?
+    '''
+    Estimate the monthly potential evapotranspiration (PET) according to Thornthwaite (1948),
+    which assumes a clear sky. When cloudy = True, 
+
+    Parameters
+    ----------
+    T_monthly : array_like
+        Mean monthly air temperature (°C), length = 12
+    lat_deg : float
+        Latitude (°)
+
+    Returns
+    -------
+    PET : ndarray
+        Monthly potential evapotranspiration (mm/month)
+
+    References
+    ----------
+    Thornthwaite (1948), An approach toward a rational classification of climate.
+    Geographical Review, 38(1), 55–94.
+    '''
+    # Cloud impact
+    if cloudy:
+        corr_cloud = .5
+    else:
+        corr_cloud = 0.
+    
+    # Heat index
+    I = np.sum((T_monthly / 5.) ** 1.514)                          # p.89, just before eq.9
+
+    # Exponent
+    a = 6.75e-7 * I**3 - 7.71e-5 * I**2 + 1.792e-2 * I + .49239    # eq.9
+
+    # Day length factor
+    lat = np.radians(lat_deg)
+    ndays_inMonth = GenMR_utils.get_ndays_inMonth()
+    J = np.cumsum(ndays_inMonth) - ndays_inMonth / 2               # Julian day
+    decl = .409 * np.sin(2. * np.pi * J / 365. - 1.39)             # solar declination (Allen et al., 1998:24)
+    ws = np.arccos(-np.tan(lat) * np.tan(decl))                    # solar hour angle (sunrise eq.)
+    L = 24. / np.pi * ws
+    
+    T_d = T_monthly
+    T_d[T_d < 0.] = 0.
+    PET_nocloud = 16. * (L / 12.) * (ndays_inMonth / 30.) * (10. * T_d / I) ** a  # eq.10: 16.*(10. * T_d / I) ** a
+    PET = (1 - corr_cloud) * PET_nocloud
+    return PET
+
+def update_soil_moisture(P, ET, S0, Smax):
+    '''
+    Monthly soil water balance.
+
+    Parameters
+    ----------
+    P : ndarray
+        Monthly precipitation (mm/month)
+    ET : ndarray
+        Monthly evapotranspiration (mm/month)
+    S0 : float
+        Initial soil moisture (mm)
+    Smax : float
+        Maximum soil water storage (mm)
+
+    Returns
+    -------
+    S : ndarray
+        Soil moisture storage per month (mm)
+    '''
+    n = len(P)
+    S = np.zeros(n)
+    S[0] = S0
+    for t in range(1, n):
+        S[t] = S[t-1] + P[t-1] - ET[t-1]
+        if S[t] > Smax:
+            S[t] = Smax
+        elif S[t] < 0:
+            S[t] = 0
+    return S
+
+def get_Dr(S_t, Dr_th):
+    '''
+    Identify drought events and extract their durations and indices.
+
+    A drought is defined as a contiguous sequence of months with S_t < Dr_th.
+
+    Parameters
+    ----------
+    S_t : ndarray
+        Monthly soil moisture (mm), length = 12
+    Dr_th : float
+        Soil moisture threshold to define drought (mm)
+
+    Returns
+    -------
+    events : list of tuple
+        List of (start_index, end_index) pairs for each drought,
+        where indices are inclusive and zero-based.
+    durations : list of int
+        Durations (in months) of all detected droughts.
+    '''
+    ind_Dr = S_t < Dr_th
+    durations = []
+    events = []
+    start = None
+    for i, dry in enumerate(ind_Dr):
+        if dry and start is None:
+            start = i
+        elif not dry and start is not None:
+            length = i - start
+            durations.append(length)
+            events.append((start, i - 1))
+            start = None
+    if start is not None:
+        length = len(S_t) - start
+        durations.append(length)
+        events.append((start, len(S_t) - 1))
+    return events, durations
+
+def calc_lbd_Dr(par, atmo_par, soil_par, Nsim = int(1e6)):
+    '''
+    Estimate drought event rates via Monte Carlo simulation.
+
+    This function performs simulations of monthly soil water balance driven by 
+    stochastic temperature variability and atmospheric circulation regimes. 
+    For each simulated year, it identifies at most one drought event and maps its 
+    severity to an upper-tail discretization.
+
+    Parameters
+    ----------
+    par : dict
+        Drought source parameters.
+
+    atmo_par : dict
+        Atmospheric parameters from the atmospheric environmental layer.
+
+    soil_par : dict
+        Soil parameters from the soil environmental layer.
+
+    Nsim : int, optional
+        Number of Monte Carlo simulations (years). Default is 1e6.
+
+    Returns
+    -------
+    lbdi : ndarray
+        Estimated event rates
+   '''
+    # temperature time series
+    moni = np.arange(12)+1
+    T0_mo, _, _ = GenMR_env.EnvLayer_atmo.calc_T0_EBCM(par['lat_deg'], moni)   # mean monthly temperature
+    DT0_stoch = np.random.normal(0, par['sigmaT_yearly'], Nsim)
+    DTadv_stoch = HazardFootprintGenerator.sample_T_advectivemodel(np.zeros(Nsim), par['lat_deg'])
+    T0_mo_stoch = T0_mo[:, np.newaxis] + DT0_stoch[np.newaxis, :] + DTadv_stoch[np.newaxis, :]
+
+    # atmopsheric regime: anticyclone vs cyclone
+    w = np.where(DTadv_stoch >= 0, atmo_par['vz_subs_asc'][0], atmo_par['vz_subs_asc'][1])
+    cloudy = np.where(DTadv_stoch >= 0, False, True)
+    z_tropopause = GenMR_env.EnvLayer_atmo.calc_z_tropopause(par['lat_deg'])
+    par_rain = {'p0': atmo_par['p0_kPa'], 'lapse_rate': atmo_par['lapse_rate_degC/km'], \
+                'eta_rain': atmo_par['eta_rain'], 'zmax_km': z_tropopause}
+
+    Dr_S_list = np.zeros(Nsim)
+    for sim in trange(Nsim, desc = 'Simulating droughts'):
+        #evapotranspiration from soils
+        ET0 = calc_PET(T0_mo_stoch[:,sim], par['lat_deg'], cloudy = cloudy[sim])
+        # precipitation
+        I_rain = gen_precipitation(T0_mo_stoch[:,sim], w[sim], par_rain)
+        # standard bucket / vertical water balance model
+        hw_mo = update_soil_moisture(I_rain, ET0, soil_par['hw0_m']*1e3, soil_par['hw_max_m']*1e3)   # (mm)
+        # get drought (none if Dr_S empty)
+        Dr_ti, Dr_S = get_Dr(hw_mo, soil_par['hw_fc_m'] * par['hw_th'])
+        if len(Dr_S) != 0:
+            Dr_S_list[sim] = Dr_S[0]  # only one possible per year by construction
+    
+    # retrieve rates
+    Si = par['Si_mo']
+    S_map = pd.DataFrame({'S_raw': Dr_S_list[Dr_S_list > 0.]})
+    S_map['S'] = S_map['S_raw'].apply(lambda s: GenMR_utils.map2upperTail(s, Si))
+    nS = len(Si)
+    lbdi = np.zeros(nS)
+    for i in range(nS):
+        lbdi[i] = np.sum(S_map['S'] == Si[i]) / Nsim
+    return lbdi
+
+
 
 #####################
 # HAZARD FOOTPRINTS #
@@ -1820,9 +2108,6 @@ class HazardFootprintGenerator:
                         plt.close()
 
 
-    ## DROUGHT FUNCTIONS ##
-
-
 
     ###################################
     ## INTENSITY FOOTPRINT GENERATOR ##
@@ -1994,17 +2279,6 @@ class HazardFootprintGenerator:
         df = pd.DataFrame([{'evID': r['evID'], 'S_raw': r['S_raw']} for r in results])
         return results, df              
 
-    def _map2upperTail(self, size, Si):
-        '''
-        Map event size to upper-tail size class Si.
-        Returns the smallest Si >= size.
-        '''
-        Si = np.asarray(Si)
-        idx = np.searchsorted(Si, size, side='left')
-        if idx >= len(Si):
-            return Si[-1]
-        return Si[idx]
-
     def _run_HW(self, Nev_peril, atmoLayer_T):
         path_HW_stochset = 'figs/HW_stochset_tmp/'
         Nsim = 100000   # WARNING: hard-coded, high enough to get reasonable estimates of rate(Si)
@@ -2015,6 +2289,7 @@ class HazardFootprintGenerator:
         cache_files = {evID: self._cache_path(evID) for evID in evIDi}
         all_cached = (not self.force_recompute and all(os.path.exists(path) for path in cache_files.values()) and os.path.exists(path_HW_stochset))
         if all_cached:
+            self.rate_HW = np.load(os.path.join(self.cache_dir, f'rates_HW.npy'))
             for evID, path in cache_files.items():
                 self.catalog_hazFootprints[evID] = np.load(path)
             print('(loading from cache)')
@@ -2030,13 +2305,15 @@ class HazardFootprintGenerator:
             HW_footprints, HW_fp_metadata = self._load_HW_footprints(path_HW_stochset + 'data')
             # Pool largest footprint per Si - for Tutorial 2
             Si2evID = dict(zip(Si, evIDi))
-            HW_fp_metadata['S'] = HW_fp_metadata['S_raw'].apply(lambda s: self._map2upperTail(s, Si))    
+            HW_fp_metadata['S'] = HW_fp_metadata['S_raw'].apply(lambda s: GenMR_utils.map2upperTail(s, Si))    
             HW_fp_metadata['fp_S'] = [np.sum(~np.isnan(HW_footprints[i]['HW_fp'])) for i in HW_fp_metadata.index]
                                     # fp_S as footprint spatial extent, proxy to temperature amplitude above threshold
             lbdi = (HW_fp_metadata.groupby('S').size().reindex(Si, fill_value=0) / Nsim)
             lbdi = lbdi.rename(index = Si2evID)
 
-            self.rate_HW = lbdi
+            self.rate_HW = lbdi.values
+            cache_file = os.path.join(self.cache_dir, f'rates_HW.npy')
+            np.save(cache_file, lbdi)
 
             for i in range(Nev_peril):
                 df_Si = HW_fp_metadata[HW_fp_metadata['S'] == Si[i]]
