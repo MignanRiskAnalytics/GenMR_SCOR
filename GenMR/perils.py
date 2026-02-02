@@ -39,7 +39,7 @@ Planned peril models (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-01-28
+:Date: 2026-02-02
 :License: AGPL-3
 """
 
@@ -1251,7 +1251,7 @@ def calc_lbd_Dr(par, atmo_par, soil_par, Nsim = int(1e6)):
         # standard bucket / vertical water balance model
         hw_mo = update_soil_moisture(I_rain, ET0, soil_par['hw0_m']*1e3, soil_par['hw_max_m']*1e3)   # (mm)
         # get drought (none if Dr_S empty)
-        Dr_ti, Dr_S = get_Dr(hw_mo, soil_par['hw_fc_m'] * par['hw_th'])
+        _, Dr_S = get_Dr(hw_mo, soil_par['hw_fc_m']*1e3 * par['hw_th'])
         if len(Dr_S) != 0:
             Dr_S_list[sim] = Dr_S[0]  # only one possible per year by construction
     
