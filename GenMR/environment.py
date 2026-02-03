@@ -662,10 +662,12 @@ class EnvLayer_atmo:
         self.topo = copy.copy(topo)
         self.par = par
         self.grid = self.topo.grid
-        self.T0, _, _ = self.calc_T0_EBCM(self.par['lat_deg'], self.par['month'], phase = np.pi) # phase hardcoded
+        moni = np.arange(12)+1
+        self.T0, _, _ = self.calc_T0_EBCM(self.par['lat_deg'], moni, phase = np.pi) # phase hardcoded
         topo_z_corr = self.topo.z.copy() * 1e-3  # m to km
         topo_z_corr[topo_z_corr < 0.] = 0        # water surface at z=0
-        self.T = self.calc_T_z(topo_z_corr, self.T0, lapse_rate = self.par['lapse_rate_degC/km'])
+#        self.T = self.calc_T_z(topo_z_corr, self.T0, lapse_rate = self.par['lapse_rate_degC/km'])
+        self.T = self.calc_T_z(topo_z_corr[None, :, :], self.T0[:, None, None], lapse_rate=self.par['lapse_rate_degC/km'])
 
     @property
     def z_tropopause(self):
@@ -879,7 +881,6 @@ class EnvLayer_atmo:
         where:
             g   = 9.80665 m s⁻² (gravitational acceleration)
             R_d = 287.05 J kg⁻¹ K⁻¹ (gas constant for dry air)
-
         '''
         g = 9.80665       # standard Gravity (m/s2)
         R_d = 287.05      # specific gas constant for dry air  (J/kg/K)
@@ -894,6 +895,8 @@ class EnvLayer_atmo:
         p_Pa = p0_kPa * 1e3 * (T_z / T0_K) ** exponent
         p_kPa = p_Pa * 1e-3
         return p_kPa
+
+
 
 ## SOIL ##
 class EnvLayer_soil:
@@ -2306,21 +2309,36 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
         if envLayer.ID == 'atmo':
             IDs = IDs + '_atmo'
 
+            month_no = 1
             if topo_bool:
                 ax[i,0].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray')
-            img1 = ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.T, cmap = 'bwr', \
+            img1 = ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.T[month_no-1,:,:], cmap = 'bwr', \
                                          vmin=-10, vmax=20, alpha = .5)
-            month = GenMR_utils.month_labels[envLayer.par['month']-1]
-            ax[i,0].contour(envLayer.grid.xx, envLayer.grid.yy, envLayer.T, levels = [envLayer.z_freezinglevel], colors = 'blue')
+            month = GenMR_utils.month_labels[month_no-1]
+            ax[i,0].contour(envLayer.grid.xx, envLayer.grid.yy, envLayer.T[month_no-1,:,:], levels = [envLayer.z_freezinglevel[month_no-1]], colors = 'blue')
             ax[i,0].set_xlabel('$x$ (km)')
             ax[i,0].set_ylabel('$y$ (km)')
-            ax[i,0].set_title('ATMOSPHERE: temperature $T$', size = 14)
+            ax[i,0].set_title(f'ATMOSPHERE: temperature $T$ ({month})', size = 14)
             ax[i,0].set_aspect(1)
             proxy = Line2D([0], [0], color='blue', label = f'Freezing level in {month}')
             ax[i,0].legend(handles=[proxy], loc='upper left')
             fig.colorbar(img1, ax = ax[i,0], fraction = .04, pad = .04, label = 'temperature ($^\circ$C)')
 
-            ax[i,1].set_axis_off()
+            month_no = 7
+            if topo_bool:
+                ax[i,1].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray')
+            img1 = ax[i,1].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.T[month_no-1,:,:], cmap = 'bwr', \
+                                         vmin=-10, vmax=20, alpha = .5)
+            month = GenMR_utils.month_labels[month_no-1]
+            ax[i,1].contour(envLayer.grid.xx, envLayer.grid.yy, envLayer.T[month_no-1,:,:], levels = [envLayer.z_freezinglevel[month_no-1]], colors = 'blue')
+            ax[i,1].set_xlabel('$x$ (km)')
+            ax[i,1].set_ylabel('$y$ (km)')
+            ax[i,1].set_title(f'ATMOSPHERE: temperature $T$ ({month})', size = 14)
+            ax[i,1].set_aspect(1)
+            proxy = Line2D([0], [0], color='blue', label = f'Freezing level in {month}')
+            ax[i,1].legend(handles=[proxy], loc='upper left')
+            fig.colorbar(img1, ax = ax[i,1], fraction = .04, pad = .04, label = 'temperature ($^\circ$C)')
+
             ax[i,2].set_axis_off()
 
         ## SOIL LAYER ##

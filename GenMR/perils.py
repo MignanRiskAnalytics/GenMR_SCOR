@@ -1997,19 +1997,21 @@ class HazardFootprintGenerator:
         src : dict
             Source dictionary containing model parameters in ``src.par['HW']``.
             Required keys include:
-            - ``T_th`` : float
+            - T_th : float
                 Heatwave temperature threshold (°C).
-            - ``Dt_da`` : int
+            - Dt_da : int
                 Minimum duration (days) to define a heatwave.
-            - ``Dt_max_da`` : int
+            - Dt_max_da : int
                 Maximum duration (days) of simulated daily temperatures.
-            - ``sigmaT_daily`` : float
+            - sigmaT_daily : float
                 Standard deviation of daily temperature variability (°C).
-            - ``sigmaT_yearly`` : float
+            - sigmaT_yearly : float
                 Standard deviation of yearly temperature variability (°C).
-            - ``corrT`` : float
+            - corrT : float
                 Temporal correlation coefficient of daily temperatures.
-            - ``lat_deg`` : float
+            - month : int
+                Calendar month (Jan = 1, Dec = 12) during which heatwave potentially occurs
+            - lat_deg : float
                 Latitude (degrees) used in the advective temperature model.
 
         atmoLayer : class
@@ -2046,20 +2048,21 @@ class HazardFootprintGenerator:
         dayi = np.arange(src.par['HW']['Dt_max_da'])+1
         Ti = np.arange(Tmin, Tmax, 1)
         Tmin_compute = T_th_HW - src.par['HW']['sigmaT_daily']
-        T0 = np.max(atmoLayer.T)
+        mon_i = src.par['HW']['month'] - 1
+        T0 = np.max(atmoLayer.T[mon_i])
 
         T0_sim = np.random.normal(T0, src.par['HW']['sigmaT_yearly'], Nsim)
         Tadv_sim = HazardFootprintGenerator.sample_T_advectivemodel(T0_sim, src.par['HW']['lat_deg'])
         DTadv_sim = Tadv_sim - T0
 
-        nx, ny = atmoLayer.T.shape
+        nx, ny = atmoLayer.T[mon_i,:,:].shape
         catalog_hazFootprints_HW = {}
         k = 1
         for sim in range(Nsim):
             if sim % 1000 == 0:
                 print(f'{sim}/{Nsim}', end = '\r', flush = True)
             if Tadv_sim[sim] > Tmin_compute:
-                T_map_mean = atmoLayer.T + DTadv_sim[sim]
+                T_map_mean = atmoLayer.T[mon_i,:,:] + DTadv_sim[sim]
                 T_daily_stoch = HazardFootprintGenerator.sample_T_daily(Tadv_sim[sim], src.par['HW']['sigmaT_daily'], \
                                             Ndays = Ndays, rho = src.par['HW']['corrT'])    
                 dT_daily_stoch = T_daily_stoch - Tadv_sim[sim]
@@ -2097,7 +2100,6 @@ class HazardFootprintGenerator:
                         ax[1].set_title(f'Daily temp. at {Tadv_sim[sim]:.1f}°C', pad = 20)
                         ax[1].spines['right'].set_visible(False)
                         ax[1].spines['top'].set_visible(False)
-#                        ax[2].contourf(atmoLayer.grid.xx, atmoLayer.grid.yy, HW_fp_stoch.astype(int), cmap = 'Reds', alpha = .5, levels = [.5, 1.5])
                         ax[2].contourf(atmoLayer.grid.xx, atmoLayer.grid.yy, HW_fp_stoch, cmap = 'Reds')
                         ax[2].set_xlabel('$x$ (km)')
                         ax[2].set_ylabel('$y$ (km)')
