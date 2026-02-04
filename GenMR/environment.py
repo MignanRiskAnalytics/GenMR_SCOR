@@ -267,7 +267,8 @@ class EnvLayer_topo:
                 indy0 = np.where(self.grid.y == y0)[0]
                 self.z[indx0[0],indy0] = self.z[indx0[0],indy0] - river_h * 2       # river ordinate
                 self.z[indx0[0],indy0-1] = self.z[indx0[0],indy0-1] - river_h * 2   # pixel below river ordinate
-        self.d2coastline = self.calc_d2coastline()
+        if self.par['calc_d2coastline']:
+            self.d2coastline = self.calc_d2coastline()
 
     def __repr__(self):
         return 'EnvLayer_topo({},{},{})'.format(repr(self.grid), self.par, self.src)
@@ -921,7 +922,7 @@ class EnvLayer_soil:
 
     Parameters
     ----------
-    topo : EnvLayer_topo
+    topo : EnvLayer_atmo
         The topography layer used as reference for the soil layer.
     par : dict
         Dictionary of parameters for the soil layer. Expected keys include:
@@ -949,7 +950,7 @@ class EnvLayer_soil:
     '''
     def __init__(self, topo, par):
         self.ID = 'soil'
-        self.topo = copy.copy(topo)
+        self.topo = copy.deepcopy(topo)
         self.par = par
         self.grid = self.topo.grid
         self.h = np.repeat(self.par['h0_m'], self.grid.nx * self.grid.ny).reshape(self.grid.nx, self.grid.ny)
@@ -1110,7 +1111,7 @@ class EnvLayer_natLand:
     '''
     def __init__(self, soil, par):
         self.ID = 'natLand'
-        self.soil = copy.copy(soil)
+        self.soil = copy.deepcopy(soil)
         self.grid = self.soil.grid
         self.topo = self.soil.topo
         self.src = self.soil.topo.src
@@ -1441,13 +1442,17 @@ class EnvLayer_urbLand:
     White R, Engelen G, Uljee I (1997), The use of constrained cellular automata for high-resolution modelling of urban land-use dynamics. 
     Environment and Planning B: Planning and Design, 24, 323-343. 
     '''
-    def __init__(self, natLand, par):
+    def __init__(self, natLand, atmo, par):
         self.ID = 'urbLand'
-        self.grid = copy.copy(natLand.grid)
-        self.topo = copy.copy(natLand.topo)
+        self.natLand = copy.deepcopy(natLand)
+        self.grid = self.natLand.grid
+        self.topo = self.natLand.topo
+        self.soil = self.natLand.soil
         self.par = par
+        if self.par['crops']:
+            self.atmo =  copy.deepcopy(atmo)
         # class: -1 = water mask, 0 = grassland, 1 = forest + built: 2 = residential, 3 = industrial, 4 = commercial
-        self.S = np.copy(natLand.S)
+        self.S = self.natLand.S
         self.year = self.par['city_yr0']
         # SLEUTH parameters
         self.urban_yes = np.logical_and(self.S == 1, self.topo.slope < self.par['SLEUTH_maxslope'])
@@ -1471,6 +1476,29 @@ class EnvLayer_urbLand:
                    np.where(self.grid.y > self.par['city_seed'][1]-1e-6)[0][0]] = 1
         self.built_yr = np.full((self.grid.nx,self.grid.ny), np.nan)
         self.built_yr[self.built == 1] = self.year
+
+    def generate(self):
+        # generate city with intertwinned road network
+        self.run()
+
+        # add crops
+        if self.par['crops']:
+            mask_slope = self.topo.slope < self.par['crop_slope_max']
+            mask_z = self.topo.z < self.par['crop_z_max']
+            mask_h = self.soil.h >= self.par['crop_h_min']
+            mask_forest = self.S == 1
+            mask_coast = self.topo.d2coastline > self.par['crop_dcoast_min']
+            mask_crop = mask_slope & mask_z & mask_h & mask_forest & mask_coast
+            mask_crop_int = mask_crop.astype(int)
+
+            T_index_wheat = self.crop_T_suitability(self.atmo.T, 'wheat') * mask_crop_int
+            T_index_maize = self.crop_T_suitability(self.atmo.T, 'maize') * mask_crop_int
+
+            S_crop = np.where(T_index_wheat > T_index_maize, 5, 6)             # wheat, maize classes
+#            T_index_min = .2                                                   # no crop below - hardcoded
+#            S_crop[np.maximum(T_index_wheat,T_index_maize) < T_index_min] = 1  # forest class
+            self.S[mask_crop] = S_crop[mask_crop]
+
 
     def __iter__(self):
         return self
@@ -1624,6 +1652,12 @@ class EnvLayer_urbLand:
         self.S[self.built_type == 0] = 4  # commercial
         # built attributes
         self.built_yr[np.logical_and(self.S >= 2, np.isnan(self.built_yr))] = self.year
+
+    def run(self):
+        for _ in tqdm(range(self.par['city_yrs'])):
+            next(self)
+        return self
+
 
     @property
     def roadNet_coord(self):
@@ -2053,6 +2087,7 @@ class EnvLayer_urbLand:
             Ex_S_kton=None,
         )
     
+
     ## define crops ##
     def crop_T_suitability(self, atmoLayer_T, crop):
         '''
@@ -2106,6 +2141,12 @@ class EnvLayer_urbLand:
         T_index = T_index * mask_Tmin
 
         return T_index
+
+
+
+
+
+
 
 
 #####################################
