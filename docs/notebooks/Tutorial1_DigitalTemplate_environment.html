@@ -131,6 +131,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.gridlow"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.gridlow</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.algo_diamondsquare"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.algo_diamondsquare()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.aspect"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.aspect</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.calc_d2coastline"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.calc_d2coastline()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.coastline_coord"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.coastline_coord</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.model_cs_compoundbevel"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.model_cs_compoundbevel()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.model_fr_diamondsquare"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.model_fr_diamondsquare()</span></code></a></li>
@@ -161,12 +162,15 @@
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.bldg_type"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.bldg_type</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.bldg_value"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.bldg_value</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.calc_Pr_urbanise"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.calc_Pr_urbanise()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.crop_T_suitability"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.crop_T_suitability()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.generate"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.generate()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.get_S_urban"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_S_urban()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.get_d4mkd"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_d4mkd()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.get_industrialZones"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_industrialZones()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.get_state_built"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_state_built()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.industrialZones"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.industrialZones</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.roadNet_coord"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.roadNet_coord</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.run"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.run()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.transform_landUse"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.transform_landUse()</span></code></a></li>
 </ul>
 </li>
@@ -321,7 +325,11 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#technological-environment-generation">2. Technological environment generation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#generating-the-urban-land-layer-and-road-network-object">2.1. Generating the urban land layer (and road network object)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#generating-the-urban-land-layer-incl-crops">2.1. Generating the urban land layer (incl. crops)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#generating-the-urban-lan-and-road-network-object">2.1.1. Generating the urban lan and road network object</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modelling-crops">2.1.2. Modelling crops</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#environmental-layer-properties">2.2. Environmental layer properties</a></li>
 </ul>
 </li>
@@ -361,9 +369,10 @@
 <li class="toctree-l2"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#appendix">Appendix</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#a-peril-sources">A. Peril sources</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#b-stochastic-event-set">B. Stochastic event set</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#b-1-earthquake-case">B.1. Earthquake case</a></li>
-<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#b-2-lightning-case">B.2. Lightning case</a></li>
-<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#b-3-tornado-case">B.3. Tornado case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#b-1-drought-case">B.1. Drought case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#b-2-earthquake-case">B.2. Earthquake case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#b-3-lightning-case">B.3. Lightning case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#b-4-tornado-case">B.4. Tornado case</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-hazard-footprints">C. Hazard footprints</a><ul>
@@ -406,7 +415,7 @@
 <h1>Tutorial 1: Generating a virtual environment for the GenMR digital template<a class="headerlink" href="#tutorial-1-generating-a-virtual-environment-for-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 1.1.2<br />
-<strong>Last Updated:</strong> 2026-01-28<br />
+<strong>Last Updated:</strong> 2026-02-04<br />
 <strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
 <p>The <em>digital template</em>, first described in <a class="reference external" href="https://www.mdpi.com/1660-4601/19/23/16097">Mignan (2022)</a> and used in the CAT Risk Modelling Sandbox (<a class="reference external" href="https://github.com/amignan/Intro2CATriskModelling/blob/main/CATRiskModellingSandbox_tutorial.ipynb">Mignan, 2024</a>), is a microcosm simulation of the complex Earth system for catastrophe dynamics R&amp;D, multi-risk prototyping in the Generic Multi-Risk (GenMR) framework, and catastrophe risk eduction. It is defined as a virtual environment populated by loss-generating events that interact with each other and with the environment. The virtual environment, to be built in this tutorial, is composed of <em>environmental layers</em> that consist of sets of variables <span class="math notranslate nohighlight">\(\theta(x,y)\)</span> defined in a spatial grid of coordinates <span class="math notranslate nohighlight">\((x,y)\)</span>. Each layer may be altered by <em>environmental objects</em> located within the layer. The parsimonious complex Earth system finally consists of a stack of interacting environmental layers defined in the natural, technological and socio-economic systems. The loss-generating events that populate the virtual environment will be defined in the next tutorial, and their occurrence rates and interactions in a third and final tutorial.</p>
 <p>Currently, a limited number of environmental layers and objects are available (Fig. 1, Table 1). This notebook provides a concise overview of these layers using a default parameterisation, with alternative scenarios to be introduced later in How-To Guides. The outputs generated here will serve as input for hazard and risk assessment in the subsequent tutorials.</p>
@@ -512,7 +521,7 @@ The environmental layers are generated as follows:
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.patches</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span> <span class="k">as</span> <span class="n">MplPolygon</span>
 
-<span class="c1">#import warnings </span>
+<span class="c1">#import warnings</span>
 <span class="c1">#warnings.filterwarnings(&#39;ignore&#39;)   # commented, try to remove all warnings</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">GenMR</span><span class="w"> </span><span class="kn">import</span> <span class="n">environment</span> <span class="k">as</span> <span class="n">GenMR_env</span>
@@ -631,12 +640,12 @@ The environmental layers are generated as follows:
     <span class="s1">&#39;fr&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;fr_Df&#39;</span><span class="p">:</span> <span class="mf">2.6</span><span class="p">,</span> <span class="s1">&#39;fr_eta&#39;</span><span class="p">:</span> <span class="mf">.5</span><span class="p">,</span> <span class="s1">&#39;fr_seed&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="s1">&#39;rv&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;rv_tan(phiWE)&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="o">/</span><span class="mi">1000</span><span class="p">],</span> <span class="s1">&#39;rv_tan(phiNS)&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;rv_eta&#39;</span><span class="p">:</span> <span class="mf">.1</span><span class="p">,</span>
     <span class="s1">&#39;cs&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;cs_w_km&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;cs_tan(phi)&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="o">/</span><span class="mi">1000</span><span class="p">,</span> <span class="s1">&#39;cs_eta&#39;</span><span class="p">:</span> <span class="mf">.1</span><span class="p">,</span>
-    <span class="s1">&#39;plt_zmin_m&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">500</span><span class="p">,</span> <span class="s1">&#39;plt_zmax_m&#39;</span><span class="p">:</span> <span class="mi">4500</span>
+    <span class="s1">&#39;plt_zmin_m&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">500</span><span class="p">,</span> <span class="s1">&#39;plt_zmax_m&#39;</span><span class="p">:</span> <span class="mi">4500</span><span class="p">,</span>
+    <span class="s1">&#39;calc_d2coastline&#39;</span><span class="p">:</span> <span class="kc">True</span>     <span class="c1"># must be True if &#39;urbLandPar[&#39;crops&#39;] = True&#39;</span>
 <span class="p">}</span>
 
 <span class="n">atmoPar</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;lat_deg&#39;</span><span class="p">:</span> <span class="n">gridPar</span><span class="p">[</span><span class="s1">&#39;lat_deg&#39;</span><span class="p">],</span>
-    <span class="s1">&#39;month&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>                  <span class="c1"># calendar month (1=Jan., 12=Dec.) - seasonality to be implemented in Tutorial 3</span>
     <span class="s1">&#39;lapse_rate_degC/km&#39;</span><span class="p">:</span> <span class="mf">6.5</span><span class="p">,</span>   <span class="c1"># rate at which temperature falls with altitude z</span>
     <span class="s1">&#39;p0_kPa&#39;</span><span class="p">:</span> <span class="mf">101.3</span><span class="p">,</span>             <span class="c1"># standard mean sea-level atmospheric pressure (International Standard Atmosphere)</span>
     <span class="s1">&#39;vz_subs_asc&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">1e-3</span><span class="p">,</span> <span class="mf">1.</span><span class="p">],</span>  <span class="c1"># large-scale vertical velocity (m/s), w &lt; 0: subside (anticyclone)</span>
@@ -669,9 +678,14 @@ The environmental layers are generated as follows:
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">grid</span> <span class="o">=</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">RasterGrid</span><span class="p">(</span><span class="n">gridPar</span><span class="p">)</span>
 <span class="n">topoLayer</span> <span class="o">=</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">EnvLayer_topo</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">topoPar</span><span class="p">)</span>
-<span class="n">atmoLayer</span> <span class="o">=</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">EnvLayer_atmo</span><span class="p">(</span><span class="n">topoLayer</span><span class="p">,</span> <span class="n">atmoPar</span><span class="p">)</span>     <span class="c1"># for now does not propagate to soil - to update</span>
+<span class="n">atmoLayer</span> <span class="o">=</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">EnvLayer_atmo</span><span class="p">(</span><span class="n">topoLayer</span><span class="p">,</span> <span class="n">atmoPar</span><span class="p">)</span>
 <span class="n">soilLayer</span> <span class="o">=</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">EnvLayer_soil</span><span class="p">(</span><span class="n">topoLayer</span><span class="p">,</span> <span class="n">soilPar</span><span class="p">)</span>
 <span class="n">natLandLayer</span> <span class="o">=</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">EnvLayer_natLand</span><span class="p">(</span><span class="n">soilLayer</span><span class="p">,</span> <span class="n">natLandPar</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Calculating distance to coastline: 100%|████| 1401/1401 [00:35&lt;00:00, 38.93it/s]
 </pre></div>
 </div>
 </div>
@@ -699,7 +713,7 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c640fe2e69dfa44756b875f2f486eba362471810fc0751631a62c596550cae66.png" src="../_images/c640fe2e69dfa44756b875f2f486eba362471810fc0751631a62c596550cae66.png" />
+<img alt="../_images/493593d36c53877afcfa45cfff86bd0b3017008eb1085895350f6a5f14309797.png" src="../_images/493593d36c53877afcfa45cfff86bd0b3017008eb1085895350f6a5f14309797.png" />
 </div>
 </div>
 <p>The function <code class="docutils literal notranslate"><span class="pre">plot_EnvLayer_attr()</span></code> plots individual attributes (incl. properties) from environmental layers. If the elevation is given in the argument <code class="docutils literal notranslate"><span class="pre">hillshading_z</span></code>, hill shading is added in the background.</p>
@@ -721,9 +735,11 @@ The environmental layers are generated as follows:
 </section>
 <section id="technological-environment-generation">
 <h2>2. Technological environment generation<a class="headerlink" href="#technological-environment-generation" title="Link to this heading"></a></h2>
-<p>The technological system refers to all things produced by humans. This includes the built environment and critical infrastructures (transportation network, energy production and distribution). Goods and services (via businesses) will be defined in the socio-economic system.</p>
-<section id="generating-the-urban-land-layer-and-road-network-object">
-<h3>2.1. Generating the urban land layer (and road network object)<a class="headerlink" href="#generating-the-urban-land-layer-and-road-network-object" title="Link to this heading"></a></h3>
+<p>The technological system refers to all things produced by humans. This includes the built environment, critical infrastructures (transportation network, energy production and distribution), and crops. Goods and services (via businesses) will be defined in the socio-economic system.</p>
+<section id="generating-the-urban-land-layer-incl-crops">
+<h3>2.1. Generating the urban land layer (incl. crops)<a class="headerlink" href="#generating-the-urban-land-layer-incl-crops" title="Link to this heading"></a></h3>
+<section id="generating-the-urban-lan-and-road-network-object">
+<h4>2.1.1. Generating the urban lan and road network object<a class="headerlink" href="#generating-the-urban-lan-and-road-network-object" title="Link to this heading"></a></h4>
 <p>The <strong>urban land layer</strong> (parameterized in <code class="docutils literal notranslate"><span class="pre">urbLandPar</span></code>) updates the natural land layer by urbanising grid pixels with new states <span class="math notranslate nohighlight">\(S = 2\)</span> for residential, <span class="math notranslate nohighlight">\(S = 3\)</span> for industrial and <span class="math notranslate nohighlight">\(S = 4\)</span> for commercial. The city nucleates at <code class="docutils literal notranslate"><span class="pre">city_seed</span></code><span class="math notranslate nohighlight">\((x,y)\)</span> and grows for a period of <code class="docutils literal notranslate"><span class="pre">city_yrs</span></code> years by following the main rules of the SLEUTH CA (Clarke et al., 1997; Candau et al., 2002; Candau, 2002) parameterized by <code class="docutils literal notranslate"><span class="pre">SLEUTH_*</span></code>. Each year, the city develops constrained on the road network configuration (an environmental object in the digital template) that grows in parallel to the city, and which is also based on a CA (Koenig &amp; Bauriedel, 2009) with parameters <code class="docutils literal notranslate"><span class="pre">road_*</span></code> in the dictionary <code class="docutils literal notranslate"><span class="pre">urbLandPar</span></code>. After each built per simulation-year, built grid pixels get their state <span class="math notranslate nohighlight">\(S\)</span> following the land-use transformation function of White et al. (1997:tab.1). The full description of this hybrid city-generator will be given in a future article (Mignan, in prep.; see <a class="reference external" href="https://www.cambridge.org/highereducation/books/introduction-to-catastrophe-risk-modelling/A3A5B5FB990921422BFEBB07734BF869#overview">Mignan, 2024:boxes 3.1-3.3</a> for a summary).</p>
 <p><strong>On the SLEUTH model:</strong> Please note that the SLEUTH algorithm used for <code>GenMR</code> was developed from the modelling instructions provided in Clarke et al. (1997) and Candau (2002) to gain knowledge on the general process of city growth. It is therefore likely that the code differs in several ways from the official SLEUTH urban growth model. Consider using <code><a href="https://pypi.org/project/sleuth-automation/" target="_blank">sleuth-automation</a></code> for any dedicated SLEUTH model use. The class <code>GenMR.environment.EnvLayer_landUrb()</code> includes a road network CA within the SLEUTH loop and adds the land use transformation function of White et al. (1997) instead of the SLEUTH Deltatron at the end of each year-run.</p>
 <p>Depending on the parameterization (especially on the value of <code class="docutils literal notranslate"><span class="pre">city_yrs</span></code>), the city generation may take more than a few minutes! (possibly half an hour for a 100-year built). To expedite the process, the user could directly load the saved default <code class="docutils literal notranslate"><span class="pre">urbLandLayer</span></code> class instance by defining <code class="docutils literal notranslate"><span class="pre">file_urbLandLayer</span> <span class="pre">=</span> <span class="pre">'envLayer_natLand_default.pkl'</span></code> below if such file already exists.</p>
@@ -735,18 +751,21 @@ The environmental layers are generated as follows:
 <li><p>Commercial: Reinforced concrete (RC), <span class="math notranslate nohighlight">\(c_1 = 33.6\)</span> and <span class="math notranslate nohighlight">\(c_2 = 0.357\)</span>;</p></li>
 <li><p>Industrial: Steel (S), <span class="math notranslate nohighlight">\(c_1 = 30.8\)</span> and <span class="math notranslate nohighlight">\(c_2 = 0.325\)</span>.</p></li>
 </ul>
-<p>(<em>Note on possible future improvement:</em> adding a modifying factor with distance from city center (or built year) to distinguish the historical centre from more modern areas)</p>
+</section>
+<section id="modelling-crops">
+<h4>2.1.2. Modelling crops<a class="headerlink" href="#modelling-crops" title="Link to this heading"></a></h4>
+<p>Two types of crops are modelled (wheat and maize), based on a temperature-based crop suitability index calculated from monthly near-surface air temperature and on other physical constraints defined by threshold <code class="docutils literal notranslate"><span class="pre">crop_*</span></code> in <code class="docutils literal notranslate"><span class="pre">urbLandPar</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#file_urbLandLayer = &#39;&#39;           # run the city growth model if &#39;&#39; provided</span>
-<span class="n">file_urbLandLayer</span> <span class="o">=</span> <span class="s1">&#39;envLayer_urbLand.pkl&#39;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">file_urbLandLayer</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>           <span class="c1"># run the city growth model if &#39;&#39; provided</span>
+<span class="c1">#file_urbLandLayer = &#39;envLayer_urbLand.pkl&#39;</span>
 
 <span class="n">urbLandPar</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;lores_f&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;rdm_seed&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="c1"># seed does not work -&gt; find where to put it...</span>
     <span class="s1">&#39;city_seed&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">40.5</span><span class="p">,</span><span class="mf">20.5</span><span class="p">],</span>     <span class="c1"># coordinates of city seed centre (put near river as historical centre)</span>
     <span class="s1">&#39;city_yr0&#39;</span><span class="p">:</span> <span class="mi">1900</span><span class="p">,</span>             <span class="c1"># year of settlement creation</span>
     <span class="s1">&#39;city_yrs&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>              <span class="c1"># number of years for urban growth from seed</span>
-    <span class="s1">&#39;SLEUTH_maxslope&#39;</span><span class="p">:</span> <span class="mi">22</span><span class="p">,</span>        <span class="c1"># cannot build above (degree) - Candau &amp; Rasmussen (2000:2)</span>
+    <span class="s1">&#39;SLEUTH_maxslope&#39;</span><span class="p">:</span> <span class="mi">22</span><span class="p">,</span>        <span class="c1"># cannot build above (°) - Candau &amp; Rasmussen (2000:2)</span>
     <span class="s1">&#39;SLEUTH_disp&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>            <span class="c1"># dispersion coefficient</span>
     <span class="s1">&#39;SLEUTH_breed&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>           <span class="c1"># breed coefficient</span>
     <span class="s1">&#39;SLEUTH_spread&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>          <span class="c1"># spread coefficient</span>
@@ -757,8 +776,15 @@ The environmental layers are generated as follows:
     <span class="s1">&#39;road_maxslope&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>          <span class="c1"># cannot build above (degree)</span>
     <span class="s1">&#39;road_X&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>                  <span class="c1"># </span>
     <span class="s1">&#39;bldg_RES_wood2brick&#39;</span><span class="p">:</span> <span class="mf">.6</span><span class="p">,</span>    <span class="c1"># ratio of number of RES. blocks made of wood relative to bricks (masonry)</span>
-    <span class="s1">&#39;GPD_percapita_USD&#39;</span><span class="p">:</span> <span class="mf">40e3</span>     <span class="c1"># GDP per capita (USD) used to estimate construction cost for res, com, ind.</span>
+    <span class="s1">&#39;GPD_percapita_USD&#39;</span><span class="p">:</span> <span class="mf">40e3</span><span class="p">,</span>    <span class="c1"># GDP per capita (USD) used to estimate construction cost for res, com, ind.</span>
+    <span class="c1"># crops #</span>
+    <span class="s1">&#39;crops&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>                <span class="c1"># if True, crop classes modelled (wheat and maize hardcoded)</span>
+    <span class="s1">&#39;crop_slope_max&#39;</span><span class="p">:</span> <span class="mf">3.</span><span class="p">,</span>         <span class="c1"># maximum slope (°)</span>
+    <span class="s1">&#39;crop_z_max&#39;</span><span class="p">:</span> <span class="mf">1500.</span><span class="p">,</span>          <span class="c1"># maximum altitude (m)</span>
+    <span class="s1">&#39;crop_h_min&#39;</span><span class="p">:</span> <span class="mf">.5</span><span class="p">,</span>             <span class="c1"># minimum soil depth (m)</span>
+    <span class="s1">&#39;crop_dcoast_min&#39;</span><span class="p">:</span> <span class="mf">5.</span>         <span class="c1"># minimum distance from coastline, i.e., saltwater intrusion limit (km)</span>
 <span class="p">}</span>
+
 <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">save_dict2json</span><span class="p">(</span><span class="n">urbLandPar</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;par_urbLand&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -770,19 +796,19 @@ The environmental layers are generated as follows:
     <span class="n">urbLandLayer</span> <span class="o">=</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">load_pickle2class</span><span class="p">(</span><span class="s1">&#39;/io/&#39;</span> <span class="o">+</span> <span class="n">file_urbLandLayer</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;... urbLandLayer class instance loaded&#39;</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="n">urbLandLayer</span> <span class="o">=</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">EnvLayer_urbLand</span><span class="p">(</span><span class="n">natLandLayer</span><span class="p">,</span> <span class="n">urbLandPar</span><span class="p">)</span>   <span class="c1"># init city instance</span>
-    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">urbLandPar</span><span class="p">[</span><span class="s1">&#39;city_yrs&#39;</span><span class="p">])):</span>
-        <span class="nb">next</span><span class="p">(</span><span class="n">urbLandLayer</span><span class="p">)</span>   
+    <span class="n">urbLandLayer</span> <span class="o">=</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">EnvLayer_urbLand</span><span class="p">(</span><span class="n">natLandLayer</span><span class="p">,</span> <span class="n">atmoLayer</span><span class="p">,</span> <span class="n">urbLandPar</span><span class="p">)</span>
+    <span class="n">urbLandLayer</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
     <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">save_class2pickle</span><span class="p">(</span><span class="n">urbLandLayer</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;envLayer_urbLand&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|█████████████████████████████████████████| 100/100 [39:00&lt;00:00, 23.40s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|█████████████████████████████████████████| 100/100 [37:32&lt;00:00, 22.52s/it]
 </pre></div>
 </div>
 </div>
 </div>
+</section>
 </section>
 <section id="environmental-layer-properties">
 <h3>2.2. Environmental layer properties<a class="headerlink" href="#environmental-layer-properties" title="Link to this heading"></a></h3>
@@ -795,7 +821,7 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/902fa6ee013cf6eec34d41e6f474eccf7ebc209ce4ca44b6040ac3c19ce38e08.png" src="../_images/902fa6ee013cf6eec34d41e6f474eccf7ebc209ce4ca44b6040ac3c19ce38e08.png" />
+<img alt="../_images/2e50054e6c0a477167d211b91115e3b9b41f0c4d77dd7e0e247766c83dfc713b.png" src="../_images/2e50054e6c0a477167d211b91115e3b9b41f0c4d77dd7e0e247766c83dfc713b.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -902,52 +928,52 @@ The environmental layers are generated as follows:
 <br>
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head text-left"><p>Layer ID</p></th>
+<tr class="row-odd"><th class="head text-left"><p>Layer class ID</p></th>
 <th class="head text-left"><p>Attribute</p></th>
 <th class="head text-left"><p>ID</p></th>
 <th class="head text-left"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">topoLayer</span></code></p></td>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo</span></code></p></td>
 <td class="text-left"><p>Elevation</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">z</span></code></p></td>
 <td class="text-left"><p>Main variable (m)</p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">topoLayer</span></code></p></td>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo</span></code></p></td>
 <td class="text-left"><p>Object coordinates</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">coastline_coord</span></code></p></td>
 <td class="text-left"><p>Coordinates of the coastline</p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">topoLayer</span></code></p></td>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo</span></code></p></td>
 <td class="text-left"><p>Object coordinates</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">river_coord</span></code></p></td>
 <td class="text-left"><p>Coordinates of the river(s)</p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">topoLayer</span></code></p></td>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo</span></code></p></td>
 <td class="text-left"><p>Slope</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">slope</span></code></p></td>
 <td class="text-left"><p>Terrain slope (<span class="math notranslate nohighlight">\(^\circ\)</span>)</p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">topoLayer</span></code></p></td>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo</span></code></p></td>
 <td class="text-left"><p>Aspect</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">aspect</span></code></p></td>
 <td class="text-left"><p>Azimuth that the terrain surface faces (<span class="math notranslate nohighlight">\(^\circ\)</span>)</p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">atmoLayer</span></code></p></td>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo</span></code></p></td>
 <td class="text-left"><p>Near-surface air temperature</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">T</span></code></p></td>
-<td class="text-left"><p>Main variable (<span class="math notranslate nohighlight">\(^\circ\)</span>C)</p></td>
+<td class="text-left"><p>Main variable (<span class="math notranslate nohighlight">\(^\circ\)</span>C), monthly</p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">atmoLayer</span></code></p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p></p></td>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo</span></code></p></td>
+<td class="text-left"><p>Tropopause</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">z_tropopause</span></code></p></td>
+<td class="text-left"><p>Altitude (km) of tropopause</p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">atmoLayer</span></code></p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p></p></td>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo</span></code></p></td>
+<td class="text-left"><p>Freezing level</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">z_freezinglevel</span></code></p></td>
+<td class="text-left"><p>Altitude (km) of 0<span class="math notranslate nohighlight">\(^\circ\)</span>C, monthly</p></td>
 </tr>
 <tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil</span></code></p></td>
 <td class="text-left"><p>Soil thickness</p></td>

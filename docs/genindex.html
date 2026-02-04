@@ -126,6 +126,7 @@
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_topo.gridlow"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.gridlow</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_topo.algo_diamondsquare"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.algo_diamondsquare()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_topo.aspect"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.aspect</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_topo.calc_d2coastline"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.calc_d2coastline()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_topo.coastline_coord"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.coastline_coord</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_topo.model_cs_compoundbevel"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.model_cs_compoundbevel()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_topo.model_fr_diamondsquare"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.model_fr_diamondsquare()</span></code></a></li>
@@ -156,12 +157,15 @@
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_urbLand.bldg_type"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.bldg_type</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_urbLand.bldg_value"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.bldg_value</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_urbLand.calc_Pr_urbanise"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.calc_Pr_urbanise()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_urbLand.crop_T_suitability"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.crop_T_suitability()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_urbLand.generate"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.generate()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_urbLand.get_S_urban"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_S_urban()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_urbLand.get_d4mkd"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_d4mkd()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_urbLand.get_industrialZones"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_industrialZones()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_urbLand.get_state_built"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_state_built()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_urbLand.industrialZones"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.industrialZones</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_urbLand.roadNet_coord"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.roadNet_coord</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_urbLand.run"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.run()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_urbLand.transform_landUse"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.transform_landUse()</span></code></a></li>
 </ul>
 </li>
@@ -316,7 +320,11 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#technological-environment-generation">2. Technological environment generation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#generating-the-urban-land-layer-and-road-network-object">2.1. Generating the urban land layer (and road network object)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#generating-the-urban-land-layer-incl-crops">2.1. Generating the urban land layer (incl. crops)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#generating-the-urban-lan-and-road-network-object">2.1.1. Generating the urban lan and road network object</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#modelling-crops">2.1.2. Modelling crops</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#environmental-layer-properties">2.2. Environmental layer properties</a></li>
 </ul>
 </li>
@@ -471,6 +479,8 @@
 </li>
       <li><a href="manual.html#GenMR.environment.calc_coord_river_dampedsine">calc_coord_river_dampedsine() (in module GenMR.environment)</a>
 </li>
+      <li><a href="manual.html#GenMR.environment.EnvLayer_topo.calc_d2coastline">calc_d2coastline() (GenMR.environment.EnvLayer_topo method)</a>
+</li>
       <li><a href="manual.html#GenMR.perils.calc_e0">calc_e0() (in module GenMR.perils)</a>
 </li>
       <li><a href="manual.html#GenMR.utils.calc_EP">calc_EP() (in module GenMR.utils)</a>
@@ -542,6 +552,8 @@
       <li><a href="manual.html#GenMR.utils.col_state_h">col_state_h() (in module GenMR.utils)</a>
 </li>
       <li><a href="manual.html#GenMR.environment.CriticalInfrastructure">CriticalInfrastructure (class in GenMR.environment)</a>
+</li>
+      <li><a href="manual.html#GenMR.environment.EnvLayer_urbLand.crop_T_suitability">crop_T_suitability() (GenMR.environment.EnvLayer_urbLand method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -617,9 +629,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="manual.html#GenMR.perils.gen_precipitation">gen_precipitation() (in module GenMR.perils)</a>
 </li>
-      <li><a href="manual.html#GenMR.perils.DynamicHazardFootprintGenerator.generate">generate() (GenMR.perils.DynamicHazardFootprintGenerator method)</a>
+      <li><a href="manual.html#GenMR.environment.EnvLayer_urbLand.generate">generate() (GenMR.environment.EnvLayer_urbLand method)</a>
 
       <ul>
+        <li><a href="manual.html#GenMR.perils.DynamicHazardFootprintGenerator.generate">(GenMR.perils.DynamicHazardFootprintGenerator method)</a>
+</li>
         <li><a href="manual.html#GenMR.perils.EventSetGenerator.generate">(GenMR.perils.EventSetGenerator method)</a>
 </li>
         <li><a href="manual.html#GenMR.perils.HazardFootprintGenerator.generate">(GenMR.perils.HazardFootprintGenerator method)</a>
@@ -883,9 +897,11 @@
 </li>
       <li><a href="manual.html#GenMR.environment.EnvLayer_urbLand.roads">roads (GenMR.environment.EnvLayer_urbLand attribute)</a>
 </li>
-      <li><a href="manual.html#GenMR.perils.CellularAutomaton_FF.run">run() (GenMR.perils.CellularAutomaton_FF method)</a>
+      <li><a href="manual.html#GenMR.environment.EnvLayer_urbLand.run">run() (GenMR.environment.EnvLayer_urbLand method)</a>
 
       <ul>
+        <li><a href="manual.html#GenMR.perils.CellularAutomaton_FF.run">(GenMR.perils.CellularAutomaton_FF method)</a>
+</li>
         <li><a href="manual.html#GenMR.perils.CellularAutomaton_LS.run">(GenMR.perils.CellularAutomaton_LS method)</a>
 </li>
         <li><a href="manual.html#GenMR.perils.CellularAutomaton_WF.run">(GenMR.perils.CellularAutomaton_WF method)</a>

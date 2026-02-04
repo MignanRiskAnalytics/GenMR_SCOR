@@ -129,6 +129,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_topo.gridlow"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.gridlow</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_topo.algo_diamondsquare"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.algo_diamondsquare()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_topo.aspect"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.aspect</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_topo.calc_d2coastline"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.calc_d2coastline()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_topo.coastline_coord"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.coastline_coord</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_topo.model_cs_compoundbevel"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.model_cs_compoundbevel()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_topo.model_fr_diamondsquare"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.model_fr_diamondsquare()</span></code></a></li>
@@ -159,12 +160,15 @@
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.bldg_type"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.bldg_type</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.bldg_value"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.bldg_value</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.calc_Pr_urbanise"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.calc_Pr_urbanise()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.crop_T_suitability"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.crop_T_suitability()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.generate"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.generate()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.get_S_urban"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_S_urban()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.get_d4mkd"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_d4mkd()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.get_industrialZones"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_industrialZones()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.get_state_built"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_state_built()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.industrialZones"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.industrialZones</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.roadNet_coord"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.roadNet_coord</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.run"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.run()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.transform_landUse"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.transform_landUse()</span></code></a></li>
 </ul>
 </li>
@@ -319,7 +323,11 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#technological-environment-generation">2. Technological environment generation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#generating-the-urban-land-layer-and-road-network-object">2.1. Generating the urban land layer (and road network object)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#generating-the-urban-land-layer-incl-crops">2.1. Generating the urban land layer (incl. crops)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#generating-the-urban-lan-and-road-network-object">2.1.1. Generating the urban lan and road network object</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#modelling-crops">2.1.2. Modelling crops</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#environmental-layer-properties">2.2. Environmental layer properties</a></li>
 </ul>
 </li>
@@ -890,7 +898,7 @@ include water height <cite>hw</cite> and optional corrections for unstable soil.
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>topo</strong> (<a class="reference internal" href="#GenMR.environment.EnvLayer_topo" title="GenMR.environment.EnvLayer_topo"><em>EnvLayer_topo</em></a>) – The topography layer used as reference for the soil layer.</p></li>
+<li><p><strong>topo</strong> (<a class="reference internal" href="#GenMR.environment.EnvLayer_atmo" title="GenMR.environment.EnvLayer_atmo"><em>EnvLayer_atmo</em></a>) – The topography layer used as reference for the soil layer.</p></li>
 <li><p><strong>par</strong> (<em>dict</em>) – <p>Dictionary of parameters for the soil layer. Expected keys include:
 - ‘h0_m’ : float</p>
 <blockquote>
@@ -1190,6 +1198,11 @@ Values indicate the downslope direction.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_topo.calc_d2coastline">
+<span class="sig-name descname"><span class="pre">calc_d2coastline</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_topo.calc_d2coastline" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="GenMR.environment.EnvLayer_topo.coastline_coord">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">coastline_coord</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_topo.coastline_coord" title="Link to this definition"></a></dt>
@@ -1333,7 +1346,7 @@ of the elevation field <cite>z(x, y)</cite>.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">EnvLayer_urbLand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">natLand</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">EnvLayer_urbLand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">natLand</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atmo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Generate an urban land use environmental layer.</p>
 <p>This model combines:
@@ -1407,9 +1420,11 @@ Keys include:
 <blockquote>
 <div><p>0: grassland
 1: forest
-2: residential
-3: industrial
-4: commercial</p>
+2: occupancy - residential
+3: occupancy - industrial
+4: occupancy - commercial
+5: crops - wheat
+6: crops - maize</p>
 </div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -1639,6 +1654,40 @@ Returns 0 if slope exceeds ‘SLEUTH_maxslope’.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.crop_T_suitability">
+<span class="sig-name descname"><span class="pre">crop_T_suitability</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atmoLayer_T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crop</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand.crop_T_suitability" title="Link to this definition"></a></dt>
+<dd><p>Compute a temperature-based crop suitability index from monthly
+near-surface air temperature.</p>
+<p>Suitability is evaluated using a Gaussian response to warm-season
+temperature and a hard constraint on minimum winter temperature.
+The warmest month controls growth potential, while the coldest
+month determines thermal viability.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atmoLayer_T</strong> (<em>ndarray</em>) – Monthly temperature field (°C) with shape (12, nx, ny).
+January and July are assumed to represent the coldest and
+warmest months, respectively (Northern Hemisphere assumption).</p></li>
+<li><p><strong>crop</strong> (<em>{'wheat'</em><em>, </em><em>'maize'}</em>) – Crop type for which temperature suitability is evaluated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>T_index</strong> – Dimensionless temperature suitability index in the range [0, 1],
+with shape (nx, ny). Values near 1 indicate optimal thermal
+conditions, while 0 indicates unsuitable temperatures.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.generate">
+<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand.generate" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.get_S_urban">
 <span class="sig-name descname"><span class="pre">get_S_urban</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">built</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">built_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand.get_S_urban" title="Link to this definition"></a></dt>
 <dd><p>Classify built land-use states using the White et al. (1997) land-use
@@ -1788,6 +1837,11 @@ as [x0, x1, None, x0, x1, None, …].</p></li>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand.run" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.transform_landUse">
@@ -2893,38 +2947,43 @@ are stored as spatial footprint arrays on disk.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>src</strong> (<em>dict</em>) – <p>Source dictionary containing model parameters in <code class="docutils literal notranslate"><span class="pre">src.par['HW']</span></code>.
 Required keys include:
-- <code class="docutils literal notranslate"><span class="pre">T_th</span></code> : float</p>
+- T_th : float</p>
 <blockquote>
 <div><p>Heatwave temperature threshold (°C).</p>
 </div></blockquote>
 <ul>
 <li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">Dt_da</span></code><span class="classifier">int</span></dt><dd><p>Minimum duration (days) to define a heatwave.</p>
+<dt>Dt_da<span class="classifier">int</span></dt><dd><p>Minimum duration (days) to define a heatwave.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">Dt_max_da</span></code><span class="classifier">int</span></dt><dd><p>Maximum duration (days) of simulated daily temperatures.</p>
+<dt>Dt_max_da<span class="classifier">int</span></dt><dd><p>Maximum duration (days) of simulated daily temperatures.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">sigmaT_daily</span></code><span class="classifier">float</span></dt><dd><p>Standard deviation of daily temperature variability (°C).</p>
+<dt>sigmaT_daily<span class="classifier">float</span></dt><dd><p>Standard deviation of daily temperature variability (°C).</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">sigmaT_yearly</span></code><span class="classifier">float</span></dt><dd><p>Standard deviation of yearly temperature variability (°C).</p>
+<dt>sigmaT_yearly<span class="classifier">float</span></dt><dd><p>Standard deviation of yearly temperature variability (°C).</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">corrT</span></code><span class="classifier">float</span></dt><dd><p>Temporal correlation coefficient of daily temperatures.</p>
+<dt>corrT<span class="classifier">float</span></dt><dd><p>Temporal correlation coefficient of daily temperatures.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">lat_deg</span></code><span class="classifier">float</span></dt><dd><p>Latitude (degrees) used in the advective temperature model.</p>
+<dt>month<span class="classifier">int</span></dt><dd><p>Calendar month (Jan = 1, Dec = 12) during which heatwave potentially occurs</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>lat_deg<span class="classifier">float</span></dt><dd><p>Latitude (degrees) used in the advective temperature model.</p>
 </dd>
 </dl>
 </li>

@@ -130,6 +130,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.gridlow"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.gridlow</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.algo_diamondsquare"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.algo_diamondsquare()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.aspect"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.aspect</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.calc_d2coastline"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.calc_d2coastline()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.coastline_coord"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.coastline_coord</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.model_cs_compoundbevel"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.model_cs_compoundbevel()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.model_fr_diamondsquare"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.model_fr_diamondsquare()</span></code></a></li>
@@ -160,12 +161,15 @@
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.bldg_type"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.bldg_type</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.bldg_value"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.bldg_value</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.calc_Pr_urbanise"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.calc_Pr_urbanise()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.crop_T_suitability"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.crop_T_suitability()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.generate"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.generate()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.get_S_urban"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_S_urban()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.get_d4mkd"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_d4mkd()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.get_industrialZones"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_industrialZones()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.get_state_built"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_state_built()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.industrialZones"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.industrialZones</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.roadNet_coord"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.roadNet_coord</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.run"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.run()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.transform_landUse"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.transform_landUse()</span></code></a></li>
 </ul>
 </li>
@@ -320,7 +324,11 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#technological-environment-generation">2. Technological environment generation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#generating-the-urban-land-layer-and-road-network-object">2.1. Generating the urban land layer (and road network object)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#generating-the-urban-land-layer-incl-crops">2.1. Generating the urban land layer (incl. crops)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#generating-the-urban-lan-and-road-network-object">2.1.1. Generating the urban lan and road network object</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#modelling-crops">2.1.2. Modelling crops</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#environmental-layer-properties">2.2. Environmental layer properties</a></li>
 </ul>
 </li>
@@ -406,7 +414,7 @@
 <h1>Tutorial 2: Implementing perils in the GenMR digital template<a class="headerlink" href="#tutorial-2-implementing-perils-in-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 1.1.2<br />
-<strong>Last Updated:</strong> 2026-02-02<br />
+<strong>Last Updated:</strong> 2026-02-03<br />
 <strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
 <p>Once a virtual environment has been generated (see previous tutorial), stochastic events are modelled to populate it. Table 1 lists the perils included in version 1.1.2 (the ones still missing to be included by June 2026).</p>
 <br>
@@ -458,7 +466,7 @@
 <td class="text-left"><p>Duration (mon)</p></td>
 <td class="text-left"><p>Threshold</p></td>
 <td class="text-left"><p>Yes/no</p></td>
-<td class="text-left"><p><span style="color: orange">ongoing<span></p></td>
+<td class="text-left"><p><span style="color: green">✓<span></p></td>
 </tr>
 <tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">EQ</span></code></p></td>
 <td class="text-left"><p>Earthquake</p></td>
@@ -686,7 +694,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/0084f0f803110a2cb9da1bc7fc5f687b102448d1305b6a71e1c4337da81b38f7.png" src="../_images/0084f0f803110a2cb9da1bc7fc5f687b102448d1305b6a71e1c4337da81b38f7.png" />
+<img alt="../_images/8916282c8575a4ef24d17a0102ce82ad3c1a83aeac047699b7b9e3613dbc12c9.png" src="../_images/8916282c8575a4ef24d17a0102ce82ad3c1a83aeac047699b7b9e3613dbc12c9.png" />
 </div>
 </div>
 <p>Note that the configuration of the digital template environment may be changed through Tutorial 1.</p>
@@ -732,6 +740,7 @@
                  <span class="s1">&#39;sigmaT_daily&#39;</span><span class="p">:</span> <span class="mf">2.</span><span class="p">,</span>              <span class="c1"># Temp. std. dev. - value to be confirmed</span>
                  <span class="s1">&#39;corrT&#39;</span><span class="p">:</span> <span class="mf">.8</span><span class="p">,</span>                     <span class="c1"># Correlation coeff. of AR(1) process for daily temp. (val. TBC)</span>
                  <span class="s1">&#39;Dt_max_da&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>                 <span class="c1"># for Tutorial 2: HW defined over a month max</span>
+                 <span class="s1">&#39;month&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>                      <span class="c1"># Calendar month (July = 7) when heatwave occurrence explored</span>
                  <span class="s1">&#39;lat_deg&#39;</span><span class="p">:</span> <span class="n">grid</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;lat_deg&#39;</span><span class="p">]}</span>
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;Li&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;supercell&#39;</span><span class="p">}</span>
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;LS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;terrain&#39;</span><span class="p">}</span>
@@ -1856,7 +1865,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>generating footprints for: AI... Dr... EQ... HW... (loading from cache)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>generating footprints for: AI... Dr... EQ... HW... (computing)
+Fetching footprints from potential footprints
 RS... TC... To... VE... WF... WS... CS... FF... Li... LS... SS... catalogue completed
 </pre></div>
 </div>
@@ -1884,7 +1894,7 @@ RS... TC... To... VE... WF... WS... CS... FF... Li... LS... SS... catalogue comp
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/08e514226419239e0fd6c83efc0e7dac27587ced5d69507cd0d907f4616df5f2.png" src="../_images/08e514226419239e0fd6c83efc0e7dac27587ced5d69507cd0d907f4616df5f2.png" />
+<img alt="../_images/572e9180637e1454bb501788a374702bcf327d66fcf90d754364d128aeecfade.png" src="../_images/572e9180637e1454bb501788a374702bcf327d66fcf90d754364d128aeecfade.png" />
 </div>
 </div>
 <p><strong>Note:</strong> Observe the <code class="docutils literal notranslate"><span class="pre">TC</span></code> footprint boundary effect (cyclonic eye), which is due to the track artificially starting at <code class="docutils literal notranslate"><span class="pre">grid.xmin</span></code>.</p>
@@ -3289,7 +3299,7 @@ TVaR_q [$ B.]: 287.23171766165484
 <h3>B. Stochastic event set<a class="headerlink" href="#b-stochastic-event-set" title="Link to this heading"></a></h3>
 <section id="b-1-drought-case">
 <h4>B.1. Drought case<a class="headerlink" href="#b-1-drought-case" title="Link to this heading"></a></h4>
-<p>The next code cell illustrates how droughts emerge from the coupling between the atmospheric and soil layers. Two cases are considered: an anticyclonic regime with extreme temperatures (also characteristic of heatwaves) and a cyclonic regime (addressed in Tutorial 3 in the context of rainstorms).</p>
+<p>The next code cell illustrates how droughts emerge from the coupling between the atmospheric and soil layers. Four scenarios are considered: an anticyclonic regime with extreme temperatures (also characteristic of heatwaves) and a cyclonic regime (addressed in Tutorial 3 in the context of rainstorms), each evaluated under two soil water storage conditions: normal and stressed.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">DTadv_anti</span> <span class="o">=</span> <span class="mf">10.</span>      <span class="c1"># anticyclone case (possible drought, heatwave)</span>
