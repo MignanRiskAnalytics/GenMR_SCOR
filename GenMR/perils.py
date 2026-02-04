@@ -2887,9 +2887,9 @@ class CellularAutomaton_WF:
                                     GenMR_env.ls.hillshade(self.urbLandLayer.topo.z, vert_exag=.1),
                                     cmap='gray', alpha=.1)
                         ax.pcolormesh(self.grid.xx, self.grid.yy, self.landuse_S4WF,
-                                    cmap=GenMR_utils.col_S, vmin=-1, vmax=5, alpha=.5)
+                                    cmap=GenMR_utils.col_S, vmin=-1, vmax=7, alpha=.5)
                         ax.pcolormesh(self.grid.xx, self.grid.yy, WF_fp,
-                                    cmap=GenMR_utils.col_S, vmin=-1, vmax=5)
+                                    cmap=GenMR_utils.col_S, vmin=-1, vmax=7)
 
                         plt.savefig(f'{self.path_WF_CA}/WF_fp_event_{self.k}_{burntArea_cells}.jpg', dpi=300)
                         plt.close()

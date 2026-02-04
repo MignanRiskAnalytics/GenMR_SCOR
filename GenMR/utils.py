@@ -640,7 +640,10 @@ colors = [(0/255.,127/255.,191/255.),        # -1 - water mask
           (131/255.,137/255.,150/255.),      # 2 - built, residential
           (10/255.,10/255.,10/255.),         # 3 - built, industry
           (230/255.,230/255.,230/255.),      # 4 - built, commercial
-          (255/255.,0/255.,0/255.)]          # 5 - wildfire
+          (255/255.,215/255.,0/255.),        # 5 - crop, wheat
+          (255/255.,140/255.,0/255.),        # 6 - crop, maize
+          (255/255.,0/255.,0/255.)           # 7 - wildfire
+         ]          
 #col_S = plt_col.LinearSegmentedColormap.from_list('col_S', colors, N = 7)
 col_S = plt_col.ListedColormap(colors, name='col_S')
 

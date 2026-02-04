@@ -36,6 +36,7 @@ import numpy as np
 import pandas as pd
 
 import copy
+from tqdm import tqdm, trange
 
 import matplotlib.pyplot as plt
 import matplotlib.colors as plt_col
@@ -266,6 +267,7 @@ class EnvLayer_topo:
                 indy0 = np.where(self.grid.y == y0)[0]
                 self.z[indx0[0],indy0] = self.z[indx0[0],indy0] - river_h * 2       # river ordinate
                 self.z[indx0[0],indy0-1] = self.z[indx0[0],indy0-1] - river_h * 2   # pixel below river ordinate
+        self.d2coastline = self.calc_d2coastline()
 
     def __repr__(self):
         return 'EnvLayer_topo({},{},{})'.format(repr(self.grid), self.par, self.src)
@@ -589,6 +591,17 @@ class EnvLayer_topo:
             zcs_max = np.min([self.par['cs_tan(phi)'] * self.par['cs_w_km'], self.z[indinland, j][0]])
             zcs[indcs,j] = np.linspace(0, zcs_max, np.sum(indcs)) + self.par['cs_eta'] * self.z[indcs,j]
         return zcs
+
+    def calc_d2coastline(self):
+        coast_x, coast_y = self.coastline_coord
+        coastline = LineString(np.column_stack([coast_x, coast_y]))
+        dist_to_coast = np.zeros_like(self.grid.xx)
+        for i in trange(self.grid.xx.shape[0], desc = 'Calculating distance to coastline'):
+            for j in range(self.grid.xx.shape[1]):
+                p = Point(self.grid.xx[i, j], self.grid.yy[i, j])
+                dist_to_coast[i, j] = coastline.distance(p)
+        return dist_to_coast
+
 
 
 def calc_topo_attributes(z, w):
@@ -1393,9 +1406,11 @@ class EnvLayer_urbLand:
         -1: water
          0: grassland
          1: forest
-         2: residential
-         3: industrial
-         4: commercial
+         2: occupancy - residential
+         3: occupancy - industrial
+         4: occupancy - commercial
+         5: crops - wheat
+         6: crops - maize
     year : int
         Current simulation year.
     urban_yes : ndarray
@@ -1704,6 +1719,7 @@ class EnvLayer_urbLand:
 #        # to add - function of built, forest, grassland -> to be used in FF model
 #        return None
 
+    ## city extension functions ##
     def calc_Pr_urbanise(self, slope, par):
         '''
         Calculate the probability of urbanisation based on local slope using the SLEUTH model.
@@ -1902,7 +1918,7 @@ class EnvLayer_urbLand:
                 built_type[i_built[k], j_built[k]] = self.get_state_built(state0, neighbor_k, neighbor_d, m_kd)
         return built_type
 
-
+    ## define critical infrastructures ##
     def get_industrialZones(self):
         '''
         Extract and classify industrial zones from the current land-use grid.
@@ -2036,8 +2052,60 @@ class EnvLayer_urbLand:
             distance_to_river=largest["distance_to_river"],
             Ex_S_kton=None,
         )
+    
+    ## define crops ##
+    def crop_T_suitability(self, atmoLayer_T, crop):
+        '''
+        Compute a temperature-based crop suitability index from monthly
+        near-surface air temperature.
 
+        Suitability is evaluated using a Gaussian response to warm-season
+        temperature and a hard constraint on minimum winter temperature.
+        The warmest month controls growth potential, while the coldest
+        month determines thermal viability.
 
+        Parameters
+        ----------
+        atmoLayer_T : ndarray
+            Monthly temperature field (°C) with shape (12, nx, ny).
+            January and July are assumed to represent the coldest and
+            warmest months, respectively (Northern Hemisphere assumption).
+        crop : {'wheat', 'maize'}
+            Crop type for which temperature suitability is evaluated.
+
+        Returns
+        -------
+        T_index : ndarray
+            Dimensionless temperature suitability index in the range [0, 1],
+            with shape (nx, ny). Values near 1 indicate optimal thermal
+            conditions, while 0 indicates unsuitable temperatures.
+        '''
+        T_opt = {'wheat': 22., 'maize': 26.}
+        #T_opt = {'wheat': 25., 'maize': 30.}
+        T_min = {'wheat': 0.,  'maize': 10.}   # Paredes et al. (2025)
+        T_max = {'wheat': 30., 'maize': 40.}   # Paredes et al. (2025)
+        t_opt, t_min, t_max = T_opt[crop], T_min[crop], T_max[crop]
+        
+        T_cold = atmoLayer_T[0,:,:]   # hardcoded for northern hemisphere
+        T_warm = atmoLayer_T[6,:,:]   #
+
+        sigma_low  = (t_opt - t_min) / 3.
+        sigma_high = (t_max - t_opt) / 3.
+        
+        T_index = np.zeros_like(T_warm, dtype = float)
+        mask_lo = (T_warm <= t_opt)
+        if sigma_low > 0:
+            T_index[mask_lo] = np.exp(-.5 * ((T_warm[mask_lo] - t_opt) / sigma_low)**2)
+        mask_hi = (T_warm > t_opt)
+        if sigma_high > 0:
+            T_index[mask_hi] = np.exp(-.5 * ((T_warm[mask_hi] - t_opt) / sigma_high)**2)
+        T_index[T_warm < t_min] = 0.
+        T_index[T_warm > t_max] = 0.
+        
+        mask_Tmin = (T_cold >= T_min[crop]).astype(float)
+        T_index = T_index * mask_Tmin
+
+        return T_index
 
 
 #####################################
@@ -2165,7 +2233,7 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
                         Patch(facecolor=(236/255., 235/255., 189/255.,.5), edgecolor='black', label='Grassland'),
                         Patch(facecolor=(34/255.,139/255.,34/255.,.5), edgecolor='black', label='Forest')]
             plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.S, cmap = GenMR_utils.col_S, \
-                                         vmin=-1, vmax=5, alpha = alpha)
+                                         vmin=-1, vmax=7, alpha = alpha)
             plt.legend(handles=legend_S, loc='upper left')   
         else:
             return print('No match found for attribute identifier in natural land layer.')
@@ -2179,7 +2247,7 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
                         Patch(facecolor=(10/255.,10/255.,10/255.,.5), edgecolor='black', label='Industrial'),
                         Patch(facecolor=(230/255.,230/255.,230/255.,.5), edgecolor='black', label='Commercial')]
             plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.S, cmap = GenMR_utils.col_S, \
-                                         vmin=-1, vmax=5, alpha = alpha)
+                                         vmin=-1, vmax=7, alpha = alpha)
             plt.legend(handles=legend_S, loc='upper left')
         elif attr == 'roadNet':
             plt.plot(envLayer.roadNet_coord[2], envLayer.roadNet_coord[3], color='darkred', lw = 1)
@@ -2382,7 +2450,7 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
             if topo_bool:
                 ax[i,0].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray')
             ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.S, cmap = GenMR_utils.col_S, \
-                                         vmin=-1, vmax=5, alpha = .5)
+                                         vmin=-1, vmax=7, alpha = .5)
             ax[i,0].set_xlabel('$x$ (km)')
             ax[i,0].set_ylabel('$y$ (km)')
             ax[i,0].set_title('NATURAL LAND', size = 14)
@@ -2404,7 +2472,7 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
             if topo_bool:
                 ax[i,0].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray')
             ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.S, cmap = GenMR_utils.col_S, \
-                                         vmin=-1, vmax=5, alpha = .5)
+                                         vmin=-1, vmax=7, alpha = .5)
             ax[i,0].set_xlabel('$x$ (km)')
             ax[i,0].set_ylabel('$y$ (km)')
             ax[i,0].set_title('URBAN LAND: state S', size = 14)
