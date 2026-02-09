@@ -22,15 +22,15 @@ Peril models (v1.1.1)
 Peril models (v1.1.2)
 ---------------------
 * CS: Convective storm
-* Dr: Drought - in construction
+* Dr: Drought
 * HW: Heatwave
 * Li: Lightning
+* PI: Pest infestation - IN CONSTRUCTION
 * To: Tornado
 * WS: Windstorm
 
 Planned peril models (v1.1.2)
 -----------------------------
-* PI: Pest infestation
 * BO: Blackout
 * BI: Business interruption
 * Sf: Public service failure
@@ -39,7 +39,7 @@ Planned peril models (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-02-02
+:Date: 2026-02-09
 :License: AGPL-3
 """
 
@@ -672,6 +672,14 @@ class EventSetGenerator:
                         self.ev_stoch,
                         pd.DataFrame({'ID': np.repeat('HW', self.sizeDistr['HW']['Nstoch']), 'evID': evID, 'S': Si_vec, 'lbd': lbdi})
                     ], ignore_index=True)
+                if ID == 'PI':
+                    evID = [f"{ID}{i+1}" for i in range(self.sizeDistr['PI']['Nstoch'])]
+                    Si_vec = self.src.par['PI']['Si_yieldloss']
+                    lbdi = np.repeat(np.nan, self.sizeDistr['PI']['Nstoch'])
+                    self.ev_stoch = pd.concat([
+                        self.ev_stoch,
+                        pd.DataFrame({'ID': np.repeat('PI', self.sizeDistr['PI']['Nstoch']), 'evID': evID, 'S': Si_vec, 'lbd': lbdi})
+                    ], ignore_index=True)
 
 
             ## SECONDARY EVENTS ##
@@ -834,6 +842,8 @@ class EventSetGenerator:
             self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.par['Dr']['object'], self.sizeDistr['Dr']['Nstoch']))
         elif ID == 'HW':
             self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.par['HW']['object'], self.sizeDistr['HW']['Nstoch']))
+        elif ID == 'PI':
+            self.srcIDs = np.append(self.srcIDs, np.repeat(self.src.par['PI']['object'], self.sizeDistr['PI']['Nstoch']))
 
         elif ID == 'FF':
             trigger = self.sizeDistr[ID]['trigger']

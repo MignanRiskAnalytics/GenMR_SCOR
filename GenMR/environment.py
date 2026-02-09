@@ -1288,7 +1288,7 @@ class EnvObj_roadNetwork():
         return self
     
     def __next__(self):
-        rng = np.random.RandomState(self.par['rdm_seed'])
+#        rng = np.random.RandomState(self.par['rdm_seed'])
         i2, j2 = np.where(self.S == 2)
         for k in range(len(i2)):
             i_neighbor, j_neighbor = GenMR_utils.get_neighborhood_ind(i2[k], j2[k], self.S.shape, 1)
@@ -1449,9 +1449,10 @@ class EnvLayer_urbLand:
         self.topo = self.natLand.topo
         self.soil = self.natLand.soil
         self.par = par
+        np.random.seed(self.par['rdm_seed'])
         if self.par['crops']:
             self.atmo =  copy.deepcopy(atmo)
-        # class: -1 = water mask, 0 = grassland, 1 = forest + built: 2 = residential, 3 = industrial, 4 = commercial
+        # class: -1 = water mask, 0 = grassland, 1 = forest + built: 2 = residential, 3 = industrial, 4 = commercial + crop: 5 = wheat, 6 = maize
         self.S = self.natLand.S
         self.year = self.par['city_yr0']
         # SLEUTH parameters
@@ -1476,10 +1477,12 @@ class EnvLayer_urbLand:
                    np.where(self.grid.y > self.par['city_seed'][1]-1e-6)[0][0]] = 1
         self.built_yr = np.full((self.grid.nx,self.grid.ny), np.nan)
         self.built_yr[self.built == 1] = self.year
+        self.Nstories = np.full((self.grid.nx, self.grid.ny), np.nan)
 
     def generate(self):
         # generate city with intertwinned road network
         self.run()
+        self.Nstories = self.assign_bldg_Nstories()
 
         # add crops
         if self.par['crops']:
@@ -1499,7 +1502,6 @@ class EnvLayer_urbLand:
 #            S_crop[np.maximum(T_index_wheat,T_index_maize) < T_index_min] = 1  # forest class
             self.S[mask_crop] = S_crop[mask_crop]
 
-
     def __iter__(self):
         return self
 
@@ -1517,7 +1519,7 @@ class EnvLayer_urbLand:
                 if self.urban_yes[i_rdm,j_rdm] and np.random.random(1) < \
                         self.calc_Pr_urbanise(slope[i_rdm,j_rdm], self.par) \
                         and i_rdm > 1 and i_rdm < self.grid.nx-2 and j_rdm > 1 and j_rdm < self.grid.ny-2:
-                    self.built[i_rdm,j_rdm] = 1           # step (i)
+                    self.built[i_rdm,j_rdm] = 1                          # step (i)
                     # new spreading center growth
                     if np.random.random(1) < self.par['SLEUTH_breed'] / 100:
                         i_neighbor, j_neighbor = GenMR_utils.get_neighborhood_ind(i_rdm, j_rdm, self.built.shape, 1)
@@ -1747,7 +1749,54 @@ class EnvLayer_urbLand:
         val[self.S == 3] = c1[1] * self.par['GPD_percapita_USD'] **c2[1] * (self.grid.w*1e3)**2
         val[self.S == 4] = c1[2] * self.par['GPD_percapita_USD'] **c2[2] * (self.grid.w*1e3)**2
         return val
-    
+
+    def assign_bldg_Nstories(self):
+        '''
+        Assign number of building stories based on land-use class
+        and construction period using fully land-use–specific
+        (vector length 3) parameters.
+
+        Parameter order:
+        0 → Residential (S=2)
+        1 → Commercial  (S=4)
+        2 → Industrial  (S=3)
+        '''
+        stories = np.full((self.grid.nx, self.grid.ny), np.nan)
+
+        # Map land-use code → parameter index
+        lu_map = {2: 0, 4: 1, 3: 2}
+
+        mask = np.isin(self.S, list(lu_map.keys()))
+        ii, jj = np.where(mask)
+
+        for i, j in zip(ii, jj):
+            lu = self.S[i, j]
+            idx = lu_map[lu]
+            yr = self.built_yr[i, j]
+
+            if yr < self.par['ResComInd_yr_lowrise_end'][idx]:
+                stories[i, j] = np.random.randint(
+                    self.par['ResComInd_lowrise_min'][idx],
+                    self.par['ResComInd_lowrise_max'][idx] + 1
+                )
+            elif yr < self.par['ResComInd_yr_highrise_end'][idx]:
+                stories[i, j] = np.random.randint(
+                    self.par['ResComInd_highrise_min'][idx],
+                    self.par['ResComInd_highrise_max'][idx] + 1
+                )
+            else:
+                if np.random.random() < self.par['ResComInd_mix_pr_high'][idx]:
+                    stories[i, j] = np.random.randint(
+                        self.par['ResComInd_highrise_min'][idx],
+                        self.par['ResComInd_highrise_max'][idx] + 1
+                    )
+                else:
+                    stories[i, j] = np.random.randint(
+                        self.par['ResComInd_lowrise_min'][idx],
+                        self.par['ResComInd_lowrise_max'][idx] + 1
+                    )
+        return stories.astype(int)
+
 #    @property
 #    def infiltration(self):
 #        # to add - function of built, forest, grassland -> to be used in FF model
@@ -2504,12 +2553,23 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
         ## URBAN LAND LAYER ##
         if envLayer.ID == 'urbLand':
             IDs = IDs + '_urbLand'
-            legend_S = [Patch(facecolor=(0/255.,127/255.,191/255.,.5), edgecolor='black', label='Water'),
-                        Patch(facecolor=(236/255., 235/255., 189/255.,.5), edgecolor='black', label='Grassland'),
-                        Patch(facecolor=(34/255.,139/255.,34/255.,.5), edgecolor='black', label='Forest'),
-                        Patch(facecolor=(131/255.,137/255.,150/255.,.5), edgecolor='black', label='Residential'),
-                        Patch(facecolor=(10/255.,10/255.,10/255.,.5), edgecolor='black', label='Industrial'),
-                        Patch(facecolor=(230/255.,230/255.,230/255.,.5), edgecolor='black', label='Commercial')]
+            if np.max(np.unique(envLayer.S)) < 5:
+                legend_S = [Patch(facecolor=(0/255.,127/255.,191/255.,.5), edgecolor='black', label='Water'),
+                            Patch(facecolor=(236/255., 235/255., 189/255.,.5), edgecolor='black', label='Grassland'),
+                            Patch(facecolor=(34/255.,139/255.,34/255.,.5), edgecolor='black', label='Forest'),
+                            Patch(facecolor=(131/255.,137/255.,150/255.,.5), edgecolor='black', label='Residential'),
+                            Patch(facecolor=(10/255.,10/255.,10/255.,.5), edgecolor='black', label='Industrial'),
+                            Patch(facecolor=(230/255.,230/255.,230/255.,.5), edgecolor='black', label='Commercial')]
+            else:
+                legend_S = [Patch(facecolor=(0/255.,127/255.,191/255.,.5), edgecolor='black', label='Water'),
+                            Patch(facecolor=(236/255., 235/255., 189/255.,.5), edgecolor='black', label='Grassland'),
+                            Patch(facecolor=(34/255.,139/255.,34/255.,.5), edgecolor='black', label='Forest'),
+                            Patch(facecolor=(131/255.,137/255.,150/255.,.5), edgecolor='black', label='Residential'),
+                            Patch(facecolor=(10/255.,10/255.,10/255.,.5), edgecolor='black', label='Industrial'),
+                            Patch(facecolor=(230/255.,230/255.,230/255.,.5), edgecolor='black', label='Commercial'),
+                            Patch(facecolor=(255/255.,215/255.,0/255.,.5), edgecolor='black', label='Wheat'),
+                            Patch(facecolor=(255/255.,140/255.,0/255.,.5), edgecolor='black', label='Maize')]
+            
             if topo_bool:
                 ax[i,0].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray')
             ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.S, cmap = GenMR_utils.col_S, \
