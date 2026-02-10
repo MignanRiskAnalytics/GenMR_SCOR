@@ -1268,7 +1268,7 @@ def calc_lbd_Dr(par, atmo_par, soil_par, Nsim = int(1e6)):
     # retrieve rates
     Si = par['Si_mo']
     S_map = pd.DataFrame({'S_raw': Dr_S_list[Dr_S_list > 0.]})
-    S_map['S'] = S_map['S_raw'].apply(lambda s: GenMR_utils.map2upperTail(s, Si))
+    S_map['S'] = S_map['S_raw'].apply(lambda s: GenMR_utils.get_S_floor(s, Si))
     nS = len(Si)
     lbdi = np.zeros(nS)
     for i in range(nS):
@@ -1309,9 +1309,10 @@ class HazardFootprintGenerator:
         self.atmoLayer = atmoLayer
         self.catalog_hazFootprints = {}
         self.force_recompute = force_recompute
-        self.cache_dir = 'io/cache_thresholdHazFootprints'
+        self.cache_dir = 'io/cache_staticHazFootprints'
         os.makedirs(self.cache_dir, exist_ok = True)
         self.rate_HW = np.full(len(src.par['HW']['Si_da']), np.nan)
+        self.rate_PI = np.full(len(src.par['PI']['Si_yieldloss']), np.nan)
 
     def _cache_path(self, evID):
         return os.path.join(self.cache_dir, f'{evID}.npy')
@@ -2066,7 +2067,7 @@ class HazardFootprintGenerator:
         DTadv_sim = Tadv_sim - T0
 
         nx, ny = atmoLayer.T[mon_i,:,:].shape
-        catalog_hazFootprints_HW = {}
+#        catalog_hazFootprints_HW = {}
         k = 1
         for sim in range(Nsim):
             if sim % 1000 == 0:
@@ -2085,7 +2086,7 @@ class HazardFootprintGenerator:
                 HW_fp_stoch, HW_S_stoch = HazardFootprintGenerator.get_HW_footprint(T_map_daily_stoch, Tth = T_th_HW, Dt = Dt_HW)
                 if HW_S_stoch >= Dt_HW:
                     evID = 'HW' + str(k)
-                    catalog_hazFootprints_HW[evID] = HW_fp_stoch
+#                    catalog_hazFootprints_HW[evID] = HW_fp_stoch
                     np.save(f'{path_HW_stochset_data}/HW_fp_event_{evID}_{HW_S_stoch}.npy', HW_fp_stoch)
                     k += 1
                     if plot_HWprocess:
@@ -2117,6 +2118,201 @@ class HazardFootprintGenerator:
                         ax[2].set_aspect(1)
                         fig.tight_layout()
                         plt.savefig(f'{path_HW_stochset}/char_{evID}.jpg')
+                        plt.close()
+
+
+    ## PEST INFESTATION FUNCTIONS ##
+    @staticmethod
+    def calc_PI_growthrate(T, method):
+        '''
+        Calculate the temperature-dependent development rate of a pest (here Spodoptera frugiperda),
+        according to different mathematical models.
+
+        Parameters
+        ----------
+        T : float or ndarray
+            Temperature (°C).
+        method : str
+            Name of the temperature–development model. Supported options:
+            'beta', 'Briere1', 'Briere2', 'Shi', 'Logan6', 'Taylor'.
+
+        Returns
+        -------
+        growthrate : float or ndarray
+            Temperature-dependent development rate (1/day).
+
+        References
+        ----------
+        Malekera et al. (2022), Temperature-Dependent Development Models Describing the Effects of Temperature 
+        on the Development of the Fall Armyworm Spodoptera frugiperda (J. E. Smith) (Lepidoptera: Noctuidae).
+        Insects, 13, 1084, doi: 10.3390/insects13121084
+        '''
+        # see table 1 for model list (typos corr.) and table 5 for model parameters (for larvae stage = damage stage)
+        if method == 'beta':
+            rho = 3.7 * 1e-3
+            a = 4.04
+            beta = 2.64   # b ?
+            growthrate = rho * (a - T /10)*(T / 10)**beta
+        if method == 'Briere1':
+            a = 2.15 * 1e-5
+            Tlow, Thigh = 12.88, 45.31
+            growthrate = a * T * (T - Tlow) * (Thigh - T)**(.5)
+        if method == 'Briere2':
+            a = 45.39 * 1e-6
+            Tlow, Thigh = 9.94, 39.53
+            m = 3.19
+            growthrate = a * T * (T - Tlow) * (Thigh - T)**(1/m)
+        if method == 'Shi':
+            Tlow, Thigh = 12.78, 34.33
+            m = 5.16 * 1e-3
+            k = 3.51
+            growthrate = m * (T - Tlow) * (1 - np.exp(k * (T - Thigh)))
+        if method == 'Logan6':
+            rho = .1  # P ?
+            Psi = .18
+            Delta = 9.56
+            Thigh = 40.63
+            growthrate = Psi * (np.exp(rho * T) - np.exp(rho * Thigh - (Thigh - T) / Delta))
+        if method == 'Taylor':
+            Rm = 8.87 * 1e-2
+            Topt = 32.04
+            growthrate = Rm * np.exp(-.5 * (T - Topt)**2)
+        
+        growthrate[growthrate < 0] = 0
+        return growthrate
+
+    @staticmethod
+    def calc_PI_I(T, method, Dt = 30.):
+        '''
+        Compute a normalized pest infestation hazard index based on
+        temperature-dependent population growth over a fixed time window.
+
+        The hazard index is defined as the relative exponential population
+        amplification driven by the growth rate, normalized by the maximum
+        pest count achievable within the biologically relevant temperature range.
+        A value of 1 indicates total crop yield loss.
+
+        Parameters
+        ----------
+        T : float or ndarray
+            Temperature (°C).
+        method : str
+            Temperature–growth model - see list in calc_PI_growthrate().
+        Dt : float, optional
+            Exposure duration in days (default = 30, i.e. a month).
+
+        Returns
+        -------
+        haz_index : float or ndarray
+            Dimensionless hazard index in [0, 1].
+        Topt : float
+            Temperature (°C) at which the pest development rate is maximal.
+        '''
+        Ti = np.arange(0, 50, .01)
+        gri = HazardFootprintGenerator.calc_PI_growthrate(Ti, method)
+        ind_max = np.argmax(gri)
+        gri_max = gri[ind_max]
+        Topt = Ti[ind_max]
+        rT = HazardFootprintGenerator.calc_PI_growthrate(T, method)
+        N_T = np.exp(rT * Dt)
+        N_max = np.exp(gri_max * Dt)
+        haz_index = (N_T - 1.) / (N_max - 1.)
+        return haz_index, Topt
+
+    def model_PI_analytical(src, atmoLayer, path_PI_stochset, path_PI_stochset_data, \
+                        Nsim = 10000, plot_PIprocess = False):
+        '''
+        Generate a stochastic catalog of pest infestation (PI) footprint events based on
+        large-scale advective temperature anomalies during the considered month.
+
+        The function performs Monte Carlo simulations of pest events by combining:
+        (i) yearly-scale advective temperature anomalies,
+        (ii) spatial temperature fields. Heatwave events are identified using a
+        temperature threshold and minimum duration criterion, and qualifying events
+        are stored as spatial footprint arrays on disk.
+
+        Parameters
+        ----------
+        src : dict
+            Source dictionary containing model parameters in ``src.par['PI']``.
+            Required keys include:
+            - month : int
+                Calendar month (1 = January, 12 = December).
+            - landuse : ndarray
+                the land use state from the urban environmental layer.
+
+        atmoLayer : class
+            Atmospheric environmental layer.
+
+        path_PI_stochset : str
+            Path where diagnostic figures of pest infestation processes are saved.
+
+        path_PI_stochset_data : str
+            Path where pest infestation footprint arrays (``.npy`` files) are stored.
+
+        Nsim : int, optional
+            Number of Monte Carlo simulations to perform. Default is 10000.
+
+        plot_PIprocess : bool, optional
+            If True, diagnostic plots illustrating the pest infestation generation process
+            are produced and saved for each detected event. Default is False.
+
+        Returns
+        -------
+        None
+            Pest infestation footprint events are written to disk as ``.npy`` files.
+        '''
+        mon_i = src.par['PI']['month'] - 1
+        T0 = np.max(atmoLayer.T[mon_i])
+
+        T0_sim = np.random.normal(T0, src.par['PI']['sigmaT_yearly'], Nsim)
+        Tadv_sim = HazardFootprintGenerator.sample_T_advectivemodel(T0_sim, src.par['PI']['lat_deg'])
+        DTadv_sim = Tadv_sim - T0
+
+        Ti = np.arange(0, 50, .1)
+        haz_index, _ = HazardFootprintGenerator.calc_PI_I(Ti, 'Shi')                            # model choice hardcoded
+        
+        k = 1
+        Tmax = 0
+        for sim in range(Nsim):
+            Tmax = np.max([Tmax, Tadv_sim[sim]])
+            if sim % 1000 == 0:
+                print(f'{sim}/{Nsim}', end = '\r', flush = True)
+            if Tadv_sim[sim] > src.par['PI']['Tmin_compute']:
+                T_map_mean = atmoLayer.T[mon_i,:,:] + DTadv_sim[sim]
+                PI_hazI_map, _ = HazardFootprintGenerator.calc_PI_I(T_map_mean, 'Shi')          # model choice hardcoded
+                mask_crop = src.par['PI']['landuse'] >= 5
+
+                PI_fp_stoch = PI_hazI_map * mask_crop.astype(int)
+                PI_fp_stoch[PI_fp_stoch == 0] = np.nan
+                PI_S_stoch = int(np.nanmean(PI_fp_stoch) * 100)
+                                
+                if PI_S_stoch >= src.par['PI']['Si_yieldloss'][0]:
+                    evID = 'PI' + str(k)
+                    np.save(f'{path_PI_stochset_data}/PI_fp_event_{evID}_{PI_S_stoch}.npy', PI_fp_stoch)
+                    k += 1
+                    if plot_PIprocess:
+                        plt.rcParams['font.size'] = '16'
+                        fig, ax = plt.subplots(1,3, figsize=(20,6))
+                        ax[0].plot(Ti, haz_index, label = 'beta', color = 'black')
+                        ax[0].axvline(Tadv_sim[sim], color = 'black', linestyle = 'dashed')
+                        ax[0].set_xlabel('$T$ (°C)')
+                        ax[0].set_ylabel('Severity index')
+                        ax[0].set_title('Hazard severity', pad = 20)
+                        ax[1].contourf(atmoLayer.grid.xx, atmoLayer.grid.yy, GenMR_env.ls.hillshade(atmoLayer.topo.z, vert_exag=.1), cmap='gray')
+                        ax[1].contourf(atmoLayer.grid.xx, atmoLayer.grid.yy, T_map_mean, cmap = 'bwr', vmin=-10, vmax=20, alpha = .5)
+                        ax[1].set_xlabel('$x$ (km)')
+                        ax[1].set_ylabel('$y$ (km)')
+                        ax[1].set_title('Average temperature', pad = 20)
+                        ax[1].set_aspect(1)
+                        ax[2].contourf(atmoLayer.grid.xx, atmoLayer.grid.yy, GenMR_env.ls.hillshade(atmoLayer.topo.z, vert_exag=.1), cmap='gray')
+                        ax[2].contourf(atmoLayer.grid.xx, atmoLayer.grid.yy, PI_fp_stoch, cmap = 'Reds', vmin=0, vmax=1, alpha = .5)
+                        ax[2].set_xlabel('$x$ (km)')
+                        ax[2].set_ylabel('$y$ (km)')
+                        ax[2].set_title(f'PI footprint (S={PI_S_stoch})', pad = 20)
+                        ax[2].set_aspect(1)
+                        fig.tight_layout()
+                        plt.savefig(f'{path_PI_stochset}/char_{evID}.jpg')
                         plt.close()
 
 
@@ -2174,6 +2370,9 @@ class HazardFootprintGenerator:
 
             elif ID == 'HW':
                 self._run_HW(Nev_peril, self.atmoLayer)
+
+            elif ID == 'PI':
+                self._run_PI(Nev_peril, self.atmoLayer)
 
             elif ID == 'TC':
                 TCcoord = self.evchar[get_peril_evID(self.evchar['evID']) == 'TC'].reset_index(drop=True)
@@ -2317,7 +2516,7 @@ class HazardFootprintGenerator:
             HW_footprints, HW_fp_metadata = self._load_HW_footprints(path_HW_stochset + 'data')
             # Pool largest footprint per Si - for Tutorial 2
             Si2evID = dict(zip(Si, evIDi))
-            HW_fp_metadata['S'] = HW_fp_metadata['S_raw'].apply(lambda s: GenMR_utils.map2upperTail(s, Si))    
+            HW_fp_metadata['S'] = HW_fp_metadata['S_raw'].apply(lambda s: GenMR_utils.get_S_floor(s, Si))    
             HW_fp_metadata['fp_S'] = [np.sum(~np.isnan(HW_footprints[i]['HW_fp'])) for i in HW_fp_metadata.index]
                                     # fp_S as footprint spatial extent, proxy to temperature amplitude above threshold
             lbdi = (HW_fp_metadata.groupby('S').size().reindex(Si, fill_value=0) / Nsim)
@@ -2329,11 +2528,76 @@ class HazardFootprintGenerator:
 
             for i in range(Nev_peril):
                 df_Si = HW_fp_metadata[HW_fp_metadata['S'] == Si[i]]
-                indmax = df_Si['fp_S'].idxmax()
-                self.catalog_hazFootprints[evIDi[i]] = HW_footprints[indmax]['HW_fp']
+                if len(df_Si) > 0:
+                    indmax = df_Si['fp_S'].idxmax()
+                    self.catalog_hazFootprints[evIDi[i]] = HW_footprints[indmax]['HW_fp']  # takes most severe from range [Si)
+                else:
+                    self.catalog_hazFootprints[evIDi[i]] = np.full(atmoLayer_T.grid.xx.shape, np.nan)
+                    print(f'WARNING: No footprint of size {Si[i]} generated (consider increasing Nsim)')
                 cache_file = self._cache_path(evIDi[i])
                 np.save(cache_file, HW_footprints[indmax]['HW_fp'])
 
+
+    ## PI CASE ##
+    def _load_PI_footprints(self, path_PI_data):
+        pattern = re.compile(r"PI_fp_event_(PI\d+)_(\d+)\.npy")
+        results = []
+        for fname in os.listdir(path_PI_data):
+            match = pattern.match(fname)
+            if match:
+                evID = match.group(1)
+                S_raw = int(match.group(2))
+                full_path = os.path.join(path_PI_data, fname)
+                PI_fp = np.load(full_path)
+                results.append({'evID': evID, 'S_raw': S_raw, 'PI_fp': PI_fp})
+        df = pd.DataFrame([{'evID': r['evID'], 'S_raw': r['S_raw']} for r in results])
+        return results, df              
+
+    def _run_PI(self, Nev_peril, atmoLayer_T):
+        path_PI_stochset = 'figs/PI_stochset_tmp/'
+        Nsim = 20000   # WARNING: hard-coded, high enough to get reasonable estimates of rate(Si)
+
+        Si = self.src.par['PI']['Si_yieldloss']
+        evIDi = [f"PI{i+1}" for i in range(len(Si))]
+
+        cache_files = {evID: self._cache_path(evID) for evID in evIDi}
+        all_cached = (not self.force_recompute and all(os.path.exists(path) for path in cache_files.values()) and os.path.exists(path_PI_stochset))
+        if all_cached:
+            self.rate_PI = np.load(os.path.join(self.cache_dir, f'rates_PI.npy'))
+            for evID, path in cache_files.items():
+                self.catalog_hazFootprints[evID] = np.load(path)
+            print('(loading from cache)')
+        else:
+            print('(computing)')
+            os.makedirs(path_PI_stochset, exist_ok = True)
+            path_PI_stochset_data = os.path.join(path_PI_stochset, 'data')
+            os.makedirs(path_PI_stochset_data, exist_ok = True)
+            HazardFootprintGenerator.model_PI_analytical(self.src, atmoLayer_T, path_PI_stochset, path_PI_stochset_data, \
+                            Nsim = Nsim, plot_PIprocess = True)
+            
+            print('Fetching footprints from potential footprints')
+            PI_footprints, PI_fp_metadata = self._load_PI_footprints(path_PI_stochset + 'data')
+            # Pool largest footprint per Si - for Tutorial 2
+            Si2evID = dict(zip(Si, evIDi))
+            PI_fp_metadata['S'] = PI_fp_metadata['S_raw'].apply(lambda s: GenMR_utils.get_S_floor(s, Si))    
+            PI_fp_metadata['fp_S'] = [int(np.nanmean(PI_footprints[i]['PI_fp']) * 100) for i in PI_fp_metadata.index]
+            lbdi = (PI_fp_metadata.groupby('S').size().reindex(Si, fill_value=0) / Nsim)
+            lbdi = lbdi.rename(index = Si2evID)
+
+            self.rate_PI = lbdi.values
+            cache_file = os.path.join(self.cache_dir, f'rates_PI.npy')
+            np.save(cache_file, lbdi)
+
+            for i in range(Nev_peril):
+                df_Si = PI_fp_metadata[PI_fp_metadata['S'] == Si[i]]
+                if len(df_Si) > 0:
+                    indmax = df_Si['fp_S'].idxmax()
+                    self.catalog_hazFootprints[evIDi[i]] = PI_footprints[indmax]['PI_fp']
+                else:
+                    self.catalog_hazFootprints[evIDi[i]] = np.full(atmoLayer_T.grid.xx.shape, np.nan)
+                    print(f'WARNING: No footprint of size {Si[i]} generated (consider increasing Nsim)')
+                cache_file = self._cache_path(evIDi[i])
+                np.save(cache_file, PI_footprints[indmax]['PI_fp'])
 
 
 class DynamicHazardFootprintGenerator:

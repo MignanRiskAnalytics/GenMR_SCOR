@@ -368,15 +368,30 @@ def get_ind_aspect2moore(ind_old):
     return ind_new[ind_old]
 
 
-def map2upperTail(size, Si):
+def get_S_ceil(size, Si):
     '''
-    Map event size to upper-tail size class Si.
-    Returns the smallest Si >= size.
+    Map event size to the ceiling size class in Si.
+
+    Returns the smallest value in Si that is greater than or equal to `size`.
+    Values outside the range of Si are clipped to the nearest endpoint.
     '''
     Si = np.asarray(Si)
+    size = np.asarray(size)
     idx = np.searchsorted(Si, size, side='left')
-    if idx >= len(Si):
-        return Si[-1]
+    idx = np.clip(idx, 0, len(Si) - 1)
+    return Si[idx]
+
+def get_S_floor(size, Si):
+    '''
+    Map event size to the floor size class in Si.
+
+    Returns the largest value in Si that is less than or equal to `size`.
+    Values outside the range of Si are clipped to the nearest endpoint.
+    '''
+    Si = np.asarray(Si)
+    size = np.asarray(size)
+    idx = np.searchsorted(Si, size, side='right') - 1
+    idx = np.clip(idx, 0, len(Si) - 1)
     return Si[idx]
 
 
