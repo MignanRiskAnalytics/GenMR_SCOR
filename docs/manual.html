@@ -156,6 +156,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.built_type"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.built_type</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.built_yr"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.built_yr</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.CI_refinery"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.CI_refinery</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.assign_bldg_Nstories"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.assign_bldg_Nstories()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.bldg_roofpitch"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.bldg_roofpitch</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.bldg_type"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.bldg_type</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.bldg_value"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.bldg_value</span></code></a></li>
@@ -240,6 +241,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.calc_I_ash_m"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_I_ash_m()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.calc_I_blast_kPa"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_I_blast_kPa()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.calc_I_shaking_ms2"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_I_shaking_ms2()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.calc_PI_I"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_PI_I()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.calc_PI_growthrate"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_PI_growthrate()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.calc_S_track"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_S_track()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.calc_lateral_distance_signed"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_lateral_distance_signed()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.calc_v_from_EFscale"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_v_from_EFscale()</span></code></a></li>
@@ -248,6 +251,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.get_HW_footprint"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.get_HW_footprint()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.get_TC_timeshot"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.get_TC_timeshot()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.model_HW_threshold"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.model_HW_threshold()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.model_PI_analytical"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.model_PI_analytical()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.model_SS_Bathtub"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.model_SS_Bathtub()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.model_To_analytical"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.model_To_analytical()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.pdf_T_advectivemodel"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.pdf_T_advectivemodel()</span></code></a></li>
@@ -293,6 +297,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.col_peril"><code class="docutils literal notranslate"><span class="pre">col_peril()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.col_state_h"><code class="docutils literal notranslate"><span class="pre">col_state_h()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.fetch_A0"><code class="docutils literal notranslate"><span class="pre">fetch_A0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_S_ceil"><code class="docutils literal notranslate"><span class="pre">get_S_ceil()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_S_floor"><code class="docutils literal notranslate"><span class="pre">get_S_floor()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_ind_aspect2moore"><code class="docutils literal notranslate"><span class="pre">get_ind_aspect2moore()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_ndays_inMonth"><code class="docutils literal notranslate"><span class="pre">get_ndays_inMonth()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_neighborhood_ind"><code class="docutils literal notranslate"><span class="pre">get_neighborhood_ind()</span></code></a></li>
@@ -301,7 +307,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.init_io"><code class="docutils literal notranslate"><span class="pre">init_io()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.load_json2dict"><code class="docutils literal notranslate"><span class="pre">load_json2dict()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.load_pickle2class"><code class="docutils literal notranslate"><span class="pre">load_pickle2class()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.map2upperTail"><code class="docutils literal notranslate"><span class="pre">map2upperTail()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.marker_peril"><code class="docutils literal notranslate"><span class="pre">marker_peril()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.norm_z"><code class="docutils literal notranslate"><span class="pre">norm_z</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.partitioning"><code class="docutils literal notranslate"><span class="pre">partitioning()</span></code></a></li>
@@ -377,6 +382,7 @@
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-1-tropical-cyclone-case">C.1. Tropical cyclone case</a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-2-tornado-case">C.2. Tornado case</a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-3-heatwave-case-threshold-model">C.3. Heatwave case (threshold model)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-4-pest-infestation-case">C.4. Pest infestation case</a></li>
 </ul>
 </li>
 </ul>
@@ -1561,6 +1567,18 @@ coastline and river.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.assign_bldg_Nstories">
+<span class="sig-name descname"><span class="pre">assign_bldg_Nstories</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand.assign_bldg_Nstories" title="Link to this definition"></a></dt>
+<dd><p>Assign number of building stories based on land-use class
+and construction period using fully land-use–specific
+(vector length 3) parameters.</p>
+<p>Parameter order:
+0 → Residential (S=2)
+1 → Commercial  (S=4)
+2 → Industrial  (S=3)</p>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.bldg_roofpitch">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bldg_roofpitch</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand.bldg_roofpitch" title="Link to this definition"></a></dt>
@@ -2343,9 +2361,10 @@ as well as intensity and loss footprint calculations.</p>
 <h4>Peril models (v1.1.2)<a class="headerlink" href="#peril-models-v1-1-2" title="Link to this heading"></a></h4>
 <ul class="simple">
 <li><p>CS: Convective storm</p></li>
-<li><p>Dr: Drought - in construction</p></li>
+<li><p>Dr: Drought</p></li>
 <li><p>HW: Heatwave</p></li>
 <li><p>Li: Lightning</p></li>
+<li><p>PI: Pest infestation - IN CONSTRUCTION</p></li>
 <li><p>To: Tornado</p></li>
 <li><p>WS: Windstorm</p></li>
 </ul>
@@ -2353,7 +2372,6 @@ as well as intensity and loss footprint calculations.</p>
 <section id="planned-peril-models-v1-1-2">
 <h4>Planned peril models (v1.1.2)<a class="headerlink" href="#planned-peril-models-v1-1-2" title="Link to this heading"></a></h4>
 <ul class="simple">
-<li><p>PI: Pest infestation</p></li>
 <li><p>BO: Blackout</p></li>
 <li><p>BI: Business interruption</p></li>
 <li><p>Sf: Public service failure</p></li>
@@ -2367,7 +2385,7 @@ as well as intensity and loss footprint calculations.</p>
 <dd class="field-even"><p>1.1.2</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2026-02-02</p>
+<dd class="field-odd"><p>2026-02-10</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -2745,6 +2763,59 @@ calibrated from historical eruptions (e.g., Mt. St. Helens 1980).</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="GenMR.perils.HazardFootprintGenerator.calc_PI_I">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calc_PI_I</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.HazardFootprintGenerator.calc_PI_I" title="Link to this definition"></a></dt>
+<dd><p>Compute a normalized pest infestation hazard index based on
+temperature-dependent population growth over a fixed time window.</p>
+<p>The hazard index is defined as the relative exponential population
+amplification driven by the growth rate, normalized by the maximum
+pest count achievable within the biologically relevant temperature range.
+A value of 1 indicates total crop yield loss.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>T</strong> (<em>float</em><em> or </em><em>ndarray</em>) – Temperature (°C).</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – Temperature–growth model - see list in calc_PI_growthrate().</p></li>
+<li><p><strong>Dt</strong> (<em>float</em><em>, </em><em>optional</em>) – Exposure duration in days (default = 30, i.e. a month).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>haz_index</strong> (<em>float or ndarray</em>) – Dimensionless hazard index in [0, 1].</p></li>
+<li><p><strong>Topt</strong> (<em>float</em>) – Temperature (°C) at which the pest development rate is maximal.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.perils.HazardFootprintGenerator.calc_PI_growthrate">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calc_PI_growthrate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.HazardFootprintGenerator.calc_PI_growthrate" title="Link to this definition"></a></dt>
+<dd><p>Calculate the temperature-dependent development rate of a pest (here Spodoptera frugiperda),
+according to different mathematical models.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>T</strong> (<em>float</em><em> or </em><em>ndarray</em>) – Temperature (°C).</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – Name of the temperature–development model. Supported options:
+‘beta’, ‘Briere1’, ‘Briere2’, ‘Shi’, ‘Logan6’, ‘Taylor’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>growthrate</strong> – Temperature-dependent development rate (1/day).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float or ndarray</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>Malekera et al. (2022), Temperature-Dependent Development Models Describing the Effects of Temperature
+on the Development of the Fall Armyworm Spodoptera frugiperda (J. E. Smith) (Lepidoptera: Noctuidae).
+Insects, 13, 1084, doi: 10.3390/insects13121084</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="GenMR.perils.HazardFootprintGenerator.calc_S_track">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calc_S_track</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stochset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Track_coord</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.HazardFootprintGenerator.calc_S_track" title="Link to this definition"></a></dt>
 <dd><p>Calculate along-track hazard intensity for tropical cyclones (TC)
@@ -3003,6 +3074,50 @@ are produced and saved for each detected event. Default is False.</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Heatwave footprint events are written to disk as <code class="docutils literal notranslate"><span class="pre">.npy</span></code> files.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.perils.HazardFootprintGenerator.model_PI_analytical">
+<span class="sig-name descname"><span class="pre">model_PI_analytical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atmoLayer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_PI_stochset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_PI_stochset_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nsim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_PIprocess</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.HazardFootprintGenerator.model_PI_analytical" title="Link to this definition"></a></dt>
+<dd><p>Generate a stochastic catalog of pest infestation (PI) footprint events based on
+large-scale advective temperature anomalies during the considered month.</p>
+<p>The function performs Monte Carlo simulations of pest events by combining:
+(i) yearly-scale advective temperature anomalies,
+(ii) spatial temperature fields. Heatwave events are identified using a
+temperature threshold and minimum duration criterion, and qualifying events
+are stored as spatial footprint arrays on disk.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>src</strong> (<em>dict</em>) – <p>Source dictionary containing model parameters in <code class="docutils literal notranslate"><span class="pre">src.par['PI']</span></code>.
+Required keys include:
+- month : int</p>
+<blockquote>
+<div><p>Calendar month (1 = January, 12 = December).</p>
+</div></blockquote>
+<ul>
+<li><dl class="simple">
+<dt>landuse<span class="classifier">ndarray</span></dt><dd><p>the land use state from the urban environmental layer.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p></li>
+<li><p><strong>atmoLayer</strong> (<em>class</em>) – Atmospheric environmental layer.</p></li>
+<li><p><strong>path_PI_stochset</strong> (<em>str</em>) – Path where diagnostic figures of pest infestation processes are saved.</p></li>
+<li><p><strong>path_PI_stochset_data</strong> (<em>str</em>) – Path where pest infestation footprint arrays (<code class="docutils literal notranslate"><span class="pre">.npy</span></code> files) are stored.</p></li>
+<li><p><strong>Nsim</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of Monte Carlo simulations to perform. Default is 10000.</p></li>
+<li><p><strong>plot_PIprocess</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, diagnostic plots illustrating the pest infestation generation process
+are produced and saved for each detected event. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Pest infestation footprint events are written to disk as <code class="docutils literal notranslate"><span class="pre">.npy</span></code> files.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None</p>
@@ -3742,7 +3857,7 @@ core GenMR workflows by streamlining data handling, computation, and visualisati
 <dd class="field-even"><p>1.1.2</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2026-01-27</p>
+<dd class="field-odd"><p>2026-02-10</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -3902,6 +4017,22 @@ code representing the state:</p>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.get_S_ceil">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">get_S_ceil</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Si</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.get_S_ceil" title="Link to this definition"></a></dt>
+<dd><p>Map event size to the ceiling size class in Si.</p>
+<p>Returns the smallest value in Si that is greater than or equal to <cite>size</cite>.
+Values outside the range of Si are clipped to the nearest endpoint.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.get_S_floor">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">get_S_floor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Si</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.get_S_floor" title="Link to this definition"></a></dt>
+<dd><p>Map event size to the floor size class in Si.</p>
+<p>Returns the largest value in Si that is less than or equal to <cite>size</cite>.
+Values outside the range of Si are clipped to the nearest endpoint.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -4080,13 +4211,6 @@ logarithmic space, or repeat a value a specified number of times.</p>
 <dd class="field-odd"><p>object</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="GenMR.utils.map2upperTail">
-<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">map2upperTail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Si</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.map2upperTail" title="Link to this definition"></a></dt>
-<dd><p>Map event size to upper-tail size class Si.
-Returns the smallest Si &gt;= size.</p>
 </dd></dl>
 
 <dl class="py function">
