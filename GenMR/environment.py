@@ -325,7 +325,7 @@ class EnvLayer_topo:
         slope : ndarray of float
             2D array of slope values in degrees at each grid point.
         '''
-        tan_slope, _ = calc_topo_attributes(self.z, self.grid.w)
+        tan_slope, _ = self.calc_topo_attributes(self.z, self.grid.w)
         slope = np.arctan(tan_slope) * 180 / np.pi
         return slope
 
@@ -343,7 +343,7 @@ class EnvLayer_topo:
             2D array of aspect values in degrees at each grid point.
             Values indicate the downslope direction.
         '''
-        _, aspect = calc_topo_attributes(self.z, self.grid.w)
+        _, aspect = self.calc_topo_attributes(self.z, self.grid.w)
         return aspect
 
     ###############################################
@@ -603,40 +603,39 @@ class EnvLayer_topo:
                 dist_to_coast[i, j] = coastline.distance(p)
         return dist_to_coast
 
+    @staticmethod
+    def calc_topo_attributes(z, w):
+        '''
+        Compute slope and aspect of a 2D topography grid using finite differences.
 
+        The topography is first converted from meters to kilometers. Gradients 
+        are computed with a 3x3 kernel (central differences) using `np.gradient`.
+        Slope is expressed in degrees, and aspect is calculated following standard 
+        geographic conventions.
 
-def calc_topo_attributes(z, w):
-    '''
-    Compute slope and aspect of a 2D topography grid using finite differences.
+        Parameters
+        ----------
+        z : ndarray, shape (nx, ny)
+            2D array of elevation values in meters.
+        w : float
+            Grid spacing (pixel width) in km.
 
-    The topography is first converted from meters to kilometers. Gradients 
-    are computed with a 3x3 kernel (central differences) using `np.gradient`.
-    Slope is expressed in degrees, and aspect is calculated following standard 
-    geographic conventions.
-
-    Parameters
-    ----------
-    z : ndarray, shape (nx, ny)
-        2D array of elevation values in meters.
-    w : float
-        Grid spacing (pixel width) in km.
-
-    Returns
-    -------
-    tan_slope : ndarray, shape (nx, ny)
-        Tangent of the slope at each grid point (unitless).
-    aspect : ndarray, shape (nx, ny)
-        Aspect angle at each grid point in degrees, measured clockwise from north.
-    '''
-    z = np.pad(z*1e-3, 1, 'edge')   # from m to km
-    # 3x3 kernel method to get dz/dx, dz/dy
-    dz_dy, dz_dx = np.gradient(z)
-    dz_dx = dz_dx[1:-1,1:-1] / w
-    dz_dy = (dz_dy[1:-1,1:-1] / w) * (-1)
-    tan_slope = np.sqrt(dz_dx**2 + dz_dy**2)
-#    slope = np.arctan(tan_slope) * 180 / np.pi
-    aspect = 180 - np.arctan(dz_dy/dz_dx)*180/np.pi + 90 * (dz_dx + 1e-6) / (np.abs(dz_dx) + 1e-6)
-    return tan_slope, aspect
+        Returns
+        -------
+        tan_slope : ndarray, shape (nx, ny)
+            Tangent of the slope at each grid point (unitless).
+        aspect : ndarray, shape (nx, ny)
+            Aspect angle at each grid point in degrees, measured clockwise from north.
+        '''
+        z = np.pad(z*1e-3, 1, 'edge')   # from m to km
+        # 3x3 kernel method to get dz/dx, dz/dy
+        dz_dy, dz_dx = np.gradient(z)
+        dz_dx = dz_dx[1:-1,1:-1] / w
+        dz_dy = (dz_dy[1:-1,1:-1] / w) * (-1)
+        tan_slope = np.sqrt(dz_dx**2 + dz_dy**2)
+    #    slope = np.arctan(tan_slope) * 180 / np.pi
+        aspect = 180 - np.arctan(dz_dy/dz_dx)*180/np.pi + 90 * (dz_dx + 1e-6) / (np.abs(dz_dx) + 1e-6)
+        return tan_slope, aspect
 
 
 
@@ -1477,12 +1476,12 @@ class EnvLayer_urbLand:
                    np.where(self.grid.y > self.par['city_seed'][1]-1e-6)[0][0]] = 1
         self.built_yr = np.full((self.grid.nx,self.grid.ny), np.nan)
         self.built_yr[self.built == 1] = self.year
-        self.Nstories = np.full((self.grid.nx, self.grid.ny), np.nan)
+        self.bldg_Nstories = np.full((self.grid.nx, self.grid.ny), np.nan)
 
     def generate(self):
         # generate city with intertwinned road network
         self.run()
-        self.Nstories = self.assign_bldg_Nstories()
+        self.bldg_Nstories = self.assign_bldg_Nstories()
 
         # add crops
         if self.par['crops']:
@@ -1497,9 +1496,8 @@ class EnvLayer_urbLand:
             T_index_wheat = self.crop_T_suitability(self.atmo.T, 'wheat') * mask_crop_int
             T_index_maize = self.crop_T_suitability(self.atmo.T, 'maize') * mask_crop_int
 
-            S_crop = np.where(T_index_wheat > T_index_maize, 5, 6)             # wheat, maize classes
-#            T_index_min = .2                                                   # no crop below - hardcoded
-#            S_crop[np.maximum(T_index_wheat,T_index_maize) < T_index_min] = 1  # forest class
+            S_crop = np.where(T_index_wheat > T_index_maize, 5, 6)                               # wheat, maize classes
+            S_crop[np.maximum(T_index_wheat,T_index_maize) <= self.par['crop_Tindex_min']] = 1   # forest class
             self.S[mask_crop] = S_crop[mask_crop]
 
     def __iter__(self):
@@ -1801,6 +1799,7 @@ class EnvLayer_urbLand:
 #    def infiltration(self):
 #        # to add - function of built, forest, grassland -> to be used in FF model
 #        return None
+
 
     ## city extension functions ##
     def calc_Pr_urbanise(self, slope, par):
@@ -2193,7 +2192,13 @@ class EnvLayer_urbLand:
 
 
 
+## ENERGY SYSTEMS ##
+class EnvLayer_urbLand:
+    '''
+    Docstring for EnvLayer_urbLand
+    '''
 
+    # to be defined - move CI_refinery to here + add power grid object
 
 
 
@@ -2366,10 +2371,10 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
 
     plt.xlabel('$x$ (km)')
     plt.ylabel('$y$ (km)')
-    plt.title('Layer:' + envLayer.ID + ' with attribute:' + attr, size = 14)
+    plt.title(f'{envLayer.ID} layer: {attr}', size = 14, pad = 20)
     ax.set_aspect(1)
     if file_ext != '-':
-        plt.savefig('figs/envLayer_' + envLayer.ID + '_' + attr + '.' + file_ext)
+        plt.savefig(f'figs/envLayer_{envLayer.ID}…{attr}.{file_ext}')
 
 
 def plot_EnvLayers(envLayers, file_ext = '-'):
