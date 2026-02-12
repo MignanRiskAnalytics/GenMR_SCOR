@@ -13,13 +13,15 @@ Layers and Related Objects (v1.1.1)
 * **Soil**
   - properties: factor of safety
 * **Natural land**
-* **Urban land** - includes road network  
-  - properties: asset value
+* **Urban land** - includes road network
+  - properties: building block value
 
 Layers and Related Objects (v1.1.2)
 -----------------------------------
 * **Atmosphere**
   - properties: freezing level, tropopause
+* **Energy infrastructures** - includes refinery
+  - properties: TO ADD
 
 Planned Additions (v1.1.2)
 ---------------------------
@@ -28,7 +30,7 @@ Planned Additions (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-01-09
+:Date: 2026-02-12
 :License: AGPL-3
 """
 
@@ -269,6 +271,8 @@ class EnvLayer_topo:
                 self.z[indx0[0],indy0-1] = self.z[indx0[0],indy0-1] - river_h * 2   # pixel below river ordinate
         if self.par['calc_d2coastline']:
             self.d2coastline = self.calc_d2coastline()
+        if self.par['calc_d2river']:
+            self.d2river = self.calc_d2river()
 
     def __repr__(self):
         return 'EnvLayer_topo({},{},{})'.format(repr(self.grid), self.par, self.src)
@@ -602,6 +606,16 @@ class EnvLayer_topo:
                 p = Point(self.grid.xx[i, j], self.grid.yy[i, j])
                 dist_to_coast[i, j] = coastline.distance(p)
         return dist_to_coast
+
+    def calc_d2river(self):
+        river_x, river_y, _, _ = self.river_coord
+        river = LineString(np.column_stack([river_x, river_y]))
+        dist_to_river = np.zeros_like(self.grid.xx)
+        for i in trange(self.grid.xx.shape[0], desc = 'Calculating distance to river'):
+            for j in range(self.grid.xx.shape[1]):
+                p = Point(self.grid.xx[i, j], self.grid.yy[i, j])
+                dist_to_river[i, j] = river.distance(p)
+        return dist_to_river
 
     @staticmethod
     def calc_topo_attributes(z, w):
@@ -1332,40 +1346,6 @@ class EnvObj_roadNetwork():
             self.net.add_edge(list_nodes[indL[0]], self.nodeID)
             
 
-@dataclass
-class CriticalInfrastructure:
-    '''
-    Represents a critical infrastructure facility or asset.
-
-    Parameters
-    ----------
-    name : str
-        Name or identifier of the infrastructure.
-    zone_type : str
-        Type of industrial zone.
-    area : float
-        Area of the facility.
-    centroid : tuple of float
-        Coordinates (x, y) of the facility's centroid.
-    polygon : shapely.geometry.Polygon
-        Polygon representing the infrastructure footprint.
-    distance_to_coast : float
-        Minimum distance from the infrastructure to the nearest coastline [km].
-    distance_to_river : float
-        Minimum distance from the infrastructure to the nearest river [km].
-    Ex_S_kton : float
-        Explosive or hazard-related characteristic, e.g., explosive stock in kilotons.
-    '''
-    name: str
-    zone_type: str
-    area: float
-    centroid: tuple
-    polygon: Polygon
-    distance_to_coast: float
-    distance_to_river: float
-    Ex_S_kton: float
-
-
 
 ## URBAN LAND ##
 class EnvLayer_urbLand:
@@ -1721,9 +1701,9 @@ class EnvLayer_urbLand:
         return val
 
     @property
-    def bldg_value(self):
+    def bldg_blockValue(self):
         '''
-        Estimate the replacement/building value for each urban cell according to Huizinga et al. (2017)
+        Estimate the replacement/building value for each urban block according to Huizinga et al. (2017:tab.3.25)
 
         Returns
         -------
@@ -1740,13 +1720,23 @@ class EnvLayer_urbLand:
         Huizinga J, de Moel H, Szewczyk W (2017), Global Flood Depth-Damage Functions. Methodology and the Database with Guidelines. 
         JRC Technical Reports. EUR 28552 EN.
         '''
-        c1 = [24.1, 30.8, 33.6]
-        c2 = [.385, .325, .357]
+        c1 = [24.1, 30.8, 33.6]      # tab.3.25
+        c2 = [.385, .325, .357]      # tab.3.25
         val = np.full((self.grid.nx, self.grid.ny), np.nan)
-        val[self.S == 2] = c1[0] * self.par['GPD_percapita_USD'] **c2[0] * (self.grid.w*1e3)**2
-        val[self.S == 3] = c1[1] * self.par['GPD_percapita_USD'] **c2[1] * (self.grid.w*1e3)**2
-        val[self.S == 4] = c1[2] * self.par['GPD_percapita_USD'] **c2[2] * (self.grid.w*1e3)**2
+        indR = self.S == 2
+        indI = self.S == 3
+        indC = self.S == 4
+        val[indR] = c1[0] * self.par['GPD_percapita_EUR'] **c2[0] * (self.grid.w*1e3)**2 * self.bldg_Nstories[indR] * self.par['ResIndCom_Aratio'][0]
+        val[indI] = c1[1] * self.par['GPD_percapita_EUR'] **c2[1] * (self.grid.w*1e3)**2 * self.bldg_Nstories[indI] * self.par['ResIndCom_Aratio'][1]
+        val[indC] = c1[2] * self.par['GPD_percapita_EUR'] **c2[2] * (self.grid.w*1e3)**2 * self.bldg_Nstories[indC] * self.par['ResIndCom_Aratio'][2]
         return val
+
+    @cached_property
+    def industrialZones(self):
+        '''
+        Cached version of industrial zones.
+        '''
+        return self._get_industrialZones()
 
     def assign_bldg_Nstories(self):
         '''
@@ -1756,43 +1746,29 @@ class EnvLayer_urbLand:
 
         Parameter order:
         0 → Residential (S=2)
-        1 → Commercial  (S=4)
-        2 → Industrial  (S=3)
+        1 → Industrial  (S=3)
+        2 → Commercial  (S=4)
         '''
         stories = np.full((self.grid.nx, self.grid.ny), np.nan)
 
         # Map land-use code → parameter index
-        lu_map = {2: 0, 4: 1, 3: 2}
-
+        lu_map = {2: 0, 3: 1, 4: 2}
         mask = np.isin(self.S, list(lu_map.keys()))
         ii, jj = np.where(mask)
-
         for i, j in zip(ii, jj):
             lu = self.S[i, j]
             idx = lu_map[lu]
             yr = self.built_yr[i, j]
-
-            if yr < self.par['ResComInd_yr_lowrise_end'][idx]:
-                stories[i, j] = np.random.randint(
-                    self.par['ResComInd_lowrise_min'][idx],
-                    self.par['ResComInd_lowrise_max'][idx] + 1
-                )
-            elif yr < self.par['ResComInd_yr_highrise_end'][idx]:
-                stories[i, j] = np.random.randint(
-                    self.par['ResComInd_highrise_min'][idx],
-                    self.par['ResComInd_highrise_max'][idx] + 1
-                )
+            if yr < self.par['ResIndCom_yr_lowrise_end'][idx]:
+                stories[i, j] = np.random.randint(1, self.par['ResIndCom_lowrise_max'][idx] + 1)
             else:
-                if np.random.random() < self.par['ResComInd_mix_pr_high'][idx]:
+                if np.random.random() < self.par['ResIndCom_mix_pr_high'][idx]:
                     stories[i, j] = np.random.randint(
-                        self.par['ResComInd_highrise_min'][idx],
-                        self.par['ResComInd_highrise_max'][idx] + 1
+                        self.par['ResIndCom_lowrise_max'][idx] + 1,
+                        self.par['ResIndCom_highrise_max'][idx] + 1
                     )
                 else:
-                    stories[i, j] = np.random.randint(
-                        self.par['ResComInd_lowrise_min'][idx],
-                        self.par['ResComInd_lowrise_max'][idx] + 1
-                    )
+                    stories[i, j] = np.random.randint(1, self.par['ResIndCom_lowrise_max'][idx] + 1)
         return stories.astype(int)
 
 #    @property
@@ -2000,8 +1976,8 @@ class EnvLayer_urbLand:
                 built_type[i_built[k], j_built[k]] = self.get_state_built(state0, neighbor_k, neighbor_d, m_kd)
         return built_type
 
-    ## define critical infrastructures ##
-    def get_industrialZones(self):
+
+    def _get_industrialZones(self):
         '''
         Extract and classify industrial zones from the current land-use grid.
 
@@ -2029,112 +2005,64 @@ class EnvLayer_urbLand:
             - ``closed`` : bool  
             Always ``True``.
         '''
-        xx = self.grid.xx
-        yy = self.grid.yy
-        states = self.S
-
-        coast_x, coast_y = self.topo.coastline_coord
-        coastline = LineString(np.column_stack([coast_x, coast_y]))
-
-        riv_x, riv_y, _, _ = self.topo.river_coord
-        river = LineString(np.column_stack([riv_x, riv_y]))
-
         buffer = self.grid.w * 2
 
         vonNeumann_struct = np.array([[0,1,0],
                                       [1,1,1],
                                       [0,1,0]], dtype=bool)
 
-        industrial_mask = (states == 3)
+        industrial_mask = (self.S == 3)
 
         labeled, n_components = label(industrial_mask, structure=vonNeumann_struct)
 
         polygons = []
         plt.figure(figsize=(4,4))
+        min_size = 10
 
-        for comp_id in range(1, n_components + 1):
-            component_mask = (labeled == comp_id).astype(float)
-            cs = plt.contour(xx, yy, component_mask, levels=[0.5])
-            if not cs.collections:
-                continue
+        for comp_id in trange(1, n_components + 1, desc = 'extracting industrial zones as polygons'):
+            component_mask = labeled == comp_id
+            component_mask_float = component_mask.astype(float)
 
-            paths = cs.collections[0].get_paths()
-            if not paths:
-                continue
-            exterior_path = max(paths, key=lambda p: len(p.vertices))
-            vertices = exterior_path.vertices.copy()
+            if np.sum(component_mask) > min_size:
+                cs = plt.contour(self.grid.xx, self.grid.yy, component_mask_float, levels=[0.5])
+                if not cs.collections:
+                    continue
 
-            if not np.allclose(vertices[0], vertices[-1]):
-                vertices = np.vstack([vertices, vertices[0]])
+                paths = cs.collections[0].get_paths()
+                if not paths:
+                    continue
+                exterior_path = max(paths, key=lambda p: len(p.vertices))
+                vertices = exterior_path.vertices.copy()
 
-            poly = Polygon(vertices)
-            area = poly.area
-            dist_coast = poly.distance(coastline)
-            dist_river = poly.distance(river)
+                if not np.allclose(vertices[0], vertices[-1]):
+                    vertices = np.vstack([vertices, vertices[0]])
 
-            if dist_coast <= buffer:
-                zone_type = 'industrial harbor'
-            elif dist_river <= buffer:
-                zone_type = 'riverside industrial park'
-            else:
-                zone_type = 'inland industrial park'
+                poly = Polygon(vertices)
+                area = poly.area
 
-            polygons.append({
-                "state": "industrial",
-                "zone_type": zone_type,
-                "vertices": vertices,
-                "area": area,
-                "distance_to_coast": dist_coast,
-                "distance_to_river": dist_river,
-                "closed": True,
-            })
+                dist_coast = self.topo.d2coastline[component_mask].min()
+                dist_river = self.topo.d2river[component_mask].min()
+
+                if dist_coast <= buffer:
+                    zone_type = 'industrial harbor'
+                elif dist_river <= buffer:
+                    zone_type = 'riverside industrial park'
+                else:
+                    zone_type = 'inland industrial park'
+
+                polygons.append({
+                    "state": "industrial",
+                    "zone_type": zone_type,
+                    "vertices": vertices,
+                    "area": area,
+                    "distance_to_coast": dist_coast,
+                    "distance_to_river": dist_river,
+                    "closed": True,
+                })
 
         plt.close()
         return polygons
 
-    @cached_property
-    def industrialZones(self):
-        """Cached version of industrial zones."""
-        return self.get_industrialZones()
-
-    @cached_property
-    def CI_refinery(self):
-        '''
-        Identify and construct the critical infrastructure object representing  
-        the main coastal refinery.
-
-        This property selects the largest polygon classified as an
-        **industrial harbor** zone from :attr:`industrialZones`, and returns a
-        :class:`CriticalInfrastructure` instance located at its centroid.
-
-        Returns
-        -------
-        CriticalInfrastructure
-            An object describing the refinery, including its name, zone type,
-            polygon geometry, area, centroid coordinates, and distances to
-            coastline and river.
-        '''
-        zones = self.industrialZones
-        harbor_polys = [p for p in zones if p["zone_type"] == "industrial harbor"]
-
-        if len(harbor_polys) == 0:
-            raise ValueError("No industrial harbor polygons found.")
-
-        largest = max(harbor_polys, key=lambda p: p["area"])
-        poly = Polygon(largest["vertices"])
-        centroid = (poly.centroid.x, poly.centroid.y)
-
-        return CriticalInfrastructure(
-            name="CI_refinery",
-            zone_type=largest["zone_type"],
-            area=largest["area"],
-            centroid=centroid,
-            polygon=poly,
-            distance_to_coast=largest["distance_to_coast"],
-            distance_to_river=largest["distance_to_river"],
-            Ex_S_kton=None,
-        )
-    
 
     ## define crops ##
     def crop_T_suitability(self, atmoLayer_T, crop):
@@ -2193,12 +2121,83 @@ class EnvLayer_urbLand:
 
 
 ## ENERGY SYSTEMS ##
-class EnvLayer_urbLand:
+@dataclass
+class CriticalInfrastructure:
     '''
-    Docstring for EnvLayer_urbLand
+    Represents a critical infrastructure facility or asset.
+
+    Parameters
+    ----------
+    name : str
+        Name or identifier of the infrastructure.
+    zone_type : str
+        Type of industrial zone.
+    area : float
+        Area of the facility.
+    centroid : tuple of float
+        Coordinates (x, y) of the facility's centroid.
+    polygon : shapely.geometry.Polygon
+        Polygon representing the infrastructure footprint.
+    Ex_S_kton : float
+        Explosive or hazard-related characteristic, e.g., explosive stock in kilotons.
+    '''
+    name: str
+    zone_type: str
+    area: float
+    centroid: tuple
+    polygon: Polygon
+    Ex_S_kton: float
+
+
+class EnvLayer_energyCI:
+    '''
+    Docstring for EnvLayer_energyCI
     '''
 
-    # to be defined - move CI_refinery to here + add power grid object
+    def __init__(self, urbLand, par):
+        self.ID = 'urbLand'
+        self.urbLand = copy.deepcopy(urbLand)
+        self.grid = self.urbLand.grid
+#        self.topo = self.urbLand.topo
+        self.par = par
+        np.random.seed(self.par['rdm_seed'])
+
+    @cached_property
+    def CI_refinery(self):
+        '''
+        Identify and construct the critical infrastructure object representing  
+        the main coastal refinery.
+
+        This property selects the largest polygon classified as an
+        **industrial harbor** zone from :attr:`industrialZones`, and returns a
+        :class:`CriticalInfrastructure` instance located at its centroid.
+
+        Returns
+        -------
+        CriticalInfrastructure
+            An object describing the refinery, including its name, zone type,
+            polygon geometry, area, centroid coordinates, and distances to
+            coastline and river.
+        '''
+        zones = self.urbLand.industrialZones
+        harbor_polys = [p for p in zones if p['zone_type'] == 'industrial harbor']
+
+        if len(harbor_polys) == 0:
+            raise ValueError('No industrial harbor polygons found.')
+
+        largest = max(harbor_polys, key=lambda p: p["area"])
+        poly = Polygon(largest["vertices"])
+        centroid = (poly.centroid.x, poly.centroid.y)
+
+        return CriticalInfrastructure(
+            name = 'CI_refinery',
+            zone_type = largest['zone_type'],
+            area = largest['area'],
+            centroid = centroid,
+            polygon = poly,
+            Ex_S_kton=None,
+        )
+
 
 
 
@@ -2251,7 +2250,7 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
         - Topography: 'z', 'slope', 'aspect'
         - Topography: 'T'
         - Soil: 'h', 'FS'
-        - Natural/Urban Land: 'S', 'roadNet', 'bldg_value', 'built_yr', 'industrialZones'
+        - Natural/Urban Land: 'S', 'roadNet', 'bldg_blockValue', 'built_yr', 'industrialZones'
     hillshading_z : ndarray, optional
         2D array of elevation values for hillshading overlay. Default is empty string, meaning no hillshading.
     file_ext : str, optional
@@ -2335,19 +2334,29 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
 
     if envLayer.ID == 'urbLand':
         if attr == 'S':
-            legend_S = [Patch(facecolor=(0/255.,127/255.,191/255.,.5), edgecolor='black', label='Water'),
-                        Patch(facecolor=(236/255., 235/255., 189/255.,.5), edgecolor='black', label='Grassland'),
-                        Patch(facecolor=(34/255.,139/255.,34/255.,.5), edgecolor='black', label='Forest'),
-                        Patch(facecolor=(131/255.,137/255.,150/255.,.5), edgecolor='black', label='Residential'),
-                        Patch(facecolor=(10/255.,10/255.,10/255.,.5), edgecolor='black', label='Industrial'),
-                        Patch(facecolor=(230/255.,230/255.,230/255.,.5), edgecolor='black', label='Commercial')]
+            if np.max(np.unique(envLayer.S)) < 5:
+                legend_S = [Patch(facecolor=(0/255.,127/255.,191/255.,.5), edgecolor='black', label='Water'),
+                            Patch(facecolor=(236/255., 235/255., 189/255.,.5), edgecolor='black', label='Grassland'),
+                            Patch(facecolor=(34/255.,139/255.,34/255.,.5), edgecolor='black', label='Forest'),
+                            Patch(facecolor=(131/255.,137/255.,150/255.,.5), edgecolor='black', label='Residential'),
+                            Patch(facecolor=(10/255.,10/255.,10/255.,.5), edgecolor='black', label='Industrial'),
+                            Patch(facecolor=(230/255.,230/255.,230/255.,.5), edgecolor='black', label='Commercial')]
+            else:
+                legend_S = [Patch(facecolor=(0/255.,127/255.,191/255.,.5), edgecolor='black', label='Water'),
+                            Patch(facecolor=(236/255., 235/255., 189/255.,.5), edgecolor='black', label='Grassland'),
+                            Patch(facecolor=(34/255.,139/255.,34/255.,.5), edgecolor='black', label='Forest'),
+                            Patch(facecolor=(131/255.,137/255.,150/255.,.5), edgecolor='black', label='Residential'),
+                            Patch(facecolor=(10/255.,10/255.,10/255.,.5), edgecolor='black', label='Industrial'),
+                            Patch(facecolor=(230/255.,230/255.,230/255.,.5), edgecolor='black', label='Commercial'),
+                            Patch(facecolor=(255/255.,215/255.,0/255.,.5), edgecolor='black', label='Wheat'),
+                            Patch(facecolor=(255/255.,140/255.,0/255.,.5), edgecolor='black', label='Maize')]
             plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.S, cmap = GenMR_utils.col_S, \
                                          vmin=-1, vmax=7, alpha = alpha)
             plt.legend(handles=legend_S, loc='upper left')
         elif attr == 'roadNet':
             plt.plot(envLayer.roadNet_coord[2], envLayer.roadNet_coord[3], color='darkred', lw = 1)
-        elif attr == 'bldg_value':
-            img = plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.expo_value, cmap = 'inferno_r', alpha = .5)
+        elif attr == 'bldg_blockValue':
+            img = plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.bldg_blockValue, cmap = 'inferno_r', alpha = .5)
             fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'Value [$]')
         elif attr == 'built_yr':
             img = plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.built_yr, cmap = 'inferno_r', alpha = .5,\
@@ -2355,12 +2364,7 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
             fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'Year built')
         elif attr == 'industrialZones':
             for poly in envLayer.industrialZones:
-                patch = MplPolygon(
-                        poly['vertices'],
-                        closed=True,
-                        color=GenMR_utils.col_industrialZone.get(poly['zone_type'], 'gray'),
-                        alpha=1.
-                )
+                patch = MplPolygon(poly['vertices'], closed = True, color=GenMR_utils.col_industrialZone.get(poly['zone_type'], 'gray'), alpha=1.)
                 ax.add_patch(patch)
             ax.set_xlim(envLayer.grid.xmin, envLayer.grid.xmax)
             ax.set_ylim(envLayer.grid.ymin, envLayer.grid.ymax)
@@ -2371,7 +2375,7 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
 
     plt.xlabel('$x$ (km)')
     plt.ylabel('$y$ (km)')
-    plt.title(f'{envLayer.ID} layer: {attr}', size = 14, pad = 20)
+    plt.title(f'{envLayer.ID} layer: {attr}', size = 14, pad = 10)
     ax.set_aspect(1)
     if file_ext != '-':
         plt.savefig(f'figs/envLayer_{envLayer.ID}…{attr}.{file_ext}')
@@ -2450,21 +2454,21 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
                 ax[i,0].plot(coast_x, coast_y, color = 'yellow', linestyle = 'dashed')
             ax[i,0].set_xlabel('$x$ (km)')
             ax[i,0].set_ylabel('$y$ (km)')
-            ax[i,0].set_title('TOPOGRAPHY: altitude $z$', size = 14)
+            ax[i,0].set_title('TOPOGRAPHY: altitude $z$', size = 14, pad = 20)
             ax[i,0].set_aspect(1)
             fig.colorbar(img0, ax = ax[i,0], fraction = .04, pad = .04, label = 'z (m)')
 
             ax[i,1].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.z, vert_exag=.1), cmap='gray')
             img1 = ax[i,1].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.slope, cmap = 'inferno', alpha = .5)
             ax[i,1].set_xlabel('$x$ (km)')
-            ax[i,1].set_title('Slope', size = 14)
+            ax[i,1].set_title('Slope', size = 14, pad = 20)
             ax[i,1].set_aspect(1)
             fig.colorbar(img1, ax = ax[i,1], fraction = .04, pad = .04, label = 'slope ($^\circ$)')
 
             ax[i,2].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.z, vert_exag=.1), cmap='gray')
             img2 = ax[i,2].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.aspect, cmap = 'coolwarm', alpha = .5)
             ax[i,2].set_xlabel('$x$ (km)')
-            ax[i,2].set_title('Aspect', size = 14)
+            ax[i,2].set_title('Aspect', size = 14, pad = 20)
             ax[i,2].set_aspect(1)
             fig.colorbar(img2, ax = ax[i,2], fraction = .04, pad = .04, label = 'aspect ($^\circ$)')
 
@@ -2481,7 +2485,7 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
             ax[i,0].contour(envLayer.grid.xx, envLayer.grid.yy, envLayer.T[month_no-1,:,:], levels = [envLayer.z_freezinglevel[month_no-1]], colors = 'blue')
             ax[i,0].set_xlabel('$x$ (km)')
             ax[i,0].set_ylabel('$y$ (km)')
-            ax[i,0].set_title(f'ATMOSPHERE: temperature $T$ ({month})', size = 14)
+            ax[i,0].set_title(f'ATMOSPHERE: temperature $T$ ({month})', size = 14, pad = 20)
             ax[i,0].set_aspect(1)
             proxy = Line2D([0], [0], color='blue', label = f'Freezing level in {month}')
             ax[i,0].legend(handles=[proxy], loc='upper left')
@@ -2496,7 +2500,7 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
             ax[i,1].contour(envLayer.grid.xx, envLayer.grid.yy, envLayer.T[month_no-1,:,:], levels = [envLayer.z_freezinglevel[month_no-1]], colors = 'blue')
             ax[i,1].set_xlabel('$x$ (km)')
             ax[i,1].set_ylabel('$y$ (km)')
-            ax[i,1].set_title(f'ATMOSPHERE: temperature $T$ ({month})', size = 14)
+            ax[i,1].set_title(f'ATMOSPHERE: temperature $T$ ({month})', size = 14, pad = 20)
             ax[i,1].set_aspect(1)
             proxy = Line2D([0], [0], color='blue', label = f'Freezing level in {month}')
             ax[i,1].legend(handles=[proxy], loc='upper left')
@@ -2520,7 +2524,7 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
                                          vmin=0, vmax=5, alpha = .5)
             ax[i,0].set_xlabel('$x$ (km)')
             ax[i,0].set_ylabel('$y$ (km)')
-            ax[i,0].set_title('SOIL: thickness $h$', size = 14)
+            ax[i,0].set_title('SOIL: thickness $h$', size = 14, pad = 20)
             ax[i,0].set_aspect(1)
             ax[i,0].legend(handles=legend_h, loc='upper left')
                 
@@ -2530,7 +2534,7 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
                                          vmin=0, vmax=2, alpha = .5)
             ax[i,1].set_xlabel('$x$ (km)')
             ax[i,1].set_ylabel('$y$ (km)')
-            ax[i,1].set_title('Factor of safety', size = 14)
+            ax[i,1].set_title('Factor of safety', size = 14, pad = 20)
             ax[i,1].set_aspect(1)
             ax[i,1].legend(handles=legend_FS, loc='upper left')
             
@@ -2548,7 +2552,7 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
                                          vmin=-1, vmax=7, alpha = .5)
             ax[i,0].set_xlabel('$x$ (km)')
             ax[i,0].set_ylabel('$y$ (km)')
-            ax[i,0].set_title('NATURAL LAND', size = 14)
+            ax[i,0].set_title('NATURAL LAND', size = 14, pad = 20)
             ax[i,0].set_aspect(1)
             ax[i,0].legend(handles=legend_S, loc='upper left')
             
@@ -2581,7 +2585,7 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
                                          vmin=-1, vmax=7, alpha = .5)
             ax[i,0].set_xlabel('$x$ (km)')
             ax[i,0].set_ylabel('$y$ (km)')
-            ax[i,0].set_title('URBAN LAND: state S', size = 14)
+            ax[i,0].set_title('URBAN LAND: state S', size = 14, pad = 20)
             ax[i,0].set_aspect(1)
             ax[i,0].legend(handles=legend_S, loc='upper left')
             
@@ -2595,18 +2599,25 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
             ax[i,1].set_ylim(envLayer.grid.ymin, envLayer.grid.ymax)
             ax[i,1].set_xlabel('$x$ (km)')
             ax[i,1].set_ylabel('$y$ (km)')
-            ax[i,1].set_title('Road network', size = 14)
+            ax[i,1].set_title('Road network', size = 14, pad = 20)
             ax[i,1].set_aspect(1)
 
             if topo_bool:
                 ax[i,2].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray')
-            img = ax[i,2].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.bldg_value, cmap = 'inferno_r', alpha = .5)
+            coast_x, coast_y = envLayer.topo.coastline_coord
+            riv_x, riv_y, _, _ = envLayer.topo.river_coord
+            ax[i,2].plot(coast_x, coast_y, color = 'yellow', linestyle = 'dashed')
+            ax[i,2].plot(riv_x, riv_y, color = 'yellow', linestyle = 'dashed')
+            for poly in envLayer.industrialZones:
+                patch = MplPolygon(poly['vertices'], closed = True, color=GenMR_utils.col_industrialZone.get(poly['zone_type'], 'gray'), alpha=1.)
+                ax[i,2].add_patch(patch)
             ax[i,2].set_xlim(envLayer.grid.xmin, envLayer.grid.xmax)
             ax[i,2].set_ylim(envLayer.grid.ymin, envLayer.grid.ymax)
             ax[i,2].set_xlabel('$x$ (km)')
             ax[i,2].set_ylabel('$y$ (km)')
-            ax[i,2].set_title('Building value', size = 14)
+            ax[i,2].set_title('Industrial zones', size = 14, pad = 20)
             ax[i,2].set_aspect(1)
-            fig.colorbar(img, ax = ax[i,2], fraction = .04, pad = .04, label = 'Value ($)')
+            labels_industrialZone = [h.get_label() for h in lgd_industrialZone]
+            ax[i,2].legend(lgd_industrialZone, labels_industrialZone, loc='upper left')
     if file_ext != '-':
         plt.savefig('figs/envLayers' + IDs + '.' + file_ext)
