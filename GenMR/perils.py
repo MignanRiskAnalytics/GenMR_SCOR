@@ -39,7 +39,7 @@ Planned peril models (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-02-10
+:Date: 2026-02-12
 :License: AGPL-3
 """
 
@@ -932,7 +932,9 @@ class EventSetGenerator:
         '''
         '''
         Nstoch = len(evIDi)
-        theta_rdm = np.random.uniform(0., 2*np.pi, Nstoch)
+        theta_mean = np.pi / 2.  # west → east
+        dtheta = np.radians(src.par['To']['theta_var'])
+        theta_rdm = theta_mean + np.random.uniform(-dtheta, dtheta, Nstoch)
         u = np.random.uniform(0, 1, size = Nstoch)
         dxy_step = src.par['To']['bin_km']
 
@@ -2707,7 +2709,7 @@ class DynamicHazardFootprintGenerator:
 
 
     def _run_WF(self, indperil, Nev_peril):
-        frame_path = 'figs/WF_CA_frames/'
+        frame_path = 'figs/WF_stochset_tmp/'
         if os.path.exists(frame_path) and not self.force_recompute:
             print('Loading from cache potential footprints')
         else:
@@ -2715,6 +2717,7 @@ class DynamicHazardFootprintGenerator:
             frame_plot = True    #False
             WF_CA = CellularAutomaton_WF(self.src, self.urb, frame_plot)
             WF_CA.run()
+        print()
         print('Fetching footprints from potential footprints')
         WF_CA_footprints, WF_CA_fp_metadata = self.load_WF_CA_footprints(frame_path + 'data')
         for item in WF_CA_footprints:
@@ -2722,16 +2725,22 @@ class DynamicHazardFootprintGenerator:
         WF_CA_fp_metadata['burnt_area_ha'] = WF_CA_fp_metadata['burnt_area_cells'] * (self.grid.w ** 2) * 100
 
         WF_pool = WF_CA_footprints.copy()
-        for i in range(Nev_peril):
+        for i in trange(Nev_peril, desc = 'Fetching WF footprints from cache'):
             evID = self.stochset['evID'][indperil].values[i]
             S = self.stochset['S'][indperil].values[i]
             cache_file = self._cache_path(evID)
-            print(f'{evID} (fetched from cache)')
             # fetch a matching footprint S from CA catalogue
             diffs = np.array([abs(r['burnt_area_ha'] - S) for r in WF_pool])
             min_diff = np.min(diffs)
             candidate_idxs = np.where(diffs == min_diff)[0]
-            chosen_idx = np.random.choice(candidate_idxs)                      # add rdm seed ?
+
+            #chosen_idx = np.random.choice(candidate_idxs)
+            # favour footprints that interact with virtual city
+            wood_counts = np.array([WF_pool[idx]['burnt_woodBldgBlocks'] for idx in candidate_idxs])
+            max_wood = np.max(wood_counts)
+            best_idxs = candidate_idxs[np.where(wood_counts == max_wood)[0]]
+            chosen_idx = np.random.choice(best_idxs)
+            
             self.catalog_hazFootprints[evID] = WF_pool[chosen_idx]['WF_fp']
             _ = WF_pool.pop(chosen_idx)
             np.save(cache_file, self.catalog_hazFootprints[evID])
@@ -2746,9 +2755,10 @@ class DynamicHazardFootprintGenerator:
                 burnt_area_cells = int(match.group(2))
                 full_path = os.path.join(path_WF_CA_data, fname)
                 WF_fp = np.load(full_path)
-                results.append({'WF_CA_id': event_id, 'burnt_area_cells': burnt_area_cells, 'WF_fp': WF_fp})
+                burnt_woodBldgBlocks = np.sum((WF_fp.flatten() == 7)[self.urb.bldg_type.flatten() == 'W'])
+                results.append({'WF_CA_id': event_id, 'burnt_area_cells': burnt_area_cells, 'burnt_woodBldgBlocks': burnt_woodBldgBlocks, 'WF_fp': WF_fp})
         results = sorted(results, key=lambda d: d['burnt_area_cells'], reverse = True)    
-        df = pd.DataFrame([{'WF_CA_id': r['WF_CA_id'], 'burnt_area_cells': r['burnt_area_cells']}
+        df = pd.DataFrame([{'WF_CA_id': r['WF_CA_id'], 'burnt_area_cells': r['burnt_area_cells'], 'burnt_woodBldgBlocks': r['burnt_woodBldgBlocks']}
             for r in results])
         return results, df
 
@@ -2976,7 +2986,7 @@ class CellularAutomaton_LS:
 
             # slope and aspect
             z_pad = np.pad(z, 1, 'edge')
-            tan_slope, aspect = GenMR_env.calc_topo_attributes(z_pad[i:i+3, j:j+3], grid.w)
+            tan_slope, aspect = GenMR_env.EnvLayer_topo.calc_topo_attributes(z_pad[i:i+3, j:j+3], grid.w)
             slope = np.degrees(np.arctan(tan_slope[1,1]))
             steepestdir = int(np.round(aspect[1,1] * 7 / 360))
 
@@ -3082,24 +3092,25 @@ class CellularAutomaton_WF:
         self.grid = copy.copy(self.urbLandLayer.grid)
         self.landuse_S = copy.copy(self.urbLandLayer.S)
 
-        self.indForest = np.where(self.landuse_S.flatten() == 1)[0]
+        # Fuel includes forest (S=1) and crops (wheat: S=5, maize: S=6)
+        self.indFuel = np.where(np.isin(self.landuse_S.flatten(), [1, 5, 6]))[0]
 
-        self.indForest2Grass = np.random.choice(
-            self.indForest,
-            size=int(len(self.indForest) * self.src.par['WF']['ratio_grass']),
+        self.indFuel2Grass = np.random.choice(
+            self.indFuel,
+            size=int(len(self.indFuel) * self.src.par['WF']['ratio_grass']),
             replace=False
         )
 
         landuse_S4WF_flat = self.landuse_S.flatten()
-        landuse_S4WF_flat[self.indForest2Grass] = 0
+        landuse_S4WF_flat[self.indFuel2Grass] = 0
 
-        # add wood buildings to forest state:
+        # add wood buildings to fuel state:
         self.indwoodBldg = np.where(self.urbLandLayer.bldg_type.flatten() == 'W')[0]
         landuse_S4WF_flat[self.indwoodBldg] = 1
 
         self.landuse_S4WF = landuse_S4WF_flat.reshape(self.landuse_S.shape)
 
-        self.path_WF_CA = 'figs/WF_CA_frames'
+        self.path_WF_CA = 'figs/WF_stochset_tmp'
         os.makedirs(self.path_WF_CA, exist_ok=True)
         self.path_WF_CA_data = os.path.join(self.path_WF_CA, 'data')
         os.makedirs(self.path_WF_CA_data, exist_ok=True)
@@ -3118,23 +3129,24 @@ class CellularAutomaton_WF:
             raise StopIteration
 
         if self.i % 1000 == 0:
-            print(self.i, '/', self.src.par['WF']['nsim'])
+            print(f"\riteration {self.i} / {self.src.par['WF']['nsim']}", end = '', flush = True)
+
 
         # LOADING (long-term tree growth)
         S_flat = self.S.flatten()
         landuse_S4WF_flat = self.landuse_S4WF.flatten()
 
-        self.indForest = np.where(self.landuse_S.flatten() == 1)[0]
-        indForest_notree = self.indForest[np.where(S_flat[self.indForest] == 0)[0]]
+        self.indFuel = np.where(self.landuse_S.flatten() == 1)[0]
+        indFuel_notree = self.indFuel[np.where(S_flat[self.indFuel] == 0)[0]]
 
-        if len(indForest_notree) > 0:
-            new_tree_xy = np.random.choice(indForest_notree, size=self.src.par['WF']['rate_newtrees'])
+        if len(indFuel_notree) > 0:
+            new_tree_xy = np.random.choice(indFuel_notree, size=self.src.par['WF']['rate_newtrees'])
             S_flat[new_tree_xy] = 1
             landuse_S4WF_flat[new_tree_xy] = 1
 
         # TRIGGERING (lightning)
         if np.random.random(1) <= self.src.par['WF']['p_lightning']:
-            lightning_xy = np.random.choice(self.indForest, size=1)  # to limit number of simulations needed
+            lightning_xy = np.random.choice(self.indFuel, size=1)  # to limit number of simulations needed
             WF_fp = np.zeros(self.S.shape)
             WF_fp[:, :] = np.nan
 
@@ -3146,11 +3158,13 @@ class CellularAutomaton_WF:
                 clump_WF = S_clumps.flatten()[lightning_xy]
                 indWF = S_clumps == clump_WF
 
-                WF_fp[indWF] = 5
+                WF_fp[indWF] = 7
                 self.S[indWF] = 0
                 self.landuse_S4WF[indWF] = 0
 
-                burntArea_cells = np.sum(WF_fp == 5)
+                burntArea_cells = np.sum(WF_fp == 7)
+
+                burntBldgBlocks_cells = np.sum(indWF.flatten()[self.indwoodBldg])
 
                 WF_Smin = 1e4   # hardcoded here, could be sizeDistr['WF']['Smin'] as additional input par.
                 if burntArea_cells >= WF_Smin:
@@ -3164,6 +3178,7 @@ class CellularAutomaton_WF:
                                     cmap=GenMR_utils.col_S, vmin=-1, vmax=7, alpha=.5)
                         ax.pcolormesh(self.grid.xx, self.grid.yy, WF_fp,
                                     cmap=GenMR_utils.col_S, vmin=-1, vmax=7)
+                        ax.set_title(f'Burnt wood building blocks: {burntBldgBlocks_cells}')
 
                         plt.savefig(f'{self.path_WF_CA}/WF_fp_event_{self.k}_{burntArea_cells}.jpg', dpi=300)
                         plt.close()
@@ -3246,9 +3261,9 @@ def vuln_f(I, peril):
         vn = (I - v_thresh) / (v_half - v_thresh)
         vn[vn < 0] = 0
         MDR = vn**3 / (1+vn**3)
-    if peril == 'WF':                    # I = 5 (burnt) or 0
+    if peril == 'WF':                    # I = 7 (burnt) or 0
         MDR = np.zeros_like(I)
-        MDR[I == 5] = 1
+        MDR[I == 7] = 1
     return MDR
 
 class RiskFootprintGenerator:
@@ -3266,7 +3281,7 @@ class RiskFootprintGenerator:
     '''
     def __init__(self, catalog_hazFootprints, urbLandLayer, evtable):
         self.catalog_hazFootprints = catalog_hazFootprints
-        self.expo_value = urbLandLayer.bldg_value.astype(float, copy=True)
+        self.expo_value = urbLandLayer.bldg_blockValue.astype(float, copy=True)
         self.ELT = evtable.copy()
         self.ELT['loss'] = np.nan
         self.evIDs_wFp = list(catalog_hazFootprints.keys())
@@ -3288,21 +3303,21 @@ class RiskFootprintGenerator:
 
         for i, evID in enumerate(tqdm(self.evIDs_wFp, desc='Computing MDR & Loss')):
             peril = evID[:2]
-            hazfp = self.hazfp_stack[i]
-            MDR = vuln_f(hazfp, peril)
-            MDR[np.isnan(self.expo_value)] = np.nan
-            MDR[MDR == 0] = np.nan
-
-            dmg_stack[i] = MDR
-
-            loss = MDR * self.expo_value
-            loss_stack[i] = loss
-
-            self.ELT.loc[self.ELT['evID'] == evID, 'loss'] = np.nansum(loss)
+            if peril not in ['HW', 'PI']:
+                hazfp = self.hazfp_stack[i]
+                MDR = vuln_f(hazfp, peril)
+                MDR[np.isnan(self.expo_value)] = np.nan
+                MDR[MDR == 0] = np.nan
+                dmg_stack[i] = MDR
+                loss = MDR * self.expo_value
+                loss_stack[i] = loss
+                self.ELT.loc[self.ELT['evID'] == evID, 'loss'] = np.nansum(loss)
 
         for i, evID in enumerate(self.evIDs_wFp):
-            self.catalog_dmgFootprints[evID] = dmg_stack[i]
-            self.catalog_lossFootprints[evID] = loss_stack[i]
+            peril = evID[:2]
+            if peril not in ['HW', 'PI']:
+                self.catalog_dmgFootprints[evID] = dmg_stack[i]
+                self.catalog_lossFootprints[evID] = loss_stack[i]
 
 
 
@@ -3451,6 +3466,7 @@ def plot_hazFootprints(catalog_hazFootprints, grid, topoLayer_z, plot_Imin, plot
 
     plt.rcParams['font.size'] = '18'
     _, ax = plt.subplots(nperil, nstoch, figsize=(20, nperil*20/nstoch))
+    ax = np.atleast_2d(ax)
 
     for i in range(nperil):
         indperil = np.where(ev_peril == perils[i])[0]

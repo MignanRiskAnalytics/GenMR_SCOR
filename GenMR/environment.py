@@ -2155,10 +2155,9 @@ class EnvLayer_energyCI:
     '''
 
     def __init__(self, urbLand, par):
-        self.ID = 'urbLand'
-        self.urbLand = copy.deepcopy(urbLand)
-        self.grid = self.urbLand.grid
-#        self.topo = self.urbLand.topo
+        self.ID = 'energyCI'
+        self.grid = urbLand.grid
+        self.industrialZones = urbLand.industrialZones
         self.par = par
         np.random.seed(self.par['rdm_seed'])
 
@@ -2179,7 +2178,7 @@ class EnvLayer_energyCI:
             polygon geometry, area, centroid coordinates, and distances to
             coastline and river.
         '''
-        zones = self.urbLand.industrialZones
+        zones = self.industrialZones
         harbor_polys = [p for p in zones if p['zone_type'] == 'industrial harbor']
 
         if len(harbor_polys) == 0:
