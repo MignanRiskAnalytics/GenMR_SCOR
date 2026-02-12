@@ -5,5 +5,6 @@ jupyter_execute/
 docs/source/notebooks/io/
 docs/source/notebooks/figs/FF_CA_frames/
 docs/source/notebooks/figs/LS_CA_frames/
-docs/source/notebooks/figs/WF_CA_frames/
+docs/source/notebooks/figs/WF_stochset_tmp/
 docs/source/notebooks/figs/HW_stochset_tmp/
+docs/source/notebooks/figs/PI_stochset_tmp/
