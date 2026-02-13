@@ -2735,7 +2735,7 @@ class DynamicHazardFootprintGenerator:
             candidate_idxs = np.where(diffs == min_diff)[0]
 
             #chosen_idx = np.random.choice(candidate_idxs)
-            # favour footprints that interact with virtual city
+            # favour footprints that interact with virtual city: WARNING, unlikely to succeed since candidate_idxs usually only 1 element (kept as is for now)
             wood_counts = np.array([WF_pool[idx]['burnt_woodBldgBlocks'] for idx in candidate_idxs])
             max_wood = np.max(wood_counts)
             best_idxs = candidate_idxs[np.where(wood_counts == max_wood)[0]]

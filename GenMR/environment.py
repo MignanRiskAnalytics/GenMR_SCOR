@@ -2377,7 +2377,7 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
     plt.title(f'{envLayer.ID} layer: {attr}', size = 14, pad = 10)
     ax.set_aspect(1)
     if file_ext != '-':
-        plt.savefig(f'figs/envLayer_{envLayer.ID}…{attr}.{file_ext}')
+        plt.savefig(f'figs/envLayer_{envLayer.ID}_{attr}.{file_ext}')
 
 
 def plot_EnvLayers(envLayers, file_ext = '-'):
