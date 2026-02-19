@@ -3371,7 +3371,7 @@ def plot_src(src, hillshading_z = '', file_ext = '-'):
         labels.append('River bed')
 
     if 'VE' in src.par['perils']:
-        h_ve = ax[0].scatter(src.par['VE']['x'], src.par['VE']['x'], color = GenMR_utils.col_peril('VE'), s=75, marker='^')
+        h_ve = ax[0].scatter(src.par['VE']['x'], src.par['VE']['y'], color = GenMR_utils.col_peril('VE'), s=75, marker='^')
         handles.append(h_ve)
         labels.append('Volcano: Volcanic Eruption (VE)')
 

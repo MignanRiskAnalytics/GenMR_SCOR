@@ -2446,7 +2446,7 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
                             indriv = river_id == src_i
                             ax[i,0].plot(river_xi[indriv], river_yi[indriv], color = 'yellow', linestyle = 'dashed')
             if 'VE' in envLayer.src.par['perils']:
-                ax[i,0].scatter(envLayer.src.par['VE']['x'], envLayer.src.par['VE']['x'], \
+                ax[i,0].scatter(envLayer.src.par['VE']['x'], envLayer.src.par['VE']['y'], \
                                         facecolors = 'none', edgecolors = 'yellow', s=100, marker = '^')
             if envLayer.par['cs']:
                 coast_x, coast_y = envLayer.coastline_coord
