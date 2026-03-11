@@ -20,7 +20,7 @@ Layers and Related Objects (v1.1.2)
 -----------------------------------
 * **Atmosphere**
   - properties: freezing level, tropopause
-* **Energy infrastructures** - includes refinery
+* **Energy infrastructures** - includes point CIs (refinery, hydrodam placeholder, wind farm, thermal plant)
   - properties: TO ADD
 
 Planned Additions (v1.1.2)
