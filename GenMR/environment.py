@@ -48,10 +48,11 @@ from matplotlib.patches import Polygon as MplPolygon
 from matplotlib.patches import Patch
 ls = plt_col.LightSource(azdeg=45, altdeg=45)
 
-from shapely.geometry import Polygon, Point, LineString
+from shapely.geometry import Polygon, Point, MultiPoint, LineString
 
 from scipy.interpolate import RegularGridInterpolator
-from scipy.ndimage import label
+from scipy import ndimage
+from skimage.graph import route_through_array
 
 from functools import cached_property
 from dataclasses import dataclass
@@ -2013,7 +2014,7 @@ class EnvLayer_urbLand:
 
         industrial_mask = (self.S == 3)
 
-        labeled, n_components = label(industrial_mask, structure=vonNeumann_struct)
+        labeled, n_components = ndimage.label(industrial_mask, structure=vonNeumann_struct)
 
         polygons = []
         plt.figure(figsize=(4,4))
@@ -2151,12 +2152,14 @@ class CriticalInfrastructure:
 
 class EnvLayer_energyCI:
     '''
-    Docstring for EnvLayer_energyCI
+    Docstring for EnvLayer_energyCI TO WRITE
     '''
 
     def __init__(self, urbLand, par):
         self.ID = 'energyCI'
-        self.grid = urbLand.grid
+        self.urbLand = copy.deepcopy(urbLand)
+        self.grid = self.urbLand.grid
+        self.topo = self.urbLand.topo
         self.industrialZones = urbLand.industrialZones
         self.par = par
         np.random.seed(self.par['rdm_seed'])
@@ -2194,8 +2197,65 @@ class EnvLayer_energyCI:
             area = largest['area'],
             centroid = centroid,
             polygon = poly,
-            Ex_S_kton=None,
+            Ex_S_kton=None,         # updated in perils notebook...
         )
+
+
+    @cached_property
+    def CI_windfarm(self):
+        '''
+        '''
+        windfarm_mask = self.get_windfarm_mask()
+        labeled, n_features = ndimage.label(windfarm_mask)
+        cluster_S = ndimage.sum(windfarm_mask, labeled, range(1, n_features+1))
+        cluster_Smax = np.argmax(cluster_S) + 1
+        windfarm_mask_selected = labeled == cluster_Smax
+        rows, cols = np.where(windfarm_mask_selected)
+        centroid_x = self.grid.x[int(rows.mean())]
+        centroid_y = self.grid.y[int(cols.mean())]
+        area = windfarm_mask_selected.sum() * self.grid.w ** 2
+
+        pts_x = self.grid.x[rows]
+        pts_y = self.grid.y[cols]
+        poly = MultiPoint(list(zip(pts_x, pts_y))).convex_hull
+
+        return CriticalInfrastructure(
+            name = 'CI_windfarm',
+            zone_type = '',
+            area = area,
+            centroid = (centroid_x, centroid_y),
+            polygon = poly,
+            Ex_S_kton = None         # no CI hazard, just node failure potentially participating to blackout
+        )
+
+    def get_windfarm_mask(self):
+        '''
+        Generate a boolean mask of suitable wind farm locations based on
+        topographic and land use constraints.
+
+        Parameters
+        ----------
+        par : dict
+            Dictionary of energy infrastructure parameters.
+
+        Returns
+        -------
+        windfarm_mask : np.ndarray of bool
+            Boolean array of shape ``(nx, ny)`` where ``True`` indicates a suitable wind farm cell.
+        '''
+        windfarm_mask = (
+            (self.topo.z > self.par['windfarm_zminmax_m'][0]) &
+            (self.topo.z < self.par['windfarm_zminmax_m'][1]) &
+            (self.topo.slope < self.par['windfarm_maxslope_deg']) &
+            (self.urbLand.S < 3) &
+            (self.grid.xx < self.par['windfarm_xmax_km'])
+        )
+        return windfarm_mask
+
+
+
+
+
 
 
 
@@ -2205,7 +2265,12 @@ class EnvLayer_energyCI:
 # SOCIO-ECONOMIC ENVIRONMENT LAYERS #
 #####################################
 
-# coming mid 2026
+# coming by mid 2026
+
+
+
+
+
 
 
 

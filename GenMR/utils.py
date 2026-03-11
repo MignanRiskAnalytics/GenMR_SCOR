@@ -8,7 +8,7 @@ core GenMR workflows by streamlining data handling, computation, and visualisati
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-02-10
+:Date: 2026-03-11
 :License: AGPL-3
 """
 
@@ -21,6 +21,7 @@ import pickle
 
 import matplotlib.pyplot as plt
 import matplotlib.colors as plt_col
+from matplotlib.colors import ListedColormap
 
 from shapely.geometry import Point
 
@@ -142,6 +143,33 @@ def load_pickle2class(filename):
 ########################
 ## ARRAY MANIPULATION ##
 ########################
+def xy_to_rc(x, y, grid):
+    '''
+    Convert digital template coordinates (x, y) to grid indices (row, col).
+
+    Parameters
+    ----------
+    x : float
+        x-coordinate (km), corresponding to grid row axis.
+    y : float
+        y-coordinate (km), corresponding to grid column axis.
+    grid : RasterGrid
+        Grid object with attributes ``x`` and ``y`` as 1D coordinate arrays,
+        constructed with ``indexing='ij'`` so that rows correspond to x
+        and columns correspond to y.
+
+    Returns
+    -------
+    row : int
+        Row index of the nearest grid cell to ``x``.
+    col : int
+        Column index of the nearest grid cell to ``y``.
+    '''
+    row = np.argmin(np.abs(grid.x - x))  # row = x index
+    col = np.argmin(np.abs(grid.y - y))  # col = y index
+    return (row, col)
+
+
 def incrementing(xmin, xmax, xbin, method):
     '''
     Return evenly spaced values within a given interval in linear or 
@@ -718,6 +746,9 @@ col_industrialZone = {
     'riverside industrial park': 'skyblue',
     'inland industrial park': 'tan'
 }
+
+
+cmap_mask = ListedColormap(['none', 'lime'])
 
 
 
