@@ -2200,7 +2200,6 @@ class EnvLayer_energyCI:
             Ex_S_kton=None,         # updated in perils notebook...
         )
 
-
     @cached_property
     def CI_windfarm(self):
         '''
@@ -2254,6 +2253,42 @@ class EnvLayer_energyCI:
 
 
 
+def downscale_layers4powergrid(self):
+    '''
+    '''
+    w0 = self.grid.w
+    tower_spacing = .4   # (km) = 400 m distance between 
+    f = int(tower_spacing / w0)
+    # DOWNSCALING for transmission line generation
+    grid_downscaled = downscale_RasterGrid(grid, f, appl = 'pooling')
+    topoLayer_downscaled = copy.deepcopy(topoLayer)
+    topoLayer_downscaled.grid = grid_downscaled
+    topoLayer_downscaled.z = GenMR_utils.pooling(topoLayer.z, f, method = 'mean')        # mean-pooling example
+    urbLandLayer_downscaled = copy.deepcopy(urbLandLayer)
+    urbLandLayer_downscaled.grid = grid_downscaled
+    urbLandLayer_downscaled.S = GenMR_utils.pooling(urbLandLayer.S, f, method = 'min')   # min-pooling example
+    return grid_downscaled, topoLayer_downscaled,  urbLandLayer_downscaled
+
+
+def gen_powergrid_line_G2S(coords_G, coords_S):
+    '''
+    Routing decision...
+    '''
+    grid_downscaled, topoLayer_downscaled,  urbLandLayer_downscaled = downscale_layers4powergrid()
+    
+    # Cost surface: penalize high slope and water cells
+    mesh_C = 1 + topoLayer_downscaled.slope * 10  # flat = cost 1, steep = cost 10+
+    mesh_C[urbLandLayer_downscaled.S == 0] = 9999         # avoid river/sea
+
+    coord_G = GenMR_utils.xy_to_rc(coords_G[0], coords_G[1], grid_downscaled)   # generator
+    coord_S = GenMR_utils.xy_to_rc(coords_S[0], coords_S[1], grid_downscaled)   # entry substation
+
+    # optimal rooting
+    path, _ = route_through_array(mesh_C, coords_G, coords_S, fully_connected = True)
+    path = np.array(path)
+    path_x = grid_downscaled.x[path[:,0]]
+    path_y = grid_downscaled.y[path[:,1]]
+    return path_x, path_y
 
 
 
