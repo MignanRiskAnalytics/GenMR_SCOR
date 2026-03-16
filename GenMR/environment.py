@@ -2165,42 +2165,39 @@ class EnvLayer_energyCI:
         np.random.seed(self.par['rdm_seed'])
 
     ## Energy CI points ##
-    @cached_property
-    def CI_refinery(self):
+    def _CI_from_largest_harbor_zone(self, name, rank=1):
         '''
-        Identify and construct the critical infrastructure object representing  
-        the main coastal refinery.
-
-        This property selects the largest polygon classified as an
-        **industrial harbor** zone from :attr:`industrialZones`, and returns a
-        :class:`CriticalInfrastructure` instance located at its centroid.
-
-        Returns
-        -------
-        CriticalInfrastructure
-            An object describing the refinery, including its name, zone type,
-            polygon geometry, area, centroid coordinates, and distances to
-            coastline and river.
+        Returns a critical infrastructure (CI) from the nth largest industrial harbor zone.
+        rank=1 → largest (refinery), rank=2 → second largest (thermal plant).
         '''
         zones = self.industrialZones
         harbor_polys = [p for p in zones if p['zone_type'] == 'industrial harbor']
 
-        if len(harbor_polys) == 0:
-            print('No refinery defined since no industrial harbor polygons found.')
+        if len(harbor_polys) < rank:
+            print(f'No {name} defined: fewer than {rank} industrial harbor polygon(s) found.')
             return None
 
-        largest = max(harbor_polys, key=lambda p: p["area"])
-        poly = largest["polygon"]
+        sorted_zones = sorted(harbor_polys, key=lambda p: p['area'], reverse=True)
+        largest = sorted_zones[rank - 1]
+        poly = largest['polygon']
         centroid = (poly.centroid.x, poly.centroid.y)
 
         return CriticalInfrastructure(
-            name = 'CI_refinery',
+            name = name,
             zone_type = largest['zone_type'],
             area = largest['area'],
             centroid = centroid,
             polygon = poly,
-            Ex_S_kton=None,         # updated in perils notebook...
+            Ex_S_kton = None,
         )
+
+    @cached_property
+    def CI_refinery(self):
+        return self._CI_from_largest_harbor_zone('CI_refinery', rank = 1)
+
+    @cached_property
+    def CI_thermalplant(self):
+        return self._CI_from_largest_harbor_zone('CI_thermalplant', rank = 2)
 
     @cached_property
     def CI_windfarm(self):
