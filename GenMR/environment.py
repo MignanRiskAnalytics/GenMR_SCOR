@@ -30,7 +30,7 @@ Planned Additions (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-02-12
+:Date: 2026-03-16
 :License: AGPL-3
 """
 
@@ -2054,7 +2054,7 @@ class EnvLayer_urbLand:
                 polygons.append({
                     "state": "industrial",
                     "zone_type": zone_type,
-                    "vertices": vertices,
+                    "polygon": Polygon(vertices),
                     "area": area,
                     "distance_to_coast": dist_coast,
                     "distance_to_river": dist_river,
@@ -2164,6 +2164,7 @@ class EnvLayer_energyCI:
         self.par = par
         np.random.seed(self.par['rdm_seed'])
 
+    ## Energy CI points ##
     @cached_property
     def CI_refinery(self):
         '''
@@ -2185,10 +2186,11 @@ class EnvLayer_energyCI:
         harbor_polys = [p for p in zones if p['zone_type'] == 'industrial harbor']
 
         if len(harbor_polys) == 0:
-            raise ValueError('No industrial harbor polygons found.')
+            print('No refinery defined since no industrial harbor polygons found.')
+            return None
 
         largest = max(harbor_polys, key=lambda p: p["area"])
-        poly = Polygon(largest["vertices"])
+        poly = largest["polygon"]
         centroid = (poly.centroid.x, poly.centroid.y)
 
         return CriticalInfrastructure(
@@ -2252,43 +2254,44 @@ class EnvLayer_energyCI:
         return windfarm_mask
 
 
+    ## Energy CI network (power grid) ##
 
-def downscale_layers4powergrid(self):
-    '''
-    '''
-    w0 = self.grid.w
-    tower_spacing = .4   # (km) = 400 m distance between 
-    f = int(tower_spacing / w0)
-    # DOWNSCALING for transmission line generation
-    grid_downscaled = downscale_RasterGrid(grid, f, appl = 'pooling')
-    topoLayer_downscaled = copy.deepcopy(topoLayer)
-    topoLayer_downscaled.grid = grid_downscaled
-    topoLayer_downscaled.z = GenMR_utils.pooling(topoLayer.z, f, method = 'mean')        # mean-pooling example
-    urbLandLayer_downscaled = copy.deepcopy(urbLandLayer)
-    urbLandLayer_downscaled.grid = grid_downscaled
-    urbLandLayer_downscaled.S = GenMR_utils.pooling(urbLandLayer.S, f, method = 'min')   # min-pooling example
-    return grid_downscaled, topoLayer_downscaled,  urbLandLayer_downscaled
+    # connect nodes
+    def downscale_layers4powergrid(self):
+        '''
+        '''
+        w0 = self.grid.w
+        tower_spacing = .4   # (km) = 400 m distance between 
+        f = int(tower_spacing / w0)
+        # DOWNSCALING for transmission line generation
+        grid_downscaled = downscale_RasterGrid(self.grid, f, appl = 'pooling')
+        topoLayer_downscaled = copy.deepcopy(self.topo)
+        topoLayer_downscaled.grid = grid_downscaled
+        topoLayer_downscaled.z = GenMR_utils.pooling(self.topo.z, f, method = 'mean')        # mean-pooling example
+        urbLandLayer_downscaled = copy.deepcopy(self.urbLand)
+        urbLandLayer_downscaled.grid = grid_downscaled
+        urbLandLayer_downscaled.S = GenMR_utils.pooling(self.urbLand.S, f, method = 'min')   # min-pooling example
+        return grid_downscaled, topoLayer_downscaled, urbLandLayer_downscaled
 
+    def gen_powergrid_line_G2S(self, coords_G, coords_S):
+        '''
+        Routing decision...
+        '''
+        grid_downscaled, topoLayer_downscaled, urbLandLayer_downscaled = self.downscale_layers4powergrid()
+        
+        # Cost surface: penalize high slope and water cells
+        mesh_C = 1 + topoLayer_downscaled.slope * 10  # flat = cost 1, steep = cost 10+
+        mesh_C[urbLandLayer_downscaled.S == 0] = 9999         # avoid river/sea
 
-def gen_powergrid_line_G2S(coords_G, coords_S):
-    '''
-    Routing decision...
-    '''
-    grid_downscaled, topoLayer_downscaled,  urbLandLayer_downscaled = downscale_layers4powergrid()
-    
-    # Cost surface: penalize high slope and water cells
-    mesh_C = 1 + topoLayer_downscaled.slope * 10  # flat = cost 1, steep = cost 10+
-    mesh_C[urbLandLayer_downscaled.S == 0] = 9999         # avoid river/sea
+        coords_G = GenMR_utils.xy_to_rc(coords_G[0], coords_G[1], grid_downscaled)   # generator
+        coords_S = GenMR_utils.xy_to_rc(coords_S[0], coords_S[1], grid_downscaled)   # entry substation
 
-    coord_G = GenMR_utils.xy_to_rc(coords_G[0], coords_G[1], grid_downscaled)   # generator
-    coord_S = GenMR_utils.xy_to_rc(coords_S[0], coords_S[1], grid_downscaled)   # entry substation
-
-    # optimal rooting
-    path, _ = route_through_array(mesh_C, coords_G, coords_S, fully_connected = True)
-    path = np.array(path)
-    path_x = grid_downscaled.x[path[:,0]]
-    path_y = grid_downscaled.y[path[:,1]]
-    return path_x, path_y
+        # optimal rooting
+        path, _ = route_through_array(mesh_C, coords_G, coords_S, fully_connected = True)
+        path = np.array(path)
+        path_x = grid_downscaled.x[path[:,0]]
+        path_y = grid_downscaled.y[path[:,1]]
+        return path_x, path_y
 
 
 
@@ -2463,7 +2466,7 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
             fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'Year built')
         elif attr == 'industrialZones':
             for poly in envLayer.industrialZones:
-                patch = MplPolygon(poly['vertices'], closed = True, color=GenMR_utils.col_industrialZone.get(poly['zone_type'], 'gray'), alpha=1.)
+                patch = MplPolygon(poly['polygon'].exterior.coords, closed = True, color=GenMR_utils.col_industrialZone.get(poly['zone_type'], 'gray'), alpha=1.)
                 ax.add_patch(patch)
             ax.set_xlim(envLayer.grid.xmin, envLayer.grid.xmax)
             ax.set_ylim(envLayer.grid.ymin, envLayer.grid.ymax)
@@ -2708,7 +2711,7 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
             ax[i,2].plot(coast_x, coast_y, color = 'yellow', linestyle = 'dashed')
             ax[i,2].plot(riv_x, riv_y, color = 'yellow', linestyle = 'dashed')
             for poly in envLayer.industrialZones:
-                patch = MplPolygon(poly['vertices'], closed = True, color=GenMR_utils.col_industrialZone.get(poly['zone_type'], 'gray'), alpha=1.)
+                patch = MplPolygon(poly['polygon'].exterior.coords, closed = True, color=GenMR_utils.col_industrialZone.get(poly['zone_type'], 'gray'), alpha=1.)
                 ax[i,2].add_patch(patch)
             ax[i,2].set_xlim(envLayer.grid.xmin, envLayer.grid.xmax)
             ax[i,2].set_ylim(envLayer.grid.ymin, envLayer.grid.ymax)
