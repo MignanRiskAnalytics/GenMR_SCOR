@@ -2191,13 +2191,50 @@ class EnvLayer_energyCI:
             Ex_S_kton = None,
         )
 
+    def get_windfarm_mask(self):
+        '''
+        Generate a boolean mask of suitable wind farm locations based on
+        topographic and land use constraints.
+
+        Parameters
+        ----------
+        par : dict
+            Dictionary of energy infrastructure parameters.
+
+        Returns
+        -------
+        windfarm_mask : np.ndarray of bool
+            Boolean array of shape ``(nx, ny)`` where ``True`` indicates a suitable wind farm cell.
+        '''
+        windfarm_mask = (
+            (self.topo.z > self.par['windfarm_zminmax_m'][0]) &
+            (self.topo.z < self.par['windfarm_zminmax_m'][1]) &
+            (self.topo.slope < self.par['windfarm_maxslope_deg']) &
+            (self.urbLand.S < 3) &
+            (self.grid.xx < self.par['windfarm_xmax_km'])
+        )
+        return windfarm_mask
+
+
+    @property
+    def CI_hydrodam(self):
+        centroid = self.par['hydrodam_coords']
+        return CriticalInfrastructure(
+            name = 'CI_hydrodam',
+            zone_type = 'upstream river',
+            area = None,
+            centroid = centroid,
+            polygon = None,
+            Ex_S_kton = None,
+        )
+
     @cached_property
     def CI_refinery(self):
-        return self._CI_from_largest_harbor_zone('CI_refinery', rank = 1)
+        return self._CI_from_largest_harbor_zone('CI_refinery', rank = self.par['refinery_loc'])
 
     @cached_property
     def CI_thermalplant(self):
-        return self._CI_from_largest_harbor_zone('CI_thermalplant', rank = 2)
+        return self._CI_from_largest_harbor_zone('CI_thermalplant', rank = self.par['thermalplant_loc'])
 
     @cached_property
     def CI_windfarm(self):
@@ -2226,30 +2263,6 @@ class EnvLayer_energyCI:
             Ex_S_kton = None         # no CI hazard, just node failure potentially participating to blackout
         )
 
-    def get_windfarm_mask(self):
-        '''
-        Generate a boolean mask of suitable wind farm locations based on
-        topographic and land use constraints.
-
-        Parameters
-        ----------
-        par : dict
-            Dictionary of energy infrastructure parameters.
-
-        Returns
-        -------
-        windfarm_mask : np.ndarray of bool
-            Boolean array of shape ``(nx, ny)`` where ``True`` indicates a suitable wind farm cell.
-        '''
-        windfarm_mask = (
-            (self.topo.z > self.par['windfarm_zminmax_m'][0]) &
-            (self.topo.z < self.par['windfarm_zminmax_m'][1]) &
-            (self.topo.slope < self.par['windfarm_maxslope_deg']) &
-            (self.urbLand.S < 3) &
-            (self.grid.xx < self.par['windfarm_xmax_km'])
-        )
-        return windfarm_mask
-
 
     ## Energy CI network (power grid) ##
 
@@ -2270,7 +2283,7 @@ class EnvLayer_energyCI:
         urbLandLayer_downscaled.S = GenMR_utils.pooling(self.urbLand.S, f, method = 'min')   # min-pooling example
         return grid_downscaled, topoLayer_downscaled, urbLandLayer_downscaled
 
-    def gen_powergrid_line_G2S(self, coords_G, coords_S):
+    def gen_powergrid_1line_G2S(self, coords_G, coords_S):
         '''
         Routing decision...
         '''
@@ -2289,6 +2302,40 @@ class EnvLayer_energyCI:
         path_x = grid_downscaled.x[path[:,0]]
         path_y = grid_downscaled.y[path[:,1]]
         return path_x, path_y
+
+    @cached_property
+    def powergrid_nlines_G2S(self):
+        '''
+        '''
+        N_INDzones = len(self.urbLand.industrialZones)
+        if N_INDzones == 0:
+            print('No industrial zone found (consider generating a larger city).')
+
+        coords_S_pot = [self.urbLand.industrialZones[i]['polygon'].centroid for i in range(N_INDzones)]
+        coords_Gs = {
+            'CI_hydrodam': self.CI_hydrodam.centroid,
+            'CI_thermalplant': self.CI_thermalplant.centroid,
+            'CI_windfarm': self.CI_windfarm.centroid
+        }
+        x, y = coords_Gs['CI_windfarm']
+        dx, dy = self.par['windfarm_centroid_shift']
+        coords_Gs['CI_windfarm'] = (x+dx, y+dy)
+
+        pathLines = {}
+        for ci_name, coords_G in coords_Gs.items():
+            distG2Ss = [Point(coords_G).distance(s) for s in coords_S_pot]
+            indmin = np.argmin(distG2Ss)
+            coords_S = coords_S_pot[indmin]
+            coords_S = (coords_S.x, coords_S.y)
+            pathLines[ci_name] = self.gen_powergrid_1line_G2S(coords_G, coords_S)
+            
+        return pathLines
+
+
+
+
+
+
 
 
 
