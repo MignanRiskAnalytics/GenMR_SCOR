@@ -100,9 +100,13 @@
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energyCI.CI_refinery"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.CI_refinery</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energyCI.CI_thermalplant"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.CI_thermalplant</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energyCI.CI_windfarm"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.CI_windfarm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energyCI.connect_generators_substations"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.connect_generators_substations()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energyCI.downscale_layers4powergrid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.downscale_layers4powergrid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energyCI.gen_loadnodes"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.gen_loadnodes()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energyCI.gen_powergrid_1line_G2S"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.gen_powergrid_1line_G2S()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energyCI.gen_urbangrid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.gen_urbangrid()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energyCI.get_windfarm_mask"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.get_windfarm_mask()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energyCI.powergrid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.powergrid</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energyCI.powergrid_nlines_G2S"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.powergrid_nlines_G2S</span></code></a></li>
 </ul>
 </li>
@@ -469,7 +473,7 @@ defined as classes or methods.</p>
 <dd class="field-even"><p>1.1.2</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2026-03-16</p>
+<dd class="field-odd"><p>2026-03-17</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -809,14 +813,67 @@ as its impact is negligible.</p></li>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_energyCI.connect_generators_substations">
+<span class="sig-name descname"><span class="pre">connect_generators_substations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urbangrid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_energyCI.connect_generators_substations" title="Link to this definition"></a></dt>
+<dd><p>Add generators (G), substations (S), and transmission lines (T) to the urban grid of loads (L).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>urbangrid</strong> (<em>networkx.Graph</em>) – Graph of urban load nodes.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>powergrid</strong> (<em>networkx.Graph</em>) – Fully connected power grid including loads, substations, generators, and transmission lines.</p></li>
+<li><p><strong>node_names</strong> (<em>dict</em>) – Mapping of node IDs to names (L#, S#, G#, or T).</p></li>
+<li><p><strong>all_coords</strong> (<em>ndarray of shape (n_nodes, 2)</em>) – Cartesian coordinates of all nodes in the power grid.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="GenMR.environment.EnvLayer_energyCI.downscale_layers4powergrid">
 <span class="sig-name descname"><span class="pre">downscale_layers4powergrid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_energyCI.downscale_layers4powergrid" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_energyCI.gen_loadnodes">
+<span class="sig-name descname"><span class="pre">gen_loadnodes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_energyCI.gen_loadnodes" title="Link to this definition"></a></dt>
+<dd><p>Generate regularly spaced load nodes on the urban area.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>load_nodes</strong> (<em>ndarray of shape (n_loads, 2)</em>) – Coordinates of load nodes (x, y).</p></li>
+<li><p><strong>load_index</strong> (<em>ndarray</em>) – 2D array of same shape as grid indicating load node indices (-1 if non-load).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="GenMR.environment.EnvLayer_energyCI.gen_powergrid_1line_G2S">
 <span class="sig-name descname"><span class="pre">gen_powergrid_1line_G2S</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coords_G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coords_S</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_energyCI.gen_powergrid_1line_G2S" title="Link to this definition"></a></dt>
 <dd><p>Routing decision…</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_energyCI.gen_urbangrid">
+<span class="sig-name descname"><span class="pre">gen_urbangrid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">load_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_energyCI.gen_urbangrid" title="Link to this definition"></a></dt>
+<dd><p>Create a graph representing the urban power grid (load nodes only) and connect isolated
+components to the main grid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>load_index</strong> (<em>ndarray</em>) – 2D array indicating load node indices (-1 if non-load).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>urbangrid</strong> (<em>networkx.Graph</em>) – Graph of urban load nodes connected.</p></li>
+<li><p><strong>edges_new</strong> (<em>list of tuples</em>) – List of edges added to connect isolated components.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -833,6 +890,26 @@ topographic and land use constraints.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>np.ndarray of bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_energyCI.powergrid">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">powergrid</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_energyCI.powergrid" title="Link to this definition"></a></dt>
+<dd><p>Complete pipeline to build the power grid:
+1. Generate load nodes
+2. Create urban load network
+3. Connect isolated components
+4. Add generators, substations, and transmission lines</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>powergrid</strong> (<em>networkx.Graph</em>) – Fully connected power grid graph.</p></li>
+<li><p><strong>node_names</strong> (<em>dict</em>) – Dictionary mapping node IDs to names.</p></li>
+<li><p><strong>node_coords</strong> (<em>ndarray of shape (n_nodes, 2)</em>) – Cartesian coordinates of all nodes in the power grid.</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 </dd></dl>

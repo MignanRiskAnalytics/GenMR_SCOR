@@ -97,9 +97,13 @@
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_energyCI.CI_refinery"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.CI_refinery</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_energyCI.CI_thermalplant"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.CI_thermalplant</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_energyCI.CI_windfarm"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.CI_windfarm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_energyCI.connect_generators_substations"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.connect_generators_substations()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_energyCI.downscale_layers4powergrid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.downscale_layers4powergrid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_energyCI.gen_loadnodes"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.gen_loadnodes()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_energyCI.gen_powergrid_1line_G2S"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.gen_powergrid_1line_G2S()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_energyCI.gen_urbangrid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.gen_urbangrid()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_energyCI.get_windfarm_mask"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.get_windfarm_mask()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_energyCI.powergrid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.powergrid</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_energyCI.powergrid_nlines_G2S"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.powergrid_nlines_G2S</span></code></a></li>
 </ul>
 </li>
@@ -582,6 +586,8 @@
 </li>
       <li><a href="manual.html#GenMR.utils.col_state_h">col_state_h() (in module GenMR.utils)</a>
 </li>
+      <li><a href="manual.html#GenMR.environment.EnvLayer_energyCI.connect_generators_substations">connect_generators_substations() (GenMR.environment.EnvLayer_energyCI method)</a>
+</li>
       <li><a href="manual.html#GenMR.environment.CriticalInfrastructure">CriticalInfrastructure (class in GenMR.environment)</a>
 </li>
       <li><a href="manual.html#GenMR.environment.EnvLayer_urbLand.crop_T_suitability">crop_T_suitability() (GenMR.environment.EnvLayer_urbLand method)</a>
@@ -658,9 +664,13 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="manual.html#GenMR.environment.EnvLayer_energyCI.gen_loadnodes">gen_loadnodes() (GenMR.environment.EnvLayer_energyCI method)</a>
+</li>
       <li><a href="manual.html#GenMR.environment.EnvLayer_energyCI.gen_powergrid_1line_G2S">gen_powergrid_1line_G2S() (GenMR.environment.EnvLayer_energyCI method)</a>
 </li>
       <li><a href="manual.html#GenMR.perils.gen_precipitation">gen_precipitation() (in module GenMR.perils)</a>
+</li>
+      <li><a href="manual.html#GenMR.environment.EnvLayer_energyCI.gen_urbangrid">gen_urbangrid() (GenMR.environment.EnvLayer_energyCI method)</a>
 </li>
       <li><a href="manual.html#GenMR.environment.EnvLayer_urbLand.generate">generate() (GenMR.environment.EnvLayer_urbLand method)</a>
 
@@ -701,10 +711,10 @@
 </li>
       <li><a href="manual.html#GenMR.perils.HazardFootprintGenerator.get_HW_atloc">get_HW_atloc() (GenMR.perils.HazardFootprintGenerator static method)</a>
 </li>
-      <li><a href="manual.html#GenMR.perils.HazardFootprintGenerator.get_HW_footprint">get_HW_footprint() (GenMR.perils.HazardFootprintGenerator static method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="manual.html#GenMR.perils.HazardFootprintGenerator.get_HW_footprint">get_HW_footprint() (GenMR.perils.HazardFootprintGenerator static method)</a>
+</li>
       <li><a href="manual.html#GenMR.utils.get_ind_aspect2moore">get_ind_aspect2moore() (in module GenMR.utils)</a>
 </li>
       <li><a href="manual.html#GenMR.utils.get_ndays_inMonth">get_ndays_inMonth() (in module GenMR.utils)</a>
@@ -905,6 +915,8 @@
       <li><a href="manual.html#GenMR.environment.CriticalInfrastructure.polygon">polygon (GenMR.environment.CriticalInfrastructure attribute)</a>
 </li>
       <li><a href="manual.html#GenMR.utils.pooling">pooling() (in module GenMR.utils)</a>
+</li>
+      <li><a href="manual.html#GenMR.environment.EnvLayer_energyCI.powergrid">powergrid (GenMR.environment.EnvLayer_energyCI property)</a>
 </li>
       <li><a href="manual.html#GenMR.environment.EnvLayer_energyCI.powergrid_nlines_G2S">powergrid_nlines_G2S (GenMR.environment.EnvLayer_energyCI property)</a>
 </li>
