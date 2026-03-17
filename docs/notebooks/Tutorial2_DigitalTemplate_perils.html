@@ -97,7 +97,14 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energyCI"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energyCI.CI_hydrodam"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.CI_hydrodam</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energyCI.CI_refinery"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.CI_refinery</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energyCI.CI_thermalplant"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.CI_thermalplant</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energyCI.CI_windfarm"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.CI_windfarm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energyCI.downscale_layers4powergrid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.downscale_layers4powergrid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energyCI.gen_powergrid_1line_G2S"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.gen_powergrid_1line_G2S()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energyCI.get_windfarm_mask"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.get_windfarm_mask()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energyCI.powergrid_nlines_G2S"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.powergrid_nlines_G2S</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_natLand"><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand</span></code></a><ul>
@@ -316,6 +323,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.sample_points_in_polygon"><code class="docutils literal notranslate"><span class="pre">sample_points_in_polygon()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.save_class2pickle"><code class="docutils literal notranslate"><span class="pre">save_class2pickle()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.save_dict2json"><code class="docutils literal notranslate"><span class="pre">save_dict2json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.xy_to_rc"><code class="docutils literal notranslate"><span class="pre">xy_to_rc()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.zero_boundary_2d"><code class="docutils literal notranslate"><span class="pre">zero_boundary_2d()</span></code></a></li>
 </ul>
 </li>
@@ -422,7 +430,7 @@
 <h1>Tutorial 2: Implementing perils in the GenMR digital template<a class="headerlink" href="#tutorial-2-implementing-perils-in-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 1.1.2<br />
-<strong>Last Updated:</strong> 2026-02-12<br />
+<strong>Last Updated:</strong> 2026-03-09<br />
 <strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
 <p>Once a virtual environment has been generated (see previous tutorial), stochastic events are modelled to populate it. Table 1 lists the perils included in version 1.1.2 (the ones still missing to be included by June 2026).</p>
 <br>
@@ -609,7 +617,7 @@
 <td class="text-left"><p></p></td>
 <td class="text-left"><p></p></td>
 <td class="text-left"><p></p></td>
-<td class="text-left"><p><span style="color: orange">✗<span></p></td>
+<td class="text-left"><p><span style="color: orange">ONGOING<span></p></td>
 </tr>
 <tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">Ex</span></code></p></td>
 <td class="text-left"><p>Explosion (industrial)</p></td>
@@ -704,7 +712,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/63d4de13d027e8e0ebae0ad871a7d91ca3084bbd95f7889e3bb79d10795ef974.png" src="../_images/63d4de13d027e8e0ebae0ad871a7d91ca3084bbd95f7889e3bb79d10795ef974.png" />
+<img alt="../_images/efaf52b2911cbc81c0ae3e0ffb57f27d9b05ccd3c8a95cedc848b7b4f4de0334.png" src="../_images/efaf52b2911cbc81c0ae3e0ffb57f27d9b05ccd3c8a95cedc848b7b4f4de0334.png" />
 </div>
 </div>
 <p>Note that the configuration of the digital template environment may be changed through Tutorial 1.</p>
@@ -2804,7 +2812,7 @@ RS... TC... To... VE... WF... WS... CS... Ex... FF... Li... LS... SS... catalogu
 </figure>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reproduce_LSmovie</span> <span class="o">=</span> <span class="kc">False</span>          <span class="c1"># True to create &#39;movs/LS_CA_xrg38_68_yrg20_35.gif&#39;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reproduce_LSmovie</span> <span class="o">=</span> <span class="kc">True</span>          <span class="c1"># True to create &#39;movs/LS_CA_xrg38_68_yrg20_35.gif&#39;</span>
 <span class="n">reproduce_FFmovie</span> <span class="o">=</span> <span class="kc">False</span>          <span class="c1"># True to create &#39;movs/FF_CA_xrg0_100_yrg0_40.gif&#39;</span>
 
 <span class="k">if</span> <span class="n">reproduce_LSmovie</span><span class="p">:</span>
@@ -2812,6 +2820,7 @@ RS... TC... To... VE... WF... WS... CS... Ex... FF... Li... LS... SS... catalogu
 
     <span class="n">evID_trigger</span> <span class="o">=</span> <span class="s1">&#39;RS3&#39;</span>                                       <span class="c1"># case considered for movie scenario</span>
     <span class="n">S_trigger</span> <span class="o">=</span> <span class="n">evtable</span><span class="p">[</span><span class="s1">&#39;S&#39;</span><span class="p">][</span><span class="n">evtable</span><span class="p">[</span><span class="s1">&#39;evID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">evID_trigger</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">S_trigger</span> <span class="o">=</span> <span class="mi">175</span> <span class="c1"># TMP</span>
     <span class="n">hw</span> <span class="o">=</span> <span class="n">S_trigger</span> <span class="o">*</span> <span class="mf">1e-3</span> <span class="o">*</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;RS&#39;</span><span class="p">][</span><span class="s1">&#39;duration&#39;</span><span class="p">]</span>          <span class="c1"># water column (m)</span>
     <span class="n">wetness</span> <span class="o">=</span> <span class="n">hw</span> <span class="o">/</span> <span class="n">soilLayer</span><span class="o">.</span><span class="n">h</span>
     <span class="n">wetness</span><span class="p">[</span><span class="n">wetness</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>                                   <span class="c1"># max possible saturation</span>
@@ -2840,9 +2849,9 @@ RS... TC... To... VE... WF... WS... CS... Ex... FF... Li... LS... SS... catalogu
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>No LS movie created.
-23.0 hr / 24.0
-FF movie created (go to mov/FF_CA_*).
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>iteration 20 / 20
+LS movie created (go to mov/LS_CA_*).
+No FF movie created.
 </pre></div>
 </div>
 </div>

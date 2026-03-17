@@ -96,7 +96,14 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.EnvLayer_energyCI"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energyCI.CI_hydrodam"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.CI_hydrodam</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energyCI.CI_refinery"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.CI_refinery</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energyCI.CI_thermalplant"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.CI_thermalplant</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energyCI.CI_windfarm"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.CI_windfarm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energyCI.downscale_layers4powergrid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.downscale_layers4powergrid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energyCI.gen_powergrid_1line_G2S"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.gen_powergrid_1line_G2S()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energyCI.get_windfarm_mask"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.get_windfarm_mask()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energyCI.powergrid_nlines_G2S"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.powergrid_nlines_G2S</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.EnvLayer_natLand"><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand</span></code></a><ul>
@@ -315,6 +322,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.sample_points_in_polygon"><code class="docutils literal notranslate"><span class="pre">sample_points_in_polygon()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.save_class2pickle"><code class="docutils literal notranslate"><span class="pre">save_class2pickle()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.save_dict2json"><code class="docutils literal notranslate"><span class="pre">save_dict2json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.xy_to_rc"><code class="docutils literal notranslate"><span class="pre">xy_to_rc()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.zero_boundary_2d"><code class="docutils literal notranslate"><span class="pre">zero_boundary_2d()</span></code></a></li>
 </ul>
 </li>
@@ -443,7 +451,7 @@ defined as classes or methods.</p>
 <ul class="simple">
 <li><p><strong>Atmosphere</strong>
 - properties: freezing level, tropopause</p></li>
-<li><p><strong>Energy infrastructures</strong> - includes refinery
+<li><p><strong>Energy infrastructures</strong> - includes point CIs (refinery, hydrodam placeholder, wind farm, thermal plant)
 - properties: TO ADD</p></li>
 </ul>
 </section>
@@ -461,7 +469,7 @@ defined as classes or methods.</p>
 <dd class="field-even"><p>1.1.2</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2026-02-12</p>
+<dd class="field-odd"><p>2026-03-16</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -779,26 +787,60 @@ as its impact is negligible.</p></li>
 <dt class="sig sig-object py" id="GenMR.environment.EnvLayer_energyCI">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">EnvLayer_energyCI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urbLand</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_energyCI" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Docstring for EnvLayer_energyCI</p>
+<p>Docstring for EnvLayer_energyCI TO WRITE</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_energyCI.CI_hydrodam">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CI_hydrodam</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_energyCI.CI_hydrodam" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="GenMR.environment.EnvLayer_energyCI.CI_refinery">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CI_refinery</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_energyCI.CI_refinery" title="Link to this definition"></a></dt>
-<dd><p>Identify and construct the critical infrastructure object representing
-the main coastal refinery.</p>
-<p>This property selects the largest polygon classified as an
-<strong>industrial harbor</strong> zone from <code class="xref py py-attr docutils literal notranslate"><span class="pre">industrialZones</span></code>, and returns a
-<a class="reference internal" href="#GenMR.environment.CriticalInfrastructure" title="GenMR.environment.CriticalInfrastructure"><code class="xref py py-class docutils literal notranslate"><span class="pre">CriticalInfrastructure</span></code></a> instance located at its centroid.</p>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_energyCI.CI_thermalplant">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CI_thermalplant</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_energyCI.CI_thermalplant" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_energyCI.CI_windfarm">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CI_windfarm</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_energyCI.CI_windfarm" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_energyCI.downscale_layers4powergrid">
+<span class="sig-name descname"><span class="pre">downscale_layers4powergrid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_energyCI.downscale_layers4powergrid" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_energyCI.gen_powergrid_1line_G2S">
+<span class="sig-name descname"><span class="pre">gen_powergrid_1line_G2S</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coords_G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coords_S</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_energyCI.gen_powergrid_1line_G2S" title="Link to this definition"></a></dt>
+<dd><p>Routing decision…</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_energyCI.get_windfarm_mask">
+<span class="sig-name descname"><span class="pre">get_windfarm_mask</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_energyCI.get_windfarm_mask" title="Link to this definition"></a></dt>
+<dd><p>Generate a boolean mask of suitable wind farm locations based on
+topographic and land use constraints.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>An object describing the refinery, including its name, zone type,
-polygon geometry, area, centroid coordinates, and distances to
-coastline and river.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>par</strong> (<em>dict</em>) – Dictionary of energy infrastructure parameters.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#GenMR.environment.CriticalInfrastructure" title="GenMR.environment.CriticalInfrastructure">CriticalInfrastructure</a></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>windfarm_mask</strong> – Boolean array of shape <code class="docutils literal notranslate"><span class="pre">(nx,</span> <span class="pre">ny)</span></code> where <code class="docutils literal notranslate"><span class="pre">True</span></code> indicates a suitable wind farm cell.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray of bool</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_energyCI.powergrid_nlines_G2S">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">powergrid_nlines_G2S</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_energyCI.powergrid_nlines_G2S" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -3834,7 +3876,7 @@ core GenMR workflows by streamlining data handling, computation, and visualisati
 <dd class="field-even"><p>1.1.2</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2026-02-10</p>
+<dd class="field-odd"><p>2026-03-11</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -4309,6 +4351,30 @@ The file is saved in the ‘io/’ directory.</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.xy_to_rc">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">xy_to_rc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.xy_to_rc" title="Link to this definition"></a></dt>
+<dd><p>Convert digital template coordinates (x, y) to grid indices (row, col).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>float</em>) – x-coordinate (km), corresponding to grid row axis.</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – y-coordinate (km), corresponding to grid column axis.</p></li>
+<li><p><strong>grid</strong> (<a class="reference internal" href="#GenMR.environment.RasterGrid" title="GenMR.environment.RasterGrid"><em>RasterGrid</em></a>) – Grid object with attributes <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> as 1D coordinate arrays,
+constructed with <code class="docutils literal notranslate"><span class="pre">indexing='ij'</span></code> so that rows correspond to x
+and columns correspond to y.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>row</strong> (<em>int</em>) – Row index of the nearest grid cell to <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p></li>
+<li><p><strong>col</strong> (<em>int</em>) – Column index of the nearest grid cell to <code class="docutils literal notranslate"><span class="pre">y</span></code>.</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 </dd></dl>
