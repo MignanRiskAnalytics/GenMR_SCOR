@@ -30,7 +30,7 @@ Planned Additions (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-03-16
+:Date: 2026-03-17
 :License: AGPL-3
 """
 
@@ -52,7 +52,9 @@ from shapely.geometry import Polygon, Point, MultiPoint, LineString
 
 from scipy.interpolate import RegularGridInterpolator
 from scipy import ndimage
+from scipy.spatial import cKDTree
 from skimage.graph import route_through_array
+import networkx as nx
 
 from functools import cached_property
 from dataclasses import dataclass
@@ -2265,8 +2267,7 @@ class EnvLayer_energyCI:
 
 
     ## Energy CI network (power grid) ##
-
-    # connect nodes
+    # create transmission lines from generator nodes to substation nodes
     def downscale_layers4powergrid(self):
         '''
         '''
@@ -2332,9 +2333,196 @@ class EnvLayer_energyCI:
         return pathLines
 
 
+    # create urban network of load nodes
+    def gen_loadnodes(self):
+        '''
+        Generate regularly spaced load nodes on the urban area. 
 
+        Returns
+        -------
+        load_nodes : ndarray of shape (n_loads, 2)
+            Coordinates of load nodes (x, y).
+        load_index : ndarray
+            2D array of same shape as grid indicating load node indices (-1 if non-load).
+        '''
+        f_spacing = int(self.par['powergrid_load_spacing_km'] / self.grid.w)
+        xx = self.grid.xx[::f_spacing, ::f_spacing]
+        yy = self.grid.yy[::f_spacing, ::f_spacing]
+        S = self.urbLand.S[::f_spacing, ::f_spacing]
 
+        urban_mask = np.isin(S, [2, 3, 4])   # urban classes
+        load_x = xx[urban_mask]
+        load_y = yy[urban_mask]
+        load_nodes = np.column_stack((load_x, load_y))
 
+        load_index = -np.ones_like(S, dtype=int)
+        load_index[urban_mask] = np.arange(len(load_nodes))
+
+        self.load_nodes = load_nodes
+        return load_nodes, load_index
+
+    def gen_urbangrid(self, load_index):
+        '''
+        Create a graph representing the urban power grid (load nodes only) and connect isolated
+        components to the main grid.
+
+        Parameters
+        ----------
+        load_index : ndarray
+            2D array indicating load node indices (-1 if non-load).
+
+        Returns
+        -------
+        urbangrid : networkx.Graph
+            Graph of urban load nodes connected.
+        edges_new : list of tuples
+            List of edges added to connect isolated components.
+        '''
+        rows, cols = load_index.shape
+        edges = []
+        for i in range(rows):
+            for j in range(cols):
+                idx = load_index[i, j]
+                if idx == -1:
+                    continue
+                if j+1 < cols and load_index[i, j+1] != -1:
+                    edges.append((idx, load_index[i, j+1]))
+                if i+1 < rows and load_index[i+1, j] != -1:
+                    edges.append((idx, load_index[i+1, j]))
+
+        urbangrid = nx.Graph()
+        urbangrid.add_nodes_from(range(len(self.load_nodes)))
+        urbangrid.add_edges_from(edges)
+
+        # Connect isolated components
+        island_comps = list(nx.connected_components(urbangrid))
+        comp_list = [list(c) for c in island_comps]
+        centroids = [self.load_nodes[c].mean(axis=0) for c in comp_list]
+        tree_comp = cKDTree(centroids)
+        trees = [cKDTree(self.load_nodes[c]) for c in comp_list]
+
+        edges_new = []
+        for i, comp in enumerate(comp_list):
+            centroid = centroids[i]
+            dists, idxs = tree_comp.query(centroid, k=min(3, len(comp_list)))
+            for j in idxs[1:]:
+                if j <= i:
+                    continue
+                comp_a, comp_b = comp_list[i], comp_list[j]
+                coords_a, coords_b = self.load_nodes[comp_a], self.load_nodes[comp_b]
+                tree_b = trees[j]
+                dists_ab, idxs_ab = tree_b.query(coords_a)
+                k_min = np.argmin(dists_ab)
+                node_a = comp_a[k_min]
+                node_b = comp_b[idxs_ab[k_min]]
+                urbangrid.add_edge(node_a, node_b)
+                edges_new.append((node_a, node_b))
+        return urbangrid, edges_new
+
+    # connect generator nodes to urban network via substations
+    def connect_generators_substations(self, urbangrid):
+        '''
+        Add generators (G), substations (S), and transmission lines (T) to the urban grid of loads (L).
+
+        Parameters
+        ----------
+        urbangrid : networkx.Graph
+            Graph of urban load nodes.
+
+        Returns
+        -------
+        powergrid : networkx.Graph
+            Fully connected power grid including loads, substations, generators, and transmission lines.
+        node_names : dict
+            Mapping of node IDs to names (L#, S#, G#, or T).
+        all_coords : ndarray of shape (n_nodes, 2)
+            Cartesian coordinates of all nodes in the power grid.  
+        '''
+        powergrid = urbangrid.copy()
+        load_nodes = self.load_nodes
+
+        substations, generators = [], []
+        for key in self.powergrid_nlines_G2S:
+            x_line, y_line = self.powergrid_nlines_G2S[key]
+            substations.append(np.array([x_line[-1], y_line[-1]]))
+            generators.append(np.array([x_line[0], y_line[0]]))
+
+        next_id = len(load_nodes)
+        sub_ids, gen_ids = [], []
+
+        for S in substations:
+            sub_ids.append(next_id)
+            powergrid.add_node(next_id)
+            next_id += 1
+        for G in generators:
+            gen_ids.append(next_id)
+            powergrid.add_node(next_id)
+            next_id += 1
+
+        all_coords = np.vstack([load_nodes, substations, generators])
+        node_names = {i: f'L{i+1}' for i in range(len(load_nodes))}
+        for i, sid in enumerate(sub_ids):
+            node_names[sid] = f'S{i+1}'
+        for i, gid in enumerate(gen_ids):
+            node_names[gid] = f'G{i+1}'
+
+        # Add transmission lines
+        for i, (key, (x_line, y_line)) in enumerate(self.powergrid_nlines_G2S.items()):
+            prev_node = None
+            first_T_node_id = None
+
+            for x, y in zip(x_line, y_line):
+                node_id = next_id
+                powergrid.add_node(node_id)
+                node_names[node_id] = 'T'
+                all_coords = np.vstack([all_coords, [x, y]])
+
+                if prev_node is not None:
+                    powergrid.add_edge(prev_node, node_id)
+                else:
+                    first_T_node_id = node_id
+                prev_node = node_id
+                next_id += 1
+
+            # Connect transmission line endpoints
+            g_id, s_id = gen_ids[i], sub_ids[i]
+            last_T_node_id = prev_node
+            powergrid.add_edge(first_T_node_id, g_id)
+            powergrid.add_edge(last_T_node_id, s_id)
+
+        # Connect substations to nearest loads
+        tree_loads = cKDTree(load_nodes)
+        k = 2
+        for sid, S_coord in zip(sub_ids, substations):
+            dists, idxs = tree_loads.query(S_coord, k=k)
+            for idx in np.atleast_1d(idxs):
+                powergrid.add_edge(sid, idx)
+
+        return powergrid, node_names, all_coords
+
+    @cached_property
+    def powergrid(self):
+        '''
+        Complete pipeline to build the power grid:
+        1. Generate load nodes
+        2. Create urban load network
+        3. Connect isolated components
+        4. Add generators, substations, and transmission lines
+
+        Returns
+        -------
+        powergrid : networkx.Graph
+            Fully connected power grid graph.
+        node_names : dict
+            Dictionary mapping node IDs to names.
+        node_coords : ndarray of shape (n_nodes, 2)
+            Cartesian coordinates of all nodes in the power grid.  
+        '''
+        load_nodes, load_index = self.gen_loadnodes()
+        urbangrid, edges_new = self.gen_urbangrid(load_index)
+        powergrid, node_names, node_coords = self.connect_generators_substations(urbangrid)
+        print('Power grid fully connected:', nx.is_connected(powergrid))
+        return powergrid, node_names, node_coords
 
 
 
