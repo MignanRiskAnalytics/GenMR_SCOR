@@ -2706,6 +2706,33 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
         else:
             return print('No match found for attribute identifier in urban land layer.')
 
+    ## ENERGY LAYER ##
+    if envLayer.ID == 'energy':
+        if attr == 'powergrid':
+            powergrid, node_names, node_coords = envLayer.powergrid
+            L_nodes = [i for i, name in node_names.items() if name.startswith('L')]
+            S_nodes = [i for i, name in node_names.items() if name.startswith('S')]
+            G_nodes = [i for i, name in node_names.items() if name.startswith('G')]
+            node_coords = np.array(node_coords)
+            L_coords = node_coords[L_nodes]
+            S_coords = node_coords[S_nodes]
+            G_coords = node_coords[G_nodes]
+            edges = list(powergrid.edges())
+            ax.scatter(L_coords[:,0], L_coords[:,1], color='black', s=5, label='Load')
+            ax.plot(S_coords[:,0], S_coords[:,1], 'bs', markersize=10, label='Substation')
+            ax.plot(G_coords[:,0], G_coords[:,1], 'r*', markersize=15, label='Generator')
+            for i,j in edges:
+                x = [node_coords[i,0], node_coords[j,0]]
+                y = [node_coords[i,1], node_coords[j,1]]
+                ax.plot(x, y, color='black', linewidth=0.5)
+            ax.set_xlabel('$x$ (km)')
+            ax.set_ylabel('$y$ (km)')
+            ax.set_title('ENERGY INFRASTRUCTURE', size = 14, pad = 20)
+            ax.set_aspect(1)
+            ax.legend(loc='upper right')
+        else:
+            return print('No match found for attribute identifier in energy infrastructure layer.')
+
     plt.xlabel('$x$ (km)')
     plt.ylabel('$y$ (km)')
     plt.title(f'{envLayer.ID} layer: {attr}', size = 14, pad = 10)
@@ -2726,8 +2753,8 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
     Parameters
     ----------
     envLayers : list of objects
-        List of environmental layer instances (e.g., EnvLayer_topo, EnvLayer_atmo, EnvLayer_soil,
-        EnvLayer_natLand, EnvLayer_urbLand).
+        List of environmental layer instances (topo, atmo, soil,
+        natLand, urbLand, energy).
     file_ext : str, optional
         File extension to save the figure ('jpg', 'pdf', etc.). Default is '-' 
         which means the figure is not saved.
@@ -2952,5 +2979,36 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
             ax[i,2].set_aspect(1)
             labels_industrialZone = [h.get_label() for h in lgd_industrialZone]
             ax[i,2].legend(lgd_industrialZone, labels_industrialZone, loc='upper left')
+
+        ## ENERGY LAYER ##
+        if envLayer.ID == 'energy':
+            IDs = IDs + '_energy'
+            powergrid, node_names, node_coords = envLayer.powergrid
+            L_nodes = [i for i, name in node_names.items() if name.startswith('L')]
+            S_nodes = [i for i, name in node_names.items() if name.startswith('S')]
+            G_nodes = [i for i, name in node_names.items() if name.startswith('G')]
+            node_coords = np.array(node_coords)
+            L_coords = node_coords[L_nodes]
+            S_coords = node_coords[S_nodes]
+            G_coords = node_coords[G_nodes]
+            edges = list(powergrid.edges())
+            if topo_bool:
+                ax[i,0].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray', alpha = .5)
+            ax[i,0].scatter(L_coords[:,0], L_coords[:,1], color='black', s=5, label='Load')
+            ax[i,0].plot(S_coords[:,0], S_coords[:,1], 'bs', markersize=10, label='Substation')
+            ax[i,0].plot(G_coords[:,0], G_coords[:,1], 'r*', markersize=15, label='Generator')
+            for ii,jj in edges:
+                x = [node_coords[ii,0], node_coords[jj,0]]
+                y = [node_coords[ii,1], node_coords[jj,1]]
+                ax[i,0].plot(x, y, color='black', linewidth=0.5)
+            ax[i,0].set_xlabel('$x$ (km)')
+            ax[i,0].set_ylabel('$y$ (km)')
+            ax[i,0].set_title('ENERGY INFRASTRUCTURE', size = 14, pad = 20)
+            ax[i,0].set_aspect(1)
+            ax[i,0].legend(loc='upper right')
+            
+            ax[i,1].set_axis_off()
+            ax[i,2].set_axis_off()
+
     if file_ext != '-':
         plt.savefig('figs/envLayers' + IDs + '.' + file_ext)
