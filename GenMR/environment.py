@@ -20,17 +20,16 @@ Layers and Related Objects (v1.1.2)
 -----------------------------------
 * **Atmosphere**
   - properties: freezing level, tropopause
-* **Energy infrastructures** - includes point CIs (refinery, hydrodam placeholder, wind farm, thermal plant)
-  - properties: TO ADD
+* **Energy infrastructures** - includes point CIs (refinery, hydrodam placeholder, wind farm, thermal plant) & power grid
+  - properties: TO ADD (energy output)
 
 Planned Additions (v1.1.2)
 ---------------------------
-* Power grid
-* Population
+* Socio-economic layers: eco (businesses), socio (population)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-03-17
+:Date: 2026-03-18
 :License: AGPL-3
 """
 
@@ -2158,13 +2157,13 @@ class EnvLayer_energyCI:
     '''
 
     def __init__(self, urbLand, par):
-        self.ID = 'energyCI'
+        self.ID = 'energy'
         self.urbLand = copy.deepcopy(urbLand)
         self.grid = self.urbLand.grid
         self.topo = self.urbLand.topo
         self.industrialZones = urbLand.industrialZones
         self.par = par
-        np.random.seed(self.par['rdm_seed'])
+#        np.random.seed(self.par['rdm_seed'])
 
     ## Energy CI points ##
     def _CI_from_largest_harbor_zone(self, name, rank=1):
@@ -2272,7 +2271,7 @@ class EnvLayer_energyCI:
         '''
         '''
         w0 = self.grid.w
-        tower_spacing = .4   # (km) = 400 m distance between 
+        tower_spacing = self.par['powergrid_route_towerSpacing_km'] 
         f = int(tower_spacing / w0)
         # DOWNSCALING for transmission line generation
         grid_downscaled = downscale_RasterGrid(self.grid, f, appl = 'pooling')
@@ -2291,8 +2290,8 @@ class EnvLayer_energyCI:
         grid_downscaled, topoLayer_downscaled, urbLandLayer_downscaled = self.downscale_layers4powergrid()
         
         # Cost surface: penalize high slope and water cells
-        mesh_C = 1 + topoLayer_downscaled.slope * 10  # flat = cost 1, steep = cost 10+
-        mesh_C[urbLandLayer_downscaled.S == 0] = 9999         # avoid river/sea
+        mesh_C = 1 + topoLayer_downscaled.slope * self.par['powergrid_route_costSlope']          # flat = cost 1, steep = cost 10+
+        mesh_C[urbLandLayer_downscaled.S == 0] = self.par['powergrid_route_costWater']             # avoid river/sea
 
         coords_G = GenMR_utils.xy_to_rc(coords_G[0], coords_G[1], grid_downscaled)   # generator
         coords_S = GenMR_utils.xy_to_rc(coords_S[0], coords_S[1], grid_downscaled)   # entry substation
