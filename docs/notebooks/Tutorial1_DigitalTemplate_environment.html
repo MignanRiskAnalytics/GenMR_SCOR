@@ -436,7 +436,7 @@
 <h1>Tutorial 1: Generating a virtual environment for the GenMR digital template<a class="headerlink" href="#tutorial-1-generating-a-virtual-environment-for-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 1.1.2<br />
-<strong>Last Updated:</strong> 2026-03-17<br />
+<strong>Last Updated:</strong> 2026-03-18<br />
 <strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
 <p>The <em>digital template</em>, first described in <a class="reference external" href="https://www.mdpi.com/1660-4601/19/23/16097">Mignan (2022)</a> and used in the CAT Risk Modelling Sandbox (<a class="reference external" href="https://github.com/amignan/Intro2CATriskModelling/blob/main/CATRiskModellingSandbox_tutorial.ipynb">Mignan, 2024</a>), is a microcosm simulation of the complex Earth system for catastrophe dynamics R&amp;D, multi-risk prototyping in the Generic Multi-Risk (GenMR) framework, and catastrophe risk eduction. It is defined as a virtual environment populated by loss-generating events that interact with each other and with the environment. The virtual environment, to be built in this tutorial, is composed of <em>environmental layers</em> that consist of sets of variables <span class="math notranslate nohighlight">\(\theta(x,y)\)</span> defined in a spatial grid of coordinates <span class="math notranslate nohighlight">\((x,y)\)</span>. Each layer may be altered by <em>environmental objects</em> located within the layer. The parsimonious complex Earth system finally consists of a stack of interacting environmental layers defined in the natural, technological and socio-economic systems. The loss-generating events that populate the virtual environment will be defined in the next tutorial, and their occurrence rates and interactions in a third and final tutorial.</p>
 <p>The modelled environmental layers and associated objects as listed in Table 1 (see also Fig. 1). This tutorial provides a concise overview of these layers using a default parameterisation, with alternative scenarios to be introduced later in How-To Guides. The outputs generated here will serve as input for hazard and risk assessment in the subsequent tutorials.</p>
@@ -501,18 +501,27 @@
 <td class="text-left"><p><span style="color: green">✓<span></p></td>
 </tr>
 <tr class="row-odd"><td class="text-left"><p>Technological</p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">energyCI</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">energy</span></code></p></td>
 <td class="text-left"><p>Energy infrastructures</p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p></p></td>
+<td class="text-left"><p>-</p></td>
 <td class="text-left"><p>Power grid</p></td>
+<td class="text-left"><p>-</p></td>
 <td class="text-left"><p>N/A</p></td>
-<td class="text-left"><p><span style="color: orange">ONGOING</span></p></td>
+<td class="text-left"><p><span style="color: green">✓<span></p></td>
 </tr>
 <tr class="row-even"><td class="text-left"><p>Socio-economic</p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">pop</span></code></p></td>
-<td class="text-left"><p>Population</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">eco</span></code></p></td>
+<td class="text-left"><p>Businesses</p></td>
 <td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p>N/A</p></td>
+<td class="text-left"><p><span style="color: orange">✗</span></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Socio-economic</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">socio</span></code></p></td>
+<td class="text-left"><p>Population</p></td>
+<td class="text-left"><p>Grievance</p></td>
 <td class="text-left"><p></p></td>
 <td class="text-left"><p></p></td>
 <td class="text-left"><p>N/A</p></td>
@@ -543,6 +552,9 @@ The environmental layers are generated as follows:
 </ul>
 <p><img alt="" src="../_images/digitaltemplate_layer_urban_SLEUTH.jpg" /></p>
 <center><small><b>Fig. 3.</b> A simplified version of the Slope, Land use, Exclusion, Urban, Transportation, and Hill-shade (SLEUTH) model of urban growth (Clarke et al., 1997; Candau, 2002). Redrawn from <a href='https://www.cambridge.org/highereducation/books/introduction-to-catastrophe-risk-modelling/A3A5B5FB990921422BFEBB07734BF869#overview' target='_blank'>Mignan (2024:box3.3)</a>.</small></center>
+<ul class="simple">
+<li><p><strong>Energy infrastructure</strong> (<code class="docutils literal notranslate"><span class="pre">energyLayer</span></code>): Consists of various localised critical infrastructures (CI), such as a refinery, a thermal plant, a hydropower dam and a wind farm. The three later CIs are the generator nodes of a power grid, defined as a regular mesh of load nodes covering the urban footprint.</p></li>
+</ul>
 <p>Sections 1 and 2 detail the simulation of the virtual natural and technological environments, respectively (v1.1.1). A future Section 3, to be released in v1.1.2, will describe the socio-economic environment of the digital template.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -838,7 +850,8 @@ The environmental layers are generated as follows:
 </section>
 <section id="generating-the-energy-infrastructure">
 <h3>2.2. Generating the energy infrastructure<a class="headerlink" href="#generating-the-energy-infrastructure" title="Link to this heading"></a></h3>
-<p>IN CONSTRUCTION. Energy infrastructures are defined as dataclass <code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure()</span></code> and localised in industrial zones.</p>
+<p>IN CONSTRUCTION.</p>
+<p>The <strong>energy infrastructure layer</strong> (parameterized in <code class="docutils literal notranslate"><span class="pre">energyPar</span></code>) defines localised critical infrastructures (CI) as dataclass <code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure()</span></code>. Considered CIs are a refinery and power plants (hydropower dam, thermal plant, and wind farm). The power plants (of power <code class="docutils literal notranslate"><span class="pre">capacity_MW_cst</span></code>) act as generator nodes in a power grid, consisting of a regular mesh of load nodes in the urban footprint.</p>
 <ul class="simple">
 <li><p><strong>Refinery</strong>: Situated in the <span class="math notranslate nohighlight">\(n^{th}\)</span> largest industrial harbor zone (<code class="docutils literal notranslate"><span class="pre">industrialZones</span> <span class="pre">=</span> <span class="pre">'industrial</span> <span class="pre">harbor'</span></code>, <code class="docutils literal notranslate"><span class="pre">'refinery_loc'</span> <span class="pre">=</span> <span class="pre">1</span></code> for <span class="math notranslate nohighlight">\(n=1\)</span>). It is a potential source of industrial explosions in Tutorial 2.</p></li>
 <li><p><strong>Power plants</strong>: Defined as generator nodes of the power grid.</p>
@@ -848,13 +861,17 @@ The environmental layers are generated as follows:
 <li><p>Wind farm: Situated in the optimal area for wind-based electricity production, according to <code class="docutils literal notranslate"><span class="pre">'windfarm_*</span></code> parameters.</p></li>
 </ul>
 </li>
-<li><p><strong>Power grid</strong>: TO ADD</p></li>
+<li><p><strong>Power grid</strong>: Defined in 4 main steps (see also Appendix B2):
+1 Load nodes: Regularly spaced on the urban footprint (<span class="math notranslate nohighlight">\(S = {2,3,4}\)</span>, i.e., RES, IND, COM) according to <code class="docutils literal notranslate"><span class="pre">'powergrid_load_spacing_km'</span></code>.
+2 Urban grid: Load nodes are connected in a regular mesh. Depending on the urban spread distribution, some separate components (i.e., islands) can exist, which are connected to the main grid.
+3 Generator-substation connections: Generator nodes (fixed as the 3 power plants) are connected to the nearest industrial zone, which centroid becomes a substation node. Transmission lines follow an optimised routing strategy, defined in <code class="docutils literal notranslate"><span class="pre">powergrid_route_*</span></code> parameters.
+4 Fully connected network (<code class="docutils literal notranslate"><span class="pre">powergrid</span></code>): the substations are connected to the two nearest load nodes.</p></li>
 </ul>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">capacity_MW_cst</span> <span class="o">=</span> <span class="mf">300.</span>            <span class="c1"># no distinction in blackout model, so kept the same for all generator nodes</span>
 <span class="n">energyPar</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;rdm_seed&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+<span class="c1">#    &#39;rdm_seed&#39;: None,</span>
     <span class="s1">&#39;hydrodam_coords&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">20</span><span class="p">),</span>  <span class="c1"># placeholder until hydropower dam model add-on implemented (future v.1.2.2)</span>
     <span class="s1">&#39;hydrodam_capacity_MW&#39;</span><span class="p">:</span> <span class="n">capacity_MW_cst</span><span class="p">,</span>
     <span class="s1">&#39;refinery_loc&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>                             <span class="c1"># harbor zone loc. ranked by size, refinery in largest zone</span>
@@ -867,7 +884,9 @@ The environmental layers are generated as follows:
     <span class="s1">&#39;windfarm_capacity_MW&#39;</span><span class="p">:</span> <span class="n">capacity_MW_cst</span><span class="p">,</span>
     <span class="s1">&#39;windfarm_turbine_capacity_MW&#39;</span><span class="p">:</span> <span class="mf">5.</span><span class="p">,</span>
     <span class="s1">&#39;powergrid_load_spacing_km&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>                <span class="c1"># spacing of regular mesh of load nodes</span>
-    <span class="s1">&#39;powergrid_substation_Nload&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>              <span class="c1"># number of load nodes per substation</span>
+    <span class="s1">&#39;powergrid_route_costSlope&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>                <span class="c1"># cost times slope_degrees</span>
+    <span class="s1">&#39;powergrid_route_costWater&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>              <span class="c1"># cost of crossing water cell</span>
+    <span class="s1">&#39;powergrid_route_towerSpacing_km&#39;</span><span class="p">:</span> <span class="mf">.4</span>          <span class="c1"># distance between transmission line towers (400 m as max)</span>
 <span class="p">}</span>
 <span class="n">energyPar</span><span class="p">[</span><span class="s1">&#39;windfarm_turbine_n&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">energyPar</span><span class="p">[</span><span class="s1">&#39;windfarm_capacity_MW&#39;</span><span class="p">]</span><span class="o">/</span><span class="n">energyPar</span><span class="p">[</span><span class="s1">&#39;windfarm_turbine_capacity_MW&#39;</span><span class="p">])</span>
 
@@ -909,7 +928,10 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9f2518fb764e8fe63434956b8df649aa329906521afc8da6e2c7a0b94db66eb1.png" src="../_images/9f2518fb764e8fe63434956b8df649aa329906521afc8da6e2c7a0b94db66eb1.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Power grid fully connected: True
+</pre></div>
+</div>
+<img alt="../_images/2da40c411815a9a7649572e5529d83212eed83e362efe725a3209cc6a0af4a22.png" src="../_images/2da40c411815a9a7649572e5529d83212eed83e362efe725a3209cc6a0af4a22.png" />
 </div>
 </div>
 </section>
@@ -1402,7 +1424,11 @@ Average zonal temperature = 14.76365750942746°C (= GMST, validation value)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/d24bddb6eef1f5412c8be3bf1a2b8023eed5b598459b4d425829e354c7985fb0.png" src="../_images/d24bddb6eef1f5412c8be3bf1a2b8023eed5b598459b4d425829e354c7985fb0.png" />
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/lib/python3.11/site-packages/IPython/core/events.py:82: UserWarning: Creating legend with loc=&quot;best&quot; can be slow with large amounts of data.
+  func(*args, **kwargs)
+</pre></div>
+</div>
+<img alt="../_images/faf09d675fdcf384986c84676f537b0b3c7b047337d2a29baa812f39dffadd83.png" src="../_images/faf09d675fdcf384986c84676f537b0b3c7b047337d2a29baa812f39dffadd83.png" />
 </div>
 </div>
 </section>
