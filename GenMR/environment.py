@@ -29,7 +29,7 @@ Planned Additions (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-03-18
+:Date: 2026-03-19
 :License: AGPL-3
 """
 
@@ -2304,7 +2304,7 @@ class EnvLayer_energyCI:
         return path_x, path_y
 
     @cached_property
-    def powergrid_nlines_G2S(self):
+    def powergrid_nlines_G2S_OLD(self):
         '''
         '''
         N_INDzones = len(self.urbLand.industrialZones)
@@ -2330,6 +2330,43 @@ class EnvLayer_energyCI:
             pathLines[ci_name] = self.gen_powergrid_1line_G2S(coords_G, coords_S)
             
         return pathLines
+
+
+
+    @cached_property
+    def powergrid_nlines_G2S(self):
+        '''
+        '''
+        N_INDzones = len(self.urbLand.industrialZones)
+        if N_INDzones == 0:
+            print('No industrial zone found (consider generating a larger city).')
+            return {}
+
+        coords_S_pot = [self.urbLand.industrialZones[i]['polygon'].centroid for i in range(N_INDzones)]
+        coords_Gs = {
+            'Gdam': self.CI_hydrodam.centroid,      # hydropower dam
+            'Gth': self.CI_thermalplant.centroid,   # thermal plant
+            'Gwf': self.CI_windfarm.centroid        # wind farm
+        }
+        x, y = coords_Gs['Gwf']
+        dx, dy = self.par['windfarm_centroid_shift']
+        coords_Gs['Gwf'] = (x + dx, y + dy)
+
+        pathLines = {}
+        n_copies = self.par['powergrid_redundanciesGS']
+        for ci_name, coords_G in coords_Gs.items():
+            distG2Ss = [Point(coords_G).distance(s) for s in coords_S_pot]
+            sorted_idx = sorted(range(len(distG2Ss)), key=lambda i: distG2Ss[i])
+            for copy_idx in range(n_copies):
+                gen_key = f"{ci_name}_{copy_idx+1}"
+                # Pick the copy_idx-th nearest substation (wrap around if n_copies > N_INDzones)
+                sub_idx = sorted_idx[copy_idx % len(sorted_idx)]
+                coords_S = coords_S_pot[sub_idx]
+                coords_S = (coords_S.x, coords_S.y)
+                path_x, path_y = self.gen_powergrid_1line_G2S(coords_G, coords_S)
+                pathLines[gen_key] = (path_x, path_y)
+        return pathLines
+
 
 
     # create urban network of load nodes
@@ -2440,6 +2477,8 @@ class EnvLayer_energyCI:
         powergrid = urbangrid.copy()
         load_nodes = self.load_nodes
 
+        node_names = {i: f'L{i+1}' for i in range(len(load_nodes))}
+
         substations, generators = [], []
         for key in self.powergrid_nlines_G2S:
             x_line, y_line = self.powergrid_nlines_G2S[key]
@@ -2453,17 +2492,17 @@ class EnvLayer_energyCI:
             sub_ids.append(next_id)
             powergrid.add_node(next_id)
             next_id += 1
-        for G in generators:
+        gen_keys = list(self.powergrid_nlines_G2S.keys())
+        for key in gen_keys:
             gen_ids.append(next_id)
             powergrid.add_node(next_id)
+            node_names[next_id] = key
             next_id += 1
 
-        all_coords = np.vstack([load_nodes, substations, generators])
-        node_names = {i: f'L{i+1}' for i in range(len(load_nodes))}
         for i, sid in enumerate(sub_ids):
             node_names[sid] = f'S{i+1}'
-        for i, gid in enumerate(gen_ids):
-            node_names[gid] = f'G{i+1}'
+
+        all_coords = np.vstack([load_nodes, substations, generators])
 
         # Add transmission lines
         T_counter = 1
@@ -2493,9 +2532,8 @@ class EnvLayer_energyCI:
 
         # Connect substations to nearest loads
         tree_loads = cKDTree(load_nodes)
-        k = 2
         for sid, S_coord in zip(sub_ids, substations):
-            dists, idxs = tree_loads.query(S_coord, k=k)
+            dists, idxs = tree_loads.query(S_coord, k = self.par['powergrid_redundanciesSL'])
             for idx in np.atleast_1d(idxs):
                 powergrid.add_edge(sid, idx)
 
