@@ -2466,6 +2466,7 @@ class EnvLayer_energyCI:
             node_names[gid] = f'G{i+1}'
 
         # Add transmission lines
+        T_counter = 1
         for i, (key, (x_line, y_line)) in enumerate(self.powergrid_nlines_G2S.items()):
             prev_node = None
             first_T_node_id = None
@@ -2473,7 +2474,8 @@ class EnvLayer_energyCI:
             for x, y in zip(x_line, y_line):
                 node_id = next_id
                 powergrid.add_node(node_id)
-                node_names[node_id] = 'T'
+                node_names[node_id] = f'T{T_counter}'
+                T_counter += 1
                 all_coords = np.vstack([all_coords, [x, y]])
 
                 if prev_node is not None:
