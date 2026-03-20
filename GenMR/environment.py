@@ -2555,13 +2555,25 @@ class EnvLayer_energyCI:
         node_names : dict
             Dictionary mapping node IDs to names.
         node_coords : ndarray of shape (n_nodes, 2)
-            Cartesian coordinates of all nodes in the power grid.  
+            Cartesian coordinates of all nodes in the power grid.
+        node_supply : ndarray of shape (n_nodes, )
+            Power supply (MW) per node, 0 if not a load node.
         '''
-        load_nodes, load_index = self.gen_loadnodes()
-        urbangrid, edges_new = self.gen_urbangrid(load_index)
+        _, load_index = self.gen_loadnodes()
+        urbangrid, _ = self.gen_urbangrid(load_index)
         powergrid, node_names, node_coords = self.connect_generators_substations(urbangrid)
-        print('Power grid fully connected:', nx.is_connected(powergrid))
-        return powergrid, node_names, node_coords
+#        print('Power grid fully connected:', nx.is_connected(powergrid))
+
+        nG = sum(1 for name in node_names.values() if name.startswith('G')) / self.par['powergrid_redundanciesGS']
+        Ptot = nG * self.par['powergrid_power_perGnode_MW']
+        nL = sum(1 for name in node_names.values() if name.startswith('L'))
+        Pload = Ptot / nL
+        node_supply = np.zeros(len(node_names))
+        for i, name in node_names.items():
+            if name.startswith('L'):
+                node_supply[i] = Pload
+        
+        return powergrid, node_names, node_coords, node_supply
 
 
 
@@ -2749,7 +2761,7 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
     ## ENERGY LAYER ##
     if envLayer.ID == 'energy':
         if attr == 'powergrid':
-            powergrid, node_names, node_coords = envLayer.powergrid
+            powergrid, node_names, node_coords, _ = envLayer.powergrid
             L_nodes = [i for i, name in node_names.items() if name.startswith('L')]
             S_nodes = [i for i, name in node_names.items() if name.startswith('S')]
             G_nodes = [i for i, name in node_names.items() if name.startswith('G')]
@@ -3023,7 +3035,7 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
         ## ENERGY LAYER ##
         if envLayer.ID == 'energy':
             IDs = IDs + '_energy'
-            powergrid, node_names, node_coords = envLayer.powergrid
+            powergrid, node_names, node_coords, _ = envLayer.powergrid
             L_nodes = [i for i, name in node_names.items() if name.startswith('L')]
             S_nodes = [i for i, name in node_names.items() if name.startswith('S')]
             G_nodes = [i for i, name in node_names.items() if name.startswith('G')]
