@@ -21,17 +21,17 @@ Peril models (v1.1.1)
 
 Peril models (v1.1.2)
 ---------------------
+* BO: Blackout - IN CONSTRUCTION
 * CS: Convective storm
 * Dr: Drought
 * HW: Heatwave
 * Li: Lightning
-* PI: Pest infestation - IN CONSTRUCTION
+* PI: Pest infestation
 * To: Tornado
 * WS: Windstorm
 
 Planned peril models (v1.1.2)
 -----------------------------
-* BO: Blackout
 * BI: Business interruption
 * Sf: Public service failure
 * SU: Social unrest
@@ -39,7 +39,7 @@ Planned peril models (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-02-12
+:Date: 2026-03-20
 :License: AGPL-3
 """
 
@@ -60,7 +60,7 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
 from shapely.geometry import LineString, Polygon
-
+import igraph as ig
 import imageio
 from skimage import measure
 
@@ -2600,6 +2600,15 @@ class HazardFootprintGenerator:
                     print(f'WARNING: No footprint of size {Si[i]} generated (consider increasing Nsim)')
                 cache_file = self._cache_path(evIDi[i])
                 np.save(cache_file, PI_footprints[indmax]['PI_fp'])
+
+
+
+## BO case ## - kept separate of any class for now (secondary invisible peril with stochastic element rupture, to update in v.1.2.x)
+
+
+
+
+
 
 
 class DynamicHazardFootprintGenerator:

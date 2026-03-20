@@ -8,7 +8,7 @@ core GenMR workflows by streamlining data handling, computation, and visualisati
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-03-11
+:Date: 2026-03-20
 :License: AGPL-3
 """
 
@@ -554,6 +554,90 @@ map_EF2vmax = {
 }
 
 
+
+
+##################
+## RISK METRICS ##
+##################
+
+def calc_EP(lbd):
+    '''
+    Calculate the cumulative event frequency and the exceedance probability 
+    for a series of event rates.
+
+    Parameters
+    ----------
+    lbd : array-like
+        An array of event rates (lambda) for individual events.
+
+    Returns
+    -------
+    EFi : numpy.ndarray
+        Cumulative event frequencies, computed as the cumulative sum of the event rates.
+    EPi : numpy.ndarray
+        Exceedance probabilities corresponding to each cumulative frequency, calculated as
+        `1 - exp(-EFi)` (following Mignan, 2024, eq. 3.22).
+    '''
+    nev = len(lbd)
+    EFi = np.zeros(nev)
+    for i in range(nev):
+        EFi[i] = np.sum(lbd[0:i+1])
+    EPi = 1 - np.exp(- EFi)                               # Mignan (2024:eq. 3.22)
+    return EFi, EPi
+
+
+def calc_riskmetrics_fromELT(ELT, q_VAR):
+    '''
+    Calculate key risk metrics from an Event Loss Table (ELT), including 
+    Average Annual Loss (AAL), Value-at-Risk (VaR), and Tail Value-at-Risk (TVaR).
+
+    Parameters
+    ----------
+    ELT : pandas.DataFrame
+        Event Loss Table containing at least the following columns:
+        - 'L'   : Loss for each event
+        - 'lbd' : Event rate (lambda) for each event
+    q_VAR : float
+        Confidence level for Value-at-Risk (e.g., 0.95 for 95% VaR)
+
+    Returns
+    -------
+    ELT : pandas.DataFrame
+        Input ELT augmented with cumulative event frequency ('EF') and 
+        exceedance probability ('EP') columns.
+    AAL : float
+        Average Annual Loss, computed as the sum of lbd * L (Mignan, 2024:eq. 3.18).
+    VaRq_interp : float
+        Interpolated Value-at-Risk at the given confidence level.
+    TVaRq_interp : float
+        Interpolated Tail Value-at-Risk at the given confidence level.
+    VaRq : float
+        Discrete VaR from the ELT.
+    TVaRq : float
+        Discrete TVaR from the ELT.
+    '''
+    AAL = np.sum(ELT['lbd'] * ELT['L'])                   # Mignan (2024:eq. 3.18)
+    ELT = ELT.sort_values(by = 'L', ascending = False)    # losses in descending order
+    EFi, EPi = calc_EP(ELT['lbd'].values)
+    ELT['EF'], ELT['EP'] = [EFi, EPi]
+    # VaR_q and TVaR_q
+    p = 1 - q_VAR
+    ELT_asc = ELT.sort_values(by = 'L')                    # losses in ascending order
+    VaRq = ELT_asc['L'][ELT_asc['EP'] < p].iloc[0]         # Mignan (2024:eq. 3.23)
+    TVaRq = np.sum(ELT_asc['L'][ELT_asc['L'] > VaRq]) / len(ELT_asc['L'][ELT_asc['L'] > VaRq])   # derived from Mignan (2024:eq. 3.24)
+
+    L_hires = 10**np.linspace(np.log10(ELT_asc['L'].min()+1e-6), np.log10(ELT_asc['L'].max()), num = 1000)
+    EP_hires = np.interp(L_hires, ELT_asc['L'], ELT_asc['EP'])
+    VaRq_interp = L_hires[EP_hires < p][0]
+    TVaRq_interp = np.sum(L_hires[L_hires > VaRq_interp]) / len(L_hires[L_hires > VaRq_interp])
+
+    return ELT, AAL, VaRq_interp, TVaRq_interp, VaRq, TVaRq
+
+
+
+
+
+
 ####################
 # PLOTTING OPTIONS #
 ####################
@@ -751,83 +835,28 @@ col_industrialZone = {
 cmap_mask = ListedColormap(['none', 'lime'])
 
 
-
-##################
-## RISK METRICS ##
-##################
-
-def calc_EP(lbd):
+def get_edge_width(edge_bw, wmin = .5, wmax = 5.):
     '''
-    Calculate the cumulative event frequency and the exceedance probability 
-    for a series of event rates.
+    Normalize edge betweenness values to a specified width range for graph plotting.
 
     Parameters
     ----------
-    lbd : array-like
-        An array of event rates (lambda) for individual events.
+    edge_bw : array-like
+        Edge betweenness values for each edge in the graph.
+    wmin : float, optional
+        Minimum width value (default is 0.5).
+    wmax : float, optional
+        Maximum width value (default is 5.0).
 
     Returns
     -------
-    EFi : numpy.ndarray
-        Cumulative event frequencies, computed as the cumulative sum of the event rates.
-    EPi : numpy.ndarray
-        Exceedance probabilities corresponding to each cumulative frequency, calculated as
-        `1 - exp(-EFi)` (following Mignan, 2024, eq. 3.22).
+    widths : ndarray
+        Array of scaled edge widths, with same shape as ``edge_bw``.
     '''
-    nev = len(lbd)
-    EFi = np.zeros(nev)
-    for i in range(nev):
-        EFi[i] = np.sum(lbd[0:i+1])
-    EPi = 1 - np.exp(- EFi)                               # Mignan (2024:eq. 3.22)
-    return EFi, EPi
+    edge_bw = np.array(edge_bw)
+    return wmin + (edge_bw - edge_bw.min()) / (edge_bw.max() - edge_bw.min()) * (wmax - wmin)
 
 
-def calc_riskmetrics_fromELT(ELT, q_VAR):
-    '''
-    Calculate key risk metrics from an Event Loss Table (ELT), including 
-    Average Annual Loss (AAL), Value-at-Risk (VaR), and Tail Value-at-Risk (TVaR).
-
-    Parameters
-    ----------
-    ELT : pandas.DataFrame
-        Event Loss Table containing at least the following columns:
-        - 'L'   : Loss for each event
-        - 'lbd' : Event rate (lambda) for each event
-    q_VAR : float
-        Confidence level for Value-at-Risk (e.g., 0.95 for 95% VaR)
-
-    Returns
-    -------
-    ELT : pandas.DataFrame
-        Input ELT augmented with cumulative event frequency ('EF') and 
-        exceedance probability ('EP') columns.
-    AAL : float
-        Average Annual Loss, computed as the sum of lbd * L (Mignan, 2024:eq. 3.18).
-    VaRq_interp : float
-        Interpolated Value-at-Risk at the given confidence level.
-    TVaRq_interp : float
-        Interpolated Tail Value-at-Risk at the given confidence level.
-    VaRq : float
-        Discrete VaR from the ELT.
-    TVaRq : float
-        Discrete TVaR from the ELT.
-    '''
-    AAL = np.sum(ELT['lbd'] * ELT['L'])                   # Mignan (2024:eq. 3.18)
-    ELT = ELT.sort_values(by = 'L', ascending = False)    # losses in descending order
-    EFi, EPi = calc_EP(ELT['lbd'].values)
-    ELT['EF'], ELT['EP'] = [EFi, EPi]
-    # VaR_q and TVaR_q
-    p = 1 - q_VAR
-    ELT_asc = ELT.sort_values(by = 'L')                    # losses in ascending order
-    VaRq = ELT_asc['L'][ELT_asc['EP'] < p].iloc[0]         # Mignan (2024:eq. 3.23)
-    TVaRq = np.sum(ELT_asc['L'][ELT_asc['L'] > VaRq]) / len(ELT_asc['L'][ELT_asc['L'] > VaRq])   # derived from Mignan (2024:eq. 3.24)
-
-    L_hires = 10**np.linspace(np.log10(ELT_asc['L'].min()+1e-6), np.log10(ELT_asc['L'].max()), num = 1000)
-    EP_hires = np.interp(L_hires, ELT_asc['L'], ELT_asc['EP'])
-    VaRq_interp = L_hires[EP_hires < p][0]
-    TVaRq_interp = np.sum(L_hires[L_hires > VaRq_interp]) / len(L_hires[L_hires > VaRq_interp])
-
-    return ELT, AAL, VaRq_interp, TVaRq_interp, VaRq, TVaRq
 
 
 

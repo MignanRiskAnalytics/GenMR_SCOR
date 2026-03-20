@@ -20,8 +20,8 @@ Layers and Related Objects (v1.1.2)
 -----------------------------------
 * **Atmosphere**
   - properties: freezing level, tropopause
-* **Energy infrastructures** - includes point CIs (refinery, hydrodam placeholder, wind farm, thermal plant) & power grid
-  - properties: TO ADD (energy output)
+* **Energy infrastructures**
+  - properties: point CIs (refinery, hydrodam placeholder, wind farm, thermal plant), power grid (graph + power supply)
 
 Planned Additions (v1.1.2)
 ---------------------------
@@ -29,7 +29,7 @@ Planned Additions (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-03-19
+:Date: 2026-03-20
 :License: AGPL-3
 """
 
@@ -2760,7 +2760,7 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
 
     ## ENERGY LAYER ##
     if envLayer.ID == 'energy':
-        if attr == 'powergrid':
+        if attr == 'powergrid' or attr == 'powergrid_wID':
             powergrid, node_names, node_coords, _ = envLayer.powergrid
             L_nodes = [i for i, name in node_names.items() if name.startswith('L')]
             S_nodes = [i for i, name in node_names.items() if name.startswith('S')]
@@ -2777,6 +2777,9 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
                 x = [node_coords[i,0], node_coords[j,0]]
                 y = [node_coords[i,1], node_coords[j,1]]
                 ax.plot(x, y, color='black', linewidth=0.5)
+            if attr == 'powergrid_wID':
+                for i, (x, y) in enumerate(node_coords):
+                    ax.text(x + 1, y + 1, node_names[i], fontsize=4, zorder=3)
             ax.set_xlabel('$x$ (km)')
             ax.set_ylabel('$y$ (km)')
             ax.set_title('ENERGY INFRASTRUCTURE', size = 14, pad = 20)
