@@ -2671,7 +2671,7 @@ def gen_BO_cascade(A_dmg, names, generators, load_nodes, betweenness_intact, tol
     return blackout, g
 
 
-def compute_node_supply(g, node_names, generators, load_nodes, par):
+def compute_node_supply(g, node_names, generators, load_nodes, BO_loads, par):
     '''
     Compute per-node power supply for each load in the network, e.g., after a blackout.
 
@@ -2712,18 +2712,22 @@ def compute_node_supply(g, node_names, generators, load_nodes, par):
         nodes = g.vs[comp]["name"]
 
         gens = [n for n in nodes if n in generators]
+        phys_gens = set(n.split('_')[0] for n in gens)
+
         loads = [n for n in nodes if n in load_nodes]
+        online_loads = loads   #[l for l in loads if l not in BO_loads]
+                               # not needed since BO_loads make for individual components
 
         if len(loads) == 0:
             continue
         if len(gens) == 0:
             power_per_load = 0.
         else:
-            power_total = len(gens) / par['powergrid_redundanciesGS'] * par['powergrid_power_perGnode_MW']
-            power_per_load = power_total / len(loads)
+            power_total = len(phys_gens) * par['powergrid_power_perGnode_MW']
+            power_per_load = power_total / len(online_loads)
 
         # assign computed power to each load node in this component
-        for n in loads:
+        for n in online_loads:
             idx = node_names_list.index(n)
             node_supply[idx] = power_per_load
 
@@ -2806,7 +2810,7 @@ def run_BO(energyLayer, par, failed_nodes, failed_lines):
     g_dmg = ig.Graph.Adjacency(A_dmg, mode = "undirected")
     
     BO_loads, g_BO = gen_BO_cascade(A_dmg, node_names_list, generators, load_nodes, edge_bw_flowproxy, par['tolerance'])
-    BO_node_supply = compute_node_supply(g_BO, node_names, generators, load_nodes, energyLayer.par)
+    BO_node_supply = compute_node_supply(g_BO, node_names, generators, load_nodes, BO_loads, energyLayer.par)
 
     return BO_loads, g_BO, g_dmg, g, BO_node_supply
 
