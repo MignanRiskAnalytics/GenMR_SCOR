@@ -101,10 +101,15 @@
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energyCI.CI_refinery"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.CI_refinery</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energyCI.CI_thermalplant"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.CI_thermalplant</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energyCI.CI_windfarm"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.CI_windfarm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energyCI.connect_generators_substations"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.connect_generators_substations()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energyCI.downscale_layers4powergrid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.downscale_layers4powergrid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energyCI.gen_loadnodes"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.gen_loadnodes()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energyCI.gen_powergrid_1line_G2S"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.gen_powergrid_1line_G2S()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energyCI.gen_urbangrid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.gen_urbangrid()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energyCI.get_windfarm_mask"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.get_windfarm_mask()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energyCI.powergrid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.powergrid</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energyCI.powergrid_nlines_G2S"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.powergrid_nlines_G2S</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energyCI.powergrid_nlines_G2S_OLD"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.powergrid_nlines_G2S_OLD</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_natLand"><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand</span></code></a><ul>
@@ -347,15 +352,19 @@
 <li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#environmental-layer-properties">2.3. Environmental layer properties</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#socio-economic-environment-generation">3. Socio-economic environment generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#socio-economic-environment-generation">3. Socio-economic environment generation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#generating-the-economic-layer">3.1. Generating the economic layer</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#references">References</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#appendix">Appendix</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#a-attributes-properties-of-environmental-layers">A. Attributes &amp; properties of environmental layers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#a-variables-properties-of-environmental-layers">A. Variables &amp; properties of environmental layers</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#a-1-a-note-on-environmental-layer-downscaling">A.1 A note on environmental layer downscaling</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#b-underlying-physical-processes">B. Underlying physical processes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#b-1-atmospheric-layer-temperature">B.1. Atmospheric layer: Temperature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#b-2-energy-ci-layer-power-grid">B.2. Energy CI layer: Power grid</a></li>
 </ul>
 </li>
 </ul>
@@ -394,6 +403,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#c-2-tornado-case">C.2. Tornado case</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c-3-heatwave-case-threshold-model">C.3. Heatwave case (threshold model)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c-4-pest-infestation-case">C.4. Pest infestation case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c-5-blackout-case">C.5. Blackout case</a></li>
 </ul>
 </li>
 </ul>
@@ -430,7 +440,7 @@
 <h1>Tutorial 2: Implementing perils in the GenMR digital template<a class="headerlink" href="#tutorial-2-implementing-perils-in-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 1.1.2<br />
-<strong>Last Updated:</strong> 2026-03-09<br />
+<strong>Last Updated:</strong> 2026-03-20<br />
 <strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
 <p>Once a virtual environment has been generated (see previous tutorial), stochastic events are modelled to populate it. Table 1 lists the perils included in version 1.1.2 (the ones still missing to be included by June 2026).</p>
 <br>
@@ -612,11 +622,11 @@
 </tr>
 <tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">BO</span></code></p></td>
 <td class="text-left"><p>Blackout</p></td>
-<td class="text-left"><p>Secondary (to <code class="docutils literal notranslate"><span class="pre">dg</span></code>)</p></td>
+<td class="text-left"><p>Secondary (to <code class="docutils literal notranslate"><span class="pre">dg</span></code>, invisible<span class="math notranslate nohighlight">\(^*\)</span>)</p></td>
 <td class="text-left"><p>Diffuse (network)</p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p></p></td>
+<td class="text-left"><p>Power loss (MW)</p></td>
+<td class="text-left"><p>Threshold</p></td>
+<td class="text-left"><p>Power loss (MW)</p></td>
 <td class="text-left"><p><span style="color: orange">ONGOING<span></p></td>
 </tr>
 <tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">Ex</span></code></p></td>
@@ -707,12 +717,15 @@
 <span class="n">urbLandLayer</span> <span class="o">=</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">load_pickle2class</span><span class="p">(</span><span class="s1">&#39;/io/&#39;</span> <span class="o">+</span> <span class="n">file_urbLandLayer</span><span class="p">)</span>
 <span class="n">energyLayer</span> <span class="o">=</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">load_pickle2class</span><span class="p">(</span><span class="s1">&#39;/io/&#39;</span> <span class="o">+</span> <span class="n">file_energyLayer</span><span class="p">)</span>
 
-<span class="n">GenMR_env</span><span class="o">.</span><span class="n">plot_EnvLayers</span><span class="p">([</span><span class="n">topoLayer</span><span class="p">,</span> <span class="n">atmoLayer</span><span class="p">,</span> <span class="n">soilLayer</span><span class="p">,</span> <span class="n">urbLandLayer</span><span class="p">],</span> <span class="n">file_ext</span> <span class="o">=</span> <span class="s1">&#39;jpg&#39;</span><span class="p">)</span>
+<span class="n">GenMR_env</span><span class="o">.</span><span class="n">plot_EnvLayers</span><span class="p">([</span><span class="n">topoLayer</span><span class="p">,</span> <span class="n">atmoLayer</span><span class="p">,</span> <span class="n">soilLayer</span><span class="p">,</span> <span class="n">urbLandLayer</span><span class="p">,</span> <span class="n">energyLayer</span><span class="p">],</span> <span class="n">file_ext</span> <span class="o">=</span> <span class="s1">&#39;jpg&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/efaf52b2911cbc81c0ae3e0ffb57f27d9b05ccd3c8a95cedc848b7b4f4de0334.png" src="../_images/efaf52b2911cbc81c0ae3e0ffb57f27d9b05ccd3c8a95cedc848b7b4f4de0334.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Power grid fully connected: True
+</pre></div>
+</div>
+<img alt="../_images/570213c32b51340eb541dd3bb0029a976a9e505d982f5a34ab99559cb588122b.png" src="../_images/570213c32b51340eb541dd3bb0029a976a9e505d982f5a34ab99559cb588122b.png" />
 </div>
 </div>
 <p>Note that the configuration of the digital template environment may be changed through Tutorial 1.</p>
@@ -725,12 +738,14 @@
 <p><strong>WARNING:</strong> Only perils listed in <code class="docutils literal notranslate"><span class="pre">src.par['perils']</span></code> will be modelled. The following perils require long computation times (minutes to tens of minutes on the first run; subsequent runs load from cache): <code class="docutils literal notranslate"><span class="pre">Ex</span></code>, <code class="docutils literal notranslate"><span class="pre">FF</span></code>, <code class="docutils literal notranslate"><span class="pre">HW</span></code>, <code class="docutils literal notranslate"><span class="pre">LS</span></code>, <code class="docutils literal notranslate"><span class="pre">WF</span></code></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;perils&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;AI&#39;</span><span class="p">,</span><span class="s1">&#39;Dr&#39;</span><span class="p">,</span><span class="s1">&#39;EQ&#39;</span><span class="p">,</span><span class="s1">&#39;HW&#39;</span><span class="p">,</span><span class="s1">&#39;PI&#39;</span><span class="p">,</span><span class="s1">&#39;RS&#39;</span><span class="p">,</span><span class="s1">&#39;TC&#39;</span><span class="p">,</span><span class="s1">&#39;To&#39;</span><span class="p">,</span><span class="s1">&#39;VE&#39;</span><span class="p">,</span><span class="s1">&#39;WF&#39;</span><span class="p">,</span><span class="s1">&#39;WS&#39;</span><span class="p">,</span>  <span class="s1">&#39;CS&#39;</span><span class="p">,</span>  <span class="s1">&#39;Ex&#39;</span><span class="p">,</span><span class="s1">&#39;FF&#39;</span><span class="p">,</span><span class="s1">&#39;Li&#39;</span><span class="p">,</span><span class="s1">&#39;LS&#39;</span><span class="p">,</span><span class="s1">&#39;SS&#39;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;perils&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;AI&#39;</span><span class="p">,</span><span class="s1">&#39;Dr&#39;</span><span class="p">,</span><span class="s1">&#39;EQ&#39;</span><span class="p">,</span><span class="s1">&#39;HW&#39;</span><span class="p">,</span><span class="s1">&#39;PI&#39;</span><span class="p">,</span><span class="s1">&#39;RS&#39;</span><span class="p">,</span><span class="s1">&#39;TC&#39;</span><span class="p">,</span><span class="s1">&#39;To&#39;</span><span class="p">,</span><span class="s1">&#39;VE&#39;</span><span class="p">,</span><span class="s1">&#39;WF&#39;</span><span class="p">,</span><span class="s1">&#39;WS&#39;</span><span class="p">,</span>        <span class="c1"># primary</span>
+                     <span class="s1">&#39;CS&#39;</span><span class="p">,</span>                                                          <span class="c1"># special</span>
+                     <span class="s1">&#39;BO&#39;</span><span class="p">,</span><span class="s1">&#39;Ex&#39;</span><span class="p">,</span><span class="s1">&#39;FF&#39;</span><span class="p">,</span><span class="s1">&#39;Li&#39;</span><span class="p">,</span><span class="s1">&#39;LS&#39;</span><span class="p">,</span><span class="s1">&#39;SS&#39;</span><span class="p">]</span>                                 <span class="c1"># secondary</span>
                     <span class="c1"># IMPORTANT: primary perils come first in src.par[&#39;perils&#39;]</span>
-                    <span class="c1"># since &#39;CS&#39; depends of &#39;To&#39;, must be listed after &#39;To&#39; (i.e., CS=special peril)</span>
+                    <span class="c1"># NB: since &#39;CS&#39; depends of &#39;To&#39;, must be listed after &#39;To&#39; (i.e., CS=special peril)</span>
 
 
-<span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;rdm_seed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">42</span>      <span class="c1"># None or integer (for stochastic sources: AI, TC)</span>
+<span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;rdm_seed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">42</span>                          <span class="c1"># None or integer (for stochastic sources: AI, TC)</span>
 <span class="k">if</span> <span class="s1">&#39;To&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;perils&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="s1">&#39;CS&#39;</span> <span class="ow">in</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;perils&#39;</span><span class="p">]:</span>
     <span class="c1"># convective storm char. depend on tornado char.</span>
     <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;perils&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;CS&#39;</span><span class="p">)</span>
@@ -796,9 +811,10 @@
                                                   <span class="c1"># constant vmax for all (x,y) reasonable because grid small</span>
 
 <span class="c1">## TECHNOLOGICAL ##</span>
+<span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;BO&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;power grid&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;tolerance&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>                  <span class="c1"># tolerance to overload (≥ 0)</span>
 <span class="n">CI_x</span><span class="p">,</span> <span class="n">CI_y</span> <span class="o">=</span> <span class="n">energyLayer</span><span class="o">.</span><span class="n">CI_refinery</span><span class="o">.</span><span class="n">centroid</span>
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;Ex&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;refinery&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">CI_x</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="n">CI_y</span><span class="p">}</span>  <span class="c1"># harbor refinery as source of explosions</span>
-<span class="c1"># blackout to add...</span>
 
 <span class="c1">## SOCIO-ECONOMIC ##</span>
 <span class="c1"># to add...</span>
@@ -808,7 +824,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/33b8fe0f31edff38a25b2b900901d11e76026a3e0075286d2137ed2431340f43.png" src="../_images/33b8fe0f31edff38a25b2b900901d11e76026a3e0075286d2137ed2431340f43.png" />
+<img alt="../_images/b389fc8b50fc71e857ca2b346aa7ed8e95ff6cea1b361c1437204975f84b68fb.png" src="../_images/b389fc8b50fc71e857ca2b346aa7ed8e95ff6cea1b361c1437204975f84b68fb.png" />
 </div>
 </div>
 <p><strong>NOTE:</strong> Hazard intensity footprints are modeled based on the sources shown in the map above. For stochastic sources (<code class="docutils literal notranslate"><span class="pre">AI</span></code>, <code class="docutils literal notranslate"><span class="pre">TC</span></code>, <code class="docutils literal notranslate"><span class="pre">To</span></code>), rerunning the previous cell will produce different configurations unless <code class="docutils literal notranslate"><span class="pre">rdm_seed</span></code> is fixed. For <code class="docutils literal notranslate"><span class="pre">To</span></code>, the full stochastic source (line) can only be parameterised in <code class="docutils literal notranslate"><span class="pre">EventSetGenerator()</span></code> since its length depends on the event size distribution.</p>
@@ -832,6 +848,7 @@
 <p><strong>NOTE 2:</strong> A floating rupture approach is used to generate earthquake ruptures on existing fault segments. See Appendix B to visualise the stochastic ruptures created by running the next cell, and refer to the Reference Manual for details on the method.</p>
 <p><strong>NOTE 3:</strong> The number of stochastic events is set equal to the number of sources when the sources themselves are stochastic (i.e., <code class="docutils literal notranslate"><span class="pre">AI</span></code>, <code class="docutils literal notranslate"><span class="pre">TC</span></code>). This number is kep very low for illustration purposes.</p>
 <p><strong>NOTE 4:</strong> The rate of heatwaves (<code class="docutils literal notranslate"><span class="pre">HW</span></code>) and of pest infestations (<code class="docutils literal notranslate"><span class="pre">PI</span></code>) is computed jointly with the generation of their intensity footprints, as their occurrence is governed by extremes in a stochastic spatiotemporal temperature field constrained by the atmospheric environmental layer.</p>
+<p><strong>NOTE 5:</strong> See Appendix C5 for the blackout (<code class="docutils literal notranslate"><span class="pre">BO</span></code>) case since it is a secondary invisible peril, which behaviour depends on the stochastic distribution of element failures.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">EQ_Mmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">EQ_char</span><span class="p">[</span><span class="s1">&#39;srcMmax&#39;</span><span class="p">])</span>
@@ -4694,6 +4711,366 @@ In anticyclone regime, drought duration = 7 months in stressed soil water condit
 </div>
 <div class="cell_output docutils container">
 <img alt="../_images/4654e49a972d9efa28de513a5e31561f0fe09b67b649333d83d81626bbb50020.png" src="../_images/4654e49a972d9efa28de513a5e31561f0fe09b67b649333d83d81626bbb50020.png" />
+</div>
+</div>
+</section>
+<section id="c-5-blackout-case">
+<h4>C.5. Blackout case<a class="headerlink" href="#c-5-blackout-case" title="Link to this heading"></a></h4>
+<p>Since blackouts (<code class="docutils literal notranslate"><span class="pre">BO</span></code>) are an invisible secondary peril, they do not enter the simple hazard-to-damage footprint process developed in this tutorial. The model is therefore demonstrated in this appendix and will be appied in Tutorial 3 where damage to the power grid will be due by other perils and consequences will be business interruption.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">igraph</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ig</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">remove_line</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
+    <span class="n">A2</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">A2</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1"># remove mirror if exists (distribution link)</span>
+    <span class="k">if</span> <span class="n">A2</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">A2</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">A2</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">remove_line_by_name</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">name_i</span><span class="p">,</span> <span class="n">name_j</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">name_i</span><span class="p">)</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">name_j</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">remove_line</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">remove_nodes</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">nodes_to_remove</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Remove nodes by name from adjacency matrix A.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    A : np.ndarray</span>
+<span class="sd">        Adjacency matrix (n×n)</span>
+<span class="sd">    nodes_to_remove : list of str</span>
+<span class="sd">        Node names to remove</span>
+<span class="sd">    names : list of str</span>
+<span class="sd">        Node names corresponding to rows/columns of A</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    A2 : np.ndarray</span>
+<span class="sd">        Copy of A with specified nodes removed</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">A2</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="c1"># Map node names to indices</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes_to_remove</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
+        <span class="n">A2</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">A2</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">A2</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">gen_BO_cascade_OLD</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">generators</span><span class="p">,</span> <span class="n">load_nodes</span><span class="p">,</span> <span class="n">betweenness_intact</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">ig</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">Adjacency</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">names</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s2">&quot;capacity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tolerance</span><span class="p">)</span> <span class="o">*</span> <span class="n">betweenness_intact</span>
+    
+    <span class="n">step</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">edge_bw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">edge_betweenness</span><span class="p">())</span>
+
+        <span class="n">failed_edges</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">index</span> <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">bw</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">,</span> <span class="n">edge_bw</span><span class="p">)</span> <span class="k">if</span> <span class="n">bw</span> <span class="o">&gt;</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;capacity&quot;</span><span class="p">]]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">failed_edges</span><span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">failed_edge_names</span> <span class="o">=</span> <span class="p">[(</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">source</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">target</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">])</span> 
+                             <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">failed_edges</span><span class="p">)]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;cascade step&quot;</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="s2">&quot;failing edges:&quot;</span><span class="p">,</span> <span class="n">failed_edge_names</span><span class="p">)</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">delete_edges</span><span class="p">(</span><span class="n">failed_edges</span><span class="p">)</span>
+    
+    <span class="n">reachable</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">gen</span> <span class="ow">in</span> <span class="n">generators</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">gen</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">gen</span><span class="p">)</span><span class="o">.</span><span class="n">index</span>
+            <span class="n">comp</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">subcomponent</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;out&quot;</span><span class="p">)</span>
+            <span class="n">reachable</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">comp</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+    <span class="n">blackout</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">load_nodes</span> <span class="k">if</span> <span class="n">l</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">reachable</span><span class="p">]</span>
+    
+    <span class="k">return</span> <span class="n">blackout</span><span class="p">,</span> <span class="n">g</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">gen_BO_cascade</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">generators</span><span class="p">,</span> <span class="n">load_nodes</span><span class="p">,</span> <span class="n">betweenness_intact</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">ig</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">Adjacency</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">names</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s2">&quot;capacity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tolerance</span><span class="p">)</span> <span class="o">*</span> <span class="n">betweenness_intact</span>
+
+    <span class="n">remaining_generators</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">gen</span> <span class="ow">in</span> <span class="n">generators</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">gen</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">gen</span><span class="p">)</span><span class="o">.</span><span class="n">index</span>
+            <span class="k">if</span> <span class="n">g</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">remaining_generators</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gen</span><span class="p">)</span>
+
+    <span class="n">step</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">edge_bw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">edge_betweenness</span><span class="p">())</span>
+
+        <span class="n">failed_edges</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">index</span> <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">bw</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">,</span> <span class="n">edge_bw</span><span class="p">)</span> <span class="k">if</span> <span class="n">bw</span> <span class="o">&gt;</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;capacity&quot;</span><span class="p">]]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">failed_edges</span><span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">failed_edge_names</span> <span class="o">=</span> <span class="p">[(</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">source</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">target</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">])</span> 
+                             <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">failed_edges</span><span class="p">)]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;cascade step&quot;</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="s2">&quot;failing edges:&quot;</span><span class="p">,</span> <span class="n">failed_edge_names</span><span class="p">)</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">delete_edges</span><span class="p">(</span><span class="n">failed_edges</span><span class="p">)</span>
+    
+    <span class="n">reachable</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">gen</span> <span class="ow">in</span> <span class="n">remaining_generators</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">gen</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">gen</span><span class="p">)</span><span class="o">.</span><span class="n">index</span>
+            <span class="n">comp</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">subcomponent</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;out&quot;</span><span class="p">)</span>
+            <span class="n">reachable</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">comp</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+    <span class="n">blackout</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">load_nodes</span> <span class="k">if</span> <span class="n">l</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">reachable</span><span class="p">]</span>
+    
+    <span class="k">return</span> <span class="n">blackout</span><span class="p">,</span> <span class="n">g</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_edge_width</span><span class="p">(</span><span class="n">edge_bw</span><span class="p">,</span> <span class="n">wmin</span> <span class="o">=</span> <span class="mf">.5</span><span class="p">,</span> <span class="n">wmax</span> <span class="o">=</span> <span class="mf">5.</span><span class="p">):</span>
+    <span class="n">edge_bw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">edge_bw</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wmin</span> <span class="o">+</span> <span class="p">(</span><span class="n">edge_bw</span> <span class="o">-</span> <span class="n">edge_bw</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">/</span> <span class="p">(</span><span class="n">edge_bw</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">edge_bw</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">*</span> <span class="p">(</span><span class="n">wmax</span> <span class="o">-</span> <span class="n">wmin</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># power grid from the energy infrastructure layer</span>
+<span class="n">powergrid</span><span class="p">,</span> <span class="n">node_names</span><span class="p">,</span> <span class="n">node_coords</span> <span class="o">=</span> <span class="n">energyLayer</span><span class="o">.</span><span class="n">powergrid</span>
+<span class="n">L_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">node_names</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;L&#39;</span><span class="p">)]</span>
+<span class="n">S_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">node_names</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;S&#39;</span><span class="p">)]</span>
+<span class="n">G_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">node_names</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;G&#39;</span><span class="p">)]</span>
+<span class="n">node_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">node_coords</span><span class="p">)</span>
+<span class="n">L_coords</span> <span class="o">=</span> <span class="n">node_coords</span><span class="p">[</span><span class="n">L_nodes</span><span class="p">]</span>
+<span class="n">S_coords</span> <span class="o">=</span> <span class="n">node_coords</span><span class="p">[</span><span class="n">S_nodes</span><span class="p">]</span>
+<span class="n">G_coords</span> <span class="o">=</span> <span class="n">node_coords</span><span class="p">[</span><span class="n">G_nodes</span><span class="p">]</span>
+<span class="n">edges</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">powergrid</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
+
+
+<span class="c1"># reformatting for BO modelling</span>
+<span class="n">node_names_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">node_names</span><span class="p">))]</span>
+<span class="n">generators</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">G_nodes</span><span class="p">]</span>
+<span class="n">load_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">L_nodes</span><span class="p">]</span>
+<span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_names_list</span><span class="p">)</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+    <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">A</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> 
+<span class="n">g</span> <span class="o">=</span> <span class="n">ig</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">Adjacency</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_names_list</span>
+<span class="n">edge_bw_flowproxy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">edge_betweenness</span><span class="p">())</span>
+
+<span class="c1"># BO scenarios</span>
+<span class="n">tolerance</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="c1">#failed_nodes = [&#39;Gdam_1&#39;, &#39;Gdam_2&#39;, &#39;Gdam_3&#39;,</span>
+<span class="c1">#                &#39;Gth_1&#39;, &#39;Gth_2&#39;, &#39;Gth_3&#39;,</span>
+<span class="c1">#                &#39;Gwf_1&#39;, &#39;Gwf_2&#39;, &#39;Gwf_3&#39;]</span>
+<span class="n">failed_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L35&#39;</span><span class="p">]</span>
+<span class="n">failed_lines</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;L9&#39;</span><span class="p">,</span> <span class="s1">&#39;L13&#39;</span><span class="p">)]</span>  <span class="c1">#, (&#39;L10&#39;, &#39;L11&#39;)]</span>
+
+<span class="n">A_dmg</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">A_dmg</span> <span class="o">=</span> <span class="n">remove_nodes</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">failed_nodes</span><span class="p">,</span> <span class="n">node_names_list</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span> <span class="ow">in</span> <span class="n">failed_lines</span><span class="p">:</span>
+    <span class="n">A_dmg</span> <span class="o">=</span> <span class="n">remove_line_by_name</span><span class="p">(</span><span class="n">A_dmg</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">node_names_list</span><span class="p">)</span>
+
+
+<span class="n">g_dmg</span> <span class="o">=</span> <span class="n">ig</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">Adjacency</span><span class="p">(</span><span class="n">A_dmg</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;undirected&quot;</span><span class="p">)</span>
+<span class="n">blackout_loads</span><span class="p">,</span> <span class="n">g_BO</span> <span class="o">=</span> <span class="n">gen_BO_cascade</span><span class="p">(</span><span class="n">A_dmg</span><span class="p">,</span> <span class="n">node_names_list</span><span class="p">,</span> <span class="n">generators</span><span class="p">,</span> <span class="n">load_nodes</span><span class="p">,</span> <span class="n">edge_bw_flowproxy</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">)</span>
+<span class="n">A_BO</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">g_BO</span><span class="o">.</span><span class="n">get_adjacency</span><span class="p">()</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final blackout loads:&quot;</span><span class="p">,</span> <span class="n">blackout_loads</span><span class="p">)</span>
+
+
+
+
+
+<span class="c1">## plotting BO footprint</span>
+<span class="n">node_s</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">eps</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">xmin_BO</span><span class="p">,</span> <span class="n">xmax_BO</span> <span class="o">=</span> <span class="n">node_coords</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">-</span><span class="n">eps</span><span class="p">,</span> <span class="n">node_coords</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">+</span><span class="n">eps</span>
+<span class="n">ymin_BO</span><span class="p">,</span> <span class="n">ymax_BO</span> <span class="o">=</span> <span class="n">node_coords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">-</span><span class="n">eps</span><span class="p">,</span> <span class="n">node_coords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">+</span><span class="n">eps</span>
+
+<span class="n">edge_w</span> <span class="o">=</span> <span class="n">get_edge_width</span><span class="p">(</span><span class="n">edge_bw_flowproxy</span><span class="p">)</span>
+<span class="n">edge_list</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">get_edgelist</span><span class="p">()</span>
+<span class="n">map_edge2width</span> <span class="o">=</span> <span class="p">{</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">e</span><span class="p">)):</span> <span class="n">w</span> <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">edge_list</span><span class="p">,</span> <span class="n">edge_w</span><span class="p">)}</span>
+
+
+<span class="c1"># damaged network</span>
+<span class="n">edge_colors_dmg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;grey&#39;</span> <span class="k">if</span> <span class="n">A_dmg</span><span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">==</span><span class="mi">1</span> <span class="k">else</span> <span class="s1">&#39;red&#39;</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">])</span>
+<span class="n">node_colors_dmg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;red&#39;</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">failed_nodes</span> <span class="k">else</span> <span class="s1">&#39;grey&#39;</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">node_names_list</span><span class="p">])</span>
+
+<span class="c1"># blackout</span>
+<span class="n">reachable_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">gen</span> <span class="ow">in</span> <span class="n">generators</span><span class="p">:</span>  <span class="c1"># list of generator names</span>
+    <span class="k">if</span> <span class="n">gen</span> <span class="ow">in</span> <span class="n">g_BO</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]:</span>
+        <span class="n">gen_idx</span> <span class="o">=</span> <span class="n">g_BO</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">gen</span><span class="p">)</span><span class="o">.</span><span class="n">index</span>
+        <span class="n">reachable</span> <span class="o">=</span> <span class="n">g_BO</span><span class="o">.</span><span class="n">subcomponent</span><span class="p">(</span><span class="n">gen_idx</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;out&quot;</span><span class="p">)</span>
+        <span class="n">reachable_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">g_BO</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">reachable</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+
+<span class="n">node_colors_bo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;black&#39;</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">reachable_names</span> <span class="k">else</span> <span class="s1">&#39;green&#39;</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">g_BO</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]])</span>
+<span class="n">node_colors_bo</span><span class="p">[</span><span class="n">node_colors_dmg</span> <span class="o">==</span> <span class="s1">&#39;red&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;red&#39;</span>
+
+<span class="n">A_BO</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">g_BO</span><span class="o">.</span><span class="n">get_adjacency</span><span class="p">()</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="n">edge_colors_bo</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">src</span><span class="p">,</span> <span class="n">tgt</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+    <span class="n">src_name</span> <span class="o">=</span> <span class="n">g_BO</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">src</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+    <span class="n">tgt_name</span> <span class="o">=</span> <span class="n">g_BO</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">tgt</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">edge_colors_dmg</span><span class="p">[</span><span class="n">edges</span><span class="o">.</span><span class="n">index</span><span class="p">((</span><span class="n">src</span><span class="p">,</span><span class="n">tgt</span><span class="p">))]</span> <span class="o">==</span> <span class="s1">&#39;red&#39;</span><span class="p">:</span>
+        <span class="n">edge_colors_bo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">A_BO</span><span class="p">[</span><span class="n">src</span><span class="p">,</span> <span class="n">tgt</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">src_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">reachable_names</span> <span class="ow">or</span> <span class="n">tgt_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">reachable_names</span><span class="p">:</span>
+            <span class="n">edge_colors_bo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">edge_colors_bo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;green&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">edge_colors_bo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;darkred&#39;</span><span class="p">)</span>
+
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;16&#39;</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">14</span><span class="p">))</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">ls</span><span class="o">.</span><span class="n">hillshade</span><span class="p">(</span><span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">vert_exag</span><span class="o">=</span><span class="mf">.1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.1</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">L_coords</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">L_coords</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">node_s</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Load&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">S_coords</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">S_coords</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;bs&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Substation&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">G_coords</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">G_coords</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;r*&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Generator&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">ii</span><span class="p">,</span><span class="n">jj</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_coords</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">node_coords</span><span class="p">[</span><span class="n">jj</span><span class="p">,</span><span class="mi">0</span><span class="p">]]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_coords</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">node_coords</span><span class="p">[</span><span class="n">jj</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Physical power grid&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">14</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin_BO</span><span class="p">,</span> <span class="n">xmax_BO</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymin_BO</span><span class="p">,</span> <span class="n">ymax_BO</span><span class="p">)</span>
+
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">ls</span><span class="o">.</span><span class="n">hillshade</span><span class="p">(</span><span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">vert_exag</span><span class="o">=</span><span class="mf">.1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.1</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">ii</span><span class="p">,</span> <span class="n">jj</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_coords</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">node_coords</span><span class="p">[</span><span class="n">jj</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_coords</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">node_coords</span><span class="p">[</span><span class="n">jj</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">((</span><span class="n">ii</span><span class="p">,</span> <span class="n">jj</span><span class="p">)))</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="n">map_edge2width</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="mf">.5</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">node_coords</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">node_coords</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">node_s</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">node_coords</span><span class="p">):</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">node_names</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Operational power grid&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">14</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin_BO</span><span class="p">,</span> <span class="n">xmax_BO</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymin_BO</span><span class="p">,</span> <span class="n">ymax_BO</span><span class="p">)</span>
+
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">ls</span><span class="o">.</span><span class="n">hillshade</span><span class="p">(</span><span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">vert_exag</span><span class="o">=</span><span class="mf">.1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.1</span><span class="p">)</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">tgt</span><span class="p">),</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">edge_colors_dmg</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_coords</span><span class="p">[</span><span class="n">src</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">node_coords</span><span class="p">[</span><span class="n">tgt</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_coords</span><span class="p">[</span><span class="n">src</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">node_coords</span><span class="p">[</span><span class="n">tgt</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">removed_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">n</span> <span class="ow">in</span> <span class="n">failed_nodes</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">node_names_list</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">node_coords</span><span class="p">[</span><span class="o">~</span><span class="n">removed_mask</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">node_coords</span><span class="p">[</span><span class="o">~</span><span class="n">removed_mask</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">node_s</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">node_coords</span><span class="p">[</span><span class="n">removed_mask</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">node_coords</span><span class="p">[</span><span class="n">removed_mask</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">node_s</span><span class="p">,</span> \
+                <span class="n">label</span><span class="o">=</span><span class="s1">&#39;failed&#39;</span><span class="p">,</span> <span class="n">zorder</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Exogenic damage&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">14</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin_BO</span><span class="p">,</span> <span class="n">xmax_BO</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymin_BO</span><span class="p">,</span> <span class="n">ymax_BO</span><span class="p">)</span>
+
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">ls</span><span class="o">.</span><span class="n">hillshade</span><span class="p">(</span><span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">vert_exag</span><span class="o">=</span><span class="mf">.1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.1</span><span class="p">)</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">tgt</span><span class="p">),</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">edge_colors_bo</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_coords</span><span class="p">[</span><span class="n">src</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">node_coords</span><span class="p">[</span><span class="n">tgt</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_coords</span><span class="p">[</span><span class="n">src</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">node_coords</span><span class="p">[</span><span class="n">tgt</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">node_coords</span><span class="p">,</span> <span class="n">node_colors_bo</span><span class="p">):</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">node_s</span><span class="p">,</span> <span class="n">zorder</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Blackout footprint&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">14</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin_BO</span><span class="p">,</span> <span class="n">xmax_BO</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymin_BO</span><span class="p">,</span> <span class="n">ymax_BO</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;fig_debugging_BO.jpg&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>cascade step 1 failing edges: [(&#39;L14&#39;, &#39;L20&#39;), (&#39;L16&#39;, &#39;L22&#39;), (&#39;L18&#39;, &#39;L19&#39;), (&#39;L18&#39;, &#39;S9&#39;), (&#39;L20&#39;, &#39;L26&#39;), (&#39;L22&#39;, &#39;L27&#39;), (&#39;L25&#39;, &#39;L26&#39;), (&#39;L29&#39;, &#39;S8&#39;), (&#39;L34&#39;, &#39;L36&#39;), (&#39;L36&#39;, &#39;S2&#39;), (&#39;L36&#39;, &#39;S3&#39;), (&#39;S1&#39;, &#39;T31&#39;), (&#39;S2&#39;, &#39;T63&#39;), (&#39;S3&#39;, &#39;T95&#39;), (&#39;S7&#39;, &#39;T122&#39;), (&#39;S8&#39;, &#39;T145&#39;), (&#39;S9&#39;, &#39;T175&#39;), (&#39;T3&#39;, &#39;T4&#39;)]
+Final blackout loads: [&#39;L22&#39;, &#39;L26&#39;, &#39;L27&#39;, &#39;L29&#39;, &#39;L30&#39;, &#39;L31&#39;, &#39;L33&#39;, &#39;L34&#39;, &#39;L35&#39;, &#39;L36&#39;, &#39;L37&#39;, &#39;L38&#39;, &#39;L39&#39;, &#39;L40&#39;, &#39;L41&#39;]
+</pre></div>
+</div>
+<img alt="../_images/a0e86483b91d672e1390a9495cdd9c9f301c796c910820624c0298c1f4090ce4.png" src="../_images/a0e86483b91d672e1390a9495cdd9c9f301c796c910820624c0298c1f4090ce4.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P_per_generator</span> <span class="o">=</span> <span class="mi">300</span>
+<span class="n">g_test</span> <span class="o">=</span> <span class="n">g_BO</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<span class="n">components</span> <span class="o">=</span> <span class="n">g_test</span><span class="o">.</span><span class="n">components</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">g_test</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">comp</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+
+    <span class="n">gens</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">generators</span><span class="p">]</span>
+    <span class="n">loads</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">load_nodes</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">loads</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># generator island → ignore or track separately</span>
+        <span class="k">continue</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gens</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># blackout</span>
+        <span class="n">power_per_load</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">power_total</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">gens</span><span class="p">)</span> <span class="o">*</span> <span class="n">P_per_generator</span>
+        <span class="n">power_per_load</span> <span class="o">=</span> <span class="n">power_total</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">loads</span><span class="p">)</span>
+        
+    <span class="nb">print</span><span class="p">(</span><span class="n">gens</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">loads</span><span class="p">),</span> <span class="n">power_per_load</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;Gth_1&#39;, &#39;Gth_2&#39;, &#39;Gth_3&#39;] 25 36.0
+[] 1 0
+[] 1 0
+[] 1 0
+[] 2 0
+[] 3 0
+[] 1 0
+[] 1 0
+[] 2 0
+[] 4 0
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_gen</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">node_names</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;G&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;CI_&#39;</span><span class="p">))</span>
+<span class="n">n_load</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">node_names</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;L&#39;</span><span class="p">))</span>
+<span class="n">n_gen</span><span class="p">,</span> <span class="n">n_load</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(9, 41)
+</pre></div>
+</div>
 </div>
 </div>
 </section>

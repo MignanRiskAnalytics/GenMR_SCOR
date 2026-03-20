@@ -108,6 +108,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energyCI.get_windfarm_mask"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.get_windfarm_mask()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energyCI.powergrid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.powergrid</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energyCI.powergrid_nlines_G2S"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.powergrid_nlines_G2S</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energyCI.powergrid_nlines_G2S_OLD"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energyCI.powergrid_nlines_G2S_OLD</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.EnvLayer_natLand"><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand</span></code></a><ul>
@@ -401,6 +402,7 @@
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-2-tornado-case">C.2. Tornado case</a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-3-heatwave-case-threshold-model">C.3. Heatwave case (threshold model)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-4-pest-infestation-case">C.4. Pest infestation case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-5-blackout-case">C.5. Blackout case</a></li>
 </ul>
 </li>
 </ul>
@@ -476,7 +478,7 @@ defined as classes or methods.</p>
 <dd class="field-even"><p>1.1.2</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2026-03-18</p>
+<dd class="field-odd"><p>2026-03-19</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -911,6 +913,7 @@ topographic and land use constraints.</p>
 <li><p><strong>powergrid</strong> (<em>networkx.Graph</em>) – Fully connected power grid graph.</p></li>
 <li><p><strong>node_names</strong> (<em>dict</em>) – Dictionary mapping node IDs to names.</p></li>
 <li><p><strong>node_coords</strong> (<em>ndarray of shape (n_nodes, 2)</em>) – Cartesian coordinates of all nodes in the power grid.</p></li>
+<li><p><strong>node_supply</strong> (<em>ndarray of shape (n_nodes, )</em>) – Power supply (MW) per node, 0 if not a load node.</p></li>
 </ul>
 </p>
 </dd>
@@ -920,6 +923,11 @@ topographic and land use constraints.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="GenMR.environment.EnvLayer_energyCI.powergrid_nlines_G2S">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">powergrid_nlines_G2S</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_energyCI.powergrid_nlines_G2S" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_energyCI.powergrid_nlines_G2S_OLD">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">powergrid_nlines_G2S_OLD</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_energyCI.powergrid_nlines_G2S_OLD" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
