@@ -29,7 +29,7 @@ Planned Additions (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-03-20
+:Date: 2026-03-24
 :License: AGPL-3
 """
 
@@ -2064,6 +2064,76 @@ class EnvLayer_urbLand:
 
         plt.close()
         return polygons
+
+
+
+    ## define population ##
+    def _get_occ_pers_m2(self, occ_ft2_pers):
+        '''
+        Convert square feet per person (ft²/person) to persons per square metre (persons/m²).
+        '''
+        ft2_to_m2 = .092903    
+        occ_pers_m2 = {}
+        for occ in occ_ft2_pers:
+            occ_pers_m2[occ] = {
+                'day': 1.0 / (occ_ft2_pers[occ]['day'] * ft2_to_m2),
+                'night': 1.0 / (occ_ft2_pers[occ]['night'] * ft2_to_m2)
+            }
+        return occ_pers_m2
+
+    def _compute_population(self):
+        '''
+        Compute day/night population per grid cell.
+
+        Returns
+        -------
+        pop_day : ndarray(nx, ny)
+        pop_night : ndarray(nx, ny)
+        '''
+        nx, ny = self.grid.nx, self.grid.ny
+        Acell = (self.grid.w * 1e3) ** 2         # m2
+
+        occ_pers_m2 = self._get_occ_pers_m2(self.par['occ_ft2_pers'])
+        S_to_occ = {
+            2: 'RES',  # Residential
+            3: 'IND',  # Industrial
+            4: 'COM'   # Commercial
+        }
+        pop_day = np.zeros((nx, ny))
+        pop_night = np.zeros((nx, ny))
+        for lu_class, occ_type in S_to_occ.items():
+            mask = self.S == lu_class  # only cells of this land-use class
+            if not np.any(mask):
+                continue
+
+            idx = {'RES': 0, 'IND': 1, 'COM': 2}[occ_type]
+            floor_area = Acell * self.par['ResIndCom_Aratio'][idx] * self.bldg_Nstories[mask]
+            pop_day[mask] = floor_area * occ_pers_m2[occ_type]['day']
+            pop_night[mask] = floor_area * occ_pers_m2[occ_type]['night']
+
+        total_day_raw = np.nansum(pop_day)
+        total_night = np.nansum(pop_night)
+        scale = total_night / total_day_raw if total_day_raw > 0 else 0.
+        pop_day *= scale
+
+        return pop_day, pop_night
+
+    @cached_property
+    def pop_day(self):
+        '''
+        Daytime population per cell (persons).
+        '''
+        pop_day, _ = self._compute_population()
+        return pop_day
+
+    @cached_property
+    def pop_night(self):
+        '''
+        Nighttime population per cell (residents, persons).
+        '''
+        _, pop_night = self._compute_population()
+        return pop_night
+
 
 
     ## define crops ##
