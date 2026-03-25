@@ -2702,7 +2702,7 @@ class EnvLayer_energyCI:
 #        print('Power grid fully connected:', nx.is_connected(powergrid))
 
         nG = sum(1 for name in node_names.values() if name.startswith('G')) / self.par['powergrid_redundanciesGS']
-        Ptot = nG * self.par['powergrid_power_perGnode_MW']
+        Ptot = nG * self.par['powergrid_power_perGnode_GW'] * 1e3       # MW
         nL = sum(1 for name in node_names.values() if name.startswith('L'))
         Pload = Ptot / nL
         node_supply = np.zeros(len(node_names))
