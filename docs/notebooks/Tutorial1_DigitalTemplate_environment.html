@@ -184,6 +184,8 @@
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.get_d4mkd"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_d4mkd()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.get_state_built"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_state_built()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.industrialZones"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.industrialZones</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.pop_day"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.pop_day</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.pop_night"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.pop_night</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.roadNet_coord"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.roadNet_coord</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.run"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.run()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.transform_landUse"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.transform_landUse()</span></code></a></li>
@@ -445,7 +447,7 @@
 <h1>Tutorial 1: Generating a virtual environment for the GenMR digital template<a class="headerlink" href="#tutorial-1-generating-a-virtual-environment-for-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 1.1.2<br />
-<strong>Last Updated:</strong> 2026-03-20<br />
+<strong>Last Updated:</strong> 2026-03-25<br />
 <strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
 <p>The <em>digital template</em>, first described in <a class="reference external" href="https://www.mdpi.com/1660-4601/19/23/16097">Mignan (2022)</a> and used in the CAT Risk Modelling Sandbox (<a class="reference external" href="https://github.com/amignan/Intro2CATriskModelling/blob/main/CATRiskModellingSandbox_tutorial.ipynb">Mignan, 2024</a>), is a microcosm simulation of the complex Earth system for catastrophe dynamics R&amp;D, multi-risk prototyping in the Generic Multi-Risk (GenMR) framework, and catastrophe risk eduction. It is defined as a virtual environment populated by loss-generating events that interact with each other and with the environment. The virtual environment, to be built in this tutorial, is composed of <em>environmental layers</em> that consist of sets of variables <span class="math notranslate nohighlight">\(\theta(x,y)\)</span> defined in a spatial grid of coordinates <span class="math notranslate nohighlight">\((x,y)\)</span>. Each layer may be altered by <em>environmental objects</em> located within the layer. The parsimonious complex Earth system finally consists of a stack of interacting environmental layers defined in the natural, technological and socio-economic systems. The loss-generating events that populate the virtual environment will be defined in the next tutorial, and their occurrence rates and interactions in a third and final tutorial.</p>
 <p>The modelled environmental layers and associated objects as listed in Table 1 (see also Fig. 1). This tutorial provides a concise overview of these layers using a default parameterisation, with alternative scenarios to be introduced later in How-To Guides. The outputs generated here will serve as input for hazard and risk assessment in the subsequent tutorials.</p>
@@ -520,26 +522,26 @@
 </tr>
 <tr class="row-even"><td class="text-left"><p>Socio-economic</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">eco</span></code></p></td>
-<td class="text-left"><p>Businesses</p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p></p></td>
+<td class="text-left"><p>Economic activity</p></td>
+<td class="text-left"><p>Business output</p></td>
+<td class="text-left"><p>Power supply</p></td>
+<td class="text-left"><p>-</p></td>
 <td class="text-left"><p>N/A</p></td>
-<td class="text-left"><p><span style="color: orange">✗</span></p></td>
+<td class="text-left"><p><span style="color: orange">ONGOING</span></p></td>
 </tr>
 <tr class="row-odd"><td class="text-left"><p>Socio-economic</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">socio</span></code></p></td>
-<td class="text-left"><p>Population</p></td>
+<td class="text-left"><p>Social activity</p></td>
 <td class="text-left"><p>Grievance</p></td>
 <td class="text-left"><p></p></td>
-<td class="text-left"><p></p></td>
+<td class="text-left"><p>-</p></td>
 <td class="text-left"><p>N/A</p></td>
-<td class="text-left"><p><span style="color: orange">✗</span></p></td>
+<td class="text-left"><p><span style="color: orange">ONGOING</span></p></td>
 </tr>
 </tbody>
 </table>
 <p><small>* Each layer additionally depends on the previous ones.<br>
-<sup>‡</sup> Included in current version (<span style="color: green">✓</span>), planned for v.1.1.2 (<span style="color: orange">✗</span>).</small></p>
+<sup>‡</sup> Included in current version (<span style="color: green">✓</span>), planned (<span style="color: orange">✗</span>).</small></p>
 <p><img alt="" src="../_images/digitaltemplate_env_rayshader.jpg" /></p>
 <center><small><b>Fig. 1.</b> The GenMR digital template (here with default parameterisation) showing the built areas in grey and road network in white. Simulation rendered using <a href='https://www.rayshader.com/' target='_blank'>Rayshader</a> (Morgan-Wall, 2022).</small></center>
 <br>
@@ -695,8 +697,8 @@ The environmental layers are generated as follows:
     <span class="s1">&#39;rv&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;rv_tan(phiWE)&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="o">/</span><span class="mi">1000</span><span class="p">],</span> <span class="s1">&#39;rv_tan(phiNS)&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;rv_eta&#39;</span><span class="p">:</span> <span class="mf">.1</span><span class="p">,</span>
     <span class="s1">&#39;cs&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;cs_w_km&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;cs_tan(phi)&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="o">/</span><span class="mi">1000</span><span class="p">,</span> <span class="s1">&#39;cs_eta&#39;</span><span class="p">:</span> <span class="mf">.1</span><span class="p">,</span>
     <span class="s1">&#39;plt_zmin_m&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">500</span><span class="p">,</span> <span class="s1">&#39;plt_zmax_m&#39;</span><span class="p">:</span> <span class="mi">4500</span><span class="p">,</span>
-    <span class="s1">&#39;calc_d2coastline&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>    <span class="c1"># must be True if &#39;urbLandPar[&#39;crops&#39;] = True&#39; &amp; to define industrialZones</span>
-    <span class="s1">&#39;calc_d2river&#39;</span><span class="p">:</span> <span class="kc">False</span>         <span class="c1"># must be True to define industrialZones</span>
+    <span class="s1">&#39;calc_d2coastline&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>    <span class="c1"># must be True if &#39;urbLandPar[&#39;crops&#39;] = True&#39; &amp; to define industrialZones</span>
+    <span class="s1">&#39;calc_d2river&#39;</span><span class="p">:</span> <span class="kc">True</span>         <span class="c1"># must be True to define industrialZones</span>
 <span class="p">}</span>
 
 <span class="n">atmoPar</span> <span class="o">=</span> <span class="p">{</span>
@@ -743,6 +745,12 @@ The environmental layers are generated as follows:
 <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">save_class2pickle</span><span class="p">(</span><span class="n">atmoLayer</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;envLayer_atmo&#39;</span><span class="p">)</span>
 <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">save_class2pickle</span><span class="p">(</span><span class="n">soilLayer</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;envLayer_soil&#39;</span><span class="p">)</span>
 <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">save_class2pickle</span><span class="p">(</span><span class="n">natLandLayer</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;envLayer_natLand&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Calculating distance to coastline: 100%|████| 1401/1401 [00:36&lt;00:00, 38.78it/s]
+Calculating distance to river: 100%|████████| 1401/1401 [00:32&lt;00:00, 42.61it/s]
 </pre></div>
 </div>
 </div>
@@ -795,8 +803,8 @@ The environmental layers are generated as follows:
 <p>Two types of crops are modelled (wheat and maize), based on a temperature-based crop suitability index calculated from monthly near-surface air temperature and on other physical constraints defined by threshold <code class="docutils literal notranslate"><span class="pre">crop_*</span></code> in <code class="docutils literal notranslate"><span class="pre">urbLandPar</span></code> (see function <code class="docutils literal notranslate"><span class="pre">crop_T_suitability()</span></code>).</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#file_urbLandLayer = &#39;&#39;           # run the city growth model if &#39;&#39; provided</span>
-<span class="n">file_urbLandLayer</span> <span class="o">=</span> <span class="s1">&#39;envLayer_urbLand.pkl&#39;</span>    <span class="c1"># if already exists</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">file_urbLandLayer</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>           <span class="c1"># run the city growth model if &#39;&#39; provided</span>
+<span class="c1">#file_urbLandLayer = &#39;envLayer_urbLand.pkl&#39;    # if already exists</span>
 
 <span class="n">urbLandPar</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;lores_f&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;rdm_seed&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>     <span class="c1"># </span>
@@ -815,12 +823,18 @@ The environmental layers are generated as follows:
     <span class="s1">&#39;road_X&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>                      <span class="c1"># </span>
     <span class="c1"># building char. #</span>
     <span class="s1">&#39;ResIndCom_yr_lowrise_end&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1970</span><span class="p">,</span> <span class="mi">1970</span><span class="p">,</span> <span class="mi">1970</span><span class="p">],</span>  <span class="c1"># historic low-rise period end (started in city_yr0)</span>
-    <span class="s1">&#39;ResIndCom_lowrise_max&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>              <span class="c1"># max. number of stories in low-rise buildings</span>
-    <span class="s1">&#39;ResIndCom_highrise_max&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span>           <span class="c1"># max. number of stories in high-rise buildings</span>
+    <span class="s1">&#39;ResIndCom_lowrise_max&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>              <span class="c1"># max. number of stories in low-rise buildings</span>
+    <span class="s1">&#39;ResIndCom_highrise_max&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>             <span class="c1"># max. number of stories in high-rise buildings</span>
     <span class="s1">&#39;ResIndCom_mix_pr_high&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">.2</span><span class="p">,</span> <span class="mf">.3</span><span class="p">,</span> <span class="mf">.2</span><span class="p">],</span>           <span class="c1"># mixed regime probability of high-rise</span>
     <span class="s1">&#39;bldg_RES_wood2brick&#39;</span><span class="p">:</span> <span class="mf">.6</span><span class="p">,</span>        <span class="c1"># ratio of number of RES. blocks made of wood relative to bricks (masonry)</span>
-    <span class="s1">&#39;ResIndCom_Aratio&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">.5</span><span class="p">,</span> <span class="mf">.6</span><span class="p">,</span> <span class="mf">.6</span><span class="p">],</span> <span class="c1"># fraction of grid cell that is actually built</span>
+    <span class="s1">&#39;ResIndCom_Aratio&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">.3</span><span class="p">,</span> <span class="mf">.4</span><span class="p">,</span> <span class="mf">.4</span><span class="p">],</span> <span class="c1"># fraction of grid cell that is actually built</span>
     <span class="s1">&#39;GPD_percapita_EUR&#39;</span><span class="p">:</span> <span class="mf">40e3</span><span class="p">,</span>        <span class="c1"># GDP per capita (USD) used to estimate construction cost for res, com, ind.</span>
+    <span class="c1"># population char. #</span>
+    <span class="s1">&#39;occ_ft2_pers&#39;</span><span class="p">:</span> <span class="p">{</span>                 <span class="c1"># square feet per person - approx. values taken from HAZUS 6.1, tab. 5.32</span>
+        <span class="s1">&#39;RES&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;day&#39;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span> <span class="s1">&#39;night&#39;</span><span class="p">:</span> <span class="mi">300</span><span class="p">},</span>
+        <span class="s1">&#39;COM&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;day&#39;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span> <span class="s1">&#39;night&#39;</span><span class="p">:</span> <span class="mi">10000</span><span class="p">},</span>
+        <span class="s1">&#39;IND&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;day&#39;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span> <span class="s1">&#39;night&#39;</span><span class="p">:</span> <span class="mi">6000</span><span class="p">}</span>
+    <span class="p">},</span>
     <span class="c1"># crop char. #</span>
     <span class="s1">&#39;crops&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>                    <span class="c1"># if True, crop classes modelled (wheat and maize hardcoded)</span>
     <span class="s1">&#39;crop_slope_max&#39;</span><span class="p">:</span> <span class="mf">3.</span><span class="p">,</span>             <span class="c1"># maximum slope (°)</span>
@@ -829,6 +843,8 @@ The environmental layers are generated as follows:
     <span class="s1">&#39;crop_dcoast_min&#39;</span><span class="p">:</span> <span class="mf">5.</span><span class="p">,</span>            <span class="c1"># minimum distance from coastline, i.e., saltwater intrusion limit (km)</span>
     <span class="s1">&#39;crop_Tindex_min&#39;</span><span class="p">:</span> <span class="mf">0.</span>             <span class="c1"># crop only generated above Tindex_min temperature suitability (0-1)</span>
 <span class="p">}</span>
+
+<span class="c1"># consider for later: decrease &#39;ResIndCom_Aratio&#39; with year (denser at historical centre, spread in suburb)</span>
 
 <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">save_dict2json</span><span class="p">(</span><span class="n">urbLandPar</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;par_urbLand&#39;</span><span class="p">)</span>
 </pre></div>
@@ -846,11 +862,23 @@ The environmental layers are generated as follows:
     <span class="c1"># get cached industrialZones before saving</span>
     <span class="n">industrialZones</span> <span class="o">=</span> <span class="n">urbLandLayer</span><span class="o">.</span><span class="n">industrialZones</span>
     <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">save_class2pickle</span><span class="p">(</span><span class="n">urbLandLayer</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;envLayer_urbLand&#39;</span><span class="p">)</span>
+    
+<span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">urbLandLayer</span><span class="o">.</span><span class="n">bldg_blockValue</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-9</span>
+<span class="n">pop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">urbLandLayer</span><span class="o">.</span><span class="n">pop_night</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-6</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Total exposure value: </span><span class="si">{</span><span class="n">val</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1"> bn EUR&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Total population: </span><span class="si">{</span><span class="n">pop</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1"> million people&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>... urbLandLayer class instance loaded
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|█████████████████████████████████████████| 100/100 [38:16&lt;00:00, 22.97s/it]
+/Users/arnaudmignan/Documents/GmbH_MRA/2_fundedR&amp;D/2025-2027_GenMR_SCOR/GenMR_SCOR/GenMR/environment.py:1774: RuntimeWarning: invalid value encountered in cast
+  return stories.astype(int)
+extracting industrial zones as polygons: 100%|█| 2873/2873 [00:03&lt;00:00, 808.56i
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Total exposure value: 1226.46 bn EUR
+Total population: 28.11 million people
 </pre></div>
 </div>
 </div>
@@ -996,6 +1024,49 @@ The environmental layers are generated as follows:
 <section id="generating-the-economic-layer">
 <h3>3.1. Generating the economic layer<a class="headerlink" href="#generating-the-economic-layer" title="Link to this heading"></a></h3>
 <p>To include: businesses (COM, IND, public safety facilities such as hospitals, police and fire stations) + connection to specific powergrid nodes</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># tmp - population tests, new in urlLand layer</span>
+
+<span class="n">urbLandLayer</span><span class="o">.</span><span class="n">pop_day</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">ls</span><span class="o">.</span><span class="n">hillshade</span><span class="p">(</span><span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">vert_exag</span><span class="o">=</span><span class="mf">.1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">urbLandLayer</span><span class="o">.</span><span class="n">pop_day</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Reds&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.5</span><span class="p">,</span> <span class="n">vmin</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Day population&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">60</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">55</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">ls</span><span class="o">.</span><span class="n">hillshade</span><span class="p">(</span><span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">vert_exag</span><span class="o">=</span><span class="mf">.1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">urbLandLayer</span><span class="o">.</span><span class="n">pop_night</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Reds&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.5</span><span class="p">,</span> <span class="n">vmin</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">poly</span> <span class="ow">in</span> <span class="n">urbLandLayer</span><span class="o">.</span><span class="n">industrialZones</span><span class="p">:</span>
+    <span class="n">patch</span> <span class="o">=</span> <span class="n">MplPolygon</span><span class="p">(</span>
+            <span class="n">poly</span><span class="p">[</span><span class="s1">&#39;polygon&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">exterior</span><span class="o">.</span><span class="n">coords</span><span class="p">,</span>
+            <span class="n">closed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">facecolor</span> <span class="o">=</span> <span class="s1">&#39;none&#39;</span><span class="p">,</span>
+            <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span>
+            <span class="n">linewidth</span><span class="o">=</span><span class="mf">.5</span>
+    <span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">patch</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Night population&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">60</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">55</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/98fb8980c6fc10caba7ce989854cfc4262a9ba9b6578583c33c5746e106255f2.png" src="../_images/98fb8980c6fc10caba7ce989854cfc4262a9ba9b6578583c33c5746e106255f2.png" />
+</div>
+</div>
 </section>
 </section>
 <section id="references">
@@ -1149,25 +1220,35 @@ The environmental layers are generated as follows:
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">roadNet_coord</span></code></p></td>
 <td class="text-left"><p>Coordinates of the road network</p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">energyCI</span></code></p></td>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">urbLand</span></code></p></td>
+<td class="text-left"><p>Population</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">pop_day</span></code>, <code class="docutils literal notranslate"><span class="pre">pop_night</span></code></p></td>
+<td class="text-left"><p>Population count during day or night</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">energyCI</span></code></p></td>
 <td class="text-left"><p>Refinery</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">CI_refinery</span></code></p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure</span></code> dataclass</p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">energyCI</span></code></p></td>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">energyCI</span></code></p></td>
 <td class="text-left"><p>Hydropower dam</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">CI_hydrodam</span></code></p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure</span></code> dataclass</p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">energyCI</span></code></p></td>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">energyCI</span></code></p></td>
 <td class="text-left"><p>Thermal plant</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">CI_thermalplant</span></code></p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure</span></code> dataclass</p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">energyCI</span></code></p></td>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">energyCI</span></code></p></td>
 <td class="text-left"><p>Windfarm</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">CI_windfarm</span></code></p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure</span></code> dataclass</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">energyCI</span></code></p></td>
+<td class="text-left"><p>Power grid</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">powergrid</span></code></p></td>
+<td class="text-left"><p>Network topology, nodes’ names, coordinates, supply (MW)</p></td>
 </tr>
 <tr class="row-even"><td class="text-left"><p></p></td>
 <td class="text-left"><p></p></td>
