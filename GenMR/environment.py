@@ -29,7 +29,7 @@ Planned Additions (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-03-24
+:Date: 2026-03-25
 :License: AGPL-3
 """
 
@@ -1728,9 +1728,10 @@ class EnvLayer_urbLand:
         indR = self.S == 2
         indI = self.S == 3
         indC = self.S == 4
-        val[indR] = c1[0] * self.par['GPD_percapita_EUR'] **c2[0] * (self.grid.w*1e3)**2 * self.bldg_Nstories[indR] * self.par['ResIndCom_Aratio'][0]
-        val[indI] = c1[1] * self.par['GPD_percapita_EUR'] **c2[1] * (self.grid.w*1e3)**2 * self.bldg_Nstories[indI] * self.par['ResIndCom_Aratio'][1]
-        val[indC] = c1[2] * self.par['GPD_percapita_EUR'] **c2[2] * (self.grid.w*1e3)**2 * self.bldg_Nstories[indC] * self.par['ResIndCom_Aratio'][2]
+        Aratio = self._get_Aratio_map()
+        val[indR] = c1[0] * self.par['GPD_percapita_EUR'] **c2[0] * (self.grid.w*1e3)**2 * self.bldg_Nstories[indR] * Aratio[indR]
+        val[indI] = c1[1] * self.par['GPD_percapita_EUR'] **c2[1] * (self.grid.w*1e3)**2 * self.bldg_Nstories[indI] * Aratio[indI]
+        val[indC] = c1[2] * self.par['GPD_percapita_EUR'] **c2[2] * (self.grid.w*1e3)**2 * self.bldg_Nstories[indC] * Aratio[indC]
         return val
 
     @cached_property
@@ -1738,7 +1739,14 @@ class EnvLayer_urbLand:
         '''
         Cached version of industrial zones.
         '''
-        return self._get_industrialZones()
+        return self._get_economicZones('industrial')
+
+    @cached_property
+    def commercialZones(self):
+        '''
+        Cached version of commercial zones.
+        '''
+        return self._get_economicZones('commercial')
 
     def assign_bldg_Nstories(self):
         '''
@@ -1979,33 +1987,82 @@ class EnvLayer_urbLand:
         return built_type
 
 
-    def _get_industrialZones(self):
+    def _get_Aratio_map(self):
         '''
-        Extract and classify industrial zones from the current land-use grid.
+        Compute stepwise built-area ratio based on construction year.
+        '''
+        nx, ny = self.grid.nx, self.grid.ny
+        
+        t0 = self.par['city_yr0']
+        tmax = t0 + self.par['city_yrs']
+        
+        rmax = np.array(self.par['ResIndCom_Aratio_max'])
+        alpha = self.par['ResIndCom_Aratio_alpha']
+        resol = self.par['ResIndCom_Aratio_resol']
+        
+        rmin = alpha * rmax
+        n_steps = int(np.ceil((tmax - t0) / resol))
+        # step size per class
+        dr = (rmax - rmin) / n_steps
+        
+        Aratio_map = np.full((nx, ny), np.nan)
+        tau = (self.built_yr - t0)
+        step_idx = np.floor(tau / resol)
+        step_idx = np.clip(step_idx, 0, n_steps)
+        for lu_class, idx in zip([2,3,4], [0,1,2]):
+            mask = self.S == lu_class
+            if not np.any(mask):
+                continue
+            rb = rmax[idx] - dr[idx] * step_idx[mask]
+            rb = np.maximum(rb, rmin[idx])
+            Aratio_map[mask] = rb
+        
+        return Aratio_map
 
-        Industrial areas (state ``3``) are grouped into connected components using
-        a von Neumann neighbourhood. Each component is converted into a polygon
-        via contour extraction, and the resulting polygon is classified based on
-        proximity to the coastline or river.
 
-        Returns
-        -------
-        list of dict
-            One dictionary per detected industrial zone. Each dictionary contains:
-            - ``state`` : str  
-            Always ``"industrial"``.
-            - ``zone_type`` : str  
-            One of ``"industrial harbor"``, ``"riverside industrial park"``, or ``"inland industrial park"``.
-            - ``vertices`` : (N, 2) ndarray  
-            Closed polygon vertex coordinates.
-            - ``area`` : float  
-            Polygon area.
-            - ``distance_to_coast`` : float  
-            Minimum distance to coastline.
-            - ``distance_to_river`` : float  
-            Minimum distance to river.
-            - ``closed`` : bool  
-            Always ``True``.
+    def _get_economicZones(self, occ):
+        '''
+    Extract and classify economic zones (industrial or commercial) 
+    from the current land-use grid.
+
+    Areas corresponding to the selected occupancy type are grouped into 
+    connected components using a von Neumann neighbourhood. Each component 
+    is converted into a polygon via contour extraction, and classified 
+    based on proximity to coastline and river.
+
+    Parameters
+    ----------
+    occ : str
+        Occupancy type to extract. Must be one of:
+        - ``"industrial"``
+        - ``"commercial"``
+
+    Returns
+    -------
+    list of dict
+        One dictionary per detected zone. Each dictionary contains:
+        - ``state`` : str  
+          Zone category (``"industrial"`` or ``"commercial"``).
+        - ``zone_type`` : str  
+          Type of zone depending on location:
+          * Industrial:
+              - ``"industrial harbor"``
+              - ``"riverside industrial park"``
+              - ``"city industrial park"``
+          * Commercial:
+              - ``"waterfront commercial district"``
+              - ``"riverside commercial district"``
+              - ``"city commercial district"``
+        - ``polygon`` : shapely.geometry.Polygon  
+          Zone geometry.
+        - ``area`` : float  
+          Polygon area.
+        - ``distance_to_coast`` : float  
+          Minimum distance to coastline.
+        - ``distance_to_river`` : float  
+          Minimum distance to river.
+        - ``closed`` : bool  
+          Always ``True``.
         '''
         buffer = self.grid.w * 2
 
@@ -2013,15 +2070,18 @@ class EnvLayer_urbLand:
                                       [1,1,1],
                                       [0,1,0]], dtype=bool)
 
-        industrial_mask = (self.S == 3)
+        if occ == 'industrial':
+            zone_mask = (self.S == 3)
+        elif occ == 'commercial':
+            zone_mask = (self.S == 4)
 
-        labeled, n_components = ndimage.label(industrial_mask, structure=vonNeumann_struct)
+        labeled, n_components = ndimage.label(zone_mask, structure=vonNeumann_struct)
 
         polygons = []
         plt.figure(figsize=(4,4))
         min_size = 10
 
-        for comp_id in trange(1, n_components + 1, desc = 'extracting industrial zones as polygons'):
+        for comp_id in trange(1, n_components + 1, desc = f'extracting {occ} zones as polygons'):
             component_mask = labeled == comp_id
             component_mask_float = component_mask.astype(float)
 
@@ -2045,15 +2105,23 @@ class EnvLayer_urbLand:
                 dist_coast = self.topo.d2coastline[component_mask].min()
                 dist_river = self.topo.d2river[component_mask].min()
 
-                if dist_coast <= buffer:
-                    zone_type = 'industrial harbor'
-                elif dist_river <= buffer:
-                    zone_type = 'riverside industrial park'
-                else:
-                    zone_type = 'inland industrial park'
+                if occ == 'industrial':
+                    if dist_coast <= buffer:
+                        zone_type = 'industrial harbor'
+                    elif dist_river <= buffer:
+                        zone_type = 'riverside industrial park'
+                    else:
+                        zone_type = 'city industrial park'
+                elif occ == 'commercial':
+                    if dist_coast <= buffer:
+                        zone_type = 'waterfront commercial district'
+                    elif dist_river <= buffer:
+                        zone_type = 'riverside commercial district'
+                    else:
+                        zone_type = 'city commercial district'
 
                 polygons.append({
-                    "state": "industrial",
+                    "state": occ,
                     "zone_type": zone_type,
                     "polygon": Polygon(vertices),
                     "area": area,
@@ -2101,13 +2169,12 @@ class EnvLayer_urbLand:
         }
         pop_day = np.zeros((nx, ny))
         pop_night = np.zeros((nx, ny))
+        Aratio = self._get_Aratio_map()
         for lu_class, occ_type in S_to_occ.items():
             mask = self.S == lu_class  # only cells of this land-use class
             if not np.any(mask):
                 continue
-
-            idx = {'RES': 0, 'IND': 1, 'COM': 2}[occ_type]
-            floor_area = Acell * self.par['ResIndCom_Aratio'][idx] * self.bldg_Nstories[mask]
+            floor_area = Acell * Aratio[mask] * self.bldg_Nstories[mask]
             pop_day[mask] = floor_area * occ_pers_m2[occ_type]['day']
             pop_night[mask] = floor_area * occ_pers_m2[occ_type]['night']
 
@@ -2681,13 +2748,31 @@ lgd_industrialZone = [
         label='Riverside Industrial Park'
     ),
     mpatches.Patch(
-        facecolor=GenMR_utils.col_industrialZone['inland industrial park'], 
+        facecolor=GenMR_utils.col_industrialZone['city industrial park'], 
         edgecolor='black',
-        label='Inland Industrial Park'
+        label='City Industrial Park'
     )
 ]
 
-def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
+lgd_commercialZone = [
+    mpatches.Patch(
+        facecolor=GenMR_utils.col_commercialZone['waterfront commercial district'], 
+        edgecolor='black',
+        label='Waterfront commercial district'
+    ),
+    mpatches.Patch(
+        facecolor=GenMR_utils.col_commercialZone['riverside commercial district'], 
+        edgecolor='black',
+        label='Riverside commercial district'
+    ),
+    mpatches.Patch(
+        facecolor=GenMR_utils.col_commercialZone['city commercial district'], 
+        edgecolor='black',
+        label='City commercial district'
+    )
+]
+
+def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-', box = None):
     '''
     Plot a specific attribute of an environmental layer.
 
@@ -2722,6 +2807,11 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
     - Legends and colormaps are automatically selected based on the layer type and attribute.
     - For `urban` layers, industrial zones are plotted as polygons with colors corresponding to their zone type.
     '''
+    if box is not None:
+        xmin, xmax, ymin, ymax = box
+    else:
+        xmin, xmax, ymin, ymax = envLayer.grid.xmin, envLayer.grid.xmax, envLayer.grid.ymin, envLayer.grid.ymax
+
     fig, ax = plt.subplots(1,1)
     alpha = 1.
     if len(hillshading_z) != 0:
@@ -2821,10 +2911,14 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
             for poly in envLayer.industrialZones:
                 patch = MplPolygon(poly['polygon'].exterior.coords, closed = True, color=GenMR_utils.col_industrialZone.get(poly['zone_type'], 'gray'), alpha=1.)
                 ax.add_patch(patch)
-            ax.set_xlim(envLayer.grid.xmin, envLayer.grid.xmax)
-            ax.set_ylim(envLayer.grid.ymin, envLayer.grid.ymax)
             labels_industrialZone = [h.get_label() for h in lgd_industrialZone]
             ax.legend(lgd_industrialZone, labels_industrialZone, loc='upper left')
+        elif attr == 'commercialZones':
+            for poly in envLayer.commercialZones:
+                patch = MplPolygon(poly['polygon'].exterior.coords, closed = True, color=GenMR_utils.col_commercialZone.get(poly['zone_type'], 'gray'), alpha=1.)
+                ax.add_patch(patch)
+            labels_commercialZone = [h.get_label() for h in lgd_commercialZone]
+            ax.legend(lgd_commercialZone, labels_commercialZone, loc='upper left')
         else:
             return print('No match found for attribute identifier in urban land layer.')
 
@@ -2840,26 +2934,24 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-'):
             S_coords = node_coords[S_nodes]
             G_coords = node_coords[G_nodes]
             edges = list(powergrid.edges())
-            ax.scatter(L_coords[:,0], L_coords[:,1], color='black', s=5, label='Load')
-            ax.plot(S_coords[:,0], S_coords[:,1], 'bs', markersize=10, label='Substation')
-            ax.plot(G_coords[:,0], G_coords[:,1], 'r*', markersize=15, label='Generator')
+            plt.scatter(L_coords[:,0], L_coords[:,1], color='black', s=5, label='Load')
+            plt.plot(S_coords[:,0], S_coords[:,1], 'bs', markersize=10, label='Substation')
+            plt.plot(G_coords[:,0], G_coords[:,1], 'r*', markersize=15, label='Generator')
             for i,j in edges:
                 x = [node_coords[i,0], node_coords[j,0]]
                 y = [node_coords[i,1], node_coords[j,1]]
-                ax.plot(x, y, color='black', linewidth=0.5)
+                plt.plot(x, y, color='black', linewidth=0.5)
             if attr == 'powergrid_wID':
                 for i, (x, y) in enumerate(node_coords):
-                    ax.text(x + 1, y + 1, node_names[i], fontsize=4, zorder=3)
-            ax.set_xlabel('$x$ (km)')
-            ax.set_ylabel('$y$ (km)')
-            ax.set_title('ENERGY INFRASTRUCTURE', size = 14, pad = 20)
-            ax.set_aspect(1)
-            ax.legend(loc='upper right')
+                    plt.text(x + 1, y + 1, node_names[i], fontsize=4, zorder=3)
+            plt.legend(loc='upper right')
         else:
             return print('No match found for attribute identifier in energy infrastructure layer.')
 
     plt.xlabel('$x$ (km)')
     plt.ylabel('$y$ (km)')
+    plt.xlim(xmin, xmax)
+    plt.ylim(ymin, ymax)
     plt.title(f'{envLayer.ID} layer: {attr}', size = 14, pad = 10)
     ax.set_aspect(1)
     if file_ext != '-':

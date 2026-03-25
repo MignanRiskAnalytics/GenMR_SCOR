@@ -8,7 +8,7 @@ core GenMR workflows by streamlining data handling, computation, and visualisati
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-03-20
+:Date: 2026-03-25
 :License: AGPL-3
 """
 
@@ -828,9 +828,13 @@ col_h = plt_col.LinearSegmentedColormap.from_list('col_h', colors, N = 6)
 col_industrialZone = {
     'industrial harbor': 'royalblue',
     'riverside industrial park': 'skyblue',
-    'inland industrial park': 'tan'
+    'city industrial park': 'tan'
 }
-
+col_commercialZone = {
+    'waterfront commercial district': 'darkblue',
+    'riverside commercial district': 'blue',
+    'city commercial district': 'pink'
+}
 
 cmap_mask = ListedColormap(['none', 'lime'])
 
