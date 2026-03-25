@@ -176,6 +176,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.bldg_roofpitch"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.bldg_roofpitch</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.bldg_type"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.bldg_type</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.calc_Pr_urbanise"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.calc_Pr_urbanise()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.commercialZones"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.commercialZones</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.crop_T_suitability"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.crop_T_suitability()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.generate"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.generate()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.get_S_urban"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_S_urban()</span></code></a></li>
@@ -484,7 +485,7 @@ defined as classes or methods.</p>
 <dd class="field-even"><p>1.1.2</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2026-03-24</p>
+<dd class="field-odd"><p>2026-03-25</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -1841,6 +1842,12 @@ Returns 0 if slope exceeds ‘SLEUTH_maxslope’.</p>
 </dl>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.commercialZones">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">commercialZones</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand.commercialZones" title="Link to this definition"></a></dt>
+<dd><p>Cached version of commercial zones.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.crop_T_suitability">
 <span class="sig-name descname"><span class="pre">crop_T_suitability</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atmoLayer_T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crop</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand.crop_T_suitability" title="Link to this definition"></a></dt>
@@ -2389,7 +2396,7 @@ Default is empty string, which treats all points as land (z = 0).</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="GenMR.environment.plot_EnvLayer_attr">
-<span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">plot_EnvLayer_attr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">envLayer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hillshading_z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.plot_EnvLayer_attr" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">plot_EnvLayer_attr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">envLayer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hillshading_z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.plot_EnvLayer_attr" title="Link to this definition"></a></dt>
 <dd><p>Plot a specific attribute of an environmental layer.</p>
 <p>This function handles plotting for multiple environmental layers including
 topography, soil, natural land, and urban land. Optionally, hillshading
@@ -4069,7 +4076,7 @@ core GenMR workflows by streamlining data handling, computation, and visualisati
 <dd class="field-even"><p>1.1.2</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2026-03-20</p>
+<dd class="field-odd"><p>2026-03-25</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
