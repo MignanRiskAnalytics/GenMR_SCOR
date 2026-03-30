@@ -67,7 +67,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#genmr-virtual-environment-generator">GenMR Virtual Environment Generator</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#layers-and-related-objects-v1-1-1">Layers and Related Objects (v1.1.1)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#layers-and-related-objects-v1-1-2">Layers and Related Objects (v1.1.2)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#planned-additions-v1-1-2">Planned Additions (v1.1.2)</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.CriticalInfrastructure"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure</span></code></a><ul>
@@ -120,6 +119,10 @@
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_natLand.par"><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand.par</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_natLand.S"><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand.S</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_natLand.hW"><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand.hW</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.EnvLayer_socioeco"><code class="docutils literal notranslate"><span class="pre">EnvLayer_socioeco</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_socioeco.build"><code class="docutils literal notranslate"><span class="pre">EnvLayer_socioeco.build()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.EnvLayer_soil"><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil</span></code></a><ul>
@@ -359,7 +362,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#socio-economic-environment-generation">3. Socio-economic environment generation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#generating-the-economic-layer">3.1. Generating the economic layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#generating-the-socio-economic-layer">3.1. Generating the socio-economic layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#id1">3.2. Environmental layer properties</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#references">References</a></li>
@@ -371,6 +375,7 @@
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#b-underlying-physical-processes">B. Underlying physical processes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#b-1-atmospheric-layer-temperature">B.1. Atmospheric layer: Temperature</a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#b-2-energy-ci-layer-power-grid">B.2. Energy CI layer: Power grid</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#b-3-socioeconomic-layer-updated-power-grid-flow">B.3. Socioeconomic layer: Updated power grid flow</a></li>
 </ul>
 </li>
 </ul>
@@ -470,12 +475,8 @@ defined as classes or methods.</p>
 - properties: freezing level, tropopause</p></li>
 <li><p><strong>Energy infrastructures</strong>
 - properties: point CIs (refinery, hydrodam placeholder, wind farm, thermal plant), power grid (graph + power supply)</p></li>
-</ul>
-</section>
-<section id="planned-additions-v1-1-2">
-<h4>Planned Additions (v1.1.2)<a class="headerlink" href="#planned-additions-v1-1-2" title="Link to this heading"></a></h4>
-<ul class="simple">
-<li><p>Socio-economic layers: eco (businesses), socio (population)</p></li>
+<li><p><strong>Socio-economic</strong>:
+- properties: public safety services (hospitals, police and fire stations), power demand, economic output, grievance level</p></li>
 </ul>
 <dl class="field-list simple">
 <dt class="field-odd">Author<span class="colon">:</span></dt>
@@ -485,7 +486,7 @@ defined as classes or methods.</p>
 <dd class="field-even"><p>1.1.2</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2026-03-25</p>
+<dd class="field-odd"><p>2026-03-30</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -1047,6 +1048,22 @@ topographic and land use constraints.</p>
 </dd>
 </dl>
 </dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_socioeco">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">EnvLayer_socioeco</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">par</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">urbLandLayer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energyLayer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_socioeco" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Socio-economic layer:
+- Public safety facilities (hospital, police, fire)
+- Electricity demand (day/night)
+- Mapping to power grid load nodes
+- Power flow redistribution (DC approximation)</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_socioeco.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_socioeco.build" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 

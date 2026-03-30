@@ -64,7 +64,6 @@
 <li class="toctree-l3"><a class="reference internal" href="manual.html#genmr-virtual-environment-generator">GenMR Virtual Environment Generator</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#layers-and-related-objects-v1-1-1">Layers and Related Objects (v1.1.1)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#layers-and-related-objects-v1-1-2">Layers and Related Objects (v1.1.2)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="manual.html#planned-additions-v1-1-2">Planned Additions (v1.1.2)</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.environment.CriticalInfrastructure"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure</span></code></a><ul>
@@ -117,6 +116,10 @@
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_natLand.par"><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand.par</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_natLand.S"><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand.S</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_natLand.hW"><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand.hW</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_socioeco"><code class="docutils literal notranslate"><span class="pre">EnvLayer_socioeco</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_socioeco.build"><code class="docutils literal notranslate"><span class="pre">EnvLayer_socioeco.build()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.environment.EnvLayer_soil"><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil</span></code></a><ul>
@@ -356,7 +359,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#socio-economic-environment-generation">3. Socio-economic environment generation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#generating-the-economic-layer">3.1. Generating the economic layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#generating-the-socio-economic-layer">3.1. Generating the socio-economic layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#id1">3.2. Environmental layer properties</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#references">References</a></li>
@@ -368,6 +372,7 @@
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#b-underlying-physical-processes">B. Underlying physical processes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#b-1-atmospheric-layer-temperature">B.1. Atmospheric layer: Temperature</a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#b-2-energy-ci-layer-power-grid">B.2. Energy CI layer: Power grid</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial1_DigitalTemplate_environment.html#b-3-socioeconomic-layer-updated-power-grid-flow">B.3. Socioeconomic layer: Updated power grid flow</a></li>
 </ul>
 </li>
 </ul>
@@ -497,6 +502,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="manual.html#GenMR.environment.EnvLayer_socioeco.build">build() (GenMR.environment.EnvLayer_socioeco method)</a>
+</li>
       <li><a href="manual.html#GenMR.environment.EnvLayer_urbLand.built">built (GenMR.environment.EnvLayer_urbLand attribute)</a>
 </li>
       <li><a href="manual.html#GenMR.environment.EnvLayer_urbLand.built_type">built_type (GenMR.environment.EnvLayer_urbLand attribute)</a>
@@ -636,6 +643,8 @@
       <li><a href="manual.html#GenMR.environment.EnvLayer_energyCI">EnvLayer_energyCI (class in GenMR.environment)</a>
 </li>
       <li><a href="manual.html#GenMR.environment.EnvLayer_natLand">EnvLayer_natLand (class in GenMR.environment)</a>
+</li>
+      <li><a href="manual.html#GenMR.environment.EnvLayer_socioeco">EnvLayer_socioeco (class in GenMR.environment)</a>
 </li>
       <li><a href="manual.html#GenMR.environment.EnvLayer_soil">EnvLayer_soil (class in GenMR.environment)</a>
 </li>
