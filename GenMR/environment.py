@@ -2289,9 +2289,48 @@ class CriticalInfrastructure:
     Ex_S_kton: float
 
 
-class EnvLayer_energyCI:
+class EnvLayer_energy:
     '''
-    Docstring for EnvLayer_energyCI TO WRITE
+    Energy infrastructure layer representing the spatial structure and operation of the power grid.
+    It generates critical energy infrastructures (e.g., generators, substations), constructs the
+    transmission and distribution network, and computes power redistribution using a DC power flow
+    approximation based on externally defined demand.
+
+    Parameters
+    ----------
+    urbLand : object
+        Urban land-use layer providing spatial information, industrial zones,
+        and topology used for infrastructure placement and routing.
+
+    par : dict
+        Dictionary of energy system parameters controlling infrastructure siting,
+        grid topology, routing costs, and generation capacity.
+
+    Attributes
+    ----------
+    ID : str
+        Identifier of the layer ('energy').
+
+    powergrid : tuple
+        Tuple containing the network graph, node names, node coordinates,
+        and initial node supply (MW).
+
+    flows_day, flows_night : dict
+        Power flows on network edges for day/night periods. Keys are edge tuples ``(i, j)``.
+
+    theta_day, theta_night : ndarray
+        Node potential (voltage angle) solutions from DC power flow.
+
+    node_supply_updated_day, node_supply_updated_night : ndarray
+        Updated node supply after redistribution of power flows (MW).
+
+    Notes
+    -----
+    - The power grid includes load (L), substation (S), generator (G), and transmission (T) nodes.
+    - Generation is initially distributed uniformly across load nodes.
+    - Demand is provided externally (from the socio-economic environmental layer).
+    - Power flows are computed using a linear DC approximation.
+    - Updated node supply reflects the effective redistribution of power across the network.
     '''
     def __init__(self, urbLand, par):
         self.ID = 'energy'
@@ -2300,13 +2339,13 @@ class EnvLayer_energyCI:
         self.topo = self.urbLand.topo
         self.industrialZones = urbLand.industrialZones
         self.par = par
-#        np.random.seed(self.par['rdm_seed'])
-        self.node_supply_updated_day = None
-        self.node_supply_updated_night = None
+        self.load_ID = None
         self.flows_day = None
         self.flows_night = None
         self.theta_day = None
         self.theta_night = None
+        self.node_supply_updated_day = None
+        self.node_supply_updated_night = None
 
     ## Energy CI points ##
     def _CI_from_largest_harbor_zone(self, name, rank=1):
@@ -2719,38 +2758,85 @@ class EnvLayer_energyCI:
         return powergrid, node_names, node_coords, node_supply
 
 
-    ## UPDATE AFTER SOCIO-ECONOMIC LAYER DEF. ##
-    def update_from_socioeco(self, socioecoLayer):
+    ## UPDATE POWER GRID AFTER SOCIO-ECONOMIC LAYER DEF. (SUPPLY & DEMAND) ##
+    def _compute_flows_dc(self, powergrid, node_supply, node_demand):
+        b = node_supply - node_demand
+        b = b.copy()
+        b[-1] -= np.sum(b)
+        L = networkx.laplacian_matrix(powergrid).astype(float)
+        ref = 0
+        L = L.tolil()
+        L[ref, :] = 0
+        L[:, ref] = 0
+        L[ref, ref] = 1
+        b[ref] = 0
+        theta = spsolve(L.tocsr(), b)
+        flows = {}
+        for i, j in powergrid.edges():
+            f = theta[i] - theta[j]
+            flows[(i, j)] = f
+            flows[(j, i)] = -f
+        return flows, theta
+
+    def solve_power_flow(self, node_demand_day, node_demand_night, load_ID):
         '''
-        Update energy layer state from socio-economic layer results.
+        Solve DC power flow for day and night demand.
 
         Parameters
         ----------
-        socioecoLayer : EnvLayer_socioeco
-            Layer providing computed power flows and node demand.
+        node_demand_day : ndarray
+            Demand per load node (MW)
+        node_demand_night : ndarray
+            Demand per load node (MW)
+        load_ID : ndarray
+            Mapping from each mesh cell to the nearest power grid load node ID (NaN for non-urban cells).
         '''
-        powergrid, _, _, node_supply = self.powergrid
+        self.load_ID = load_ID
+        powergrid, node_names, _, node_supply = self.powergrid
+        n_nodes = len(node_supply)
 
-        ## STORE FLOWS & POTENTIALS ##
-        self.flows_day = socioecoLayer.flows_day
-        self.flows_night = socioecoLayer.flows_night
-        self.theta_day = socioecoLayer.theta_day
-        self.theta_night = socioecoLayer.theta_night
+        indL = [i for i, name in node_names.items() if name.startswith('L')]
 
-        ## UPDATE NODE SUPPLY ##
-        #  DAY
+        ## DAY ##
+        node_demand_full = np.zeros(n_nodes)
+        node_demand_full[indL] = node_demand_day
+
+        # global balance check
+        total_supply = np.sum(node_supply)
+        total_demand = np.sum(node_demand_full)
+        load_min_day = total_supply - total_demand
+        if load_min_day < 0:
+            print(f"Power deficit (day): {load_min_day:.2f} MW")
+        else:
+            print(f"Power surplus (day): {load_min_day:.2f} MW")
+
+        self.flows_day, self.theta_day = self._compute_flows_dc(powergrid, node_supply, node_demand_full)
         updated_day = node_supply.copy()
         for (i, j) in powergrid.edges():
             f = self.flows_day[(i, j)]
             updated_day[i] -= f
             updated_day[j] += f
-        # NIGHT
+        self.node_supply_updated_day = updated_day
+
+        ## NIGHT ##
+        node_demand_full = np.zeros(n_nodes)
+        node_demand_full[indL] = node_demand_night
+
+        # global balance check
+        total_supply = np.sum(node_supply)
+        total_demand = np.sum(node_demand_full)
+        load_min_night = total_supply - total_demand
+        if load_min_night < 0:
+            print(f"Power deficit (night): {load_min_night:.2f} MW")
+        else:
+            print(f"Power surplus (night): {load_min_night:.2f} MW")
+
+        self.flows_night, self.theta_night = self._compute_flows_dc(powergrid, node_supply, node_demand_full)
         updated_night = node_supply.copy()
         for (i, j) in powergrid.edges():
             f = self.flows_night[(i, j)]
             updated_night[i] -= f
             updated_night[j] += f
-        self.node_supply_updated_day = updated_day
         self.node_supply_updated_night = updated_night
 
 
@@ -2760,101 +2846,65 @@ class EnvLayer_energyCI:
 #####################################
 class EnvLayer_socioeco:
     '''
-    Socio-economic environment layer which represents the coupling between urban land use, population
-    distribution, and energy infrastructure within the digital template. It generates spatial distributions of public 
-    safety facilities, estimates electricity demand at the mesh-cell level, maps demand to power grid
-    load nodes, and computes power redistribution using a DC power flow approximation.
+    Socio-economic environment layer linking urban land use, population,
+    and energy demand within the digital template.
+
+    The layer generates spatial distributions of public safety facilities,
+    computes electricity demand at the mesh-cell level, and maps this demand
+    to power grid load nodes.
 
     Parameters
     ----------
     par : dict
-        Dictionary of socio-economic parameters. Expected keys include:
-
+        Socio-economic parameters, including:
         - ``rdm_seed`` : int  
-          Random seed for reproducibility.
+        Random seed for reproducibility.
         - ``W_per_pers_RES`` : list[float]
-          Residential power demand per person (W) for day/night.
+        Residential demand per person (W) for day/night.
         - ``W_per_m2_IND`` : list[float]
-          Industrial power demand per floor area (W/m²) for day/night.
+        Industrial demand per floor area (W/m²) for day/night.
         - ``W_per_m2_COM`` : list[float]
-          Commercial power demand per floor area (W/m²) for day/night.
+        Commercial demand per floor area (W/m²) for day/night.
         - ``pop_perHospital`` : int
-          Population served per hospital.
+        Population served per hospital.
         - ``pop_perPoliceStation`` : int
-          Population served per police station.
+        Population served per police station.
         - ``pop_perFireStation`` : int
-          Population served per fire station.
+        Population served per fire station.
 
     grid : object
-        Spatial grid object containing mesh geometry, including coordinates
-        (``xx``, ``yy``) and cell size (``w``).
+        Spatial grid with coordinates (``xx``, ``yy``) and cell size (``w``).
 
     urbLandLayer : object
-        Urban land-use layer providing land-use classification (``S``),
-        population distributions (``pop_day``, ``pop_night``), and building
-        properties (e.g., number of stories).
+        Urban land-use layer providing land-use classes (``S``),
+        population (day/night), and building properties.
 
     energyLayer : object
-        Energy infrastructure layer containing the initial power grid definition:
-        graph structure, node coordinates, node labels, and supply values.
+        Energy layer providing the power grid structure and node information.
 
     Attributes
     ----------
     ID : str
-        Identifier of the layer ('socioeco').
+        Layer identifier ('socioeco').
 
-    hosp_coords : ndarray of shape (n_hosp, 2)
-        Coordinates of hospitals.
-
-    pol_coords : ndarray of shape (n_pol, 2)
-        Coordinates of police stations.
-
-    fire_coords : ndarray of shape (n_fire, 2)
-        Coordinates of fire stations.
+    hosp_coords, pol_coords, fire_coords : ndarray
+        Coordinates of public safety facilities (hospitals, police, fire).
 
     load_ID : ndarray of shape (nx, ny)
-        Mapping from each mesh cell to the nearest power grid load node ID (NaN for non-urban cells).
+        Mapping of each mesh cell to the nearest load node (NaN for non-urban cells).
 
-    demand_day : ndarray of shape (nx, ny)
-        Electricity demand per mesh cell during daytime (W).
+    demand_day, demand_night : ndarray of shape (nx, ny)
+        Electricity demand per mesh cell (W) for day and night.
 
-    demand_night : ndarray of shape (nx, ny)
-        Electricity demand per mesh cell during nighttime (W).
-
-    node_demand_day : ndarray of shape (n_nodes,)
-        Aggregated electricity demand per power grid node during daytime (MW).
-
-    node_demand_night : ndarray of shape (n_nodes,)
-        Aggregated electricity demand per power grid node during nighttime (MW).
-
-    diff_day : ndarray
-        Difference between uniform node supply and heterogeneous demand during daytime (MW).
-
-    diff_night : ndarray
-        Difference between uniform node supply and heterogeneous demand during nighttime (MW).
-
-    flows_day, flows_night : dict
-        Power flows on network edges for day/night periods, computed using
-        DC approximation. Keys are edge tuples ``(i, j)``.
-
-    theta_day, theta_night : ndarray
-        Node potential (voltage angle) solutions from DC power flow.
-
-    net_day, net_night : ndarray
-        Net power imbalance at each node after flow redistribution (MW).
+    node_demand_day, node_demand_night : ndarray of shape (n_nodes,)
+        Aggregated electricity demand per load node (MW).
 
     Notes
     -----
-    - Facilities are randomly sampled within commercial (COM) cells.
-    - Electricity demand is computed differently for residential (RES),
-      industrial (IND), and commercial (COM) land uses.
-    - Demand is mapped to the nearest load node using a KD-tree search.
-    - Power flows are computed using a linear DC approximation:
-      flow is proportional to differences in node potential (theta).
-    - A slack/reference node is enforced to ensure solvability of the
-      network system.
+    - Facilities are randomly placed within commercial (COM) areas.
+    - Demand depends on land-use type (RES, IND, COM) and building characteristics.
+    - Mesh-cell demand is aggregated to the nearest load node using a KD-tree.
     '''
-
     def __init__(self, par, grid, urbLandLayer, energyLayer):
         self.ID = 'socioeco'
         self.par = par
@@ -2879,8 +2929,6 @@ class EnvLayer_socioeco:
         self._assign_power_nodes()
         self._compute_demand()
         self._aggregate_node_demand()
-        self._compute_power_balance()
-        self._compute_power_flows()
 
 
     ## 1. FACILITIES ##
@@ -2908,7 +2956,7 @@ class EnvLayer_socioeco:
         self.fire_coords = self._sample_facilities(mask_COM, n_fire)
 
 
-    ## 2. POWER NODE MAPPING ##
+    ## 2a POWER NODE MAPPING ##
     def _assign_power_nodes(self):
         powergrid, node_names, node_coords, node_supply = self.energy.powergrid
 
@@ -2926,8 +2974,7 @@ class EnvLayer_socioeco:
         self.load_nodes = load_nodes
         self.node_supply = np.array(node_supply)
 
-
-    ## 3. DEMAND PER CELL ##
+    ## 2b DEMAND PER CELL ##
     def _compute_demand(self):
         nx, ny = self.urb.S.shape
         demand = np.zeros((2, nx, ny), dtype=float)
@@ -2950,8 +2997,7 @@ class EnvLayer_socioeco:
         self.demand_day = demand[0]
         self.demand_night = demand[1]
 
-
-    ## 4. AGGREGATION TO GRID NODES ##
+    ## 2c AGGREGATION TO GRID NODES ##
     def _aggregate_node_demand(self):
         valid_mask = ~np.isnan(self.load_ID)
         node_ids = self.load_ID[valid_mask].astype(int)
@@ -2959,64 +3005,8 @@ class EnvLayer_socioeco:
         self.node_demand_day = (np.bincount(node_ids, weights = self.demand_day[valid_mask], minlength = n_nodes) * 1e-6)
         self.node_demand_night = (np.bincount(node_ids, weights = self.demand_night[valid_mask], minlength = n_nodes) * 1e-6)
 
-    ## 5. BALANCE CHECK ##
-    def _compute_power_balance(self):
-        indL = self.load_nodes
-        diff_day = self.node_supply[indL] - self.node_demand_day
-        diff_night = self.node_supply[indL] - self.node_demand_night
-        self.diff_day = diff_day
-        self.diff_night = diff_night
-        load_min = np.min([np.sum(diff_day), np.sum(diff_night)])
-        if load_min < 0:
-            print(f"Power deficit: {load_min} MW")
-        else:
-            print(f"Power surplus: {load_min} MW")
 
-    ## 6. DC POWER FLOW ##
-    def _compute_flows_dc(self, powergrid, node_supply, node_demand):
-        b = node_supply - node_demand
-        b = b.copy()
-        b[-1] -= np.sum(b)
-        L = networkx.laplacian_matrix(powergrid).astype(float)
-        ref = 0
-        L = L.tolil()
-        L[ref, :] = 0
-        L[:, ref] = 0
-        L[ref, ref] = 1
-        b[ref] = 0
-        theta = spsolve(L.tocsr(), b)
-        flows = {}
-        for i, j in powergrid.edges():
-            f = theta[i] - theta[j]
-            flows[(i, j)] = f
-            flows[(j, i)] = -f
-        return flows, theta
-
-    def _compute_net_power(self, powergrid, flows, node_supply, node_demand):
-        net = node_supply - node_demand
-        for (i, j) in powergrid.edges():
-            f = flows[(i, j)]
-            net[i] -= f
-            net[j] += f
-        return net
-
-    def _compute_power_flows(self):
-        powergrid = self.energy.powergrid[0]
-        n_nodes = len(self.node_supply)
-        # DAY
-        node_demand_full = np.zeros(n_nodes)
-        node_demand_full[self.load_nodes] = self.node_demand_day
-        self.flows_day, self.theta_day = self._compute_flows_dc(powergrid, self.node_supply, node_demand_full)
-        self.net_day = self._compute_net_power(powergrid, self.flows_day, self.node_supply, node_demand_full)
-        # NIGHT
-        node_demand_full = np.zeros(n_nodes)
-        node_demand_full[self.load_nodes] = self.node_demand_night
-        self.flows_night, self.theta_night = self._compute_flows_dc(powergrid, self.node_supply, node_demand_full)
-        self.net_night = self._compute_net_power(powergrid, self.flows_night, self.node_supply, node_demand_full)
-
-
-
-
+    ## 3 xxx ##
 
 
 
@@ -3239,18 +3229,8 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-', box =
                 for i, (x, y) in enumerate(node_coords):
                     plt.text(x + 1, y + 1, node_names[i], fontsize=4, zorder=3)
             plt.legend(loc='upper right')
-        else:
-            return print('No match found for attribute identifier in energy infrastructure layer.')
-        
-    ## SOCIO-ECONOMIC LAYER ##
-    if envLayer.ID == 'socioeco':
-        if attr == 'socialsafFacilities':
-            plt.scatter(envLayer.hosp_coords[:,0], envLayer.hosp_coords[:,1], color = 'blue', marker = 's', label = 'hospital')
-            plt.scatter(envLayer.pol_coords[:,0], envLayer.pol_coords[:,1], color = 'black', marker = '.', label = 'police')
-            plt.scatter(envLayer.fire_coords[:,0], envLayer.fire_coords[:,1], color = 'red', marker = '+', label = 'fire sta.')
-            plt.legend()
-        elif attr == 'powerflows_day':
-            powergrid, _, node_coords, _ = envLayer.energy.powergrid
+        elif attr == 'powerflows_day' and envLayer.load_ID is not None:
+            powergrid, _, node_coords, _ = envLayer.powergrid
             edges = list(powergrid.edges())
             flow_vals = np.array([envLayer.flows_day[(i, j)] for i, j in edges])
             max_flow = np.max(np.abs(flow_vals)) + 1e-6
@@ -3262,8 +3242,8 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-', box =
                     f = -f
                 lw = .5 + 4 * abs(f) / max_flow
                 plt.arrow(x1, y1, x2 - x1, y2 - y1, head_width = .8, length_includes_head = True, linewidth = lw, color = 'red', alpha = .7)
-        elif attr == 'powerflows_night':
-            powergrid, _, node_coords, _ = envLayer.energy.powergrid
+        elif attr == 'powerflows_night' and envLayer.load_ID is not None:
+            powergrid, _, node_coords, _ = envLayer.powergrid
             edges = list(powergrid.edges())
             flow_vals = np.array([envLayer.flows_night[(i, j)] for i, j in edges])
             max_flow = np.max(np.abs(flow_vals)) + 1e-6
@@ -3275,6 +3255,16 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-', box =
                     f = -f
                 lw = .5 + 4 * abs(f) / max_flow
                 plt.arrow(x1, y1, x2 - x1, y2 - y1, head_width = .8, length_includes_head = True, linewidth = lw, color = 'red', alpha = .7)
+        else:
+            return print('No match found for attribute identifier in energy infrastructure layer.')
+        
+    ## SOCIO-ECONOMIC LAYER ##
+    if envLayer.ID == 'socioeco':
+        if attr == 'socialsafFacilities':
+            plt.scatter(envLayer.hosp_coords[:,0], envLayer.hosp_coords[:,1], color = 'blue', marker = 's', label = 'hospital')
+            plt.scatter(envLayer.pol_coords[:,0], envLayer.pol_coords[:,1], color = 'black', marker = '.', label = 'police')
+            plt.scatter(envLayer.fire_coords[:,0], envLayer.fire_coords[:,1], color = 'red', marker = '+', label = 'fire sta.')
+            plt.legend()
         else:
             return print('No match found for attribute identifier in socio-economic layer.')
 
@@ -3578,8 +3568,53 @@ def plot_EnvLayers(envLayers, file_ext = '-', topo_bool = False, box = None):
             ax[i,0].set_aspect(1)
             ax[i,0].legend(loc='upper right')
             
-            ax[i,1].set_axis_off()
-            ax[i,2].set_axis_off()
+            if envLayer.load_ID is not None:
+                if topo_bool:
+                    ax[i,1].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.topo.z, vert_exag=.1), cmap='gray', alpha = .5)
+                edges = list(powergrid.edges())
+                flow_vals = np.array([envLayer.flows_day[(i, j)] for i, j in edges])
+                max_flow = np.max(np.abs(flow_vals)) + 1e-6
+                for (ii, jj), f in zip(edges, flow_vals):
+                    x1, y1 = node_coords[ii]
+                    x2, y2 = node_coords[jj]
+                    # Flip arrow if flow is negative
+                    if f < 0:
+                        x1, y1, x2, y2 = x2, y2, x1, y1
+                        f = -f
+                    lw = .5 + 4 * abs(f) / max_flow
+                    ax[i,1].arrow(x1, y1, x2 - x1, y2 - y1, head_width = .8, length_includes_head = True, linewidth = lw, color = 'red', alpha = .7)
+                ax[i,1].set_xlabel('$x$ (km)')
+                ax[i,1].set_ylabel('$y$ (km)')
+                ax[i,1].set_title('Power grid flows (day)', size = 14, pad = 20)
+                ax[i,1].set_xlim(xmin, xmax)
+                ax[i,1].set_ylim(ymin, ymax)
+                ax[i,1].set_aspect(1)
+            else:
+                ax[i,1].set_axis_off()
+
+            if envLayer.load_ID is not None:
+                if topo_bool:
+                    ax[i,2].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.topo.z, vert_exag=.1), cmap='gray', alpha = .5)
+                edges = list(powergrid.edges())
+                flow_vals = np.array([envLayer.flows_night[(i, j)] for i, j in edges])
+                max_flow = np.max(np.abs(flow_vals)) + 1e-6
+                for (ii, jj), f in zip(edges, flow_vals):
+                    x1, y1 = node_coords[ii]
+                    x2, y2 = node_coords[jj]
+                    # Flip arrow if flow is negative
+                    if f < 0:
+                        x1, y1, x2, y2 = x2, y2, x1, y1
+                        f = -f
+                    lw = .5 + 4 * abs(f) / max_flow
+                    ax[i,2].arrow(x1, y1, x2 - x1, y2 - y1, head_width = .8, length_includes_head = True, linewidth = lw, color = 'red', alpha = .7)
+                ax[i,2].set_xlabel('$x$ (km)')
+                ax[i,2].set_ylabel('$y$ (km)')
+                ax[i,2].set_title('Power grid flows (night)', size = 14, pad = 20)
+                ax[i,2].set_xlim(xmin, xmax)
+                ax[i,2].set_ylim(ymin, ymax)
+                ax[i,2].set_aspect(1)
+            else:
+                ax[i,2].set_axis_off()
 
         ## SOCIO-ECONOMIC LAYER ##
         if envLayer.ID == 'socioeco':
@@ -3599,41 +3634,7 @@ def plot_EnvLayers(envLayers, file_ext = '-', topo_bool = False, box = None):
             ax[i,0].set_aspect(1)
             ax[i,0].legend(loc='upper right')
 
-            mask = ~np.isnan(envLayer.load_ID)
-            node_ids = envLayer.load_ID[mask].astype(int)
-            nx, ny = envLayer.grid.xx.shape
-            net_day_array = np.full((nx, ny), np.nan)
-            net_day_array[mask] = envLayer.net_day[node_ids]
-#            net_night_array = np.full((nx, ny), np.nan)
-#            net_night_array[mask] = envLayer.net_night[node_ids]
-
-            edges = list(powergrid.edges())
-
-            indL = [i for i, name in node_names.items() if name.startswith('L')]
-            diff_day_init = node_supply[indL] - envLayer.node_demand_day
-            vmax = np.nanmax(np.abs(diff_day_init))
-
-            if topo_bool:
-                ax[i,1].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.urb.topo.z, vert_exag=.1), cmap='gray', alpha = .5)
-            ax[i,1].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, net_day_array, cmap = 'PiYG', alpha = .5, vmin = -vmax, vmax = vmax)
-            flow_vals = np.array([envLayer.flows_day[(i, j)] for i, j in edges])
-            max_flow = np.max(np.abs(flow_vals)) + 1e-6
-            for (ii, jj), f in zip(edges, flow_vals):
-                x1, y1 = node_coords[ii]
-                x2, y2 = node_coords[jj]
-                # Flip arrow if flow is negative
-                if f < 0:
-                    x1, y1, x2, y2 = x2, y2, x1, y1
-                    f = -f
-                lw = .5 + 4 * abs(f) / max_flow
-                ax[i,1].arrow(x1, y1, x2 - x1, y2 - y1, head_width = .8, length_includes_head = True, linewidth = lw, color = 'red', alpha = .7)
-            ax[i,1].set_xlabel('$x$ (km)')
-            ax[i,1].set_ylabel('$y$ (km)')
-            ax[i,1].set_title('Power grid flows (day)', size = 14, pad = 20)
-            ax[i,1].set_xlim(xmin, xmax)
-            ax[i,1].set_ylim(ymin, ymax)
-            ax[i,1].set_aspect(1)
-
+            ax[i,1].set_axis_off()
             ax[i,2].set_axis_off()
 
     fig.tight_layout()
