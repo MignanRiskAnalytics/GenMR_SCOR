@@ -3089,7 +3089,7 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-', box =
 
     if envLayer.ID == 'atmo':
         if attr == 'T':
-            img1 = plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.T, cmap = 'bwr', vmin=-10, vmax=20, alpha = .5)
+            img1 = plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.T, cmap = 'bwr', vmin=-10, vmax=20, alpha = alpha)
             month = GenMR_utils.month_labels[envLayer.par['month']-1]
             plt.contour(envLayer.grid.xx, envLayer.grid.yy, envLayer.T, levels = [envLayer.z_freezinglevel], colors = 'blue')
             proxy = Line2D([0], [0], color='blue', label = f'Freezing level in {month}')
@@ -3151,12 +3151,18 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-', box =
         elif attr == 'roadNet':
             plt.plot(envLayer.roadNet_coord[2], envLayer.roadNet_coord[3], color='darkred', lw = 1)
         elif attr == 'bldg_blockValue':
-            img = plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.bldg_blockValue, cmap = 'inferno_r', alpha = .5)
+            img = plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.bldg_blockValue, cmap = 'inferno_r', alpha = alpha)
             fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'Value [$]')
         elif attr == 'built_yr':
-            img = plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.built_yr, cmap = 'inferno_r', alpha = .5,\
+            img = plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.built_yr, cmap = 'inferno_r', alpha = alpha,\
                                 vmin = envLayer.par['city_yr0'], vmax = np.nanmax(envLayer.built_yr))
             fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'Year built')
+        elif attr == 'pop_day':
+            img = plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.pop_day, cmap = 'Reds', alpha = alpha)
+            fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'Population count')
+        elif attr == 'pop_night':
+            img = plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.pop_night, cmap = 'Reds', alpha = alpha)
+            fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'Population count')
         elif attr == 'industrialZones':
             for poly in envLayer.industrialZones:
                 patch = MplPolygon(poly['polygon'].exterior.coords, closed = True, color=GenMR_utils.col_industrialZone.get(poly['zone_type'], 'gray'), alpha=1.)
@@ -3197,6 +3203,42 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-', box =
             plt.legend(loc='upper right')
         else:
             return print('No match found for attribute identifier in energy infrastructure layer.')
+        
+    ## SOCIO-ECONOMIC LAYER ##
+    if envLayer.ID == 'socioeco':
+        if attr == 'socialsafFacilities':
+            plt.scatter(envLayer.hosp_coords[:,0], envLayer.hosp_coords[:,1], color = 'blue', marker = 's', label = 'hospital')
+            plt.scatter(envLayer.pol_coords[:,0], envLayer.pol_coords[:,1], color = 'black', marker = '.', label = 'police')
+            plt.scatter(envLayer.fire_coords[:,0], envLayer.fire_coords[:,1], color = 'red', marker = '+', label = 'fire sta.')
+            plt.legend()
+        elif attr == 'powerflows_day':
+            powergrid, _, node_coords, _ = envLayer.energy.powergrid
+            edges = list(powergrid.edges())
+            flow_vals = np.array([envLayer.flows_day[(i, j)] for i, j in edges])
+            max_flow = np.max(np.abs(flow_vals)) + 1e-6
+            for (ii, jj), f in zip(edges, flow_vals):
+                x1, y1 = node_coords[ii]
+                x2, y2 = node_coords[jj]
+                if f < 0:
+                    x1, y1, x2, y2 = x2, y2, x1, y1
+                    f = -f
+                lw = .5 + 4 * abs(f) / max_flow
+                plt.arrow(x1, y1, x2 - x1, y2 - y1, head_width = .8, length_includes_head = True, linewidth = lw, color = 'red', alpha = .7)
+        elif attr == 'powerflows_night':
+            powergrid, _, node_coords, _ = envLayer.energy.powergrid
+            edges = list(powergrid.edges())
+            flow_vals = np.array([envLayer.flows_night[(i, j)] for i, j in edges])
+            max_flow = np.max(np.abs(flow_vals)) + 1e-6
+            for (ii, jj), f in zip(edges, flow_vals):
+                x1, y1 = node_coords[ii]
+                x2, y2 = node_coords[jj]
+                if f < 0:
+                    x1, y1, x2, y2 = x2, y2, x1, y1
+                    f = -f
+                lw = .5 + 4 * abs(f) / max_flow
+                plt.arrow(x1, y1, x2 - x1, y2 - y1, head_width = .8, length_includes_head = True, linewidth = lw, color = 'red', alpha = .7)
+        else:
+            return print('No match found for attribute identifier in socio-economic layer.')
 
     plt.xlabel('$x$ (km)')
     plt.ylabel('$y$ (km)')
@@ -3206,6 +3248,9 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-', box =
     ax.set_aspect(1)
     if file_ext != '-':
         plt.savefig(f'figs/envLayer_{envLayer.ID}_{attr}.{file_ext}')
+
+
+
 
 
 def plot_EnvLayers(envLayers, file_ext = '-', topo_bool = False, box = None):
@@ -3248,6 +3293,10 @@ def plot_EnvLayers(envLayers, file_ext = '-', topo_bool = False, box = None):
         xmin, xmax, ymin, ymax = box
     else:
         xmin, xmax, ymin, ymax = envLayers[0].grid.xmin, envLayers[0].grid.xmax, envLayers[0].grid.ymin, envLayers[0].grid.ymax
+    if topo_bool:
+        alpha = .5
+    else:
+        alpha = 1.
 
     nLayers = len(envLayers)
     fig, ax = plt.subplots(nLayers, 3, figsize=(20, 6*nLayers), squeeze = False)
@@ -3292,7 +3341,7 @@ def plot_EnvLayers(envLayers, file_ext = '-', topo_bool = False, box = None):
 
             if topo_bool:
                 ax[i,1].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.z, vert_exag=.1), cmap='gray')
-            img1 = ax[i,1].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.slope, cmap = 'inferno', alpha = .5)
+            img1 = ax[i,1].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.slope, cmap = 'inferno', alpha = alpha)
             ax[i,1].set_xlabel('$x$ (km)')
             ax[i,1].set_title('Slope', size = 14, pad = 20)
             ax[i,1].set_xlim(xmin, xmax)
@@ -3302,7 +3351,7 @@ def plot_EnvLayers(envLayers, file_ext = '-', topo_bool = False, box = None):
 
             if topo_bool:
                 ax[i,2].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.z, vert_exag=.1), cmap='gray')
-            img2 = ax[i,2].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.aspect, cmap = 'coolwarm', alpha = .5)
+            img2 = ax[i,2].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.aspect, cmap = 'coolwarm', alpha = alpha)
             ax[i,2].set_xlabel('$x$ (km)')
             ax[i,2].set_title('Aspect', size = 14, pad = 20)
             ax[i,2].set_xlim(xmin, xmax)
@@ -3318,7 +3367,7 @@ def plot_EnvLayers(envLayers, file_ext = '-', topo_bool = False, box = None):
             if topo_bool:
                 ax[i,0].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.topo.z, vert_exag=.1), cmap='gray')
             img1 = ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.T[month_no-1,:,:], cmap = 'bwr', \
-                                         vmin=-10, vmax=20, alpha = .5)
+                                         vmin=-10, vmax=20, alpha = alpha)
             month = GenMR_utils.month_labels[month_no-1]
             ax[i,0].contour(envLayer.grid.xx, envLayer.grid.yy, envLayer.T[month_no-1,:,:], levels = [envLayer.z_freezinglevel[month_no-1]], colors = 'blue')
             ax[i,0].set_xlabel('$x$ (km)')
@@ -3335,7 +3384,7 @@ def plot_EnvLayers(envLayers, file_ext = '-', topo_bool = False, box = None):
             if topo_bool:
                 ax[i,1].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.topo.z, vert_exag=.1), cmap='gray')
             img1 = ax[i,1].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.T[month_no-1,:,:], cmap = 'bwr', \
-                                         vmin=-10, vmax=20, alpha = .5)
+                                         vmin=-10, vmax=20, alpha = alpha)
             month = GenMR_utils.month_labels[month_no-1]
             ax[i,1].contour(envLayer.grid.xx, envLayer.grid.yy, envLayer.T[month_no-1,:,:], levels = [envLayer.z_freezinglevel[month_no-1]], colors = 'blue')
             ax[i,1].set_xlabel('$x$ (km)')
@@ -3362,8 +3411,7 @@ def plot_EnvLayers(envLayers, file_ext = '-', topo_bool = False, box = None):
             
             if topo_bool:
                 ax[i,0].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.topo.z, vert_exag=.1), cmap='gray')
-            ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, h_state, cmap = GenMR_utils.col_h, \
-                                         vmin=0, vmax=5, alpha = .5)
+            ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, h_state, cmap = GenMR_utils.col_h, vmin=0, vmax=5, alpha = alpha)
             ax[i,0].set_xlabel('$x$ (km)')
             ax[i,0].set_ylabel('$y$ (km)')
             ax[i,0].set_title('SOIL: Thickness $h$', size = 14, pad = 20)
@@ -3374,8 +3422,7 @@ def plot_EnvLayers(envLayers, file_ext = '-', topo_bool = False, box = None):
                 
             if topo_bool:
                 ax[i,1].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.topo.z, vert_exag=.1), cmap='gray')
-            ax[i,1].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.FS_state, cmap = GenMR_utils.col_FS, \
-                                         vmin=0, vmax=2, alpha = .5)
+            ax[i,1].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.FS_state, cmap = GenMR_utils.col_FS, vmin=0, vmax=2, alpha = alpha)
             ax[i,1].set_xlabel('$x$ (km)')
             ax[i,1].set_ylabel('$y$ (km)')
             ax[i,1].set_title('Factor of safety', size = 14, pad = 20)
@@ -3394,8 +3441,7 @@ def plot_EnvLayers(envLayers, file_ext = '-', topo_bool = False, box = None):
                         Patch(facecolor=(34/255.,139/255.,34/255.,.5), edgecolor='black', label='Forest')]
             if topo_bool:
                 ax[i,0].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.topo.z, vert_exag=.1), cmap='gray')
-            ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.S, cmap = GenMR_utils.col_S, \
-                                         vmin=-1, vmax=7, alpha = .5)
+            ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.S, cmap = GenMR_utils.col_S, vmin=-1, vmax=7, alpha = alpha)
             ax[i,0].set_xlabel('$x$ (km)')
             ax[i,0].set_ylabel('$y$ (km)')
             ax[i,0].set_title('NATURAL LAND: State $S$', size = 14, pad = 20)
@@ -3429,8 +3475,7 @@ def plot_EnvLayers(envLayers, file_ext = '-', topo_bool = False, box = None):
             
             if topo_bool:
                 ax[i,0].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.topo.z, vert_exag=.1), cmap='gray')
-            ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.S, cmap = GenMR_utils.col_S, \
-                                         vmin=-1, vmax=7, alpha = .5)
+            ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.S, cmap = GenMR_utils.col_S, vmin=-1, vmax=7, alpha = alpha)
             ax[i,0].set_xlabel('$x$ (km)')
             ax[i,0].set_ylabel('$y$ (km)')
             ax[i,0].set_title('URBAN LAND: state $S$', size = 14, pad = 20)
@@ -3456,7 +3501,7 @@ def plot_EnvLayers(envLayers, file_ext = '-', topo_bool = False, box = None):
 
             if topo_bool:
                 ax[i,2].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.topo.z, vert_exag=.1), cmap='gray')
-            ax[i,2].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.pop_day, cmap='Reds', alpha = .5)
+            ax[i,2].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.pop_day, cmap='Reds', alpha = alpha)
             ax[i,2].set_xlim(envLayer.grid.xmin, envLayer.grid.xmax)
             ax[i,2].set_ylim(envLayer.grid.ymin, envLayer.grid.ymax)
             ax[i,2].set_xlabel('$x$ (km)')
