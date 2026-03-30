@@ -22,14 +22,13 @@ Layers and Related Objects (v1.1.2)
   - properties: freezing level, tropopause
 * **Energy infrastructures**
   - properties: point CIs (refinery, hydrodam placeholder, wind farm, thermal plant), power grid (graph + power supply)
+* **Socio-economic**:
+  - properties: public safety services (hospitals, police and fire stations), power demand, economic output, grievance level
 
-Planned Additions (v1.1.2)
----------------------------
-* Socio-economic layers: eco (businesses), socio (population)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-03-25
+:Date: 2026-03-30
 :License: AGPL-3
 """
 
@@ -52,8 +51,10 @@ from shapely.geometry import Polygon, Point, MultiPoint, LineString
 from scipy.interpolate import RegularGridInterpolator
 from scipy import ndimage
 from scipy.spatial import cKDTree
+from scipy.sparse.linalg import spsolve
 from skimage.graph import route_through_array
-import networkx as nx
+import networkx
+
 
 from functools import cached_property
 from dataclasses import dataclass
@@ -2563,12 +2564,12 @@ class EnvLayer_energyCI:
                 if i+1 < rows and load_index[i+1, j] != -1:
                     edges.append((idx, load_index[i+1, j]))
 
-        urbangrid = nx.Graph()
+        urbangrid = networkx.Graph()
         urbangrid.add_nodes_from(range(len(self.load_nodes)))
         urbangrid.add_edges_from(edges)
 
         # Connect isolated components
-        island_comps = list(nx.connected_components(urbangrid))
+        island_comps = list(networkx.connected_components(urbangrid))
         comp_list = [list(c) for c in island_comps]
         centroids = [self.load_nodes[c].mean(axis=0) for c in comp_list]
         tree_comp = cKDTree(centroids)
@@ -2699,7 +2700,7 @@ class EnvLayer_energyCI:
         _, load_index = self.gen_loadnodes()
         urbangrid, _ = self.gen_urbangrid(load_index)
         powergrid, node_names, node_coords = self.connect_generators_substations(urbangrid)
-#        print('Power grid fully connected:', nx.is_connected(powergrid))
+#        print('Power grid fully connected:', networkx.is_connected(powergrid))
 
         nG = sum(1 for name in node_names.values() if name.startswith('G')) / self.par['powergrid_redundanciesGS']
         Ptot = nG * self.par['powergrid_power_perGnode_GW'] * 1e3       # MW
@@ -2716,15 +2717,185 @@ class EnvLayer_energyCI:
 
 
 
-
-
-
 #####################################
 # SOCIO-ECONOMIC ENVIRONMENT LAYERS #
 #####################################
+class EnvLayer_socioeco:
+    '''
+    Socio-economic layer:
+    - Public safety facilities (hospital, police, fire)
+    - Electricity demand (day/night)
+    - Mapping to power grid load nodes
+    - Power flow redistribution (DC approximation)
+    '''
 
-# coming by mid 2026
+    def __init__(self, par, grid, urbLandLayer, energyLayer):
+        self.par = par
+        self.grid = grid
+        self.urb = urbLandLayer
+        self.energy = energyLayer
+        self.rng = np.random.default_rng(self.par['rdm_seed'])
 
+        self.hosp_coords = None
+        self.pol_coords = None
+        self.fire_coords = None
+        # grid mesh cells
+        self.load_ID = None
+        self.demand_day = None
+        self.demand_night = None
+        # power grid nodes
+        self.node_demand_day = None
+        self.node_demand_night = None
+
+    def build(self):
+        self._place_facilities()
+        self._assign_power_nodes()
+        self._compute_demand()
+        self._aggregate_node_demand()
+        self._compute_power_balance()
+        self._compute_power_flows()
+
+
+    ## 1. FACILITIES ##
+    def _sample_facilities(self, mask, n):
+        ii, jj = np.where(mask)
+        if len(ii) == 0:
+            return np.empty((0, 2))
+
+        n = min(n, len(ii))
+        ind = self.rng.choice(len(ii), size=n, replace=False)
+
+        x = self.grid.xx[ii[ind], jj[ind]]
+        y = self.grid.yy[ii[ind], jj[ind]]
+
+        return np.column_stack((x, y))
+
+    def _place_facilities(self):
+        pop_tot = np.sum(self.urb.pop_night)
+        n_hospital = int(pop_tot / self.par['pop_perHospital'])
+        n_police = int(pop_tot / self.par['pop_perPoliceStation'])
+        n_fire = int(pop_tot / self.par['pop_perFireStation'])
+        mask_COM = self.urb.S == 4
+        self.hosp_coords = self._sample_facilities(mask_COM, n_hospital)
+        self.pol_coords = self._sample_facilities(mask_COM, n_police)
+        self.fire_coords = self._sample_facilities(mask_COM, n_fire)
+
+
+    ## 2. POWER NODE MAPPING ##
+    def _assign_power_nodes(self):
+        powergrid, node_names, node_coords, node_supply = self.energy.powergrid
+
+        load_nodes = [i for i, name in node_names.items() if name.startswith('L')]
+        load_coords = node_coords[load_nodes]
+
+        tree = cKDTree(load_coords)
+        mask = np.isin(self.urb.S, [2, 3, 4])        # urban area RES, IND, COM
+        cell_coords = np.column_stack((self.grid.xx[mask], self.grid.yy[mask]))
+        _, idx = tree.query(cell_coords)
+        nearest_load_ids = np.array(load_nodes)[idx]
+
+        self.load_ID = np.full(self.urb.S.shape, np.nan)
+        self.load_ID[mask] = nearest_load_ids
+        self.load_nodes = load_nodes
+        self.node_supply = np.array(node_supply)
+
+
+    ## 3. DEMAND PER CELL ##
+    def _compute_demand(self):
+        nx, ny = self.urb.S.shape
+        demand = np.zeros((2, nx, ny), dtype=float)
+        Acell = (self.grid.w * 1e3) ** 2
+        Aratio = self.urb._get_Aratio_map()
+        # RES
+        mask = self.urb.S == 2
+        demand[0, mask] = self.urb.pop_day[mask] * self.par['W_per_pers_RES'][0]
+        demand[1, mask] = self.urb.pop_night[mask] * self.par['W_per_pers_RES'][1]
+        # IND
+        mask = self.urb.S == 3
+        floor_area = Acell * Aratio[mask] * self.urb.bldg_Nstories[mask]
+        demand[0, mask] = floor_area * self.par['W_per_m2_IND'][0]
+        demand[1, mask] = floor_area * self.par['W_per_m2_IND'][1]
+        # COM
+        mask = self.urb.S == 4
+        floor_area = Acell * Aratio[mask] * self.urb.bldg_Nstories[mask]
+        demand[0, mask] = floor_area * self.par['W_per_m2_COM'][0]
+        demand[1, mask] = floor_area * self.par['W_per_m2_COM'][1]
+        self.demand_day = demand[0]
+        self.demand_night = demand[1]
+
+
+    ## 4. AGGREGATION TO GRID NODES ##
+    def _aggregate_node_demand(self):
+        valid_mask = ~np.isnan(self.load_ID)
+        node_ids = self.load_ID[valid_mask].astype(int)
+        n_nodes = int(np.nanmax(self.load_ID)) + 1
+        self.node_demand_day = (
+            np.bincount(node_ids,
+                        weights=self.demand_day[valid_mask],
+                        minlength=n_nodes) * 1e-6
+        )
+        self.node_demand_night = (
+            np.bincount(node_ids,
+                        weights=self.demand_night[valid_mask],
+                        minlength=n_nodes) * 1e-6
+        )
+
+    ## 5. BALANCE CHECK ##
+    def _compute_power_balance(self):
+        indL = self.load_nodes
+        diff_day = self.node_supply[indL] - self.node_demand_day
+        diff_night = self.node_supply[indL] - self.node_demand_night
+        self.diff_day = diff_day
+        self.diff_night = diff_night
+        load_min = np.min([np.sum(diff_day), np.sum(diff_night)])
+        if load_min < 0:
+            print(f"Power deficit: {load_min} MW")
+        else:
+            print(f"Power surplus: {load_min} MW")
+
+    ## 6. DC POWER FLOW ##
+    def _compute_flows_dc(self, powergrid, node_supply, node_demand):
+        b = node_supply - node_demand
+
+        b = b.copy()
+        b[-1] -= np.sum(b)
+        L = networkx.laplacian_matrix(powergrid).astype(float)
+        ref = 0
+        L = L.tolil()
+        L[ref, :] = 0
+        L[:, ref] = 0
+        L[ref, ref] = 1
+        b[ref] = 0
+        theta = spsolve(L.tocsr(), b)
+        flows = {}
+        for i, j in powergrid.edges():
+            f = theta[i] - theta[j]
+            flows[(i, j)] = f
+            flows[(j, i)] = -f
+        return flows, theta
+
+    def _compute_net_power(self, powergrid, flows, node_supply, node_demand):
+        net = node_supply - node_demand
+        for (i, j) in powergrid.edges():
+            f = flows[(i, j)]
+            net[i] -= f
+            net[j] += f
+        return net
+
+    def _compute_power_flows(self):
+        powergrid = self.energy.powergrid[0]
+        n_nodes = len(self.node_supply)
+        # DAY
+        node_demand_full = np.zeros(n_nodes)
+        node_demand_full[self.load_nodes] = self.node_demand_day
+        self.flows_day, self.theta_day = self._compute_flows_dc(powergrid, self.node_supply, node_demand_full)
+        self.net_day = self._compute_net_power(powergrid, self.flows_day, self.node_supply, node_demand_full)
+
+        # NIGHT
+        node_demand_full = np.zeros(n_nodes)
+        node_demand_full[self.load_nodes] = self.node_demand_night
+        self.flows_night, self.theta_night = self._compute_flows_dc(powergrid, self.node_supply, node_demand_full)
+        self.net_night = self._compute_net_power(powergrid, self.flows_night, self.node_supply, node_demand_full)
 
 
 
