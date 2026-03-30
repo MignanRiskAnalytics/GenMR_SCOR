@@ -2293,7 +2293,6 @@ class EnvLayer_energyCI:
     '''
     Docstring for EnvLayer_energyCI TO WRITE
     '''
-
     def __init__(self, urbLand, par):
         self.ID = 'energy'
         self.urbLand = copy.deepcopy(urbLand)
@@ -2302,6 +2301,12 @@ class EnvLayer_energyCI:
         self.industrialZones = urbLand.industrialZones
         self.par = par
 #        np.random.seed(self.par['rdm_seed'])
+        self.node_supply_updated_day = None
+        self.node_supply_updated_night = None
+        self.flows_day = None
+        self.flows_night = None
+        self.theta_day = None
+        self.theta_night = None
 
     ## Energy CI points ##
     def _CI_from_largest_harbor_zone(self, name, rank=1):
@@ -2714,6 +2719,39 @@ class EnvLayer_energyCI:
         return powergrid, node_names, node_coords, node_supply
 
 
+    ## UPDATE AFTER SOCIO-ECONOMIC LAYER DEF. ##
+    def update_from_socioeco(self, socioecoLayer):
+        '''
+        Update energy layer state from socio-economic layer results.
+
+        Parameters
+        ----------
+        socioecoLayer : EnvLayer_socioeco
+            Layer providing computed power flows and node demand.
+        '''
+        powergrid, _, _, node_supply = self.powergrid
+
+        ## STORE FLOWS & POTENTIALS ##
+        self.flows_day = socioecoLayer.flows_day
+        self.flows_night = socioecoLayer.flows_night
+        self.theta_day = socioecoLayer.theta_day
+        self.theta_night = socioecoLayer.theta_night
+
+        ## UPDATE NODE SUPPLY ##
+        #  DAY
+        updated_day = node_supply.copy()
+        for (i, j) in powergrid.edges():
+            f = self.flows_day[(i, j)]
+            updated_day[i] -= f
+            updated_day[j] += f
+        # NIGHT
+        updated_night = node_supply.copy()
+        for (i, j) in powergrid.edges():
+            f = self.flows_night[(i, j)]
+            updated_night[i] -= f
+            updated_night[j] += f
+        self.node_supply_updated_day = updated_day
+        self.node_supply_updated_night = updated_night
 
 
 
