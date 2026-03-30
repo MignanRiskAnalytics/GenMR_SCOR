@@ -2722,14 +2722,103 @@ class EnvLayer_energyCI:
 #####################################
 class EnvLayer_socioeco:
     '''
-    Socio-economic layer:
-    - Public safety facilities (hospital, police, fire)
-    - Electricity demand (day/night)
-    - Mapping to power grid load nodes
-    - Power flow redistribution (DC approximation)
+    Socio-economic environment layer which represents the coupling between urban land use, population
+    distribution, and energy infrastructure within the digital template. It generates spatial distributions of public 
+    safety facilities, estimates electricity demand at the mesh-cell level, maps demand to power grid
+    load nodes, and computes power redistribution using a DC power flow approximation.
+
+    Parameters
+    ----------
+    par : dict
+        Dictionary of socio-economic parameters. Expected keys include:
+
+        - ``rdm_seed`` : int  
+          Random seed for reproducibility.
+        - ``W_per_pers_RES`` : list[float]
+          Residential power demand per person (W) for day/night.
+        - ``W_per_m2_IND`` : list[float]
+          Industrial power demand per floor area (W/m²) for day/night.
+        - ``W_per_m2_COM`` : list[float]
+          Commercial power demand per floor area (W/m²) for day/night.
+        - ``pop_perHospital`` : int
+          Population served per hospital.
+        - ``pop_perPoliceStation`` : int
+          Population served per police station.
+        - ``pop_perFireStation`` : int
+          Population served per fire station.
+
+    grid : object
+        Spatial grid object containing mesh geometry, including coordinates
+        (``xx``, ``yy``) and cell size (``w``).
+
+    urbLandLayer : object
+        Urban land-use layer providing land-use classification (``S``),
+        population distributions (``pop_day``, ``pop_night``), and building
+        properties (e.g., number of stories).
+
+    energyLayer : object
+        Energy infrastructure layer containing the initial power grid definition:
+        graph structure, node coordinates, node labels, and supply values.
+
+    Attributes
+    ----------
+    ID : str
+        Identifier of the layer ('socioeco').
+
+    hosp_coords : ndarray of shape (n_hosp, 2)
+        Coordinates of hospitals.
+
+    pol_coords : ndarray of shape (n_pol, 2)
+        Coordinates of police stations.
+
+    fire_coords : ndarray of shape (n_fire, 2)
+        Coordinates of fire stations.
+
+    load_ID : ndarray of shape (nx, ny)
+        Mapping from each mesh cell to the nearest power grid load node ID (NaN for non-urban cells).
+
+    demand_day : ndarray of shape (nx, ny)
+        Electricity demand per mesh cell during daytime (W).
+
+    demand_night : ndarray of shape (nx, ny)
+        Electricity demand per mesh cell during nighttime (W).
+
+    node_demand_day : ndarray of shape (n_nodes,)
+        Aggregated electricity demand per power grid node during daytime (MW).
+
+    node_demand_night : ndarray of shape (n_nodes,)
+        Aggregated electricity demand per power grid node during nighttime (MW).
+
+    diff_day : ndarray
+        Difference between uniform node supply and heterogeneous demand during daytime (MW).
+
+    diff_night : ndarray
+        Difference between uniform node supply and heterogeneous demand during nighttime (MW).
+
+    flows_day, flows_night : dict
+        Power flows on network edges for day/night periods, computed using
+        DC approximation. Keys are edge tuples ``(i, j)``.
+
+    theta_day, theta_night : ndarray
+        Node potential (voltage angle) solutions from DC power flow.
+
+    net_day, net_night : ndarray
+        Net power imbalance at each node after flow redistribution (MW).
+
+    Notes
+    -----
+    - Facilities are randomly sampled within commercial (COM) cells.
+    - Electricity demand is computed differently for residential (RES),
+      industrial (IND), and commercial (COM) land uses.
+    - Demand is mapped to the nearest load node using a KD-tree search.
+    - Power flows are computed using a linear DC approximation:
+      flow is proportional to differences in node potential (theta).
+    - A slack/reference node is enforced to ensure solvability of the
+      network system.
     '''
 
     def __init__(self, par, grid, urbLandLayer, energyLayer):
+        self.ID = 'socioeco'
         self.par = par
         self.grid = grid
         self.urb = urbLandLayer
@@ -2829,16 +2918,8 @@ class EnvLayer_socioeco:
         valid_mask = ~np.isnan(self.load_ID)
         node_ids = self.load_ID[valid_mask].astype(int)
         n_nodes = int(np.nanmax(self.load_ID)) + 1
-        self.node_demand_day = (
-            np.bincount(node_ids,
-                        weights=self.demand_day[valid_mask],
-                        minlength=n_nodes) * 1e-6
-        )
-        self.node_demand_night = (
-            np.bincount(node_ids,
-                        weights=self.demand_night[valid_mask],
-                        minlength=n_nodes) * 1e-6
-        )
+        self.node_demand_day = (np.bincount(node_ids, weights = self.demand_day[valid_mask], minlength = n_nodes) * 1e-6)
+        self.node_demand_night = (np.bincount(node_ids, weights = self.demand_night[valid_mask], minlength = n_nodes) * 1e-6)
 
     ## 5. BALANCE CHECK ##
     def _compute_power_balance(self):
@@ -2856,7 +2937,6 @@ class EnvLayer_socioeco:
     ## 6. DC POWER FLOW ##
     def _compute_flows_dc(self, powergrid, node_supply, node_demand):
         b = node_supply - node_demand
-
         b = b.copy()
         b[-1] -= np.sum(b)
         L = networkx.laplacian_matrix(powergrid).astype(float)
@@ -2890,7 +2970,6 @@ class EnvLayer_socioeco:
         node_demand_full[self.load_nodes] = self.node_demand_day
         self.flows_day, self.theta_day = self._compute_flows_dc(powergrid, self.node_supply, node_demand_full)
         self.net_day = self._compute_net_power(powergrid, self.flows_day, self.node_supply, node_demand_full)
-
         # NIGHT
         node_demand_full = np.zeros(n_nodes)
         node_demand_full[self.load_nodes] = self.node_demand_night
@@ -3129,7 +3208,7 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-', box =
         plt.savefig(f'figs/envLayer_{envLayer.ID}_{attr}.{file_ext}')
 
 
-def plot_EnvLayers(envLayers, file_ext = '-'):
+def plot_EnvLayers(envLayers, file_ext = '-', topo_bool = False, box = None):
     '''
     Plot multiple environmental layers with up to three attributes per layer.
 
@@ -3156,27 +3235,30 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
     Notes
     -----
     - For topography layer, the three columns correspond to: altitude `z`, slope, and aspect.
-    - For atmospheric layer, the column correspinds to: near-surface air temperature `T`.
+    - For atmospheric layer, the column corresponds to: near-surface air temperature `T`.
     - For soil layer, the three columns correspond to: thickness `h`, factor of safety, and an empty panel.
     - For natural land layer, the first column shows land classes (`S`), the other two columns are empty.
     - For urban land layer, the three columns correspond to: state `S`, road network, and building value.
+    - For energy layer, the column corresponds to: power grid graph.
+    - For socio-economic layer, the two columns correspond to: public safety facilities, optimised power grid graph.
     - Legends, color maps, and hillshading are applied automatically depending on the layer type.
     '''
+
+    if box is not None:
+        xmin, xmax, ymin, ymax = box
+    else:
+        xmin, xmax, ymin, ymax = envLayers[0].grid.xmin, envLayers[0].grid.xmax, envLayers[0].grid.ymin, envLayers[0].grid.ymax
+
     nLayers = len(envLayers)
     fig, ax = plt.subplots(nLayers, 3, figsize=(20, 6*nLayers), squeeze = False)
     plt.subplots_adjust(wspace = .25, hspace = .1)
     
-    topo_bool = False
     IDs = ''
     for i in range(nLayers):
         envLayer = envLayers[i]
         ## TOPOGRAPHY LAYER ##
         if envLayer.ID == 'topo':
             IDs = IDs + '_topo'
-            topo_bool = True
-            topo_z = envLayer.z
-            topo_xx = envLayer.grid.xx
-            topo_yy = envLayer.grid.yy
             z_plot = np.copy(envLayer.z)
             z_plot[z_plot < envLayer.par['plt_zmin_m']] = envLayer.par['plt_zmin_m']
             z_plot[z_plot > envLayer.par['plt_zmax_m']] = envLayer.par['plt_zmax_m']
@@ -3202,21 +3284,29 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
                 ax[i,0].plot(coast_x, coast_y, color = 'yellow', linestyle = 'dashed')
             ax[i,0].set_xlabel('$x$ (km)')
             ax[i,0].set_ylabel('$y$ (km)')
-            ax[i,0].set_title('TOPOGRAPHY: altitude $z$', size = 14, pad = 20)
+            ax[i,0].set_title('TOPOGRAPHY: Altitude $z$', size = 14, pad = 20)
+            ax[i,0].set_xlim(xmin, xmax)
+            ax[i,0].set_ylim(ymin, ymax)
             ax[i,0].set_aspect(1)
             fig.colorbar(img0, ax = ax[i,0], fraction = .04, pad = .04, label = 'z (m)')
 
-            ax[i,1].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.z, vert_exag=.1), cmap='gray')
+            if topo_bool:
+                ax[i,1].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.z, vert_exag=.1), cmap='gray')
             img1 = ax[i,1].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.slope, cmap = 'inferno', alpha = .5)
             ax[i,1].set_xlabel('$x$ (km)')
             ax[i,1].set_title('Slope', size = 14, pad = 20)
+            ax[i,1].set_xlim(xmin, xmax)
+            ax[i,1].set_ylim(ymin, ymax)
             ax[i,1].set_aspect(1)
             fig.colorbar(img1, ax = ax[i,1], fraction = .04, pad = .04, label = 'slope ($^\circ$)')
 
-            ax[i,2].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.z, vert_exag=.1), cmap='gray')
+            if topo_bool:
+                ax[i,2].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.z, vert_exag=.1), cmap='gray')
             img2 = ax[i,2].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.aspect, cmap = 'coolwarm', alpha = .5)
             ax[i,2].set_xlabel('$x$ (km)')
             ax[i,2].set_title('Aspect', size = 14, pad = 20)
+            ax[i,2].set_xlim(xmin, xmax)
+            ax[i,2].set_ylim(ymin, ymax)
             ax[i,2].set_aspect(1)
             fig.colorbar(img2, ax = ax[i,2], fraction = .04, pad = .04, label = 'aspect ($^\circ$)')
 
@@ -3226,14 +3316,16 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
 
             month_no = 1
             if topo_bool:
-                ax[i,0].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray')
+                ax[i,0].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.topo.z, vert_exag=.1), cmap='gray')
             img1 = ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.T[month_no-1,:,:], cmap = 'bwr', \
                                          vmin=-10, vmax=20, alpha = .5)
             month = GenMR_utils.month_labels[month_no-1]
             ax[i,0].contour(envLayer.grid.xx, envLayer.grid.yy, envLayer.T[month_no-1,:,:], levels = [envLayer.z_freezinglevel[month_no-1]], colors = 'blue')
             ax[i,0].set_xlabel('$x$ (km)')
             ax[i,0].set_ylabel('$y$ (km)')
-            ax[i,0].set_title(f'ATMOSPHERE: temperature $T$ ({month})', size = 14, pad = 20)
+            ax[i,0].set_title(f'ATMOSPHERE: Temperature $T$ ({month})', size = 14, pad = 20)
+            ax[i,0].set_xlim(xmin, xmax)
+            ax[i,0].set_ylim(ymin, ymax)
             ax[i,0].set_aspect(1)
             proxy = Line2D([0], [0], color='blue', label = f'Freezing level in {month}')
             ax[i,0].legend(handles=[proxy], loc='upper left')
@@ -3241,14 +3333,16 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
 
             month_no = 7
             if topo_bool:
-                ax[i,1].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray')
+                ax[i,1].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.topo.z, vert_exag=.1), cmap='gray')
             img1 = ax[i,1].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.T[month_no-1,:,:], cmap = 'bwr', \
                                          vmin=-10, vmax=20, alpha = .5)
             month = GenMR_utils.month_labels[month_no-1]
             ax[i,1].contour(envLayer.grid.xx, envLayer.grid.yy, envLayer.T[month_no-1,:,:], levels = [envLayer.z_freezinglevel[month_no-1]], colors = 'blue')
             ax[i,1].set_xlabel('$x$ (km)')
             ax[i,1].set_ylabel('$y$ (km)')
-            ax[i,1].set_title(f'ATMOSPHERE: temperature $T$ ({month})', size = 14, pad = 20)
+            ax[i,1].set_title(f'Temperature $T$ ({month})', size = 14, pad = 20)
+            ax[i,1].set_xlim(xmin, xmax)
+            ax[i,1].set_ylim(ymin, ymax)
             ax[i,1].set_aspect(1)
             proxy = Line2D([0], [0], color='blue', label = f'Freezing level in {month}')
             ax[i,1].legend(handles=[proxy], loc='upper left')
@@ -3267,22 +3361,26 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
                         Patch(facecolor=(178/255.,34/255.,34/255., .5), edgecolor='black', label='<1 (unstable)')]
             
             if topo_bool:
-                ax[i,0].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray')
+                ax[i,0].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.topo.z, vert_exag=.1), cmap='gray')
             ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, h_state, cmap = GenMR_utils.col_h, \
                                          vmin=0, vmax=5, alpha = .5)
             ax[i,0].set_xlabel('$x$ (km)')
             ax[i,0].set_ylabel('$y$ (km)')
-            ax[i,0].set_title('SOIL: thickness $h$', size = 14, pad = 20)
+            ax[i,0].set_title('SOIL: Thickness $h$', size = 14, pad = 20)
+            ax[i,0].set_xlim(xmin, xmax)
+            ax[i,0].set_ylim(ymin, ymax)
             ax[i,0].set_aspect(1)
             ax[i,0].legend(handles=legend_h, loc='upper left')
                 
             if topo_bool:
-                ax[i,1].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray')
+                ax[i,1].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.topo.z, vert_exag=.1), cmap='gray')
             ax[i,1].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.FS_state, cmap = GenMR_utils.col_FS, \
                                          vmin=0, vmax=2, alpha = .5)
             ax[i,1].set_xlabel('$x$ (km)')
             ax[i,1].set_ylabel('$y$ (km)')
             ax[i,1].set_title('Factor of safety', size = 14, pad = 20)
+            ax[i,1].set_xlim(xmin, xmax)
+            ax[i,1].set_ylim(ymin, ymax)
             ax[i,1].set_aspect(1)
             ax[i,1].legend(handles=legend_FS, loc='upper left')
             
@@ -3295,12 +3393,14 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
                         Patch(facecolor=(236/255., 235/255., 189/255.,.5), edgecolor='black', label='Grassland'),
                         Patch(facecolor=(34/255.,139/255.,34/255.,.5), edgecolor='black', label='Forest')]
             if topo_bool:
-                ax[i,0].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray')
+                ax[i,0].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.topo.z, vert_exag=.1), cmap='gray')
             ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.S, cmap = GenMR_utils.col_S, \
                                          vmin=-1, vmax=7, alpha = .5)
             ax[i,0].set_xlabel('$x$ (km)')
             ax[i,0].set_ylabel('$y$ (km)')
-            ax[i,0].set_title('NATURAL LAND', size = 14, pad = 20)
+            ax[i,0].set_title('NATURAL LAND: State $S$', size = 14, pad = 20)
+            ax[i,0].set_xlim(xmin, xmax)
+            ax[i,0].set_ylim(ymin, ymax)
             ax[i,0].set_aspect(1)
             ax[i,0].legend(handles=legend_S, loc='upper left')
             
@@ -3328,17 +3428,19 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
                             Patch(facecolor=(255/255.,140/255.,0/255.,.5), edgecolor='black', label='Maize')]
             
             if topo_bool:
-                ax[i,0].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray')
+                ax[i,0].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.topo.z, vert_exag=.1), cmap='gray')
             ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.S, cmap = GenMR_utils.col_S, \
                                          vmin=-1, vmax=7, alpha = .5)
             ax[i,0].set_xlabel('$x$ (km)')
             ax[i,0].set_ylabel('$y$ (km)')
-            ax[i,0].set_title('URBAN LAND: state S', size = 14, pad = 20)
+            ax[i,0].set_title('URBAN LAND: state $S$', size = 14, pad = 20)
+            ax[i,0].set_xlim(xmin, xmax)
+            ax[i,0].set_ylim(ymin, ymax)
             ax[i,0].set_aspect(1)
             ax[i,0].legend(handles=legend_S, loc='upper left')
             
             if topo_bool:
-                ax[i,1].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray')
+                ax[i,1].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.topo.z, vert_exag=.1), cmap='gray')
 #            ax[i,1].scatter(envLayer.roadNet_coord[0], envLayer.roadNet_coord[1], color = 'white', edgecolors='black')
 #            ax[i,1].plot(envLayer.roadNet_coord[2], envLayer.roadNet_coord[3], color='white', lw = 1, \
 #                         path_effects=[pe.Stroke(linewidth = 1.5, foreground='black'), pe.Normal()])
@@ -3347,26 +3449,22 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
             ax[i,1].set_ylim(envLayer.grid.ymin, envLayer.grid.ymax)
             ax[i,1].set_xlabel('$x$ (km)')
             ax[i,1].set_ylabel('$y$ (km)')
+            ax[i,1].set_xlim(xmin, xmax)
+            ax[i,1].set_ylim(ymin, ymax)
             ax[i,1].set_title('Road network', size = 14, pad = 20)
             ax[i,1].set_aspect(1)
 
             if topo_bool:
-                ax[i,2].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray')
-            coast_x, coast_y = envLayer.topo.coastline_coord
-            riv_x, riv_y, _, _ = envLayer.topo.river_coord
-            ax[i,2].plot(coast_x, coast_y, color = 'yellow', linestyle = 'dashed')
-            ax[i,2].plot(riv_x, riv_y, color = 'yellow', linestyle = 'dashed')
-            for poly in envLayer.industrialZones:
-                patch = MplPolygon(poly['polygon'].exterior.coords, closed = True, color=GenMR_utils.col_industrialZone.get(poly['zone_type'], 'gray'), alpha=1.)
-                ax[i,2].add_patch(patch)
+                ax[i,2].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.topo.z, vert_exag=.1), cmap='gray')
+            ax[i,2].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.pop_day, cmap='Reds', alpha = .5)
             ax[i,2].set_xlim(envLayer.grid.xmin, envLayer.grid.xmax)
             ax[i,2].set_ylim(envLayer.grid.ymin, envLayer.grid.ymax)
             ax[i,2].set_xlabel('$x$ (km)')
             ax[i,2].set_ylabel('$y$ (km)')
-            ax[i,2].set_title('Industrial zones', size = 14, pad = 20)
+            ax[i,2].set_title('Day population', size = 14, pad = 20)
+            ax[i,2].set_xlim(xmin, xmax)
+            ax[i,2].set_ylim(ymin, ymax)
             ax[i,2].set_aspect(1)
-            labels_industrialZone = [h.get_label() for h in lgd_industrialZone]
-            ax[i,2].legend(lgd_industrialZone, labels_industrialZone, loc='upper left')
 
         ## ENERGY LAYER ##
         if envLayer.ID == 'energy':
@@ -3381,7 +3479,7 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
             G_coords = node_coords[G_nodes]
             edges = list(powergrid.edges())
             if topo_bool:
-                ax[i,0].contourf(topo_xx, topo_yy, ls.hillshade(topo_z, vert_exag=.1), cmap='gray', alpha = .5)
+                ax[i,0].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.topo.z, vert_exag=.1), cmap='gray', alpha = .5)
             ax[i,0].scatter(L_coords[:,0], L_coords[:,1], color='black', s=5, label='Load')
             ax[i,0].plot(S_coords[:,0], S_coords[:,1], 'bs', markersize=10, label='Substation')
             ax[i,0].plot(G_coords[:,0], G_coords[:,1], 'r*', markersize=15, label='Generator')
@@ -3391,12 +3489,70 @@ def plot_EnvLayers(envLayers, file_ext = '-'):
                 ax[i,0].plot(x, y, color='black', linewidth=0.5)
             ax[i,0].set_xlabel('$x$ (km)')
             ax[i,0].set_ylabel('$y$ (km)')
-            ax[i,0].set_title('ENERGY INFRASTRUCTURE', size = 14, pad = 20)
+            ax[i,0].set_title('ENERGY: Power grid', size = 14, pad = 20)
+            ax[i,0].set_xlim(xmin, xmax)
+            ax[i,0].set_ylim(ymin, ymax)
             ax[i,0].set_aspect(1)
             ax[i,0].legend(loc='upper right')
             
             ax[i,1].set_axis_off()
             ax[i,2].set_axis_off()
 
+        ## SOCIO-ECONOMIC LAYER ##
+        if envLayer.ID == 'socioeco':
+            IDs = IDs + '_socioeco'
+            powergrid, node_names, node_coords, node_supply = envLayer.energy.powergrid
+
+            if topo_bool:
+                ax[i,0].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.urb.topo.z, vert_exag=.1), cmap='gray', alpha = .5)
+            ax[i,0].scatter(envLayer.hosp_coords[:,0], envLayer.hosp_coords[:,1], color = 'blue', marker = 's', label = 'hospital')
+            ax[i,0].scatter(envLayer.pol_coords[:,0], envLayer.pol_coords[:,1], color = 'black', marker = '.', label = 'police')
+            ax[i,0].scatter(envLayer.fire_coords[:,0], envLayer.fire_coords[:,1], color = 'red', marker = '+', label = 'fire sta.')
+            ax[i,0].set_xlabel('$x$ (km)')
+            ax[i,0].set_ylabel('$y$ (km)')
+            ax[i,0].set_title('SOCIOECO: Public safety facilities', size = 14, pad = 20)
+            ax[i,0].set_xlim(xmin, xmax)
+            ax[i,0].set_ylim(ymin, ymax)
+            ax[i,0].set_aspect(1)
+            ax[i,0].legend(loc='upper right')
+
+            mask = ~np.isnan(envLayer.load_ID)
+            node_ids = envLayer.load_ID[mask].astype(int)
+            nx, ny = envLayer.grid.xx.shape
+            net_day_array = np.full((nx, ny), np.nan)
+            net_day_array[mask] = envLayer.net_day[node_ids]
+#            net_night_array = np.full((nx, ny), np.nan)
+#            net_night_array[mask] = envLayer.net_night[node_ids]
+
+            edges = list(powergrid.edges())
+
+            indL = [i for i, name in node_names.items() if name.startswith('L')]
+            diff_day_init = node_supply[indL] - envLayer.node_demand_day
+            vmax = np.nanmax(np.abs(diff_day_init))
+
+            if topo_bool:
+                ax[i,1].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.urb.topo.z, vert_exag=.1), cmap='gray', alpha = .5)
+            ax[i,1].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, net_day_array, cmap = 'PiYG', alpha = .5, vmin = -vmax, vmax = vmax)
+            flow_vals = np.array([envLayer.flows_day[(i, j)] for i, j in edges])
+            max_flow = np.max(np.abs(flow_vals)) + 1e-6
+            for (ii, jj), f in zip(edges, flow_vals):
+                x1, y1 = node_coords[ii]
+                x2, y2 = node_coords[jj]
+                # Flip arrow if flow is negative
+                if f < 0:
+                    x1, y1, x2, y2 = x2, y2, x1, y1
+                    f = -f
+                lw = .5 + 4 * abs(f) / max_flow
+                ax[i,1].arrow(x1, y1, x2 - x1, y2 - y1, head_width = .8, length_includes_head = True, linewidth = lw, color = 'red', alpha = .7)
+            ax[i,1].set_xlabel('$x$ (km)')
+            ax[i,1].set_ylabel('$y$ (km)')
+            ax[i,1].set_title('Power grid flows (day)', size = 14, pad = 20)
+            ax[i,1].set_xlim(xmin, xmax)
+            ax[i,1].set_ylim(ymin, ymax)
+            ax[i,1].set_aspect(1)
+
+            ax[i,2].set_axis_off()
+
+    fig.tight_layout()
     if file_ext != '-':
         plt.savefig('figs/envLayers' + IDs + '.' + file_ext)
