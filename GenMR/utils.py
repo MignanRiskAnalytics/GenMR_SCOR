@@ -8,7 +8,7 @@ core GenMR workflows by streamlining data handling, computation, and visualisati
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-03-25
+:Date: 2026-04-01
 :License: AGPL-3
 """
 
@@ -473,6 +473,13 @@ def get_net_coord(net):
     edge_y = [yy for n0, n1 in net.edges for yy in (pos[n0][1], pos[n1][1], None)]
     return node_x, node_y, edge_x, edge_y
 
+
+def graph_to_full_adjacency(g, n_nodes):
+    A = np.zeros((n_nodes, n_nodes), dtype=int)
+    for i, j in g.edges():
+        A[i, j] = 1
+        A[j, i] = 1
+    return A
 
 
 #######################

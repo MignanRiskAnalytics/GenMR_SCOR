@@ -28,7 +28,7 @@ Layers and Related Objects (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-03-30
+:Date: 2026-04-01
 :License: AGPL-3
 """
 
@@ -2321,7 +2321,7 @@ class EnvLayer_energy:
     theta_day, theta_night : ndarray
         Node potential (voltage angle) solutions from DC power flow.
 
-    node_supply_updated_day, node_supply_updated_night : ndarray
+    node_served_day, node_served_night : ndarray
         Updated node supply after redistribution of power flows (MW).
 
     Notes
@@ -2344,8 +2344,10 @@ class EnvLayer_energy:
         self.flows_night = None
         self.theta_day = None
         self.theta_night = None
-        self.node_supply_updated_day = None
-        self.node_supply_updated_night = None
+        self.node_demand_served_day = None
+        self.node_demand_served_night = None
+        self.node_served_day = None
+        self.node_served_night = None
 
     ## Energy CI points ##
     def _CI_from_largest_harbor_zone(self, name, rank=1):
@@ -2512,7 +2514,6 @@ class EnvLayer_energy:
             pathLines[ci_name] = self.gen_powergrid_1line_G2S(coords_G, coords_S)
             
         return pathLines
-
 
 
     @cached_property
@@ -2721,6 +2722,8 @@ class EnvLayer_energy:
 
         return powergrid, node_names, all_coords
 
+
+    ## POWER GRID MODEL ##
     @cached_property
     def powergrid(self):
         '''
@@ -2729,115 +2732,171 @@ class EnvLayer_energy:
         2. Create urban load network
         3. Connect isolated components
         4. Add generators, substations, and transmission lines
-
+ 
         Returns
         -------
-        powergrid : networkx.Graph
+        powergrid_g : networkx.Graph
             Fully connected power grid graph.
         node_names : dict
             Dictionary mapping node IDs to names.
         node_coords : ndarray of shape (n_nodes, 2)
             Cartesian coordinates of all nodes in the power grid.
         node_supply : ndarray of shape (n_nodes, )
-            Power supply (MW) per node, 0 if not a load node.
+            Power supply (MW) per node: positive on generator nodes (G*),
+            zero on all other nodes (L*, S*, T*).
+ 
+        Notes
+        -----
+        CONVENTION:
+            Generators are the only sources: node_supply[G] = P_gen_per_node.
+            Load nodes are pure sinks: demand is set in solve_power_flow.
+            Net injection b = node_supply - node_demand gives:
+                b[G] > 0  (source)
+                b[L] < 0  (sink)
+                b[S] = b[T] = 0  (passive routing)
         '''
         _, load_index = self.gen_loadnodes()
         urbangrid, _ = self.gen_urbangrid(load_index)
-        powergrid, node_names, node_coords = self.connect_generators_substations(urbangrid)
-#        print('Power grid fully connected:', networkx.is_connected(powergrid))
-
-        nG = sum(1 for name in node_names.values() if name.startswith('G')) / self.par['powergrid_redundanciesGS']
-        Ptot = nG * self.par['powergrid_power_perGnode_GW'] * 1e3       # MW
-        nL = sum(1 for name in node_names.values() if name.startswith('L'))
-        Pload = Ptot / nL
+        powergrid_g, node_names, node_coords = self.connect_generators_substations(urbangrid)
+ 
+        # Total generation capacity
+        nG_phys = sum(1 for name in node_names.values() if name.startswith('G')) \
+                  / self.par['powergrid_redundanciesGS']
+        Ptot = nG_phys * self.par['powergrid_power_perGnode_GW'] * 1e3  # MW
+ 
+        # Distribute equally across all generator nodes (including redundant lines)
+        gen_node_ids = [i for i, name in node_names.items() if name.startswith('G')]
+        P_per_gen_node = Ptot / len(gen_node_ids)
         node_supply = np.zeros(len(node_names))
-        for i, name in node_names.items():
-            if name.startswith('L'):
-                node_supply[i] = Pload
-        
-        return powergrid, node_names, node_coords, node_supply
+        for i in gen_node_ids:
+            node_supply[i] = P_per_gen_node
+ 
+        return powergrid_g, node_names, node_coords, node_supply
 
 
-    ## UPDATE POWER GRID AFTER SOCIO-ECONOMIC LAYER DEF. (SUPPLY & DEMAND) ##
+    ## POWER DISTRIBUTION ONCE NODE_DEMAND KNOWN ##
     def _compute_flows_dc(self, powergrid, node_supply, node_demand):
-        b = node_supply - node_demand
-        b = b.copy()
+        # relabel nodes to contiguous 0..N-1
+        # (necessary after node removals leave gaps in node indices during blackout - see perils.py)
+        nodes = list(powergrid.nodes())
+        mapping = {old: new for new, old in enumerate(nodes)}
+        g = networkx.relabel_nodes(powergrid, mapping)
+
+        # slice supply/demand to only present nodes, in order
+        node_supply_g = np.array([node_supply[i] for i in nodes])
+        node_demand_g = np.array([node_demand[i] for i in nodes])
+
+        # per-component load shedding
+        node_demand_served_g = node_demand_g.copy().astype(float)
+        for comp in networkx.connected_components(g):
+            comp = list(comp)
+            S = node_supply_g[comp].sum()
+            D = node_demand_g[comp].sum()
+            if D == 0:
+                continue
+            if S <= 0:
+                node_demand_served_g[comp] = 0.
+            elif S < D:
+                scale = S / D
+                for i in comp:
+                    node_demand_served_g[i] = node_demand_g[i] * scale
+
+        b = node_supply_g - node_demand_served_g
         b[-1] -= np.sum(b)
-        L = networkx.laplacian_matrix(powergrid).astype(float)
-        ref = 0
-        L = L.tolil()
-        L[ref, :] = 0
-        L[:, ref] = 0
-        L[ref, ref] = 1
-        b[ref] = 0
-        theta = spsolve(L.tocsr(), b)
+        L = networkx.laplacian_matrix(g).astype(float).tolil()
+        for comp in networkx.connected_components(g):
+            ref = min(comp)
+            L[ref, :] = 0
+            L[:, ref] = 0
+            L[ref, ref] = 1
+            b[ref] = 0
+
+        theta_g = spsolve(L.tocsr(), b)
+
+        # map flows back to original node indices
         flows = {}
-        for i, j in powergrid.edges():
-            f = theta[i] - theta[j]
-            flows[(i, j)] = f
-            flows[(j, i)] = -f
-        return flows, theta
+        for i, j in g.edges():
+            f = theta_g[i] - theta_g[j]
+            orig_i, orig_j = nodes[i], nodes[j]
+            flows[(orig_i, orig_j)] = f
+            flows[(orig_j, orig_i)] = -f
+        # map node_demand_served back to full array
+        node_demand_served = np.zeros(len(node_supply))
+        for new, old in enumerate(nodes):
+            node_demand_served[old] = node_demand_served_g[new]
+
+        theta = np.zeros(len(node_supply))
+        for new, old in enumerate(nodes):
+            theta[old] = theta_g[new]
+
+        return flows, theta, node_demand_served
+
+
 
     def solve_power_flow(self, node_demand_day, node_demand_night, load_ID):
         '''
         Solve DC power flow for day and night demand.
-
+ 
         Parameters
         ----------
         node_demand_day : ndarray
-            Demand per load node (MW)
+            Demand per load node (MW), length = number of L nodes.
         node_demand_night : ndarray
-            Demand per load node (MW)
+            Demand per load node (MW), length = number of L nodes.
         load_ID : ndarray
-            Mapping from each mesh cell to the nearest power grid load node ID (NaN for non-urban cells).
+            Mapping from each mesh cell to the nearest power grid load node ID.
+ 
+        Notes
+        -----
+        With the corrected convention:
+            node_supply[G] = P_gen  →  generators inject power
+            node_demand[L] = demand →  loads consume power
+            b = supply - demand:  b[G]>0, b[L]<0, b[S]=b[T]=0
+        The DC flow solution carries power FROM generators TO loads
+        through the transmission network. Generator failures now
+        directly reduce injections and force flow rerouting.
         '''
         self.load_ID = load_ID
-        powergrid, node_names, _, node_supply = self.powergrid
+        powergrid_g, node_names, _, node_supply = self.powergrid
         n_nodes = len(node_supply)
-
+ 
         indL = [i for i, name in node_names.items() if name.startswith('L')]
-
+ 
         ## DAY ##
         node_demand_full = np.zeros(n_nodes)
         node_demand_full[indL] = node_demand_day
-
-        # global balance check
         total_supply = np.sum(node_supply)
         total_demand = np.sum(node_demand_full)
-        load_min_day = total_supply - total_demand
-        if load_min_day < 0:
-            print(f"Power deficit (day): {load_min_day:.2f} MW")
+        balance_day = total_supply - total_demand
+        if balance_day < 0:
+            print(f"Power deficit (day): {balance_day:.2f} MW — generators undersized for demand.")
         else:
-            print(f"Power surplus (day): {load_min_day:.2f} MW")
-
-        self.flows_day, self.theta_day = self._compute_flows_dc(powergrid, node_supply, node_demand_full)
-        updated_day = node_supply.copy()
-        for (i, j) in powergrid.edges():
+            print(f"Power surplus (day): {balance_day:.2f} MW")
+        self.flows_day, self.theta_day, self.node_demand_served_day = self._compute_flows_dc(powergrid_g, node_supply, node_demand_full)
+        served_day = node_supply.copy()
+        for (i, j) in powergrid_g.edges():
             f = self.flows_day[(i, j)]
-            updated_day[i] -= f
-            updated_day[j] += f
-        self.node_supply_updated_day = updated_day
-
+            served_day[i] -= f
+            served_day[j] += f
+        self.node_served_day = served_day
+ 
         ## NIGHT ##
         node_demand_full = np.zeros(n_nodes)
         node_demand_full[indL] = node_demand_night
-
-        # global balance check
         total_supply = np.sum(node_supply)
         total_demand = np.sum(node_demand_full)
-        load_min_night = total_supply - total_demand
-        if load_min_night < 0:
-            print(f"Power deficit (night): {load_min_night:.2f} MW")
+        balance_night = total_supply - total_demand
+        if balance_night < 0:
+            print(f"Power deficit (night): {balance_night:.2f} MW — generators undersized for demand.")
         else:
-            print(f"Power surplus (night): {load_min_night:.2f} MW")
-
-        self.flows_night, self.theta_night = self._compute_flows_dc(powergrid, node_supply, node_demand_full)
-        updated_night = node_supply.copy()
-        for (i, j) in powergrid.edges():
+            print(f"Power surplus (night): {balance_night:.2f} MW")
+        self.flows_night, self.theta_night, self.node_demand_served_night = self._compute_flows_dc(powergrid_g, node_supply, node_demand_full)
+        served_night = node_supply.copy()
+        for (i, j) in powergrid_g.edges():
             f = self.flows_night[(i, j)]
-            updated_night[i] -= f
-            updated_night[j] += f
-        self.node_supply_updated_night = updated_night
+            served_night[i] -= f
+            served_night[j] += f
+        self.node_served_night = served_night
 
 
 

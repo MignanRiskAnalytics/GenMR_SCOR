@@ -39,7 +39,7 @@ Planned peril models (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-03-20
+:Date: 2026-03-31
 :License: AGPL-3
 """
 
@@ -61,6 +61,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
 from shapely.geometry import LineString, Polygon
 import igraph as ig
+import networkx
 import imageio
 from skimage import measure
 
@@ -2604,215 +2605,151 @@ class HazardFootprintGenerator:
 
 
 ## BO case ## - kept separate of any class for now (secondary invisible peril with stochastic element rupture, to update in v.1.2.x)
-def gen_BO_cascade(A_dmg, names, generators, load_nodes, betweenness_intact, tolerance, print_casc = False):
+def run_BO_flow(energyLayer, par, failed_nodes, failed_lines,
+                period='day', print_casc=False):
     '''
-    Simulate cascading failures using edge betweenness as a flow proxy.
-
-    Starting from a damaged network, edges are iteratively removed if their
-    betweenness exceeds a predefined capacity. The process continues until
-    no further overload occurs. Load nodes not connected to any functioning
-    generator are considered in blackout.
-
-    Parameters
-    ----------
-    A_dmg : ndarray of shape (n_nodes, n_nodes)
-        Adjacency matrix of the damaged network.
-    names : list of str
-        Node names corresponding to adjacency matrix indices.
-    generators : list of str
-        Names of generator nodes.
-    load_nodes : list of str
-        Names of load nodes.
-    betweenness_intact : array-like
-        Edge betweenness values of the intact network, used as baseline capacity.
-    tolerance : float
-        Capacity margin factor. Edge capacity is defined as ``(1 + tolerance) * betweenness_intact``.
-    print_casc : bool, optional
-        If True, print cascade steps and failing edges (default is False).
-
-    Returns
-    -------
-    blackout : list of str
-        Names of load nodes not connected to any generator after the cascade.
-    g : igraph.Graph
-        Final graph after cascading failures.
-    '''
-    g = ig.Graph.Adjacency(A_dmg.tolist(), mode="undirected")
-    g.vs["name"] = names
-    g.es["capacity"] = (1 + tolerance) * betweenness_intact
-
-    remaining_generators = []
-    for gen in generators:
-        if gen in g.vs["name"]:
-            idx = g.vs.find(name=gen).index
-            if g.degree(idx) > 0:
-                remaining_generators.append(gen)
-    step = 0
-    while True:
-        edge_bw = np.array(g.edge_betweenness())
-        failed_edges = [e.index for e, bw in zip(g.es, edge_bw) if bw > e["capacity"]]
-        if not failed_edges:
-            break
-        step += 1
-        failed_edge_names = [(g.vs[e.source]["name"], g.vs[e.target]["name"]) 
-                             for e in g.es.select(failed_edges)]
-        if print_casc:
-            print("cascade step", step, "failing edges:", failed_edge_names)
-        g.delete_edges(failed_edges)
-    
-    reachable = set()
-    for gen in remaining_generators:
-        if gen in g.vs["name"]:
-            idx = g.vs.find(name=gen).index
-            comp = g.subcomponent(idx, mode="out")
-            reachable.update(g.vs[comp]["name"])
-    blackout = [l for l in load_nodes if l not in reachable]
-    
-    return blackout, g
-
-
-def compute_node_supply(g, node_names, generators, load_nodes, BO_loads, par):
-    '''
-    Compute per-node power supply for each load in the network, e.g., after a blackout.
-
-    Parameters
-    ----------
-    g : ig.Graph
-        Graph of the power grid.
-    node_names : dict
-        Mapping of node indices to names (e.g., 'L1', 'G1', 'T1', ...).
-    generators : list of str
-        List of generator node names (e.g., ['G1', 'G2', ...]).
-    load_nodes : list of str
-        List of load node names (e.g., ['L1', 'L2', ...]).
-    par : dict
-        Dictionary of parameters:
-        - 'powergrid_redundanciesGS' : number of redundant generator lines
-        - 'powergrid_power_perGnode_MW' : MW per generator node
-
-    Returns
-    -------
-    node_supply : ndarray, shape (n_nodes,)
-        Power assigned to each node. Loads in blackout islands get 0.
-
-    Notes
-    -----
-    The lower supply per load in partially powered islands is distributed uniformly here.
-    Redistribution of supply so that some loads get full standard supply while others get none
-    will be implemented in a separate function.
-    '''
-    n_nodes = len(node_names)
-    node_supply = np.zeros(n_nodes)
-
-    # Loop over connected components (islands)
-    components = g.components()
-    node_names_list = [node_names[i] for i in range(n_nodes)]
-
-    for comp in components:
-        nodes = g.vs[comp]["name"]
-
-        gens = [n for n in nodes if n in generators]
-        phys_gens = set(n.split('_')[0] for n in gens)
-
-        loads = [n for n in nodes if n in load_nodes]
-        online_loads = loads   #[l for l in loads if l not in BO_loads]
-                               # not needed since BO_loads make for individual components
-
-        if len(loads) == 0:
-            continue
-        if len(gens) == 0:
-            power_per_load = 0.
-        else:
-            power_total = len(phys_gens) * par['powergrid_power_perGnode_MW']
-            power_per_load = power_total / len(online_loads)
-
-        # assign computed power to each load node in this component
-        for n in online_loads:
-            idx = node_names_list.index(n)
-            node_supply[idx] = power_per_load
-
-    return node_supply
-
-
-def run_BO(energyLayer, par, failed_nodes, failed_lines):
-    '''
-    Run a blackout cascade scenario on a power grid.
-
-    This function builds the network from the energy infrastructure layer, applies initial
-    node and line failures, computes edge betweenness as a flow proxy, and
-    simulates cascading failures using ``gen_BO_cascade()``.
-
+    Run a blackout cascade scenario on a power grid using DC power flow.
+ 
+    Logic:
+        1. Edge capacities defined from intact network flows.
+        2. Initial damage: remove nodes/lines, zero supply of failed generators.
+        3. Cascade: iteratively remove edges whose flow exceeds intact capacity.
+           _compute_flows_dc handles island load shedding internally at each step.
+        4. Final state: node_demand_served gives power actually served per node.
+ 
     Parameters
     ----------
     energyLayer : object
-        Object containing the power grid (graph, node names, coordinates, etc.).
+        Power system container providing:
+        - ``powergrid``: tuple (graph, node_names, node_coords, node_supply)
+        - ``_compute_flows_dc``: DC power flow solver
+        - ``node_demand_served_day`` / ``node_demand_served_night``: demand profiles
     par : dict
-        Dictionary of parameters, must contain key ``'tolerance'`` for cascade model.
+        Model parameters. Must contain ``'tolerance'``.
     failed_nodes : list of str
-        Names of nodes to remove initially.
+        Names of nodes to be removed initially.
     failed_lines : list of tuple of str
-        List of edges to remove initially, given as pairs of node names.
+        List of edges (node_name_1, node_name_2) to be removed initially.
+    period : {'day', 'night'}, optional
+        Demand profile to use. Default is ``'day'``.
+    print_casc : bool, optional
+        If True, print diagnostic information during cascade iterations.
 
     Returns
     -------
     BO_loads : list of str
-        Names of load nodes in blackout after cascade.
-    g_BO : igraph.Graph
-        Graph after cascading failures.
-    g_dmg : igraph.Graph
-        Graph after initial damage (before cascade).
-    g : igraph.Graph
-        Intact graph before any failures.
+        Names of load nodes (prefix ``'L'``) with zero served demand in the
+        final state (i.e., fully blacked out).
+    g_BO : networkx.Graph
+        Final graph after the cascade terminates.
+    g_dmg : networkx.Graph
+        Graph after initial damage but before cascading failures.
+    g_intact : networkx.Graph
+        Original intact graph before any failures.
+    node_demand_served : ndarray of shape (n_nodes,)
+        Power actually delivered to each node after the cascade.
     '''
-    def remove_line(A, i, j):
-        A2 = A.copy()
-        A2[i, j] = 0
-        if A2[j, i] == 1:
-            A2[j, i] = 0
-        return A2
-
-    def remove_line_by_name(A, name_i, name_j, names):
-        i = names.index(name_i)
-        j = names.index(name_j)
-        return remove_line(A, i, j)
-
-    def remove_nodes(A, nodes_to_remove, names):
-        A2 = A.copy()
-        indices = [names.index(n) for n in nodes_to_remove]
-        for i in indices:
-            A2[i, :] = 0
-            A2[:, i] = 0
-        return A2
-
-    powergrid, node_names, node_coords, node_supply = energyLayer.powergrid
-    G_nodes = [i for i, name in node_names.items() if name.startswith('G')]
-    L_nodes = [i for i, name in node_names.items() if name.startswith('L')]
-    edges = list(powergrid.edges())
-    
-    # get adjacency matrix + graph stats
-    generators = [node_names[i] for i in G_nodes]
-    load_nodes = [node_names[i] for i in L_nodes]
+    powergrid_g, node_names, node_coords, node_supply = energyLayer.powergrid
     node_names_list = [node_names[i] for i in range(len(node_names))]
-    n = len(node_names_list)
-    A = np.zeros((n, n), dtype=int)
-    for i, j in edges:
-        A[i, j] = 1
-        A[j, i] = 1 
-    g = ig.Graph.Adjacency(A.tolist(), mode="undirected")
-    g.vs["name"] = node_names_list
-    edge_bw_flowproxy = np.array(g.edge_betweenness())
-    
-    # get damaged network
-    A_dmg = A.copy()
-    A_dmg = remove_nodes(A, failed_nodes, node_names_list)
-    for n1, n2 in failed_lines:
-        A_dmg = remove_line_by_name(A_dmg, n1, n2, node_names_list)
-    g_dmg = ig.Graph.Adjacency(A_dmg, mode = "undirected")
-    
-    BO_loads, g_BO = gen_BO_cascade(A_dmg, node_names_list, generators, load_nodes, edge_bw_flowproxy, par['tolerance'])
-    BO_node_supply = compute_node_supply(g_BO, node_names, generators, load_nodes, BO_loads, energyLayer.par)
+    n_nodes = len(node_names_list)
+    indL = [i for i, name in node_names.items() if name.startswith('L')]
+    if period == 'day':
+        node_demand = energyLayer.node_demand_served_day
+    else:
+        node_demand = energyLayer.node_demand_served_night
+ 
+    g_intact = powergrid_g.copy()
+ 
+    #######################################################
+    ## Step 1: edge capacities from intact network flows ##
+    flows_intact, _, _ = energyLayer._compute_flows_dc(g_intact, node_supply, node_demand)
+    edge_capacity = {}
+    for (i, j), f in flows_intact.items():
+        key = (min(i, j), max(i, j))
+        edge_capacity[key] = (1 + par['tolerance']) * max(abs(f), 1e-6)
 
-    return BO_loads, g_BO, g_dmg, g, BO_node_supply
+    ##################################
+    ## Step 2: apply initial damage ##
+    g_dmg = powergrid_g.copy()
+    node_supply_dmg = node_supply.copy().astype(float)
+ 
+    for name in failed_nodes:
+        idx = node_names_list.index(name)
+        node_supply_dmg[idx] = 0.          # zero generator supply if applicable
+        if idx in g_dmg:
+            g_dmg.remove_node(idx)
+ 
+    for n1, n2 in failed_lines:
+        i = node_names_list.index(n1)
+        j = node_names_list.index(n2)
+        if g_dmg.has_edge(i, j):
+            g_dmg.remove_edge(i, j)
+
+    # zero supply AND remove stranded components (no load nodes)
+    for comp in list(networkx.connected_components(g_dmg)):
+        comp = list(comp)
+        has_load = any(node_names[i].startswith('L') for i in comp)
+        if not has_load:
+            for i in comp:
+                if node_names[i].startswith('G'):
+                    node_supply_dmg[i] = 0.
+            g_dmg.remove_nodes_from(comp)
+
+    ##########################
+    ## Step 3: cascade loop ##
+    g = g_dmg.copy()
+    step = 0
+    while True:
+        if g.number_of_edges() == 0:
+            break
+ 
+        # remove any newly stranded components before solving
+        for comp in list(networkx.connected_components(g)):
+            comp = list(comp)
+            has_load = any(node_names[i].startswith('L') for i in comp)
+            if not has_load:
+                for i in comp:
+                    if node_names[i].startswith('G'):
+                        node_supply_dmg[i] = 0.
+                g.remove_nodes_from(comp)
+
+        flows, _, _ = energyLayer._compute_flows_dc(g, node_supply_dmg, node_demand) 
+
+        if print_casc and step == 0:
+            n_over = sum(1 for (i, j) in g.edges()
+                if abs(flows.get((i,j), flows.get((j,i), 0.))) > edge_capacity.get((min(i,j), max(i,j)), np.inf)
+            )
+            print(f"[step 0] overloaded edges: {n_over} / {g.number_of_edges()}")
+ 
+        failed_edges = []
+        for (i, j) in list(g.edges()):
+            key = (min(i, j), max(i, j))
+            cap = edge_capacity.get(key, np.inf)
+            f = abs(flows.get((i, j), flows.get((j, i), 0.0)))
+            if f > cap:
+                failed_edges.append((i, j))
+ 
+        if not failed_edges:
+            if print_casc:
+                print(f"[cascade] no more overloads — stopped after {step} step(s).")
+            break
+ 
+        step += 1
+        if print_casc:
+            print(f"[cascade] step {step}, failing edges: {failed_edges}")
+        g.remove_edges_from(failed_edges)
+ 
+    g_BO = g
+ 
+    #################################
+    ## Step 4: final served demand ##
+    # node_demand_served[i] = power actually delivered to node i
+    # (zero for blackout islands, scaled down for partial-supply islands)
+    _, _, node_demand_served = energyLayer._compute_flows_dc(g_BO, node_supply_dmg, node_demand)
+ 
+    BO_loads = [node_names[i] for i in indL if node_demand_served[i] == 0]
+ 
+    return BO_loads, g_BO, g_dmg, g_intact, node_demand_served
 
 
 
@@ -3804,3 +3741,215 @@ def plot_vulnFunctions():
     plt.savefig('figs/vulnFunctions.jpg', dpi = 300)
     plt.pause(1)
     plt.show()
+
+
+
+
+
+
+
+
+################
+## DEPRECATED ##
+################
+def gen_BO_cascade_betweenness(A_dmg, names, generators, load_nodes, betweenness_intact, tolerance, print_casc = False):
+    '''
+    Simulate cascading failures using edge betweenness as a flow proxy.
+
+    Starting from a damaged network, edges are iteratively removed if their
+    betweenness exceeds a predefined capacity. The process continues until
+    no further overload occurs. Load nodes not connected to any functioning
+    generator are considered in blackout.
+
+    Parameters
+    ----------
+    A_dmg : ndarray of shape (n_nodes, n_nodes)
+        Adjacency matrix of the damaged network.
+    names : list of str
+        Node names corresponding to adjacency matrix indices.
+    generators : list of str
+        Names of generator nodes.
+    load_nodes : list of str
+        Names of load nodes.
+    betweenness_intact : array-like
+        Edge betweenness values of the intact network, used as baseline capacity.
+    tolerance : float
+        Capacity margin factor. Edge capacity is defined as ``(1 + tolerance) * betweenness_intact``.
+    print_casc : bool, optional
+        If True, print cascade steps and failing edges (default is False).
+
+    Returns
+    -------
+    blackout : list of str
+        Names of load nodes not connected to any generator after the cascade.
+    g : igraph.Graph
+        Final graph after cascading failures.
+    '''
+    g = ig.Graph.Adjacency(A_dmg.tolist(), mode="undirected")
+    g.vs["name"] = names
+    g.es["capacity"] = (1 + tolerance) * betweenness_intact
+
+    remaining_generators = []
+    for gen in generators:
+        if gen in g.vs["name"]:
+            idx = g.vs.find(name=gen).index
+            if g.degree(idx) > 0:
+                remaining_generators.append(gen)
+    step = 0
+    while True:
+        edge_bw = np.array(g.edge_betweenness())
+        failed_edges = [e.index for e, bw in zip(g.es, edge_bw) if bw > e["capacity"]]
+        if not failed_edges:
+            break
+        step += 1
+        failed_edge_names = [(g.vs[e.source]["name"], g.vs[e.target]["name"]) 
+                             for e in g.es.select(failed_edges)]
+        if print_casc:
+            print("cascade step", step, "failing edges:", failed_edge_names)
+        g.delete_edges(failed_edges)
+    
+    reachable = set()
+    for gen in remaining_generators:
+        if gen in g.vs["name"]:
+            idx = g.vs.find(name=gen).index
+            comp = g.subcomponent(idx, mode="out")
+            reachable.update(g.vs[comp]["name"])
+    blackout = [l for l in load_nodes if l not in reachable]
+    return blackout, g
+
+
+def compute_node_supply_betweenness(g, node_names, generators, load_nodes, BO_loads, par):
+    '''
+    Compute per-node power supply for each load in the network, e.g., after a blackout.
+
+    Parameters
+    ----------
+    g : ig.Graph
+        Graph of the power grid.
+    node_names : dict
+        Mapping of node indices to names (e.g., 'L1', 'G1', 'T1', ...).
+    generators : list of str
+        List of generator node names (e.g., ['G1', 'G2', ...]).
+    load_nodes : list of str
+        List of load node names (e.g., ['L1', 'L2', ...]).
+    par : dict
+        Dictionary of parameters:
+        - 'powergrid_redundanciesGS' : number of redundant generator lines
+        - 'powergrid_power_perGnode_GW' : MW per generator node
+
+    Returns
+    -------
+    node_supply : ndarray, shape (n_nodes,)
+        Power assigned to each node. Loads in blackout islands get 0.
+
+    Notes
+    -----
+    The lower supply per load in partially powered islands is distributed uniformly here.
+    Redistribution of supply so that some loads get full standard supply while others get none
+    will be implemented in a separate function.
+    '''
+    n_nodes = len(node_names)
+    node_supply = np.zeros(n_nodes)
+
+    # Loop over connected components (islands)
+    components = g.components()
+    node_names_list = [node_names[i] for i in range(n_nodes)]
+    for comp in components:
+        nodes = g.vs[comp]["name"]
+        gens = [n for n in nodes if n in generators]
+        phys_gens = set(n.split('_')[0] for n in gens)
+        loads = [n for n in nodes if n in load_nodes]
+        online_loads = loads   #[l for l in loads if l not in BO_loads]
+                               # not needed since BO_loads make for individual components
+        if len(loads) == 0:
+            continue
+        if len(gens) == 0:
+            power_per_load = 0.
+        else:
+            power_total = len(phys_gens) * par['powergrid_power_perGnode_GW'] * 1e3  # MW
+            power_per_load = power_total / len(online_loads)
+        # assign computed power to each load node in this component
+        for n in online_loads:
+            idx = node_names_list.index(n)
+            node_supply[idx] = power_per_load
+    return node_supply
+
+def run_BO_betweenness(energyLayer, par, failed_nodes, failed_lines):
+    '''
+    Run a blackout cascade scenario on a power grid.
+
+    This function builds the network from the energy infrastructure layer, applies initial
+    node and line failures, computes edge betweenness as a flow proxy, and
+    simulates cascading failures using ``gen_BO_cascade()``.
+
+    Parameters
+    ----------
+    energyLayer : object
+        Object containing the power grid (graph, node names, coordinates, etc.).
+    par : dict
+        Dictionary of parameters, must contain key ``'tolerance'`` for cascade model.
+    failed_nodes : list of str
+        Names of nodes to remove initially.
+    failed_lines : list of tuple of str
+        List of edges to remove initially, given as pairs of node names.
+
+    Returns
+    -------
+    BO_loads : list of str
+        Names of load nodes in blackout after cascade.
+    g_BO : igraph.Graph
+        Graph after cascading failures.
+    g_dmg : igraph.Graph
+        Graph after initial damage (before cascade).
+    g : igraph.Graph
+        Intact graph before any failures.
+    '''
+    def remove_line(A, i, j):
+        A2 = A.copy()
+        A2[i, j] = 0
+        if A2[j, i] == 1:
+            A2[j, i] = 0
+        return A2
+
+    def remove_line_by_name(A, name_i, name_j, names):
+        i = names.index(name_i)
+        j = names.index(name_j)
+        return remove_line(A, i, j)
+
+    def remove_nodes(A, nodes_to_remove, names):
+        A2 = A.copy()
+        indices = [names.index(n) for n in nodes_to_remove]
+        for i in indices:
+            A2[i, :] = 0
+            A2[:, i] = 0
+        return A2
+
+    powergrid, node_names, node_coords, node_supply = energyLayer.powergrid
+    G_nodes = [i for i, name in node_names.items() if name.startswith('G')]
+    L_nodes = [i for i, name in node_names.items() if name.startswith('L')]
+    edges = list(powergrid.edges())
+    
+    # get adjacency matrix + graph stats
+    generators = [node_names[i] for i in G_nodes]
+    load_nodes = [node_names[i] for i in L_nodes]
+    node_names_list = [node_names[i] for i in range(len(node_names))]
+    n = len(node_names_list)
+    A = np.zeros((n, n), dtype=int)
+    for i, j in edges:
+        A[i, j] = 1
+        A[j, i] = 1 
+    g = ig.Graph.Adjacency(A.tolist(), mode="undirected")
+    g.vs["name"] = node_names_list
+    edge_bw_flowproxy = np.array(g.edge_betweenness())
+    
+    # get damaged network
+    A_dmg = A.copy()
+    A_dmg = remove_nodes(A, failed_nodes, node_names_list)
+    for n1, n2 in failed_lines:
+        A_dmg = remove_line_by_name(A_dmg, n1, n2, node_names_list)
+    g_dmg = ig.Graph.Adjacency(A_dmg, mode = "undirected")
+    
+    BO_loads, g_BO = gen_BO_cascade_betweenness(A_dmg, node_names_list, generators, load_nodes, edge_bw_flowproxy, par['tolerance'])
+    BO_node_supply = compute_node_supply_betweenness(g_BO, node_names, generators, load_nodes, BO_loads, energyLayer.par)
+
+    return BO_loads, g_BO, g_dmg, g, BO_node_supply
