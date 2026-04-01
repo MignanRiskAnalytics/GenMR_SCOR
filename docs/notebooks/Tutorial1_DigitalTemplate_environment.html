@@ -304,8 +304,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.calc_e0"><code class="docutils literal notranslate"><span class="pre">calc_e0()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.calc_lbd_Dr"><code class="docutils literal notranslate"><span class="pre">calc_lbd_Dr()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.calc_qsat"><code class="docutils literal notranslate"><span class="pre">calc_qsat()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.compute_node_supply"><code class="docutils literal notranslate"><span class="pre">compute_node_supply()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.gen_BO_cascade"><code class="docutils literal notranslate"><span class="pre">gen_BO_cascade()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.compute_node_supply_betweenness"><code class="docutils literal notranslate"><span class="pre">compute_node_supply_betweenness()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.gen_BO_cascade_betweenness"><code class="docutils literal notranslate"><span class="pre">gen_BO_cascade_betweenness()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.gen_precipitation"><code class="docutils literal notranslate"><span class="pre">gen_precipitation()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.get_Dr"><code class="docutils literal notranslate"><span class="pre">get_Dr()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.get_peril_evID"><code class="docutils literal notranslate"><span class="pre">get_peril_evID()</span></code></a></li>
@@ -313,7 +313,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.plot_hazFootprints"><code class="docutils literal notranslate"><span class="pre">plot_hazFootprints()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.plot_src"><code class="docutils literal notranslate"><span class="pre">plot_src()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.plot_vulnFunctions"><code class="docutils literal notranslate"><span class="pre">plot_vulnFunctions()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.run_BO"><code class="docutils literal notranslate"><span class="pre">run_BO()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.run_BO_betweenness"><code class="docutils literal notranslate"><span class="pre">run_BO_betweenness()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.run_BO_flow"><code class="docutils literal notranslate"><span class="pre">run_BO_flow()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.update_soil_moisture"><code class="docutils literal notranslate"><span class="pre">update_soil_moisture()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.vuln_f"><code class="docutils literal notranslate"><span class="pre">vuln_f()</span></code></a></li>
 </ul>
@@ -333,6 +334,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.get_ndays_inMonth"><code class="docutils literal notranslate"><span class="pre">get_ndays_inMonth()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.get_neighborhood_ind"><code class="docutils literal notranslate"><span class="pre">get_neighborhood_ind()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.get_net_coord"><code class="docutils literal notranslate"><span class="pre">get_net_coord()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.graph_to_full_adjacency"><code class="docutils literal notranslate"><span class="pre">graph_to_full_adjacency()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.incrementing"><code class="docutils literal notranslate"><span class="pre">incrementing()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.init_io"><code class="docutils literal notranslate"><span class="pre">init_io()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.load_json2dict"><code class="docutils literal notranslate"><span class="pre">load_json2dict()</span></code></a></li>
@@ -423,6 +425,7 @@
 <li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-3-heatwave-case-threshold-model">C.3. Heatwave case (threshold model)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-4-pest-infestation-case">C.4. Pest infestation case</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-5-blackout-case">C.5. Blackout case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-6-business-interruption-case">C.6. Business interruption case</a></li>
 </ul>
 </li>
 </ul>
@@ -459,7 +462,7 @@
 <h1>Tutorial 1: Generating a virtual environment for the GenMR digital template<a class="headerlink" href="#tutorial-1-generating-a-virtual-environment-for-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 1.1.2<br />
-<strong>Last Updated:</strong> 2026-03-30<br />
+<strong>Last Updated:</strong> 2026-03-31<br />
 <strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
 <p>The <em>digital template</em>, first described in <a class="reference external" href="https://www.mdpi.com/1660-4601/19/23/16097">Mignan (2022)</a> and used in the CAT Risk Modelling Sandbox (<a class="reference external" href="https://github.com/amignan/Intro2CATriskModelling/blob/main/CATRiskModellingSandbox_tutorial.ipynb">Mignan, 2024</a>), is a microcosm simulation of the complex Earth system for catastrophe dynamics R&amp;D, multi-risk prototyping in the Generic Multi-Risk (GenMR) framework, and catastrophe risk eduction. It is defined as a virtual environment populated by loss-generating events that interact with each other and with the environment. The virtual environment, to be built in this tutorial, is composed of <em>environmental layers</em> that consist of sets of variables <span class="math notranslate nohighlight">\(\theta(x,y)\)</span> defined in a spatial grid of coordinates <span class="math notranslate nohighlight">\((x,y)\)</span>. Each layer may be altered by <em>environmental objects</em> located within the layer. The parsimonious complex Earth system finally consists of a stack of interacting environmental layers defined in the natural, technological and socio-economic systems. The loss-generating events that populate the virtual environment will be defined in the next tutorial, and their interactions potentially leading to compound catastrophes in a third and final tutorial.</p>
 <p>The modelled environmental layers and associated objects as listed in Table 1 (see also Fig. 1). This tutorial provides a concise overview of these layers using a default parameterisation, with alternative scenarios to be introduced later in How-To Guides. The outputs generated here will serve as input for hazard and risk assessment in the subsequent tutorials.</p>
@@ -917,7 +920,7 @@ Total population: 23.12 million people
     <span class="s1">&#39;windfarm_maxslope_deg&#39;</span><span class="p">:</span> <span class="mf">15.</span><span class="p">,</span>                  <span class="c1"># construction impossible if too steep</span>
     <span class="s1">&#39;windfarm_centroid_shift&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mf">1.</span><span class="p">),</span>            <span class="c1"># if needed to optimise routing on specific ridge side</span>
     <span class="s1">&#39;windfarm_turbine_capacity_MW&#39;</span><span class="p">:</span> <span class="mf">5.</span><span class="p">,</span>
-    <span class="s1">&#39;powergrid_power_perGnode_GW&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span>              <span class="c1"># same for all generator nodes</span>
+    <span class="s1">&#39;powergrid_power_perGnode_GW&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span>            <span class="c1"># same for all generator nodes</span>
     <span class="s1">&#39;powergrid_load_spacing_km&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>                <span class="c1"># spacing of regular mesh of load nodes</span>
     <span class="s1">&#39;powergrid_redundanciesGS&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>                 <span class="c1"># number of lines connecting each generator to substation</span>
     <span class="s1">&#39;powergrid_redundanciesSL&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>                 <span class="c1"># number of lines connecting each substation to main grid</span>
@@ -929,19 +932,17 @@ Total population: 23.12 million people
     <span class="nb">int</span><span class="p">(</span><span class="n">energyPar</span><span class="p">[</span><span class="s1">&#39;powergrid_power_perGnode_GW&#39;</span><span class="p">]</span><span class="o">*</span><span class="mf">1e3</span><span class="o">/</span><span class="n">energyPar</span><span class="p">[</span><span class="s1">&#39;windfarm_turbine_capacity_MW&#39;</span><span class="p">])</span>
 
 <span class="n">energyLayer</span> <span class="o">=</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">EnvLayer_energy</span><span class="p">(</span><span class="n">urbLandLayer</span><span class="p">,</span> <span class="n">energyPar</span><span class="p">)</span>
-<span class="n">GenMR_utils</span><span class="o">.</span><span class="n">save_class2pickle</span><span class="p">(</span><span class="n">energyLayer</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;envLayer_energy&#39;</span><span class="p">)</span>
+<span class="c1">#GenMR_utils.save_class2pickle(energyLayer, filename = &#39;envLayer_energy&#39;)</span>
 
 <span class="n">powergrid</span><span class="p">,</span> <span class="n">node_names</span><span class="p">,</span> <span class="n">node_coords</span><span class="p">,</span> <span class="n">node_supply</span> <span class="o">=</span> <span class="n">energyLayer</span><span class="o">.</span><span class="n">powergrid</span>
 <span class="n">node_names_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">node_names</span><span class="p">))]</span>
 <span class="n">indL</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">node_names</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;L&#39;</span><span class="p">)]</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Power generation (GW):&#39;</span><span class="p">,</span> <span class="n">energyPar</span><span class="p">[</span><span class="s1">&#39;powergrid_power_perGnode_GW&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Power supply per load node (MW):&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">node_supply</span><span class="p">[</span><span class="n">indL</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total power generation = </span><span class="si">{</span><span class="n">energyPar</span><span class="p">[</span><span class="s1">&#39;powergrid_power_perGnode_GW&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="si">}</span><span class="s2"> GW&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Power generation (GW): 7.5
-Power supply per load node (MW): [182.92682927]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Total power generation = 7.5 GW
 </pre></div>
 </div>
 </div>
@@ -1055,9 +1056,9 @@ Power supply per load node (MW): [182.92682927]
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">socioecoPar</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;rdm_seed&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="c1"># eco</span>
-    <span class="s1">&#39;W_per_pers_RES&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">150</span><span class="p">,</span> <span class="mi">300</span><span class="p">],</span>          <span class="c1"># day / night</span>
-    <span class="s1">&#39;W_per_m2_IND&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">30</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span>              <span class="c1"># day / night</span>
-    <span class="s1">&#39;W_per_m2_COM&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">25</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>               <span class="c1"># day / night</span>
+    <span class="s1">&#39;W_per_pers_RES&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">150</span><span class="p">,</span> <span class="mi">300</span><span class="p">],</span>          <span class="c1"># day / night IEA &quot;Energy in Buildings&quot; 2023, Eurostat household energy statistics</span>
+    <span class="s1">&#39;W_per_m2_IND&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">140</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span>             <span class="c1"># day / night</span>
+    <span class="s1">&#39;W_per_m2_COM&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">40</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>               <span class="c1"># day / night</span>
     
     <span class="c1"># socio</span>
     <span class="s1">&#39;pop_perHospital&#39;</span><span class="p">:</span> <span class="mi">200000</span><span class="p">,</span>             <span class="c1"># note for later: regime could be defined &#39;normal&#39; vs &#39;underfunded&#39;</span>
@@ -1069,22 +1070,18 @@ Power supply per load node (MW): [182.92682927]
 <span class="n">socioecoLayer</span> <span class="o">=</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">EnvLayer_socioeco</span><span class="p">(</span><span class="n">socioecoPar</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">urbLandLayer</span><span class="p">,</span> <span class="n">energyLayer</span><span class="p">)</span>
 <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
 
-<span class="n">energyLayer</span><span class="o">.</span><span class="n">solve_power_flow</span><span class="p">(</span>
-    <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">node_demand_day</span><span class="p">,</span>
-    <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">node_demand_night</span><span class="p">,</span>
-    <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">load_ID</span>
-<span class="p">)</span>
+<span class="n">energyLayer</span><span class="o">.</span><span class="n">solve_power_flow</span><span class="p">(</span><span class="n">socioecoLayer</span><span class="o">.</span><span class="n">node_demand_day</span><span class="p">,</span> <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">node_demand_night</span><span class="p">,</span> <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">load_ID</span><span class="p">)</span>
 
 <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">save_class2pickle</span><span class="p">(</span><span class="n">socioecoLayer</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;envLayer_socioeco&#39;</span><span class="p">)</span>
 <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">save_class2pickle</span><span class="p">(</span><span class="n">energyLayer</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;envLayer_energy&#39;</span><span class="p">)</span>     <span class="c1"># previous file overwritten</span>
 
 <span class="c1"># WARNING: if there is a power supply deficit (instead of surplus) given socioecoPar, </span>
-<span class="c1">#          increase energyPar[&#39;powergrid_power_perGnode_GW&#39;] and rerun from there.</span>
+<span class="c1">#          increase energyPar[&#39;powergrid_power_perGnode_GW&#39;] or reduce socioecoPar[&#39;W_*&#39;].</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Power surplus (day): 3021.86 MW
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Power surplus (day): 161.38 MW
 Power surplus (night): 227.65 MW
 </pre></div>
 </div>
@@ -1102,14 +1099,14 @@ Power surplus (night): 227.65 MW
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9512198c71aebb14cba3efbb0a6896de584a8671d02638b470705c7414be06d1.png" src="../_images/9512198c71aebb14cba3efbb0a6896de584a8671d02638b470705c7414be06d1.png" />
+<img alt="../_images/5e045b2e33248aaf1c1c15ab19445c943dd04c759e223dd6fb109a56b2df94d7.png" src="../_images/5e045b2e33248aaf1c1c15ab19445c943dd04c759e223dd6fb109a56b2df94d7.png" />
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#GenMR_env.plot_EnvLayer_attr(socioecoLayer, &#39;socialsafFacilities&#39;, box = [15,70,15,55])</span>
-<span class="c1">#GenMR_env.plot_EnvLayer_attr(energyLayer, &#39;powerflows_day&#39;, box = [15,100,15,70])</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#GenMR_env.plot_EnvLayer_attr(energyLayer, &#39;powerflows_day&#39;, box = [15,100,15,70])</span>
 <span class="c1">#GenMR_env.plot_EnvLayer_attr(energyLayer, &#39;powerflows_night&#39;, box = [15,100,15,70])</span>
+<span class="c1">#GenMR_env.plot_EnvLayer_attr(socioecoLayer, &#39;socialsafFacilities&#39;, box = [15,70,15,55])</span>
 </pre></div>
 </div>
 </div>
@@ -1706,7 +1703,7 @@ Average zonal temperature = 14.76365750942746°C (= GMST, validation value)
     <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">val</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Supply vs Demand before optim. (day)&#39;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Load demand distribution (day)&#39;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
@@ -1719,15 +1716,15 @@ Average zonal temperature = 14.76365750942746°C (= GMST, validation value)
     <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">val</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Supply vs Demand before optim. (night)&#39;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Load demand distribution (night)&#39;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
 
 <span class="c1">## POWER FLOW ##</span>
-<span class="n">diff_day_new</span> <span class="o">=</span> <span class="n">energyLayer</span><span class="o">.</span><span class="n">node_supply_updated_day</span><span class="p">[</span><span class="n">indL</span><span class="p">]</span> <span class="o">-</span> <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">node_demand_day</span>
-<span class="n">diff_night_new</span> <span class="o">=</span> <span class="n">energyLayer</span><span class="o">.</span><span class="n">node_supply_updated_night</span><span class="p">[</span><span class="n">indL</span><span class="p">]</span> <span class="o">-</span> <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">node_demand_night</span>
+<span class="n">diff_day_new</span> <span class="o">=</span> <span class="n">energyLayer</span><span class="o">.</span><span class="n">node_served_day</span><span class="p">[</span><span class="n">indL</span><span class="p">]</span> <span class="o">-</span> <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">node_demand_day</span>
+<span class="n">diff_night_new</span> <span class="o">=</span> <span class="n">energyLayer</span><span class="o">.</span><span class="n">node_served_night</span><span class="p">[</span><span class="n">indL</span><span class="p">]</span> <span class="o">-</span> <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">node_demand_night</span>
 <span class="c1"># from node to mesh for plotting</span>
 <span class="n">mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">socioecoLayer</span><span class="o">.</span><span class="n">load_ID</span><span class="p">)</span>
 <span class="n">node_ids</span> <span class="o">=</span> <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">load_ID</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
@@ -1757,7 +1754,7 @@ Average zonal temperature = 14.76365750942746°C (= GMST, validation value)
 <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">node_coords</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">node_coords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span> <span class="o">=</span> <span class="n">energyLayer</span><span class="o">.</span><span class="n">theta_day</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;coolwarm&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Power flow (day)&#39;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Power balance residual (day)&#39;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
@@ -1781,7 +1778,7 @@ Average zonal temperature = 14.76365750942746°C (= GMST, validation value)
 <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">node_coords</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">node_coords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span> <span class="o">=</span> <span class="n">energyLayer</span><span class="o">.</span><span class="n">theta_night</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;coolwarm&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Power flow (night)&#39;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Power balance residual (night)&#39;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
@@ -1789,38 +1786,26 @@ Average zonal temperature = 14.76365750942746°C (= GMST, validation value)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ef337088cc5bd6499e01f72f8076c7566d963150bb68731307f41e8f76fc1c63.png" src="../_images/ef337088cc5bd6499e01f72f8076c7566d963150bb68731307f41e8f76fc1c63.png" />
+<img alt="../_images/8abfc4c98725e3e52f82943e7942a35dc7e3e5f0e5468e441dec7c85b0a5f24b.png" src="../_images/8abfc4c98725e3e52f82943e7942a35dc7e3e5f0e5468e441dec7c85b0a5f24b.png" />
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># verify that final load power supply = initial load power demand</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Daytime&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Load node power demand (MW):&quot;</span><span class="p">,</span> <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">node_demand_day</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Optimised load node power supply (MW):&quot;</span><span class="p">,</span> <span class="n">energyLayer</span><span class="o">.</span><span class="n">node_supply_updated_day</span><span class="p">[</span><span class="n">indL</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Daytime supply-demand (MW):&#39;</span><span class="p">,</span> 
+      <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">energyLayer</span><span class="o">.</span><span class="n">node_served_day</span><span class="p">[</span><span class="n">indL</span><span class="p">]</span><span class="o">-</span> <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">node_demand_day</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Nighttime supply-demand (MW):&#39;</span><span class="p">,</span> 
+      <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">energyLayer</span><span class="o">.</span><span class="n">node_served_night</span><span class="p">[</span><span class="n">indL</span><span class="p">]</span><span class="o">-</span> <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">node_demand_night</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Daytime
-Load node power demand (MW): [143.90644813 148.57894056  72.04434002 119.49529752 147.24333731
- 109.87840541 101.96924801 110.84198628  75.14367226 159.89370433
-  70.21540206 127.35236349 104.11226991 120.18287418  71.8351075
- 238.31473551  75.39661233 102.15636035  81.89751858  85.40680483
-  44.66669145 224.49843718 114.96062905  78.12401238  80.33458782
-  61.40426716 192.26070141 114.71873179 120.55611454  29.76426397
- 220.99521246 104.42109634  75.46255822 130.08532119 156.49467906
- 105.81295449  57.21323818 142.14042254  84.87467594  50.58547218
-  22.89664614]
-Optimised load node power supply (MW): [143.90644813 148.57894056  72.04434002 119.49529752 147.24333731
- 109.87840541 101.96924801 110.84198628  75.14367226 159.89370433
-  70.21540206 127.35236349 104.11226991 120.18287418  71.8351075
- 238.31473551  75.39661233 102.15636035  81.89751858  85.40680483
-  44.66669145 224.49843718 114.96062905  78.12401238  80.33458782
-  61.40426716 192.26070141 114.71873179 120.55611454  29.76426397
- 220.99521246 104.42109634  75.46255822 130.08532119 156.49467906
- 105.81295449  57.21323818 142.14042254  84.87467594  50.58547218
-  22.89664614]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Daytime supply-demand (MW): [ 0. -0.  0. -0. -0.  0. -0.  0. -0. -0.  0. -0. -0.  0.  0.  0.  0. -0.
+ -0.  0. -0. -0. -0.  0. -0. -0.  0.  0. -0.  0. -0. -0.  0.  0. -0. -0.
+ -0. -0. -0.  0. -0.]
+Nighttime supply-demand (MW): [ 0. -0.  0. -0.  0.  0.  0.  0. -0. -0.  0. -0. -0.  0.  0. -0. -0. -0.
+  0.  0.  0. -0.  0.  0. -0.  0.  0. -0. -0.  0.  0.  0.  0. -0. -0.  0.
+  0. -0. -0. -0.  0.]
 </pre></div>
 </div>
 </div>

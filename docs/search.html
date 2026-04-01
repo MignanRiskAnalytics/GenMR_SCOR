@@ -302,8 +302,8 @@
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.calc_e0"><code class="docutils literal notranslate"><span class="pre">calc_e0()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.calc_lbd_Dr"><code class="docutils literal notranslate"><span class="pre">calc_lbd_Dr()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.calc_qsat"><code class="docutils literal notranslate"><span class="pre">calc_qsat()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.compute_node_supply"><code class="docutils literal notranslate"><span class="pre">compute_node_supply()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.gen_BO_cascade"><code class="docutils literal notranslate"><span class="pre">gen_BO_cascade()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.compute_node_supply_betweenness"><code class="docutils literal notranslate"><span class="pre">compute_node_supply_betweenness()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.gen_BO_cascade_betweenness"><code class="docutils literal notranslate"><span class="pre">gen_BO_cascade_betweenness()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.gen_precipitation"><code class="docutils literal notranslate"><span class="pre">gen_precipitation()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.get_Dr"><code class="docutils literal notranslate"><span class="pre">get_Dr()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.get_peril_evID"><code class="docutils literal notranslate"><span class="pre">get_peril_evID()</span></code></a></li>
@@ -311,7 +311,8 @@
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.plot_hazFootprints"><code class="docutils literal notranslate"><span class="pre">plot_hazFootprints()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.plot_src"><code class="docutils literal notranslate"><span class="pre">plot_src()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.plot_vulnFunctions"><code class="docutils literal notranslate"><span class="pre">plot_vulnFunctions()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.run_BO"><code class="docutils literal notranslate"><span class="pre">run_BO()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.run_BO_betweenness"><code class="docutils literal notranslate"><span class="pre">run_BO_betweenness()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.run_BO_flow"><code class="docutils literal notranslate"><span class="pre">run_BO_flow()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.update_soil_moisture"><code class="docutils literal notranslate"><span class="pre">update_soil_moisture()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.vuln_f"><code class="docutils literal notranslate"><span class="pre">vuln_f()</span></code></a></li>
 </ul>
@@ -331,6 +332,7 @@
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.utils.get_ndays_inMonth"><code class="docutils literal notranslate"><span class="pre">get_ndays_inMonth()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.utils.get_neighborhood_ind"><code class="docutils literal notranslate"><span class="pre">get_neighborhood_ind()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.utils.get_net_coord"><code class="docutils literal notranslate"><span class="pre">get_net_coord()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.utils.graph_to_full_adjacency"><code class="docutils literal notranslate"><span class="pre">graph_to_full_adjacency()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.utils.incrementing"><code class="docutils literal notranslate"><span class="pre">incrementing()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.utils.init_io"><code class="docutils literal notranslate"><span class="pre">init_io()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.utils.load_json2dict"><code class="docutils literal notranslate"><span class="pre">load_json2dict()</span></code></a></li>
@@ -421,6 +423,7 @@
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-3-heatwave-case-threshold-model">C.3. Heatwave case (threshold model)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-4-pest-infestation-case">C.4. Pest infestation case</a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-5-blackout-case">C.5. Blackout case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-6-business-interruption-case">C.6. Business interruption case</a></li>
 </ul>
 </li>
 </ul>

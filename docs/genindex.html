@@ -299,8 +299,8 @@
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.calc_e0"><code class="docutils literal notranslate"><span class="pre">calc_e0()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.calc_lbd_Dr"><code class="docutils literal notranslate"><span class="pre">calc_lbd_Dr()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.calc_qsat"><code class="docutils literal notranslate"><span class="pre">calc_qsat()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.compute_node_supply"><code class="docutils literal notranslate"><span class="pre">compute_node_supply()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.gen_BO_cascade"><code class="docutils literal notranslate"><span class="pre">gen_BO_cascade()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.compute_node_supply_betweenness"><code class="docutils literal notranslate"><span class="pre">compute_node_supply_betweenness()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.gen_BO_cascade_betweenness"><code class="docutils literal notranslate"><span class="pre">gen_BO_cascade_betweenness()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.gen_precipitation"><code class="docutils literal notranslate"><span class="pre">gen_precipitation()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.get_Dr"><code class="docutils literal notranslate"><span class="pre">get_Dr()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.get_peril_evID"><code class="docutils literal notranslate"><span class="pre">get_peril_evID()</span></code></a></li>
@@ -308,7 +308,8 @@
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.plot_hazFootprints"><code class="docutils literal notranslate"><span class="pre">plot_hazFootprints()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.plot_src"><code class="docutils literal notranslate"><span class="pre">plot_src()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.plot_vulnFunctions"><code class="docutils literal notranslate"><span class="pre">plot_vulnFunctions()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.run_BO"><code class="docutils literal notranslate"><span class="pre">run_BO()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.run_BO_betweenness"><code class="docutils literal notranslate"><span class="pre">run_BO_betweenness()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.run_BO_flow"><code class="docutils literal notranslate"><span class="pre">run_BO_flow()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.update_soil_moisture"><code class="docutils literal notranslate"><span class="pre">update_soil_moisture()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.perils.vuln_f"><code class="docutils literal notranslate"><span class="pre">vuln_f()</span></code></a></li>
 </ul>
@@ -328,6 +329,7 @@
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.utils.get_ndays_inMonth"><code class="docutils literal notranslate"><span class="pre">get_ndays_inMonth()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.utils.get_neighborhood_ind"><code class="docutils literal notranslate"><span class="pre">get_neighborhood_ind()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.utils.get_net_coord"><code class="docutils literal notranslate"><span class="pre">get_net_coord()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.utils.graph_to_full_adjacency"><code class="docutils literal notranslate"><span class="pre">graph_to_full_adjacency()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.utils.incrementing"><code class="docutils literal notranslate"><span class="pre">incrementing()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.utils.init_io"><code class="docutils literal notranslate"><span class="pre">init_io()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="manual.html#GenMR.utils.load_json2dict"><code class="docutils literal notranslate"><span class="pre">load_json2dict()</span></code></a></li>
@@ -418,6 +420,7 @@
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-3-heatwave-case-threshold-model">C.3. Heatwave case (threshold model)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-4-pest-infestation-case">C.4. Pest infestation case</a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-5-blackout-case">C.5. Blackout case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-6-business-interruption-case">C.6. Business interruption case</a></li>
 </ul>
 </li>
 </ul>
@@ -614,7 +617,7 @@
 </li>
       <li><a href="manual.html#GenMR.environment.EnvLayer_urbLand.commercialZones">commercialZones (GenMR.environment.EnvLayer_urbLand property)</a>
 </li>
-      <li><a href="manual.html#GenMR.perils.compute_node_supply">compute_node_supply() (in module GenMR.perils)</a>
+      <li><a href="manual.html#GenMR.perils.compute_node_supply_betweenness">compute_node_supply_betweenness() (in module GenMR.perils)</a>
 </li>
       <li><a href="manual.html#GenMR.environment.EnvLayer_energy.connect_generators_substations">connect_generators_substations() (GenMR.environment.EnvLayer_energy method)</a>
 </li>
@@ -696,7 +699,7 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="manual.html#GenMR.perils.gen_BO_cascade">gen_BO_cascade() (in module GenMR.perils)</a>
+      <li><a href="manual.html#GenMR.perils.gen_BO_cascade_betweenness">gen_BO_cascade_betweenness() (in module GenMR.perils)</a>
 </li>
       <li><a href="manual.html#GenMR.environment.EnvLayer_energy.gen_loadnodes">gen_loadnodes() (GenMR.environment.EnvLayer_energy method)</a>
 </li>
@@ -745,10 +748,10 @@
 </li>
       <li><a href="manual.html#GenMR.environment.get_FS_state">get_FS_state() (in module GenMR.environment)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="manual.html#GenMR.perils.HazardFootprintGenerator.get_HW_atloc">get_HW_atloc() (GenMR.perils.HazardFootprintGenerator static method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="manual.html#GenMR.perils.HazardFootprintGenerator.get_HW_footprint">get_HW_footprint() (GenMR.perils.HazardFootprintGenerator static method)</a>
 </li>
       <li><a href="manual.html#GenMR.utils.get_ind_aspect2moore">get_ind_aspect2moore() (in module GenMR.utils)</a>
@@ -772,6 +775,8 @@
       <li><a href="manual.html#GenMR.perils.HazardFootprintGenerator.get_TC_timeshot">get_TC_timeshot() (GenMR.perils.HazardFootprintGenerator method)</a>
 </li>
       <li><a href="manual.html#GenMR.environment.EnvLayer_energy.get_windfarm_mask">get_windfarm_mask() (GenMR.environment.EnvLayer_energy method)</a>
+</li>
+      <li><a href="manual.html#GenMR.utils.graph_to_full_adjacency">graph_to_full_adjacency() (in module GenMR.utils)</a>
 </li>
       <li><a href="manual.html#GenMR.environment.EnvLayer_atmo.grid">grid (GenMR.environment.EnvLayer_atmo attribute)</a>
 
@@ -1010,7 +1015,9 @@
         <li><a href="manual.html#GenMR.perils.CellularAutomaton_WF.run">(GenMR.perils.CellularAutomaton_WF method)</a>
 </li>
       </ul></li>
-      <li><a href="manual.html#GenMR.perils.run_BO">run_BO() (in module GenMR.perils)</a>
+      <li><a href="manual.html#GenMR.perils.run_BO_betweenness">run_BO_betweenness() (in module GenMR.perils)</a>
+</li>
+      <li><a href="manual.html#GenMR.perils.run_BO_flow">run_BO_flow() (in module GenMR.perils)</a>
 </li>
   </ul></td>
 </tr></table>

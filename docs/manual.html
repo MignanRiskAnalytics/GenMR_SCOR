@@ -302,8 +302,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_e0"><code class="docutils literal notranslate"><span class="pre">calc_e0()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_lbd_Dr"><code class="docutils literal notranslate"><span class="pre">calc_lbd_Dr()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_qsat"><code class="docutils literal notranslate"><span class="pre">calc_qsat()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.compute_node_supply"><code class="docutils literal notranslate"><span class="pre">compute_node_supply()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.gen_BO_cascade"><code class="docutils literal notranslate"><span class="pre">gen_BO_cascade()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.compute_node_supply_betweenness"><code class="docutils literal notranslate"><span class="pre">compute_node_supply_betweenness()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.gen_BO_cascade_betweenness"><code class="docutils literal notranslate"><span class="pre">gen_BO_cascade_betweenness()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.gen_precipitation"><code class="docutils literal notranslate"><span class="pre">gen_precipitation()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.get_Dr"><code class="docutils literal notranslate"><span class="pre">get_Dr()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.get_peril_evID"><code class="docutils literal notranslate"><span class="pre">get_peril_evID()</span></code></a></li>
@@ -311,7 +311,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.plot_hazFootprints"><code class="docutils literal notranslate"><span class="pre">plot_hazFootprints()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.plot_src"><code class="docutils literal notranslate"><span class="pre">plot_src()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.plot_vulnFunctions"><code class="docutils literal notranslate"><span class="pre">plot_vulnFunctions()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.run_BO"><code class="docutils literal notranslate"><span class="pre">run_BO()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.run_BO_betweenness"><code class="docutils literal notranslate"><span class="pre">run_BO_betweenness()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.run_BO_flow"><code class="docutils literal notranslate"><span class="pre">run_BO_flow()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.update_soil_moisture"><code class="docutils literal notranslate"><span class="pre">update_soil_moisture()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.vuln_f"><code class="docutils literal notranslate"><span class="pre">vuln_f()</span></code></a></li>
 </ul>
@@ -331,6 +332,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_ndays_inMonth"><code class="docutils literal notranslate"><span class="pre">get_ndays_inMonth()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_neighborhood_ind"><code class="docutils literal notranslate"><span class="pre">get_neighborhood_ind()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_net_coord"><code class="docutils literal notranslate"><span class="pre">get_net_coord()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.graph_to_full_adjacency"><code class="docutils literal notranslate"><span class="pre">graph_to_full_adjacency()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.incrementing"><code class="docutils literal notranslate"><span class="pre">incrementing()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.init_io"><code class="docutils literal notranslate"><span class="pre">init_io()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.load_json2dict"><code class="docutils literal notranslate"><span class="pre">load_json2dict()</span></code></a></li>
@@ -421,6 +423,7 @@
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-3-heatwave-case-threshold-model">C.3. Heatwave case (threshold model)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-4-pest-infestation-case">C.4. Pest infestation case</a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-5-blackout-case">C.5. Blackout case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-6-business-interruption-case">C.6. Business interruption case</a></li>
 </ul>
 </li>
 </ul>
@@ -492,7 +495,7 @@ defined as classes or methods.</p>
 <dd class="field-even"><p>1.1.2</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2026-03-30</p>
+<dd class="field-odd"><p>2026-04-01</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -871,7 +874,7 @@ and initial node supply (MW).</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">node_supply_updated_day,</span> <span class="pre">node_supply_updated_night</span></span></dt>
+<span class="sig-name descname"><span class="pre">node_served_day,</span> <span class="pre">node_served_night</span></span></dt>
 <dd><p>Updated node supply after redistribution of power flows (MW).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -1001,12 +1004,25 @@ topographic and land use constraints.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><ul class="simple">
-<li><p><strong>powergrid</strong> (<em>networkx.Graph</em>) – Fully connected power grid graph.</p></li>
+<li><p><strong>powergrid_g</strong> (<em>networkx.Graph</em>) – Fully connected power grid graph.</p></li>
 <li><p><strong>node_names</strong> (<em>dict</em>) – Dictionary mapping node IDs to names.</p></li>
 <li><p><strong>node_coords</strong> (<em>ndarray of shape (n_nodes, 2)</em>) – Cartesian coordinates of all nodes in the power grid.</p></li>
-<li><p><strong>node_supply</strong> (<em>ndarray of shape (n_nodes, )</em>) – Power supply (MW) per node, 0 if not a load node.</p></li>
+<li><p><strong>node_supply</strong> (<em>ndarray of shape (n_nodes, )</em>) – Power supply (MW) per node: positive on generator nodes (G*),
+zero on all other nodes (L*, S*, T*).</p></li>
 </ul>
 </p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<dl>
+<dt>CONVENTION:</dt><dd><p>Generators are the only sources: node_supply[G] = P_gen_per_node.
+Load nodes are pure sinks: demand is set in solve_power_flow.
+Net injection b = node_supply - node_demand gives:</p>
+<blockquote>
+<div><p>b[G] &gt; 0  (source)
+b[L] &lt; 0  (sink)
+b[S] = b[T] = 0  (passive routing)</p>
+</div></blockquote>
 </dd>
 </dl>
 </dd></dl>
@@ -1028,12 +1044,22 @@ topographic and land use constraints.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>node_demand_day</strong> (<em>ndarray</em>) – Demand per load node (MW)</p></li>
-<li><p><strong>node_demand_night</strong> (<em>ndarray</em>) – Demand per load node (MW)</p></li>
-<li><p><strong>load_ID</strong> (<em>ndarray</em>) – Mapping from each mesh cell to the nearest power grid load node ID (NaN for non-urban cells).</p></li>
+<li><p><strong>node_demand_day</strong> (<em>ndarray</em>) – Demand per load node (MW), length = number of L nodes.</p></li>
+<li><p><strong>node_demand_night</strong> (<em>ndarray</em>) – Demand per load node (MW), length = number of L nodes.</p></li>
+<li><p><strong>load_ID</strong> (<em>ndarray</em>) – Mapping from each mesh cell to the nearest power grid load node ID.</p></li>
 </ul>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<dl class="simple">
+<dt>With the corrected convention:</dt><dd><p>node_supply[G] = P_gen  →  generators inject power
+node_demand[L] = demand →  loads consume power
+b = supply - demand:  b[G]&gt;0, b[L]&lt;0, b[S]=b[T]=0</p>
+</dd>
+</dl>
+<p>The DC flow solution carries power FROM generators TO loads
+through the transmission network. Generator failures now
+directly reduce injections and force flow rerouting.</p>
 </dd></dl>
 
 </dd></dl>
@@ -2720,7 +2746,7 @@ as well as intensity and loss footprint calculations.</p>
 <dd class="field-even"><p>1.1.2</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2026-03-20</p>
+<dd class="field-odd"><p>2026-03-31</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -3977,8 +4003,8 @@ mass of water vapor to the total mass of moist air.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="GenMR.perils.compute_node_supply">
-<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">compute_node_supply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generators</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BO_loads</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.compute_node_supply" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="GenMR.perils.compute_node_supply_betweenness">
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">compute_node_supply_betweenness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generators</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BO_loads</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.compute_node_supply_betweenness" title="Link to this definition"></a></dt>
 <dd><p>Compute per-node power supply for each load in the network, e.g., after a blackout.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -3989,7 +4015,7 @@ mass of water vapor to the total mass of moist air.</p>
 <li><p><strong>load_nodes</strong> (<em>list</em><em> of </em><em>str</em>) – List of load node names (e.g., [‘L1’, ‘L2’, …]).</p></li>
 <li><p><strong>par</strong> (<em>dict</em>) – Dictionary of parameters:
 - ‘powergrid_redundanciesGS’ : number of redundant generator lines
-- ‘powergrid_power_perGnode_MW’ : MW per generator node</p></li>
+- ‘powergrid_power_perGnode_GW’ : MW per generator node</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -4006,8 +4032,8 @@ will be implemented in a separate function.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="GenMR.perils.gen_BO_cascade">
-<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">gen_BO_cascade</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A_dmg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generators</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betweenness_intact</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_casc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.gen_BO_cascade" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="GenMR.perils.gen_BO_cascade_betweenness">
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">gen_BO_cascade_betweenness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A_dmg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generators</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betweenness_intact</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_casc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.gen_BO_cascade_betweenness" title="Link to this definition"></a></dt>
 <dd><p>Simulate cascading failures using edge betweenness as a flow proxy.</p>
 <p>Starting from a damaged network, edges are iteratively removed if their
 betweenness exceeds a predefined capacity. The process continues until
@@ -4187,8 +4213,8 @@ For logarithmic scale, this represents the step in log10 space.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="GenMR.perils.run_BO">
-<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">run_BO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energyLayer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_lines</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.run_BO" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="GenMR.perils.run_BO_betweenness">
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">run_BO_betweenness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energyLayer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_lines</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.run_BO_betweenness" title="Link to this definition"></a></dt>
 <dd><p>Run a blackout cascade scenario on a power grid.</p>
 <p>This function builds the network from the energy infrastructure layer, applies initial
 node and line failures, computes edge betweenness as a flow proxy, and
@@ -4208,6 +4234,48 @@ simulates cascading failures using <code class="docutils literal notranslate"><s
 <li><p><strong>g_BO</strong> (<em>igraph.Graph</em>) – Graph after cascading failures.</p></li>
 <li><p><strong>g_dmg</strong> (<em>igraph.Graph</em>) – Graph after initial damage (before cascade).</p></li>
 <li><p><strong>g</strong> (<em>igraph.Graph</em>) – Intact graph before any failures.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.perils.run_BO_flow">
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">run_BO_flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energyLayer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'day'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_casc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.run_BO_flow" title="Link to this definition"></a></dt>
+<dd><p>Run a blackout cascade scenario on a power grid using DC power flow.</p>
+<dl class="simple">
+<dt>Logic:</dt><dd><ol class="arabic simple">
+<li><p>Edge capacities defined from intact network flows.</p></li>
+<li><p>Initial damage: remove nodes/lines, zero supply of failed generators.</p></li>
+<li><p>Cascade: iteratively remove edges whose flow exceeds intact capacity.
+_compute_flows_dc handles island load shedding internally at each step.</p></li>
+<li><p>Final state: node_demand_served gives power actually served per node.</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>energyLayer</strong> (<em>object</em>) – Power system container providing:
+- <code class="docutils literal notranslate"><span class="pre">powergrid</span></code>: tuple (graph, node_names, node_coords, node_supply)
+- <code class="docutils literal notranslate"><span class="pre">_compute_flows_dc</span></code>: DC power flow solver
+- <code class="docutils literal notranslate"><span class="pre">node_demand_served_day</span></code> / <code class="docutils literal notranslate"><span class="pre">node_demand_served_night</span></code>: demand profiles</p></li>
+<li><p><strong>par</strong> (<em>dict</em>) – Model parameters. Must contain <code class="docutils literal notranslate"><span class="pre">'tolerance'</span></code>.</p></li>
+<li><p><strong>failed_nodes</strong> (<em>list</em><em> of </em><em>str</em>) – Names of nodes to be removed initially.</p></li>
+<li><p><strong>failed_lines</strong> (<em>list</em><em> of </em><em>tuple</em><em> of </em><em>str</em>) – List of edges (node_name_1, node_name_2) to be removed initially.</p></li>
+<li><p><strong>period</strong> (<em>{'day'</em><em>, </em><em>'night'}</em><em>, </em><em>optional</em>) – Demand profile to use. Default is <code class="docutils literal notranslate"><span class="pre">'day'</span></code>.</p></li>
+<li><p><strong>print_casc</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, print diagnostic information during cascade iterations.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>BO_loads</strong> (<em>list of str</em>) – Names of load nodes (prefix <code class="docutils literal notranslate"><span class="pre">'L'</span></code>) with zero served demand in the
+final state (i.e., fully blacked out).</p></li>
+<li><p><strong>g_BO</strong> (<em>networkx.Graph</em>) – Final graph after the cascade terminates.</p></li>
+<li><p><strong>g_dmg</strong> (<em>networkx.Graph</em>) – Graph after initial damage but before cascading failures.</p></li>
+<li><p><strong>g_intact</strong> (<em>networkx.Graph</em>) – Original intact graph before any failures.</p></li>
+<li><p><strong>node_demand_served</strong> (<em>ndarray of shape (n_nodes,)</em>) – Power actually delivered to each node after the cascade.</p></li>
 </ul>
 </p>
 </dd>
@@ -4279,7 +4347,7 @@ core GenMR workflows by streamlining data handling, computation, and visualisati
 <dd class="field-even"><p>1.1.2</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2026-03-25</p>
+<dd class="field-odd"><p>2026-04-01</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -4583,6 +4651,11 @@ Both arrays exclude the focal cell <cite>(i, j)</cite>.</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.graph_to_full_adjacency">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">graph_to_full_adjacency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_nodes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.graph_to_full_adjacency" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="GenMR.utils.incrementing">
