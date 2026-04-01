@@ -2168,8 +2168,8 @@ class EnvLayer_urbLand:
             3: 'IND',  # Industrial
             4: 'COM'   # Commercial
         }
-        pop_day = np.zeros((nx, ny))
-        pop_night = np.zeros((nx, ny))
+        pop_day = np.full((nx, ny), np.nan)
+        pop_night = np.full((nx, ny), np.nan)
         Aratio = self._get_Aratio_map()
         for lu_class, occ_type in S_to_occ.items():
             mask = self.S == lu_class  # only cells of this land-use class
@@ -2983,11 +2983,14 @@ class EnvLayer_socioeco:
         self.node_demand_day = None
         self.node_demand_night = None
 
+        self.econ_output = None
+
     def build(self):
         self._place_facilities()
         self._assign_power_nodes()
         self._compute_demand()
         self._aggregate_node_demand()
+        self._compute_economic_output()
 
 
     ## 1. FACILITIES ##
@@ -2995,17 +2998,14 @@ class EnvLayer_socioeco:
         ii, jj = np.where(mask)
         if len(ii) == 0:
             return np.empty((0, 2))
-
         n = min(n, len(ii))
         ind = self.rng.choice(len(ii), size=n, replace=False)
-
         x = self.grid.xx[ii[ind], jj[ind]]
         y = self.grid.yy[ii[ind], jj[ind]]
-
         return np.column_stack((x, y))
 
     def _place_facilities(self):
-        pop_tot = np.sum(self.urb.pop_night)
+        pop_tot = np.nansum(self.urb.pop_night)
         n_hospital = int(pop_tot / self.par['pop_perHospital'])
         n_police = int(pop_tot / self.par['pop_perPoliceStation'])
         n_fire = int(pop_tot / self.par['pop_perFireStation'])
@@ -3041,18 +3041,18 @@ class EnvLayer_socioeco:
         Aratio = self.urb._get_Aratio_map()
         # RES
         mask = self.urb.S == 2
-        demand[0, mask] = self.urb.pop_day[mask] * self.par['W_per_pers_RES'][0]
-        demand[1, mask] = self.urb.pop_night[mask] * self.par['W_per_pers_RES'][1]
+        demand[0, mask] = self.urb.pop_day[mask] * self.par['P_W_per_pers_RES'][0]
+        demand[1, mask] = self.urb.pop_night[mask] * self.par['P_W_per_pers_RES'][1]
         # IND
         mask = self.urb.S == 3
         floor_area = Acell * Aratio[mask] * self.urb.bldg_Nstories[mask]
-        demand[0, mask] = floor_area * self.par['W_per_m2_IND'][0]
-        demand[1, mask] = floor_area * self.par['W_per_m2_IND'][1]
+        demand[0, mask] = floor_area * self.par['P_W_per_m2_IND'][0]
+        demand[1, mask] = floor_area * self.par['P_W_per_m2_IND'][1]
         # COM
         mask = self.urb.S == 4
         floor_area = Acell * Aratio[mask] * self.urb.bldg_Nstories[mask]
-        demand[0, mask] = floor_area * self.par['W_per_m2_COM'][0]
-        demand[1, mask] = floor_area * self.par['W_per_m2_COM'][1]
+        demand[0, mask] = floor_area * self.par['P_W_per_m2_COM'][0]
+        demand[1, mask] = floor_area * self.par['P_W_per_m2_COM'][1]
         self.demand_day = demand[0]
         self.demand_night = demand[1]
 
@@ -3064,9 +3064,27 @@ class EnvLayer_socioeco:
         self.node_demand_day = (np.bincount(node_ids, weights = self.demand_day[valid_mask], minlength = n_nodes) * 1e-6)
         self.node_demand_night = (np.bincount(node_ids, weights = self.demand_night[valid_mask], minlength = n_nodes) * 1e-6)
 
-
-    ## 3 xxx ##
-
+    ## 3 ECONOMIC OUTPUT ##
+    def _compute_economic_output(self):
+        nx, ny = self.urb.S.shape
+        econ = np.full((nx, ny), np.nan)
+        Acell = (self.grid.w * 1e3) ** 2
+        Aratio = self.urb._get_Aratio_map()
+        O_tot = np.nansum(self.urb.pop_night) * self.urb.par['GPD_percapita_EUR']
+        mask = (self.urb.S == 3) | (self.urb.S == 4)
+        Abiz = Acell * Aratio[mask] * self.urb.bldg_Nstories[mask]
+        O_m2_yr = O_tot / np.sum(Abiz)
+        # INDUSTRIAL
+        mask = self.urb.S == 3
+        floor_area = Acell * Aratio[mask] * self.urb.bldg_Nstories[mask]
+        econ[mask] = floor_area * O_m2_yr * self.par['GDP_fraction_IND']
+        # COMMERCIAL
+        mask = self.urb.S == 4
+        floor_area = Acell * Aratio[mask] * self.urb.bldg_Nstories[mask]
+        econ[mask] = floor_area * O_m2_yr * self.par['GDP_fraction_COM']
+        self.O = econ     # EUR/yr per cell
+        self.econ_output_IND_m2_yr = O_m2_yr * self.par['GDP_fraction_IND']
+        self.econ_output_COM_m2_yr = O_m2_yr * self.par['GDP_fraction_COM']
 
 
 ############
@@ -3319,7 +3337,10 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-', box =
         
     ## SOCIO-ECONOMIC LAYER ##
     if envLayer.ID == 'socioeco':
-        if attr == 'socialsafFacilities':
+        if attr == 'O':
+            img = plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.O*1e-6, cmap = 'Reds', alpha = alpha)
+            fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'Economic output (M. EUR/block/yr)')
+        elif attr == 'socialsafFacilities':
             plt.scatter(envLayer.hosp_coords[:,0], envLayer.hosp_coords[:,1], color = 'blue', marker = 's', label = 'hospital')
             plt.scatter(envLayer.pol_coords[:,0], envLayer.pol_coords[:,1], color = 'black', marker = '.', label = 'police')
             plt.scatter(envLayer.fire_coords[:,0], envLayer.fire_coords[:,1], color = 'red', marker = '+', label = 'fire sta.')
@@ -3572,7 +3593,7 @@ def plot_EnvLayers(envLayers, file_ext = '-', topo_bool = False, box = None):
             ax[i,0].legend(handles=legend_S, loc='upper left')
             
             if topo_bool:
-                ax[i,1].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.topo.z, vert_exag=.1), cmap='gray')
+                ax[i,1].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.topo.z, vert_exag=.1), cmap='gray', alpha = .5)
 #            ax[i,1].scatter(envLayer.roadNet_coord[0], envLayer.roadNet_coord[1], color = 'white', edgecolors='black')
 #            ax[i,1].plot(envLayer.roadNet_coord[2], envLayer.roadNet_coord[3], color='white', lw = 1, \
 #                         path_effects=[pe.Stroke(linewidth = 1.5, foreground='black'), pe.Normal()])
@@ -3587,7 +3608,7 @@ def plot_EnvLayers(envLayers, file_ext = '-', topo_bool = False, box = None):
             ax[i,1].set_aspect(1)
 
             if topo_bool:
-                ax[i,2].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.topo.z, vert_exag=.1), cmap='gray')
+                ax[i,2].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.topo.z, vert_exag=.1), cmap='gray', alpha = .5)
             ax[i,2].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.pop_day, cmap='Reds', alpha = alpha)
             ax[i,2].set_xlim(envLayer.grid.xmin, envLayer.grid.xmax)
             ax[i,2].set_ylim(envLayer.grid.ymin, envLayer.grid.ymax)
@@ -3678,22 +3699,30 @@ def plot_EnvLayers(envLayers, file_ext = '-', topo_bool = False, box = None):
         ## SOCIO-ECONOMIC LAYER ##
         if envLayer.ID == 'socioeco':
             IDs = IDs + '_socioeco'
-            powergrid, node_names, node_coords, node_supply = envLayer.energy.powergrid
 
             if topo_bool:
                 ax[i,0].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.urb.topo.z, vert_exag=.1), cmap='gray', alpha = .5)
-            ax[i,0].scatter(envLayer.hosp_coords[:,0], envLayer.hosp_coords[:,1], color = 'blue', marker = 's', label = 'hospital')
-            ax[i,0].scatter(envLayer.pol_coords[:,0], envLayer.pol_coords[:,1], color = 'black', marker = '.', label = 'police')
-            ax[i,0].scatter(envLayer.fire_coords[:,0], envLayer.fire_coords[:,1], color = 'red', marker = '+', label = 'fire sta.')
+            ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.O*1e-6, cmap = 'Reds')
             ax[i,0].set_xlabel('$x$ (km)')
             ax[i,0].set_ylabel('$y$ (km)')
-            ax[i,0].set_title('SOCIOECO: Public safety facilities', size = 14, pad = 20)
+            ax[i,0].set_title('SOCIOECO: Economic output $O$', size = 14, pad = 20)
             ax[i,0].set_xlim(xmin, xmax)
             ax[i,0].set_ylim(ymin, ymax)
             ax[i,0].set_aspect(1)
-            ax[i,0].legend(loc='upper right')
 
-            ax[i,1].set_axis_off()
+            if topo_bool:
+                ax[i,1].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.urb.topo.z, vert_exag=.1), cmap='gray', alpha = .5)
+            ax[i,1].scatter(envLayer.hosp_coords[:,0], envLayer.hosp_coords[:,1], color = 'blue', marker = 's', label = 'hospital')
+            ax[i,1].scatter(envLayer.pol_coords[:,0], envLayer.pol_coords[:,1], color = 'black', marker = '.', label = 'police')
+            ax[i,1].scatter(envLayer.fire_coords[:,0], envLayer.fire_coords[:,1], color = 'red', marker = '+', label = 'fire sta.')
+            ax[i,1].set_xlabel('$x$ (km)')
+            ax[i,1].set_ylabel('$y$ (km)')
+            ax[i,1].set_title('Public safety facilities', size = 14, pad = 20)
+            ax[i,1].set_xlim(xmin, xmax)
+            ax[i,1].set_ylim(ymin, ymax)
+            ax[i,1].set_aspect(1)
+            ax[i,1].legend(loc='upper right')
+
             ax[i,2].set_axis_off()
 
     fig.tight_layout()
