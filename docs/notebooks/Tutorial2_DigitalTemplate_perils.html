@@ -425,6 +425,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#c-4-pest-infestation-case">C.4. Pest infestation case</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c-5-blackout-case">C.5. Blackout case</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c-6-business-interruption-case">C.6. Business interruption case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c-7-public-safety-service-case">C.7. Public safety service case</a></li>
 </ul>
 </li>
 </ul>
@@ -461,7 +462,7 @@
 <h1>Tutorial 2: Implementing perils in the GenMR digital template<a class="headerlink" href="#tutorial-2-implementing-perils-in-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 1.1.2<br />
-<strong>Last Updated:</strong> 2026-04-01<br />
+<strong>Last Updated:</strong> 2026-04-02
 <strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
 <p>Once a virtual environment has been generated (see previous tutorial), stochastic events are modelled to populate it. Table 1 lists the perils included in version 1.1.2 (the ones still missing to be included by June 2026).</p>
 <br>
@@ -670,21 +671,21 @@
 </tr>
 <tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">BI</span></code></p></td>
 <td class="text-left"><p>Business interruption</p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p><span style="color: orange">✗<span></p></td>
+<td class="text-left"><p>Secondary (to <code class="docutils literal notranslate"><span class="pre">dg</span></code>, <code class="docutils literal notranslate"><span class="pre">BO</span></code>)</p></td>
+<td class="text-left"><p>Point</p></td>
+<td class="text-left"><p>-</p></td>
+<td class="text-left"><p>Threshold</p></td>
+<td class="text-left"><p>BI loss</p></td>
+<td class="text-left"><p><span style="color: green">✓<span></p></td>
 </tr>
 <tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">Sf</span></code></p></td>
-<td class="text-left"><p>Public service failure</p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p></p></td>
-<td class="text-left"><p><span style="color: orange">✗<span></p></td>
+<td class="text-left"><p>Public safety service failure</p></td>
+<td class="text-left"><p>Secondary (to <code class="docutils literal notranslate"><span class="pre">dg</span></code>)</p></td>
+<td class="text-left"><p>Point</p></td>
+<td class="text-left"><p>-</p></td>
+<td class="text-left"><p>Threshold</p></td>
+<td class="text-left"><p>Service loss</p></td>
+<td class="text-left"><p><span style="color: orange">ONGOING<span></p></td>
 </tr>
 <tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">SU</span></code></p></td>
 <td class="text-left"><p>Social unrest</p></td>
@@ -746,7 +747,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/2d5adea577dad94cbcd33269a03d8d2fa526201dfc7ca5137bfdaadc873d8897.png" src="../_images/2d5adea577dad94cbcd33269a03d8d2fa526201dfc7ca5137bfdaadc873d8897.png" />
+<img alt="../_images/fe676d1a584c2f7596874b6396a5531efe59fc2feecc6d769c86c0b64e4fac1f.png" src="../_images/fe676d1a584c2f7596874b6396a5531efe59fc2feecc6d769c86c0b64e4fac1f.png" />
 </div>
 </div>
 <p>Note that the configuration of the digital template environment may be changed through Tutorial 1.</p>
@@ -761,7 +762,7 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;perils&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;AI&#39;</span><span class="p">,</span><span class="s1">&#39;Dr&#39;</span><span class="p">,</span><span class="s1">&#39;EQ&#39;</span><span class="p">,</span><span class="s1">&#39;HW&#39;</span><span class="p">,</span><span class="s1">&#39;PI&#39;</span><span class="p">,</span><span class="s1">&#39;RS&#39;</span><span class="p">,</span><span class="s1">&#39;TC&#39;</span><span class="p">,</span><span class="s1">&#39;To&#39;</span><span class="p">,</span><span class="s1">&#39;VE&#39;</span><span class="p">,</span><span class="s1">&#39;WF&#39;</span><span class="p">,</span><span class="s1">&#39;WS&#39;</span><span class="p">,</span>        <span class="c1"># primary</span>
                      <span class="s1">&#39;CS&#39;</span><span class="p">,</span>                                                          <span class="c1"># special</span>
-                     <span class="s1">&#39;BO&#39;</span><span class="p">,</span><span class="s1">&#39;Ex&#39;</span><span class="p">,</span><span class="s1">&#39;FF&#39;</span><span class="p">,</span><span class="s1">&#39;Li&#39;</span><span class="p">,</span><span class="s1">&#39;LS&#39;</span><span class="p">,</span><span class="s1">&#39;SS&#39;</span><span class="p">]</span>                                 <span class="c1"># secondary</span>
+                     <span class="s1">&#39;BI&#39;</span><span class="p">,</span><span class="s1">&#39;BO&#39;</span><span class="p">,</span><span class="s1">&#39;Ex&#39;</span><span class="p">,</span><span class="s1">&#39;FF&#39;</span><span class="p">,</span><span class="s1">&#39;Li&#39;</span><span class="p">,</span><span class="s1">&#39;LS&#39;</span><span class="p">,</span><span class="s1">&#39;Sf&#39;</span><span class="p">,</span><span class="s1">&#39;SS&#39;</span><span class="p">]</span>                       <span class="c1"># secondary</span>
                     <span class="c1"># IMPORTANT: primary perils come first in src.par[&#39;perils&#39;]</span>
                     <span class="c1"># NB: since &#39;CS&#39; depends of &#39;To&#39;, must be listed after &#39;To&#39; (i.e., CS=special peril)</span>
 
@@ -838,7 +839,11 @@
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;Ex&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;refinery&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">CI_x</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="n">CI_y</span><span class="p">}</span>  <span class="c1"># harbor refinery as source of explosions</span>
 
 <span class="c1">## SOCIO-ECONOMIC ##</span>
-<span class="c1"># to add...</span>
+<span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;BI&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;socio-economic fabric&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;MDR_th&#39;</span><span class="p">:</span> <span class="mf">.3</span><span class="p">}</span>                    <span class="c1"># BI when buildings moderately damaged</span>
+<span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;Sf&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;socio-economic fabric&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;MDR_th&#39;</span><span class="p">:</span> <span class="mf">.6</span><span class="p">}</span>                    <span class="c1"># Sf when CIs (e.g., hospitals) when buildings heavily damaged</span>
+
 
 <span class="n">GenMR_perils</span><span class="o">.</span><span class="n">plot_src</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">hillshading_z</span> <span class="o">=</span> <span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">file_ext</span> <span class="o">=</span> <span class="s1">&#39;jpg&#39;</span><span class="p">)</span>
 </pre></div>
@@ -1961,7 +1966,7 @@
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>generating footprints for: AI... Dr... EQ... HW... (loading from cache)
 PI... (loading from cache)
-RS... TC... To... VE... WF... WS... CS... Ex... FF... Li... LS... SS... catalogue completed
+RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf... SS... catalogue completed
 </pre></div>
 </div>
 </div>
@@ -1988,7 +1993,7 @@ RS... TC... To... VE... WF... WS... CS... Ex... FF... Li... LS... SS... catalogu
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/4e602e63d31b9e3c49df9b09de8940e4eecfea5aa7b7fc82b7ca92b11ed138d6.png" src="../_images/4e602e63d31b9e3c49df9b09de8940e4eecfea5aa7b7fc82b7ca92b11ed138d6.png" />
+<img alt="../_images/77ba40662ad5c5fb077f0c80ca290ca921dbdd0f78c9d684146dbdb15904e945.png" src="../_images/77ba40662ad5c5fb077f0c80ca290ca921dbdd0f78c9d684146dbdb15904e945.png" />
 </div>
 </div>
 <p><strong>Note:</strong> Observe the <code class="docutils literal notranslate"><span class="pre">TC</span></code> footprint boundary effect (cyclonic eye), which is due to the track artificially starting at <code class="docutils literal notranslate"><span class="pre">grid.xmin</span></code>.</p>
@@ -2850,7 +2855,7 @@ RS... TC... To... VE... WF... WS... CS... Ex... FF... Li... LS... SS... catalogu
 </figure>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reproduce_LSmovie</span> <span class="o">=</span> <span class="kc">True</span>          <span class="c1"># True to create &#39;movs/LS_CA_xrg38_68_yrg20_35.gif&#39;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reproduce_LSmovie</span> <span class="o">=</span> <span class="kc">False</span>          <span class="c1"># True to create &#39;movs/LS_CA_xrg38_68_yrg20_35.gif&#39;</span>
 <span class="n">reproduce_FFmovie</span> <span class="o">=</span> <span class="kc">False</span>          <span class="c1"># True to create &#39;movs/FF_CA_xrg0_100_yrg0_40.gif&#39;</span>
 
 <span class="k">if</span> <span class="n">reproduce_LSmovie</span><span class="p">:</span>
@@ -2887,8 +2892,7 @@ RS... TC... To... VE... WF... WS... CS... Ex... FF... Li... LS... SS... catalogu
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>iteration 20 / 20
-LS movie created (go to mov/LS_CA_*).
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>No LS movie created.
 No FF movie created.
 </pre></div>
 </div>
@@ -2920,18 +2924,12 @@ Loading from cache potential footprints
 Fetching footprints from potential footprints
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Fetching WF footprints from cache: 100%|████████| 10/10 [00:00&lt;00:00, 48.55it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Fetching WF footprints from cache: 100%|████████| 10/10 [00:00&lt;00:00, 33.13it/s]
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>FF_fromRS1 (computing)
-0.0 hr / 24.0
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>FF_fromRS2 (computing)
-FF_fromRS3 (computing)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>FF_fromRS1 (loaded from cache)
+FF_fromRS2 (loaded from cache)
+FF_fromRS3 (loaded from cache)
 LS_fromRS1 (loaded from cache)
 LS_fromRS2 (loaded from cache)
 LS_fromRS3 (loaded from cache)
@@ -2958,7 +2956,7 @@ LS_fromRS3 (loaded from cache)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/b4a48cbfd3689289e33aada49d0067f7a22cec5169b915ef0fe2e2bf90540607.png" src="../_images/b4a48cbfd3689289e33aada49d0067f7a22cec5169b915ef0fe2e2bf90540607.png" />
+<img alt="../_images/8e68349452672f4b475ba221f1e64e16320fec1a0d9746927441b6647a22fc9a.png" src="../_images/8e68349452672f4b475ba221f1e64e16320fec1a0d9746927441b6647a22fc9a.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -3059,7 +3057,7 @@ LS_fromRS3 (loaded from cache)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Computing MDR &amp; Loss: 100%|█████████████████████| 76/76 [00:01&lt;00:00, 40.31it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Computing MDR &amp; Loss: 100%|█████████████████████| 76/76 [00:01&lt;00:00, 39.79it/s]
 </pre></div>
 </div>
 <div class="output text_html"><div>
@@ -3096,7 +3094,7 @@ LS_fromRS3 (loaded from cache)
       <td>AI1</td>
       <td>10.000000</td>
       <td>2.657777e-06</td>
-      <td>1.575638e+10</td>
+      <td>2.234232e+00</td>
     </tr>
     <tr>
       <th>1</th>
@@ -3114,7 +3112,7 @@ LS_fromRS3 (loaded from cache)
       <td>AI3</td>
       <td>10.000000</td>
       <td>2.657777e-06</td>
-      <td>2.970399e-03</td>
+      <td>0.000000e+00</td>
     </tr>
     <tr>
       <th>3</th>
@@ -3123,7 +3121,7 @@ LS_fromRS3 (loaded from cache)
       <td>AI4</td>
       <td>100.000000</td>
       <td>2.509457e-07</td>
-      <td>1.732054e+05</td>
+      <td>1.891861e+10</td>
     </tr>
     <tr>
       <th>4</th>
@@ -3132,7 +3130,7 @@ LS_fromRS3 (loaded from cache)
       <td>AI5</td>
       <td>100.000000</td>
       <td>2.509457e-07</td>
-      <td>1.218247e+10</td>
+      <td>5.812879e+09</td>
     </tr>
     <tr>
       <th>5</th>
@@ -3141,7 +3139,7 @@ LS_fromRS3 (loaded from cache)
       <td>AI6</td>
       <td>100.000000</td>
       <td>2.509457e-07</td>
-      <td>1.321924e+10</td>
+      <td>6.380996e+09</td>
     </tr>
     <tr>
       <th>6</th>
@@ -3150,7 +3148,7 @@ LS_fromRS3 (loaded from cache)
       <td>AI7</td>
       <td>100.000000</td>
       <td>2.509457e-07</td>
-      <td>1.404086e+06</td>
+      <td>5.191635e+05</td>
     </tr>
     <tr>
       <th>7</th>
@@ -3159,7 +3157,7 @@ LS_fromRS3 (loaded from cache)
       <td>AI8</td>
       <td>1000.000000</td>
       <td>4.212292e-08</td>
-      <td>1.194902e+08</td>
+      <td>3.194076e+06</td>
     </tr>
     <tr>
       <th>8</th>
@@ -3168,7 +3166,7 @@ LS_fromRS3 (loaded from cache)
       <td>AI9</td>
       <td>1000.000000</td>
       <td>4.212292e-08</td>
-      <td>1.131285e+11</td>
+      <td>4.138047e+10</td>
     </tr>
     <tr>
       <th>9</th>
@@ -3177,7 +3175,7 @@ LS_fromRS3 (loaded from cache)
       <td>AI10</td>
       <td>1000.000000</td>
       <td>4.212292e-08</td>
-      <td>1.190284e+08</td>
+      <td>1.065886e+10</td>
     </tr>
     <tr>
       <th>10</th>
@@ -3213,7 +3211,7 @@ LS_fromRS3 (loaded from cache)
       <td>EQ1</td>
       <td>6.000000</td>
       <td>6.855726e-03</td>
-      <td>7.495152e+08</td>
+      <td>9.446496e+06</td>
     </tr>
     <tr>
       <th>14</th>
@@ -3222,7 +3220,7 @@ LS_fromRS3 (loaded from cache)
       <td>EQ2</td>
       <td>6.000000</td>
       <td>6.855726e-03</td>
-      <td>9.030498e+09</td>
+      <td>6.670798e+09</td>
     </tr>
     <tr>
       <th>15</th>
@@ -3231,7 +3229,7 @@ LS_fromRS3 (loaded from cache)
       <td>EQ3</td>
       <td>6.000000</td>
       <td>6.855726e-03</td>
-      <td>9.566236e+07</td>
+      <td>1.955907e+05</td>
     </tr>
     <tr>
       <th>16</th>
@@ -3240,7 +3238,7 @@ LS_fromRS3 (loaded from cache)
       <td>EQ4</td>
       <td>6.100000</td>
       <td>5.445696e-03</td>
-      <td>2.092472e+08</td>
+      <td>4.091224e+05</td>
     </tr>
     <tr>
       <th>17</th>
@@ -3249,7 +3247,7 @@ LS_fromRS3 (loaded from cache)
       <td>EQ5</td>
       <td>6.100000</td>
       <td>5.445696e-03</td>
-      <td>1.778549e+07</td>
+      <td>1.111121e+05</td>
     </tr>
     <tr>
       <th>18</th>
@@ -3258,7 +3256,7 @@ LS_fromRS3 (loaded from cache)
       <td>EQ6</td>
       <td>6.100000</td>
       <td>5.445696e-03</td>
-      <td>1.037532e+09</td>
+      <td>6.657400e+06</td>
     </tr>
     <tr>
       <th>19</th>
@@ -3267,7 +3265,7 @@ LS_fromRS3 (loaded from cache)
       <td>EQ7</td>
       <td>6.200000</td>
       <td>6.488506e-03</td>
-      <td>1.277986e+09</td>
+      <td>2.086236e+07</td>
     </tr>
     <tr>
       <th>20</th>
@@ -3276,7 +3274,7 @@ LS_fromRS3 (loaded from cache)
       <td>EQ8</td>
       <td>6.200000</td>
       <td>6.488506e-03</td>
-      <td>4.576414e+07</td>
+      <td>2.557983e+05</td>
     </tr>
     <tr>
       <th>21</th>
@@ -3285,7 +3283,7 @@ LS_fromRS3 (loaded from cache)
       <td>EQ9</td>
       <td>6.300000</td>
       <td>3.436002e-03</td>
-      <td>1.768410e+09</td>
+      <td>2.901590e+07</td>
     </tr>
     <tr>
       <th>22</th>
@@ -3294,7 +3292,7 @@ LS_fromRS3 (loaded from cache)
       <td>EQ10</td>
       <td>6.300000</td>
       <td>3.436002e-03</td>
-      <td>2.302008e+08</td>
+      <td>7.156476e+05</td>
     </tr>
     <tr>
       <th>23</th>
@@ -3303,7 +3301,7 @@ LS_fromRS3 (loaded from cache)
       <td>EQ11</td>
       <td>6.300000</td>
       <td>3.436002e-03</td>
-      <td>2.302008e+08</td>
+      <td>7.156476e+05</td>
     </tr>
     <tr>
       <th>24</th>
@@ -3312,7 +3310,7 @@ LS_fromRS3 (loaded from cache)
       <td>EQ12</td>
       <td>6.400000</td>
       <td>4.093970e-03</td>
-      <td>1.012253e+09</td>
+      <td>2.746055e+06</td>
     </tr>
     <tr>
       <th>25</th>
@@ -3321,7 +3319,7 @@ LS_fromRS3 (loaded from cache)
       <td>EQ13</td>
       <td>6.400000</td>
       <td>4.093970e-03</td>
-      <td>2.672893e+09</td>
+      <td>2.175381e+07</td>
     </tr>
     <tr>
       <th>26</th>
@@ -3330,7 +3328,7 @@ LS_fromRS3 (loaded from cache)
       <td>EQ14</td>
       <td>6.500000</td>
       <td>3.251956e-03</td>
-      <td>2.800540e+10</td>
+      <td>2.370068e+10</td>
     </tr>
     <tr>
       <th>27</th>
@@ -3339,7 +3337,7 @@ LS_fromRS3 (loaded from cache)
       <td>EQ15</td>
       <td>6.500000</td>
       <td>3.251956e-03</td>
-      <td>4.604609e+08</td>
+      <td>1.762244e+06</td>
     </tr>
     <tr>
       <th>28</th>
@@ -3348,7 +3346,7 @@ LS_fromRS3 (loaded from cache)
       <td>EQ16</td>
       <td>6.600000</td>
       <td>5.166241e-03</td>
-      <td>4.156197e+09</td>
+      <td>4.205287e+07</td>
     </tr>
     <tr>
       <th>29</th>
@@ -3357,7 +3355,7 @@ LS_fromRS3 (loaded from cache)
       <td>EQ17</td>
       <td>6.700000</td>
       <td>4.103691e-03</td>
-      <td>5.561986e+09</td>
+      <td>7.217333e+07</td>
     </tr>
     <tr>
       <th>30</th>
@@ -3366,7 +3364,7 @@ LS_fromRS3 (loaded from cache)
       <td>EQ18</td>
       <td>6.800000</td>
       <td>3.259678e-03</td>
-      <td>1.579965e+09</td>
+      <td>8.023193e+06</td>
     </tr>
     <tr>
       <th>31</th>
@@ -3375,7 +3373,7 @@ LS_fromRS3 (loaded from cache)
       <td>EQ19</td>
       <td>6.900000</td>
       <td>2.589254e-03</td>
-      <td>6.052721e+09</td>
+      <td>6.533837e+07</td>
     </tr>
     <tr>
       <th>32</th>
@@ -3384,7 +3382,7 @@ LS_fromRS3 (loaded from cache)
       <td>EQ20</td>
       <td>7.000000</td>
       <td>2.056718e-03</td>
-      <td>1.055151e+10</td>
+      <td>2.449221e+08</td>
     </tr>
     <tr>
       <th>33</th>
@@ -3465,7 +3463,7 @@ LS_fromRS3 (loaded from cache)
       <td>TC1</td>
       <td>40.000000</td>
       <td>2.841439e-04</td>
-      <td>1.086326e+11</td>
+      <td>3.974903e+10</td>
     </tr>
     <tr>
       <th>42</th>
@@ -3474,7 +3472,7 @@ LS_fromRS3 (loaded from cache)
       <td>TC2</td>
       <td>50.000000</td>
       <td>1.637893e-04</td>
-      <td>2.164483e+11</td>
+      <td>7.788077e+10</td>
     </tr>
     <tr>
       <th>43</th>
@@ -3483,7 +3481,7 @@ LS_fromRS3 (loaded from cache)
       <td>TC3</td>
       <td>60.000000</td>
       <td>4.064719e-05</td>
-      <td>5.903068e+11</td>
+      <td>2.041044e+11</td>
     </tr>
     <tr>
       <th>44</th>
@@ -3492,7 +3490,7 @@ LS_fromRS3 (loaded from cache)
       <td>TC4</td>
       <td>60.000000</td>
       <td>4.064719e-05</td>
-      <td>8.453843e+11</td>
+      <td>3.317747e+11</td>
     </tr>
     <tr>
       <th>45</th>
@@ -3501,7 +3499,7 @@ LS_fromRS3 (loaded from cache)
       <td>TC5</td>
       <td>70.000000</td>
       <td>3.110718e-05</td>
-      <td>1.097077e+12</td>
+      <td>4.352142e+11</td>
     </tr>
     <tr>
       <th>46</th>
@@ -3519,7 +3517,7 @@ LS_fromRS3 (loaded from cache)
       <td>To2</td>
       <td>3.000000</td>
       <td>4.537519e-05</td>
-      <td>6.244221e+09</td>
+      <td>0.000000e+00</td>
     </tr>
     <tr>
       <th>48</th>
@@ -3546,7 +3544,7 @@ LS_fromRS3 (loaded from cache)
       <td>To5</td>
       <td>4.000000</td>
       <td>5.712399e-06</td>
-      <td>3.242708e+10</td>
+      <td>1.529321e+10</td>
     </tr>
     <tr>
       <th>51</th>
@@ -3555,7 +3553,7 @@ LS_fromRS3 (loaded from cache)
       <td>To6</td>
       <td>4.000000</td>
       <td>5.712399e-06</td>
-      <td>7.455413e+09</td>
+      <td>6.861873e+09</td>
     </tr>
     <tr>
       <th>52</th>
@@ -3564,7 +3562,7 @@ LS_fromRS3 (loaded from cache)
       <td>To7</td>
       <td>5.000000</td>
       <td>7.191484e-07</td>
-      <td>4.610442e+10</td>
+      <td>2.610644e+10</td>
     </tr>
     <tr>
       <th>53</th>
@@ -3573,7 +3571,7 @@ LS_fromRS3 (loaded from cache)
       <td>To8</td>
       <td>5.000000</td>
       <td>7.191484e-07</td>
-      <td>3.160345e+10</td>
+      <td>1.782841e+10</td>
     </tr>
     <tr>
       <th>54</th>
@@ -3582,7 +3580,7 @@ LS_fromRS3 (loaded from cache)
       <td>To9</td>
       <td>5.000000</td>
       <td>7.191484e-07</td>
-      <td>4.034830e+04</td>
+      <td>2.728138e+03</td>
     </tr>
     <tr>
       <th>55</th>
@@ -3591,7 +3589,7 @@ LS_fromRS3 (loaded from cache)
       <td>VE1</td>
       <td>1.000000</td>
       <td>7.303024e-07</td>
-      <td>6.178149e+02</td>
+      <td>1.597409e-03</td>
     </tr>
     <tr>
       <th>56</th>
@@ -3600,7 +3598,7 @@ LS_fromRS3 (loaded from cache)
       <td>VE2</td>
       <td>3.162278</td>
       <td>3.415881e-07</td>
-      <td>1.602683e+08</td>
+      <td>5.832275e+04</td>
     </tr>
     <tr>
       <th>57</th>
@@ -3609,7 +3607,7 @@ LS_fromRS3 (loaded from cache)
       <td>VE3</td>
       <td>10.000000</td>
       <td>1.597728e-07</td>
-      <td>6.400317e+10</td>
+      <td>1.512229e+09</td>
     </tr>
     <tr>
       <th>58</th>
@@ -3618,7 +3616,7 @@ LS_fromRS3 (loaded from cache)
       <td>WF1</td>
       <td>10000.000000</td>
       <td>1.062953e-02</td>
-      <td>2.415349e+09</td>
+      <td>2.010705e+10</td>
     </tr>
     <tr>
       <th>59</th>
@@ -3627,7 +3625,7 @@ LS_fromRS3 (loaded from cache)
       <td>WF2</td>
       <td>10000.000000</td>
       <td>1.062953e-02</td>
-      <td>2.266438e+10</td>
+      <td>1.709981e+06</td>
     </tr>
     <tr>
       <th>60</th>
@@ -3672,7 +3670,7 @@ LS_fromRS3 (loaded from cache)
       <td>WF7</td>
       <td>31622.776602</td>
       <td>5.158744e-03</td>
-      <td>9.154100e+10</td>
+      <td>7.492433e+09</td>
     </tr>
     <tr>
       <th>65</th>
@@ -3681,7 +3679,7 @@ LS_fromRS3 (loaded from cache)
       <td>WF8</td>
       <td>31622.776602</td>
       <td>5.158744e-03</td>
-      <td>7.607992e+10</td>
+      <td>5.518586e+09</td>
     </tr>
     <tr>
       <th>66</th>
@@ -3690,7 +3688,7 @@ LS_fromRS3 (loaded from cache)
       <td>WF9</td>
       <td>31622.776602</td>
       <td>5.158744e-03</td>
-      <td>1.918742e+10</td>
+      <td>8.362532e+09</td>
     </tr>
     <tr>
       <th>67</th>
@@ -3699,7 +3697,7 @@ LS_fromRS3 (loaded from cache)
       <td>WF10</td>
       <td>100000.000000</td>
       <td>3.755478e-03</td>
-      <td>4.247879e+10</td>
+      <td>1.402185e+08</td>
     </tr>
     <tr>
       <th>68</th>
@@ -3708,7 +3706,7 @@ LS_fromRS3 (loaded from cache)
       <td>WS1</td>
       <td>45.000000</td>
       <td>2.741867e-03</td>
-      <td>1.508013e+11</td>
+      <td>5.622653e+10</td>
     </tr>
     <tr>
       <th>69</th>
@@ -3717,7 +3715,7 @@ LS_fromRS3 (loaded from cache)
       <td>WS2</td>
       <td>50.000000</td>
       <td>1.746819e-05</td>
-      <td>2.846636e+11</td>
+      <td>1.061373e+11</td>
     </tr>
     <tr>
       <th>70</th>
@@ -3807,7 +3805,7 @@ LS_fromRS3 (loaded from cache)
       <td>Ex_fromCIf</td>
       <td>1.000000</td>
       <td>NaN</td>
-      <td>1.696280e+09</td>
+      <td>8.764755e+08</td>
     </tr>
     <tr>
       <th>80</th>
@@ -3816,7 +3814,7 @@ LS_fromRS3 (loaded from cache)
       <td>FF_fromRS1</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>2.789031e+09</td>
+      <td>1.909296e+10</td>
     </tr>
     <tr>
       <th>81</th>
@@ -3825,7 +3823,7 @@ LS_fromRS3 (loaded from cache)
       <td>FF_fromRS2</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>2.175961e+10</td>
+      <td>5.256014e+10</td>
     </tr>
     <tr>
       <th>82</th>
@@ -3834,7 +3832,7 @@ LS_fromRS3 (loaded from cache)
       <td>FF_fromRS3</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>2.647483e+10</td>
+      <td>5.865191e+10</td>
     </tr>
     <tr>
       <th>83</th>
@@ -3933,7 +3931,7 @@ LS_fromRS3 (loaded from cache)
       <td>LS_fromRS2</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>8.301439e+08</td>
+      <td>2.579308e+08</td>
     </tr>
     <tr>
       <th>94</th>
@@ -3942,7 +3940,7 @@ LS_fromRS3 (loaded from cache)
       <td>LS_fromRS3</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>2.189653e+09</td>
+      <td>1.134961e+09</td>
     </tr>
     <tr>
       <th>95</th>
@@ -3951,7 +3949,7 @@ LS_fromRS3 (loaded from cache)
       <td>SS_fromTC1</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>3.452790e+09</td>
+      <td>1.336266e+09</td>
     </tr>
     <tr>
       <th>96</th>
@@ -3960,7 +3958,7 @@ LS_fromRS3 (loaded from cache)
       <td>SS_fromTC2</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1.184006e+10</td>
+      <td>4.610870e+09</td>
     </tr>
     <tr>
       <th>97</th>
@@ -3969,7 +3967,7 @@ LS_fromRS3 (loaded from cache)
       <td>SS_fromTC3</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>2.723853e+10</td>
+      <td>1.112125e+10</td>
     </tr>
     <tr>
       <th>98</th>
@@ -3978,7 +3976,7 @@ LS_fromRS3 (loaded from cache)
       <td>SS_fromTC4</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>5.868062e+10</td>
+      <td>2.765527e+10</td>
     </tr>
     <tr>
       <th>99</th>
@@ -3987,7 +3985,7 @@ LS_fromRS3 (loaded from cache)
       <td>SS_fromTC5</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>7.112751e+10</td>
+      <td>3.450642e+10</td>
     </tr>
   </tbody>
 </table>
@@ -4028,7 +4026,7 @@ LS_fromRS3 (loaded from cache)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/bae1538319ee8ef33d2ddc142ca6256dbc0479027fdcdf801229dc0a04238f8b.png" src="../_images/bae1538319ee8ef33d2ddc142ca6256dbc0479027fdcdf801229dc0a04238f8b.png" />
+<img alt="../_images/be45d48dd51ace2a1a679755c3efd90300ef1bbafa9dbb48223ad2ceb318d3e8.png" src="../_images/be45d48dd51ace2a1a679755c3efd90300ef1bbafa9dbb48223ad2ceb318d3e8.png" />
 </div>
 </div>
 </section>
@@ -4065,12 +4063,12 @@ LS_fromRS3 (loaded from cache)
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>** from ELT **
-AAL [$ M.]: 2253.0089493977466
-VaR_q [$ B.]: 86.83224400803859
-TVaR_q [$ B.]: 406.632526622705
+AAL [$ M.]: 664.5648753409689
+VaR_q [$ B.]: 23.30478971228499
+TVaR_q [$ B.]: 143.5987466063049
 </pre></div>
 </div>
-<img alt="../_images/75ca14594ecb9499a49813596fe996c557c5d70635dc74a48bbde3a1739bb0e2.png" src="../_images/75ca14594ecb9499a49813596fe996c557c5d70635dc74a48bbde3a1739bb0e2.png" />
+<img alt="../_images/e4e4909fdafe82833457d897a9afa01f28fd360ddb8a1bb0ef99e9115e1fbaf3.png" src="../_images/e4e4909fdafe82833457d897a9afa01f28fd360ddb8a1bb0ef99e9115e1fbaf3.png" />
 </div>
 </div>
 </section>
@@ -4741,7 +4739,7 @@ In anticyclone regime, drought duration = 7 months in stressed soil water condit
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## SCENARIO ##</span>
-<span class="n">period</span> <span class="o">=</span> <span class="s1">&#39;day&#39;</span>
+<span class="n">period</span> <span class="o">=</span> <span class="s1">&#39;day&#39;</span>                       <span class="c1"># &#39;day&#39; or &#39;night&#39;</span>
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;BO&#39;</span><span class="p">][</span><span class="s1">&#39;tolerance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>       <span class="c1"># high value to correct simplified topology (more redundancies in reality)</span>
                                      <span class="c1"># and lack of protection systems present in reality</span>
                                      <span class="c1"># value of 2 from trial and error, rare cascades when 1 element removed</span>
@@ -4821,7 +4819,7 @@ In anticyclone regime, drought duration = 7 months in stressed soil water condit
     <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Physical power grid&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">14</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Physical power grid&#39;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin_BO</span><span class="p">,</span> <span class="n">xmax_BO</span><span class="p">)</span>
@@ -4851,7 +4849,7 @@ In anticyclone regime, drought duration = 7 months in stressed soil water condit
     <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">node_names</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Operational power grid during </span><span class="si">{</span><span class="n">period</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Operational power grid during </span><span class="si">{</span><span class="n">period</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin_BO</span><span class="p">,</span> <span class="n">xmax_BO</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymin_BO</span><span class="p">,</span> <span class="n">ymax_BO</span><span class="p">)</span>
@@ -4872,7 +4870,7 @@ In anticyclone regime, drought duration = 7 months in stressed soil water condit
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">node_coords</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">node_coords</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">node_col_dmg</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">node_s_dmg</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Exogenic damage&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Exogenic damage&#39;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin_BO</span><span class="p">,</span> <span class="n">xmax_BO</span><span class="p">)</span>
@@ -4927,47 +4925,45 @@ In anticyclone regime, drought duration = 7 months in stressed soil water condit
     <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">node_coords</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">node_coords</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Blackout footprint during </span><span class="si">{</span><span class="n">period</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Blackout footprint during </span><span class="si">{</span><span class="n">period</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin_BO</span><span class="p">,</span> <span class="n">xmax_BO</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymin_BO</span><span class="p">,</span> <span class="n">ymax_BO</span><span class="p">)</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[step 0] overloaded edges: 3 / 249
-[cascade] step 1, failing edges: [(8, 12), (11, 12), (12, 18)]
-[cascade] step 2, failing edges: [(11, 17)]
-[cascade] step 3, failing edges: [(13, 19), (18, 19)]
-[cascade] step 4, failing edges: [(13, 14), (14, 20), (19, 20), (19, 25), (24, 25)]
-[cascade] no more overloads — stopped after 4 step(s).
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[step 0] overloaded edges: 5 / 249
+[cascade] step 1, failing edges: [(8, 12), (11, 12), (17, 18), (18, 19), (24, 25)]
+[cascade] step 2, failing edges: [(12, 13)]
+[cascade] no more overloads — stopped after 2 step(s).
 Operational grid - Power supply (MW) per load node:
- [256.58464813 269.90284056 116.23584002 193.36549752 238.40823731
- 165.29170541 149.32664801 164.76638628 110.36757226 300.38340433
- 124.16170206 217.35356349 145.74806991 184.47857418  92.8921075
- 499.12273551 101.69161233 145.80246035 119.97951858 119.79820483
-  58.61459145 424.53723718 175.78112905 109.97291238 113.16928782
-  80.87936716 402.72450141 150.10853179 164.52801454  35.79576397
- 503.66361246 134.25909634  92.95525822 248.60242119 203.21577906
- 178.49935449  68.00633818 289.38252254 102.63377594  58.34197218
-  27.28534614]
+ [219.07926586 229.25013401 122.06467289 197.81720873 231.5561775
+ 178.80583732 174.50099718 170.8232882  133.22562973 243.34935271
+ 112.0629851  209.16793879 172.54469724 212.89266597 131.73290671
+ 333.98829212 136.81743456 171.02778279 144.97481842 143.98920352
+  82.27084502 325.06677077 188.68747711 141.13855519 142.39938516
+ 112.89334529 269.99340014 192.94294137 213.46181408  55.33808169
+ 280.27054468 195.41374214 141.68286505 186.73394172 282.7064689
+ 163.01448997 110.54265868 209.87691064 165.25984514  99.42385495
+  43.5561206 ]
 Load nodes offline during blackout:
- [&#39;L8&#39;, &#39;L9&#39;, &#39;L12&#39;, &#39;L20&#39;, &#39;L21&#39;]
+ [&#39;L8&#39;, &#39;L9&#39;]
 During blackout - Power supply (MW) per load node:
- [256.58464813 269.90284056 116.23584002 193.36549752 238.40823731
- 165.29170541 149.32664801   0.           0.         300.38340433
- 124.16170206   0.         145.74806991 184.47857418  92.8921075
- 499.12273551  80.64890501 115.63204188  95.15255561   0.
-   0.         424.53723718 139.40732431  87.21658317  89.75154327
-  80.84945784 402.72450141 119.04707227 164.4671718   35.78252664
- 503.66361246 106.47730782  92.92088321 248.60242119 203.14062953
- 178.49935449  67.98118932 289.38252254 102.5958218   58.32039722
-  27.27525597]
+ [219.07926586 229.25013401 122.06467289 197.81720873 231.5561775
+ 178.80583732 174.50099718   0.           0.         243.34935271
+ 112.0629851  102.82879865  84.82449095 197.58929498 122.26354555
+ 333.98829212  67.26065434  84.07876246  71.270896   133.63882254
+  76.35696697 325.06677077  92.76042353  69.38495525  70.00479036
+ 104.77822899 269.99340014  94.85244719 198.11753099  51.36021242
+ 280.27054468  96.06711459 131.49827068 186.73394172 262.38466986
+ 163.01448997 102.59651686 209.87691064 153.38046588  92.27696649
+  40.42517445]
 </pre></div>
 </div>
-<img alt="../_images/f54f0f566e2af4bdc1afe739191de8088b050812f45d7738ebda1931c42ebad9.png" src="../_images/f54f0f566e2af4bdc1afe739191de8088b050812f45d7738ebda1931c42ebad9.png" />
+<img alt="../_images/bd8bac336d26830fa6a2bfcadd9892376d1bfad32fcdad6ef37305df5a6ff674.png" src="../_images/bd8bac336d26830fa6a2bfcadd9892376d1bfad32fcdad6ef37305df5a6ff674.png" />
 </div>
 </div>
 </section>
@@ -4975,18 +4971,278 @@ During blackout - Power supply (MW) per load node:
 <h4>C.6. Business interruption case<a class="headerlink" href="#c-6-business-interruption-case" title="Link to this heading"></a></h4>
 <p>Similarly to BO, BI will be studied in detail in Tutorial 3 in the context of compound event modelling. As a proof-of-concept, two BI triggering scenarios are considered below:</p>
 <ul class="simple">
+<li><p>BI triggered by building damage caused by another peril (e.g., FF here).</p></li>
 <li><p>BI triggered by BO</p></li>
-<li><p>BI triggered by building damage caused by another peril (e.g., EQ here).</p></li>
 </ul>
-<section id="c-6-1-bo-to-bi">
-<h5>C.6.1. BO to BI<a class="headerlink" href="#c-6-1-bo-to-bi" title="Link to this heading"></a></h5>
-<p>The next code cell calculates BI from the previously defined BO footprint (see Section C.5). This is to be considered a proof-of-concept where BI is caused by lack of served power.</p>
-<p>IN CONSTRUCTION</p>
+<section id="c-6-1-ff-to-business-building-damage-to-bi">
+<h5>C.6.1. FF to business building damage to BI<a class="headerlink" href="#c-6-1-ff-to-business-building-damage-to-bi" title="Link to this heading"></a></h5>
+<p>An example of BI footprint is shown given a FF footprint previously modelled.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">calc_BI_duration</span><span class="p">(</span><span class="n">MDR</span><span class="p">,</span> <span class="n">thresholds</span> <span class="o">=</span> <span class="p">[</span><span class="mf">.1</span><span class="p">,</span> <span class="mf">.3</span><span class="p">,</span> <span class="mf">.6</span><span class="p">],</span> <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">.01</span><span class="p">,</span> <span class="mf">.05</span><span class="p">,</span> <span class="mf">.25</span><span class="p">,</span> <span class="mf">.5</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Compute business interruption (BI) duration from Mean Damage Ratio (MDR).</span>
+
+<span class="sd">    This function maps damage levels (MDR ∈ [0,1]) to downtime durations</span>
+<span class="sd">    (in fraction of year) using a piecewise-constant relationship.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    MDR : ndarray</span>
+<span class="sd">        Mean Damage Ratio per cell (0-1).</span>
+
+<span class="sd">    thresholds : list of float, optional</span>
+<span class="sd">        Increasing MDR thresholds defining damage intervals. Default: [0.1, 0.3, 0.6]</span>
+
+<span class="sd">    values : list of float, optional</span>
+<span class="sd">        Duration values (in years) for each interval. Must have length = len(thresholds) + 1.</span>
+<span class="sd">        Default: [0.01, 0.05, 0.25, 0.75]</span>
+
+<span class="sd">        Interpretation (default):</span>
+<span class="sd">        - MDR &lt; 0.1  → ~4 days disruption</span>
+<span class="sd">        - 0.1–0.3    → ~2–3 weeks</span>
+<span class="sd">        - 0.3–0.6    → ~3 months</span>
+<span class="sd">        - &gt; 0.6      → ~6 months</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    duration : ndarray</span>
+<span class="sd">        Business interruption duration per cell (in years).</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">duration</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">MDR</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">t3</span> <span class="o">=</span> <span class="n">thresholds</span>
+    <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">v3</span><span class="p">,</span> <span class="n">v4</span> <span class="o">=</span> <span class="n">values</span>
+
+    <span class="n">duration</span><span class="p">[</span><span class="n">MDR</span> <span class="o">&lt;</span> <span class="n">t1</span><span class="p">]</span> <span class="o">=</span> <span class="n">v1</span>
+    <span class="n">duration</span><span class="p">[(</span><span class="n">MDR</span> <span class="o">&gt;=</span> <span class="n">t1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">MDR</span> <span class="o">&lt;</span> <span class="n">t2</span><span class="p">)]</span> <span class="o">=</span> <span class="n">v2</span>
+    <span class="n">duration</span><span class="p">[(</span><span class="n">MDR</span> <span class="o">&gt;=</span> <span class="n">t2</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">MDR</span> <span class="o">&lt;</span> <span class="n">t3</span><span class="p">)]</span> <span class="o">=</span> <span class="n">v3</span>
+    <span class="n">duration</span><span class="p">[</span><span class="n">MDR</span> <span class="o">&gt;=</span> <span class="n">t3</span><span class="p">]</span> <span class="o">=</span> <span class="n">v4</span>
+    <span class="k">return</span> <span class="n">duration</span>
+
+
+<span class="c1">## triggger ##</span>
+<span class="n">FF2_fp_dmg</span> <span class="o">=</span> <span class="n">catalog_dmgFootprints</span><span class="p">[</span><span class="s1">&#39;FF_fromRS2&#39;</span><span class="p">]</span>
+
+<span class="c1"># correct for building height - TO DO: move this to FF damage assessment function...</span>
+<span class="n">h_story</span> <span class="o">=</span> <span class="mf">3.</span>                                    <span class="c1"># m per storey</span>
+<span class="n">H_bldg</span> <span class="o">=</span> <span class="n">urbLandLayer</span><span class="o">.</span><span class="n">bldg_Nstories</span> <span class="o">*</span> <span class="n">h_story</span>   <span class="c1"># (m) to move to urbLandLayer class...</span>
+<span class="n">h_FF</span> <span class="o">=</span> <span class="n">catalog_dynhazFootprints</span><span class="p">[</span><span class="s1">&#39;FF_fromRS2&#39;</span><span class="p">]</span>  <span class="c1"># flood depth (m)</span>
+<span class="n">flood_fraction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="n">h_FF</span> <span class="o">/</span> <span class="n">H_bldg</span> <span class="p">)</span>
+<span class="n">FF2_fp_dmg</span> <span class="o">=</span> <span class="n">FF2_fp_dmg</span> <span class="o">*</span> <span class="n">flood_fraction</span>
+
+<span class="c1">### Business exposure ##</span>
+<span class="n">Biz_expo</span> <span class="o">=</span> <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">O</span>
+
+<span class="c1">## footprint of BI triggered by FF2 flood ##</span>
+<span class="n">BI_fromFF2_fp_per_yr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">FF2_fp_dmg</span> <span class="o">&gt;=</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;BI&#39;</span><span class="p">][</span><span class="s1">&#39;MDR_th&#39;</span><span class="p">],</span> <span class="n">Biz_expo</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+<span class="n">duration_BI</span> <span class="o">=</span> <span class="n">calc_BI_duration</span><span class="p">(</span><span class="n">FF2_fp_dmg</span><span class="p">)</span>
+<span class="n">BI_fromFF2_fp</span> <span class="o">=</span> <span class="n">BI_fromFF2_fp_per_yr</span> <span class="o">*</span> <span class="n">duration_BI</span>
+
+<span class="c1">## plot ##</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">16</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
+<span class="n">xmin_BI</span><span class="p">,</span> <span class="n">xmax_BI</span><span class="p">,</span> <span class="n">ymin_BI</span><span class="p">,</span> <span class="n">ymax_BI</span> <span class="o">=</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">50</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">ls</span><span class="o">.</span><span class="n">hillshade</span><span class="p">(</span><span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">vert_exag</span><span class="o">=</span><span class="mf">.1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.1</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">FF2_fp_dmg</span><span class="p">,</span> <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;Reds&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.9</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Fluvial flood (FF2) footprint&#39;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin_BI</span><span class="p">,</span> <span class="n">xmax_BI</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymin_BI</span><span class="p">,</span> <span class="n">ymax_BI</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">ls</span><span class="o">.</span><span class="n">hillshade</span><span class="p">(</span><span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">vert_exag</span><span class="o">=</span><span class="mf">.1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.1</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">Biz_expo</span><span class="p">,</span> <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;inferno_r&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Business (IND/COM) exposure&#39;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin_BI</span><span class="p">,</span> <span class="n">xmax_BI</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymin_BI</span><span class="p">,</span> <span class="n">ymax_BI</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">ls</span><span class="o">.</span><span class="n">hillshade</span><span class="p">(</span><span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">vert_exag</span><span class="o">=</span><span class="mf">.1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.1</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">BI_fromFF2_fp</span><span class="p">,</span> <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;Reds&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;BI (BI_fromFF2) footprint&#39;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin_BI</span><span class="p">,</span> <span class="n">xmax_BI</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymin_BI</span><span class="p">,</span> <span class="n">ymax_BI</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Total BI (Bn. EUR):&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">BI_fromFF2_fp</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-9</span><span class="p">,</span> <span class="n">decimals</span> <span class="o">=</span> <span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Total BI (Bn. EUR): 9.9
+</pre></div>
+</div>
+<img alt="../_images/6825f8bf049c43b21d4d90ed150b7992e350614259e42a90fbf15e30425b1465.png" src="../_images/6825f8bf049c43b21d4d90ed150b7992e350614259e42a90fbf15e30425b1465.png" />
+</div>
+</div>
 </section>
-<section id="c-6-2-eq-to-business-building-damage-to-bi">
-<h5>C.6.2. EQ to business building damage to BI<a class="headerlink" href="#c-6-2-eq-to-business-building-damage-to-bi" title="Link to this heading"></a></h5>
-<p>TO DO.</p>
+<section id="c-6-2-bo-to-bi">
+<h5>C.6.2. BO to BI<a class="headerlink" href="#c-6-2-bo-to-bi" title="Link to this heading"></a></h5>
+<p>The next code cell calculates BI from the previously defined BO footprint (see Section C.5, must already be run). This is to be considered a proof-of-concept where BI is caused by lack of served power.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">calc_BI_from_BO</span><span class="p">(</span><span class="n">load_node_served</span><span class="p">,</span> <span class="n">load_node_demand</span><span class="p">,</span> <span class="n">load_ID</span><span class="p">,</span> <span class="n">Biz_expo</span><span class="p">,</span> <span class="n">demand_cell</span><span class="p">,</span> <span class="n">rdm_seed</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Compute the Business Interruption (BI) footprint due to a power blackout.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    load_node_served : ndarray of shape (n_nodes,)</span>
+<span class="sd">        Available electricity supply at each load node (same units as demand).</span>
+<span class="sd">    load_node_demand : ndarray of shape (n_nodes,)</span>
+<span class="sd">        Total electricity demand aggregated per load node.</span>
+<span class="sd">    load_ID : ndarray of shape (nx, ny)</span>
+<span class="sd">        Mapping of each mesh/grid cell to its serving load node.</span>
+<span class="sd">        Cells outside urban areas can be NaN.</span>
+<span class="sd">    Biz_expo : ndarray of shape (nx, ny)</span>
+<span class="sd">        Economic exposure (EUR/yr) of each cell that could be affected by BI.</span>
+<span class="sd">    demand_cell : ndarray of shape (nx, ny)</span>
+<span class="sd">        Electricity demand per grid cell.</span>
+<span class="sd">    rdm_seed : int, optional</span>
+<span class="sd">        Seed for reproducible random allocation of partial service.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    BI : ndarray of shape (nx, ny)</span>
+<span class="sd">        Estimated business interruption per cell (EUR/yr).</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - Random allocation of partially served cells ensures that the sum of cell-level</span>
+<span class="sd">      served demand does not exceed the node supply.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">rdm_seed</span><span class="p">)</span>
+    
+    <span class="n">BI</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">Biz_expo</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+
+    <span class="n">valid_mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">load_ID</span><span class="p">)</span>
+    <span class="n">node_ids</span> <span class="o">=</span> <span class="n">load_ID</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">node_ids</span><span class="p">):</span>
+        <span class="n">cell_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">load_ID</span> <span class="o">==</span> <span class="n">node</span><span class="p">)</span>
+        <span class="n">served</span> <span class="o">=</span> <span class="n">load_node_served</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
+        <span class="n">demand</span> <span class="o">=</span> <span class="n">load_node_demand</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">served</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>         <span class="c1"># full blackout</span>
+            <span class="n">BI</span><span class="p">[</span><span class="n">cell_mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">Biz_expo</span><span class="p">[</span><span class="n">cell_mask</span><span class="p">]</span>
+            <span class="k">continue</span>
+        <span class="k">elif</span> <span class="n">served</span> <span class="o">&gt;=</span> <span class="n">demand</span><span class="p">:</span>  <span class="c1"># fully served (no BI)</span>
+            <span class="k">continue</span>
+        <span class="k">else</span><span class="p">:</span>                   <span class="c1"># partial service</span>
+            <span class="n">frac</span> <span class="o">=</span> <span class="n">served</span> <span class="o">/</span> <span class="n">demand</span>
+            <span class="n">cell_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">cell_mask</span><span class="p">)</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">demand_cell</span><span class="p">[</span><span class="n">cell_mask</span><span class="p">]</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)))</span>
+            <span class="n">cum_demand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">order</span><span class="p">])</span>
+            <span class="n">served_cells</span> <span class="o">=</span> <span class="n">cum_demand</span> <span class="o">&lt;=</span> <span class="n">served</span>
+            <span class="n">served_idx</span> <span class="o">=</span> <span class="n">cell_ind</span><span class="p">[</span><span class="n">order</span><span class="p">][</span><span class="n">served_cells</span><span class="p">]</span>
+            <span class="n">not_served_idx</span> <span class="o">=</span> <span class="n">cell_ind</span><span class="p">[</span><span class="n">order</span><span class="p">][</span><span class="o">~</span><span class="n">served_cells</span><span class="p">]</span>
+            <span class="n">BI</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">not_served_idx</span><span class="o">.</span><span class="n">T</span><span class="p">)]</span> <span class="o">=</span> <span class="n">Biz_expo</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">not_served_idx</span><span class="o">.</span><span class="n">T</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">BI</span>
+
+
+
+
+<span class="c1">## triggger ##</span>
+<span class="n">load_node_served_BO</span> <span class="o">=</span> <span class="n">node_served_BO</span><span class="p">[</span><span class="n">indL</span><span class="p">]</span>
+<span class="k">if</span> <span class="n">period</span> <span class="o">==</span> <span class="s1">&#39;day&#39;</span><span class="p">:</span>
+    <span class="n">load_node_demand</span> <span class="o">=</span> <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">node_demand_day</span>
+    <span class="n">block_demand</span> <span class="o">=</span> <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">demand_day</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">load_node_demand</span> <span class="o">=</span> <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">node_demand_night</span>
+    <span class="n">block_demand</span> <span class="o">=</span> <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">demand_night</span>
+
+<span class="c1">### Business exposure ##</span>
+<span class="n">Biz_expo</span> <span class="o">=</span> <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">O</span>
+<span class="n">load_ID</span> <span class="o">=</span> <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">load_ID</span>
+
+<span class="c1">## footprint of BI triggered by BO ##</span>
+<span class="n">BI_fromBO_fp_yr</span> <span class="o">=</span> <span class="n">calc_BI_from_BO</span><span class="p">(</span><span class="n">load_node_served_BO</span><span class="p">,</span> <span class="n">load_node_demand</span><span class="p">,</span> <span class="n">load_ID</span><span class="p">,</span> <span class="n">Biz_expo</span><span class="p">,</span> <span class="n">block_demand</span><span class="p">)</span>
+<span class="n">days_OFF_per_node</span> <span class="o">=</span> <span class="mf">3.</span>
+<span class="n">duration_BO</span> <span class="o">=</span> <span class="n">days_OFF_per_node</span> <span class="o">/</span> <span class="mf">365.</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">BO_loads</span><span class="p">)</span>
+<span class="n">BI_fromBO_fp</span> <span class="o">=</span> <span class="n">BI_fromBO_fp_yr</span> <span class="o">*</span> <span class="n">duration_BO</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">16</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
+<span class="n">xmin_BI</span><span class="p">,</span> <span class="n">xmax_BI</span><span class="p">,</span> <span class="n">ymin_BI</span><span class="p">,</span> <span class="n">ymax_BI</span> <span class="o">=</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">65</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">60</span>
+
+<span class="n">fraction_unacceptable</span> <span class="o">=</span> <span class="mf">.1</span>
+<span class="n">fraction_served</span> <span class="o">=</span> <span class="p">(</span><span class="n">node_served_BO</span><span class="p">[</span><span class="n">indL</span><span class="p">]</span> <span class="o">-</span> <span class="n">node_demand</span><span class="p">[</span><span class="n">indL</span><span class="p">])</span><span class="o">/</span><span class="n">node_demand</span><span class="p">[</span><span class="n">indL</span><span class="p">]</span>
+
+<span class="n">load_col_BO</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+    <span class="s1">&#39;black&#39;</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">BO_loads</span> <span class="k">else</span>
+    <span class="s1">&#39;red&#39;</span> <span class="k">if</span> <span class="n">fraction_served</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">fraction_unacceptable</span> <span class="k">else</span>
+    <span class="s1">&#39;darkorange&#39;</span> <span class="k">if</span> <span class="n">fraction_served</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">1e-6</span> <span class="k">else</span>
+    <span class="s1">&#39;green&#39;</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">load_nodes</span><span class="p">)</span>
+<span class="p">])</span>
+
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">ls</span><span class="o">.</span><span class="n">hillshade</span><span class="p">(</span><span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">vert_exag</span> <span class="o">=</span> <span class="mf">.1</span><span class="p">),</span> <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.1</span><span class="p">)</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">),</span> <span class="n">color</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">edge_col_BO</span><span class="p">,</span> <span class="n">edge_width_BO</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_coords</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">node_coords</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="mi">0</span><span class="p">]]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_coords</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">node_coords</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">w</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">indL</span><span class="p">,</span> <span class="n">load_col_BO</span><span class="p">,</span> <span class="n">load_s_BO</span><span class="p">):</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">node_coords</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">node_coords</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Blackout footprint during </span><span class="si">{</span><span class="n">period</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin_BI</span><span class="p">,</span> <span class="n">xmax_BI</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymin_BI</span><span class="p">,</span> <span class="n">ymax_BI</span><span class="p">)</span>
+
+<span class="n">n_colors</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">color_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">socioecoLayer</span><span class="o">.</span><span class="n">load_ID</span><span class="p">)</span> <span class="o">%</span> <span class="n">n_colors</span>
+<span class="n">color_indices</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">socioecoLayer</span><span class="o">.</span><span class="n">load_ID</span><span class="p">)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">ls</span><span class="o">.</span><span class="n">hillshade</span><span class="p">(</span><span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">vert_exag</span><span class="o">=</span><span class="mf">.1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.1</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">color_indices</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;tab10&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.2</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">Biz_expo</span><span class="p">,</span> <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;inferno_r&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">load_coords</span> <span class="o">=</span> <span class="n">node_coords</span><span class="p">[</span><span class="n">indL</span><span class="p">]</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">load_coords</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">load_coords</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Power supply ID&#39;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin_BI</span><span class="p">,</span> <span class="n">xmax_BI</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymin_BI</span><span class="p">,</span> <span class="n">ymax_BI</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">ls</span><span class="o">.</span><span class="n">hillshade</span><span class="p">(</span><span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">vert_exag</span><span class="o">=</span><span class="mf">.1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.1</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">BI_fromBO_fp</span><span class="p">,</span> <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;Reds&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;BI (BI_fromBO) footprint&#39;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin_BI</span><span class="p">,</span> <span class="n">xmax_BI</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymin_BI</span><span class="p">,</span> <span class="n">ymax_BI</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Total BI (Bn. EUR):&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">BI_fromBO_fp</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-9</span><span class="p">,</span> <span class="n">decimals</span> <span class="o">=</span> <span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Total BI (Bn. EUR): 3.0
+</pre></div>
+</div>
+<img alt="../_images/0b105df5496a1c6732038355e4b116d7abe37835f2b601022d48f1ffc0e68f9d.png" src="../_images/0b105df5496a1c6732038355e4b116d7abe37835f2b601022d48f1ffc0e68f9d.png" />
+</div>
+</div>
 </section>
+</section>
+<section id="c-7-public-safety-service-case">
+<h4>C.7. Public safety service case<a class="headerlink" href="#c-7-public-safety-service-case" title="Link to this heading"></a></h4>
+<p>TO DO…</p>
 </section>
 </section>
 </section>

@@ -426,6 +426,7 @@
 <li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-4-pest-infestation-case">C.4. Pest infestation case</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-5-blackout-case">C.5. Blackout case</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-6-business-interruption-case">C.6. Business interruption case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-7-public-safety-service-case">C.7. Public safety service case</a></li>
 </ul>
 </li>
 </ul>
@@ -538,7 +539,7 @@
 <tr class="row-even"><td class="text-left"><p>Socio-economic</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">socioeco</span></code></p></td>
 <td class="text-left"><p>Socio-economic activity</p></td>
-<td class="text-left"><p>Business output <span class="math notranslate nohighlight">\(O\)</span>, grievance <span class="math notranslate nohighlight">\(G\)</span></p></td>
+<td class="text-left"><p>Economic output <span class="math notranslate nohighlight">\(O\)</span>, grievance level <span class="math notranslate nohighlight">\(G\)</span></p></td>
 <td class="text-left"><p>Power demand, public safety facilities</p></td>
 <td class="text-left"><p>-</p></td>
 <td class="text-left"><p>N/A</p></td>
@@ -871,7 +872,7 @@ The environmental layers are generated as follows:
     <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">save_class2pickle</span><span class="p">(</span><span class="n">urbLandLayer</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;envLayer_urbLand&#39;</span><span class="p">)</span>
     
 <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">urbLandLayer</span><span class="o">.</span><span class="n">bldg_blockValue</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-9</span>
-<span class="n">pop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">urbLandLayer</span><span class="o">.</span><span class="n">pop_night</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-6</span>
+<span class="n">pop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">urbLandLayer</span><span class="o">.</span><span class="n">pop_night</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-6</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Total exposure value: </span><span class="si">{</span><span class="n">val</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1"> bn EUR&#39;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Total population: </span><span class="si">{</span><span class="n">pop</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1"> million people&#39;</span><span class="p">)</span>
 
@@ -958,7 +959,7 @@ Total population: 23.12 million people
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f25bf337e6ffd410860cb88b7b5945d81c6f392290e0c2e68a76f61835b82daf.png" src="../_images/f25bf337e6ffd410860cb88b7b5945d81c6f392290e0c2e68a76f61835b82daf.png" />
+<img alt="../_images/ea295468cb80b14cb874b0c6d80fcedd37ff963b249dfac619e358529fbc5048.png" src="../_images/ea295468cb80b14cb874b0c6d80fcedd37ff963b249dfac619e358529fbc5048.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1056,19 +1057,25 @@ Total population: 23.12 million people
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">socioecoPar</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;rdm_seed&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="c1"># eco</span>
-    <span class="s1">&#39;W_per_pers_RES&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">150</span><span class="p">,</span> <span class="mi">300</span><span class="p">],</span>          <span class="c1"># day / night IEA &quot;Energy in Buildings&quot; 2023, Eurostat household energy statistics</span>
-    <span class="s1">&#39;W_per_m2_IND&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">140</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span>             <span class="c1"># day / night</span>
-    <span class="s1">&#39;W_per_m2_COM&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">40</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>               <span class="c1"># day / night</span>
-    
+    <span class="s1">&#39;P_W_per_pers_RES&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">150</span><span class="p">,</span> <span class="mi">300</span><span class="p">],</span>        <span class="c1"># day / night IEA &quot;Energy in Buildings&quot; 2023, Eurostat household energy statistics</span>
+    <span class="s1">&#39;P_W_per_m2_IND&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">140</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span>           <span class="c1"># day / night</span>
+    <span class="s1">&#39;P_W_per_m2_COM&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">40</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>             <span class="c1"># day / night</span>
+    <span class="s1">&#39;GDP_fraction_IND&#39;</span><span class="p">:</span> <span class="mf">.4</span><span class="p">,</span>                <span class="c1"># fraction of region&#39;s GDP in IND blocks</span>
+    <span class="s1">&#39;GDP_fraction_COM&#39;</span><span class="p">:</span> <span class="mf">.6</span><span class="p">,</span>                <span class="c1"># fraction of region&#39;s GDP in COM blocks</span>
+                                           <span class="c1"># &#39;GDP_fraction_IND&#39;+&#39;GDP_fraction_COM&#39; ≤ 1, remainder=other</span>
     <span class="c1"># socio</span>
     <span class="s1">&#39;pop_perHospital&#39;</span><span class="p">:</span> <span class="mi">200000</span><span class="p">,</span>             <span class="c1"># note for later: regime could be defined &#39;normal&#39; vs &#39;underfunded&#39;</span>
     <span class="s1">&#39;pop_perPoliceStation&#39;</span><span class="p">:</span> <span class="mi">50000</span><span class="p">,</span>
     <span class="s1">&#39;pop_perFireStation&#39;</span><span class="p">:</span> <span class="mi">100000</span><span class="p">,</span>
-    <span class="c1"># add n_wealth sectors for RES as voronoi cells, estimated from building yr, count com vs ind...</span>
+    <span class="c1"># add n_wealth sectors for RES as voronoi cells, estimated from building yr, count com vs ind, forest+water</span>
 <span class="p">}</span>
 
 <span class="n">socioecoLayer</span> <span class="o">=</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">EnvLayer_socioeco</span><span class="p">(</span><span class="n">socioecoPar</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">urbLandLayer</span><span class="p">,</span> <span class="n">energyLayer</span><span class="p">)</span>
 <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Economic output (Bn EUR/yr):&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">socioecoLayer</span><span class="o">.</span><span class="n">O</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-9</span><span class="p">,</span> <span class="n">decimals</span> <span class="o">=</span> <span class="mi">2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Economic output for IND (EUR/m2/yr):&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">socioecoLayer</span><span class="o">.</span><span class="n">econ_output_IND_m2_yr</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Economic output for COM (EUR/m2/yr):&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">socioecoLayer</span><span class="o">.</span><span class="n">econ_output_COM_m2_yr</span><span class="p">))</span>
+
 
 <span class="n">energyLayer</span><span class="o">.</span><span class="n">solve_power_flow</span><span class="p">(</span><span class="n">socioecoLayer</span><span class="o">.</span><span class="n">node_demand_day</span><span class="p">,</span> <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">node_demand_night</span><span class="p">,</span> <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">load_ID</span><span class="p">)</span>
 
@@ -1081,7 +1088,10 @@ Total population: 23.12 million people
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Power surplus (day): 161.38 MW
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Economic output (Bn EUR/yr): 470.38
+Economic output for IND (EUR/m2/yr): 7554.0
+Economic output for COM (EUR/m2/yr): 11331.0
+Power surplus (day): 161.38 MW
 Power surplus (night): 227.65 MW
 </pre></div>
 </div>
@@ -1099,16 +1109,19 @@ Power surplus (night): 227.65 MW
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5e045b2e33248aaf1c1c15ab19445c943dd04c759e223dd6fb109a56b2df94d7.png" src="../_images/5e045b2e33248aaf1c1c15ab19445c943dd04c759e223dd6fb109a56b2df94d7.png" />
+<img alt="../_images/f7305375044105ec8974faf48ba83a8b73312790bddcec1c8b43e8be7af1c071.png" src="../_images/f7305375044105ec8974faf48ba83a8b73312790bddcec1c8b43e8be7af1c071.png" />
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#GenMR_env.plot_EnvLayer_attr(energyLayer, &#39;powerflows_day&#39;, box = [15,100,15,70])</span>
 <span class="c1">#GenMR_env.plot_EnvLayer_attr(energyLayer, &#39;powerflows_night&#39;, box = [15,100,15,70])</span>
-<span class="c1">#GenMR_env.plot_EnvLayer_attr(socioecoLayer, &#39;socialsafFacilities&#39;, box = [15,70,15,55])</span>
+<span class="n">GenMR_env</span><span class="o">.</span><span class="n">plot_EnvLayer_attr</span><span class="p">(</span><span class="n">socioecoLayer</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">,</span> <span class="n">box</span> <span class="o">=</span> <span class="p">[</span><span class="mi">15</span><span class="p">,</span><span class="mi">70</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">55</span><span class="p">])</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/82aa1351b44f7f27a014028f52e5494c82e9ff853c375246c6fd8d8f3bc2f4e9.png" src="../_images/82aa1351b44f7f27a014028f52e5494c82e9ff853c375246c6fd8d8f3bc2f4e9.png" />
 </div>
 </div>
 </section>
@@ -1297,11 +1310,16 @@ Power surplus (night): 227.65 MW
 <td class="text-left"><p>Network topology, nodes’ names, coordinates, supply (MW)</p></td>
 </tr>
 <tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">socioeco</span></code></p></td>
+<td class="text-left"><p>Economic output</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">O</span></code></p></td>
+<td class="text-left"><p>Economic output of IND &amp; COM businesses per block (EUR)</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">socioeco</span></code></p></td>
 <td class="text-left"><p>Social safety facilities</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">*_coords</span></code></p></td>
 <td class="text-left"><p>Coordinates of hospitals <code class="docutils literal notranslate"><span class="pre">hos</span></code>, police stations <code class="docutils literal notranslate"><span class="pre">pol</span></code> &amp; fire stations <code class="docutils literal notranslate"><span class="pre">fire</span></code></p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p></p></td>
+<tr class="row-even"><td class="text-left"><p></p></td>
 <td class="text-left"><p></p></td>
 <td class="text-left"><p></p></td>
 <td class="text-left"><p></p></td>
@@ -1416,6 +1434,11 @@ Power surplus (night): 227.65 MW
 <td class="text-left"><p>Flows in transmission lines to satisfy demand during the night</p></td>
 </tr>
 <tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">socioeco</span></code></p></td>
+<td class="text-left"><p>Economic output</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">O</span></code></p></td>
+<td class="text-left"><p>Economic output of IND &amp; COM businesses per block (EUR)</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">socioeco</span></code></p></td>
 <td class="text-left"><p>Social safety facilities</p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">socialsafFacilities</span></code></p></td>
 <td class="text-left"><p>Locations of hospitals, police &amp; fire stations</p></td>
