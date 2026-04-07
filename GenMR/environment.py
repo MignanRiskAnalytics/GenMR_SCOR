@@ -1379,7 +1379,7 @@ class EnvLayer_urbLand:
     ID : str
         Layer identifier, here 'urbLand'.
     grid : RasterGrid
-        The computational grid for the urban layer.
+        Spatial mesh of the digital template.
     topo : EnvLayer_topo
         Topography layer used for slope calculations and urban constraints.
     par : dict
