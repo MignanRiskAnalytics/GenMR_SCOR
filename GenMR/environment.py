@@ -28,7 +28,7 @@ Layers and Related Objects (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-04-01
+:Date: 2026-04-07
 :License: AGPL-3
 """
 
@@ -1460,6 +1460,7 @@ class EnvLayer_urbLand:
         self.built_yr = np.full((self.grid.nx,self.grid.ny), np.nan)
         self.built_yr[self.built == 1] = self.year
         self.bldg_Nstories = np.full((self.grid.nx, self.grid.ny), np.nan)
+        self._bldg_blockValue = np.full((self.grid.nx, self.grid.ny), np.nan)   # backing attribute for bldg_blockValue
 
     def generate(self):
         # generate city with intertwinned road network
@@ -1723,17 +1724,42 @@ class EnvLayer_urbLand:
         Huizinga J, de Moel H, Szewczyk W (2017), Global Flood Depth-Damage Functions. Methodology and the Database with Guidelines. 
         JRC Technical Reports. EUR 28552 EN.
         '''
-        c1 = [24.1, 30.8, 33.6]      # tab.3.25
-        c2 = [.385, .325, .357]      # tab.3.25
-        val = np.full((self.grid.nx, self.grid.ny), np.nan)
-        indR = self.S == 2
-        indI = self.S == 3
-        indC = self.S == 4
-        Aratio = self._get_Aratio_map()
-        val[indR] = c1[0] * self.par['GPD_percapita_EUR'] **c2[0] * (self.grid.w*1e3)**2 * self.bldg_Nstories[indR] * Aratio[indR]
-        val[indI] = c1[1] * self.par['GPD_percapita_EUR'] **c2[1] * (self.grid.w*1e3)**2 * self.bldg_Nstories[indI] * Aratio[indI]
-        val[indC] = c1[2] * self.par['GPD_percapita_EUR'] **c2[2] * (self.grid.w*1e3)**2 * self.bldg_Nstories[indC] * Aratio[indC]
-        return val
+        if not hasattr(self, "_bldg_blockValue") or self._bldg_blockValue is None:
+            c1 = [24.1, 30.8, 33.6]      # tab.3.25
+            c2 = [.385, .325, .357]      # tab.3.25
+            val = np.full((self.grid.nx, self.grid.ny), np.nan)
+            indR = self.S == 2
+            indI = self.S == 3
+            indC = self.S == 4
+            Aratio = self._get_Aratio_map()
+            val[indR] = c1[0] * self.par['GPD_percapita_EUR'] **c2[0] * (self.grid.w*1e3)**2 * self.bldg_Nstories[indR] * Aratio[indR]
+            val[indI] = c1[1] * self.par['GPD_percapita_EUR'] **c2[1] * (self.grid.w*1e3)**2 * self.bldg_Nstories[indI] * Aratio[indI]
+            val[indC] = c1[2] * self.par['GPD_percapita_EUR'] **c2[2] * (self.grid.w*1e3)**2 * self.bldg_Nstories[indC] * Aratio[indC]
+            self._bldg_blockValue = val
+        return self._bldg_blockValue
+
+    @bldg_blockValue.setter
+    def bldg_blockValue(self, value):
+        self._bldg_blockValue = value
+
+    def update_bldg_blockValue(self, socioecolayer):
+        '''
+        Update bldg_blockValue property given wealth distribution
+        '''
+        res_mask = (self.S == 2)
+        wealth_factor = 1 + socioecolayer.par['wealth']['contrast'] * socioecolayer.wealth_index
+
+        total_base = np.sum(self.bldg_blockValue[res_mask])
+        total_modif = np.sum(self.bldg_blockValue[res_mask] * wealth_factor[res_mask])
+
+        # correction factor to enforce sum conservation
+        correction = total_base / total_modif
+        wealth_factor[res_mask] *= correction
+
+        bldg_blockValue_updated = self.bldg_blockValue.copy()
+        bldg_blockValue_updated[res_mask] = bldg_blockValue_updated[res_mask] * wealth_factor[res_mask]
+        self.bldg_blockValue = bldg_blockValue_updated
+
 
     @cached_property
     def industrialZones(self):
@@ -2991,6 +3017,7 @@ class EnvLayer_socioeco:
         self._compute_demand()
         self._aggregate_node_demand()
         self._compute_economic_output()
+        self._compute_wealth()
 
 
     ## 1. FACILITIES ##
@@ -3085,6 +3112,39 @@ class EnvLayer_socioeco:
         self.O = econ     # EUR/yr per cell
         self.econ_output_IND_m2_yr = O_m2_yr * self.par['GDP_fraction_IND']
         self.econ_output_COM_m2_yr = O_m2_yr * self.par['GDP_fraction_COM']
+
+    ## 4 WEALTH ##
+    def _compute_wealth(self):
+        '''
+        Compute wealth index (0-1).
+        '''
+        water_mask = (self.urb.S == -1)
+        green_mask = (self.urb.S == 0) | (self.urb.S == 1)
+        res_mask = (self.urb.S == 2)
+        ind_mask = (self.urb.S == 3)
+        com_mask = (self.urb.S == 4)
+        crop_mask = (self.urb.S == 5) | (self.urb.S == 6)
+        hist_mask = self.urb.built_yr <= self.par['wealth']['historic_maxyr']
+
+        dist_water = ndimage.distance_transform_edt(~water_mask) * self.grid.w
+        dist_green = ndimage.distance_transform_edt(~green_mask) * self.grid.w
+        dist_com = ndimage.distance_transform_edt(~com_mask) * self.grid.w
+        dist_ind = ndimage.distance_transform_edt(~ind_mask) * self.grid.w
+        dist_crop = ndimage.distance_transform_edt(~crop_mask) * self.grid.w
+
+        water_term = self.par['wealth']['w_water'] * np.exp(-dist_water / self.par['wealth']['decay_char'])
+        green_term = self.par['wealth']['w_green'] * np.exp(-dist_green / self.par['wealth']['decay_char'])
+        com_term = self.par['wealth']['w_commerce'] * np.exp(-dist_com / self.par['wealth']['decay_char'])
+        ind_term = self.par['wealth']['w_industrial'] * np.exp(-dist_ind / self.par['wealth']['decay_char'])
+        crop_term = self.par['wealth']['w_industrial'] * np.exp(-dist_crop / self.par['wealth']['decay_char'])
+        hist_term = self.par['wealth']['w_historic_centre'] * hist_mask.astype(float)
+
+        wealth_index = water_term + green_term + com_term + ind_term + crop_term + hist_term
+        wealth_index[~res_mask] = np.nan
+        wealth_min = np.nanmin(wealth_index)
+        wealth_max = np.nanmax(wealth_index)
+        self.wealth_index = (wealth_index - wealth_min) / (wealth_max - wealth_min)
+
 
 
 ############
@@ -3340,6 +3400,9 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-', box =
         if attr == 'O':
             img = plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.O*1e-6, cmap = 'Reds', alpha = alpha)
             fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'Economic output (M. EUR/block/yr)')
+        elif attr == 'wealth_index':
+            img = plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.wealth_index, cmap = 'seismic', vmin = 0, vmax = 1, alpha = alpha)
+            fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'Wealth index')
         elif attr == 'socialsafFacilities':
             plt.scatter(envLayer.hosp_coords[:,0], envLayer.hosp_coords[:,1], color = 'blue', marker = 's', label = 'hospital')
             plt.scatter(envLayer.pol_coords[:,0], envLayer.pol_coords[:,1], color = 'black', marker = '.', label = 'police')
@@ -3402,7 +3465,7 @@ def plot_EnvLayers(envLayers, file_ext = '-', topo_bool = False, box = None):
     else:
         xmin, xmax, ymin, ymax = envLayers[0].grid.xmin, envLayers[0].grid.xmax, envLayers[0].grid.ymin, envLayers[0].grid.ymax
     if topo_bool:
-        alpha = .5
+        alpha = .8
     else:
         alpha = 1.
 
@@ -3702,7 +3765,7 @@ def plot_EnvLayers(envLayers, file_ext = '-', topo_bool = False, box = None):
 
             if topo_bool:
                 ax[i,0].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.urb.topo.z, vert_exag=.1), cmap='gray', alpha = .5)
-            ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.O*1e-6, cmap = 'Reds')
+            ax[i,0].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.O*1e-6, cmap = 'Reds', alpha = alpha)
             ax[i,0].set_xlabel('$x$ (km)')
             ax[i,0].set_ylabel('$y$ (km)')
             ax[i,0].set_title('SOCIOECO: Economic output $O$', size = 14, pad = 20)
@@ -3712,18 +3775,27 @@ def plot_EnvLayers(envLayers, file_ext = '-', topo_bool = False, box = None):
 
             if topo_bool:
                 ax[i,1].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.urb.topo.z, vert_exag=.1), cmap='gray', alpha = .5)
-            ax[i,1].scatter(envLayer.hosp_coords[:,0], envLayer.hosp_coords[:,1], color = 'blue', marker = 's', label = 'hospital')
-            ax[i,1].scatter(envLayer.pol_coords[:,0], envLayer.pol_coords[:,1], color = 'black', marker = '.', label = 'police')
-            ax[i,1].scatter(envLayer.fire_coords[:,0], envLayer.fire_coords[:,1], color = 'red', marker = '+', label = 'fire sta.')
+            ax[i,1].pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.wealth_index, cmap = 'seismic', vmin = 0, vmax = 1, alpha = alpha)
             ax[i,1].set_xlabel('$x$ (km)')
             ax[i,1].set_ylabel('$y$ (km)')
-            ax[i,1].set_title('Public safety facilities', size = 14, pad = 20)
+            ax[i,1].set_title('Wealth index', size = 14, pad = 20)
             ax[i,1].set_xlim(xmin, xmax)
             ax[i,1].set_ylim(ymin, ymax)
             ax[i,1].set_aspect(1)
-            ax[i,1].legend(loc='upper right')
 
-            ax[i,2].set_axis_off()
+            if topo_bool:
+                ax[i,2].contourf(envLayer.grid.xx, envLayer.grid.yy, ls.hillshade(envLayer.urb.topo.z, vert_exag=.1), cmap='gray', alpha = .5)
+            ax[i,2].scatter(envLayer.hosp_coords[:,0], envLayer.hosp_coords[:,1], color = 'blue', marker = 's', label = 'hospital')
+            ax[i,2].scatter(envLayer.pol_coords[:,0], envLayer.pol_coords[:,1], color = 'black', marker = '.', label = 'police')
+            ax[i,2].scatter(envLayer.fire_coords[:,0], envLayer.fire_coords[:,1], color = 'red', marker = '+', label = 'fire sta.')
+            ax[i,2].set_xlabel('$x$ (km)')
+            ax[i,2].set_ylabel('$y$ (km)')
+            ax[i,2].set_title('Public safety facilities', size = 14, pad = 20)
+            ax[i,2].set_xlim(xmin, xmax)
+            ax[i,2].set_ylim(ymin, ymax)
+            ax[i,2].set_aspect(1)
+            ax[i,2].legend(loc='upper right')
+
 
     fig.tight_layout()
     if file_ext != '-':
