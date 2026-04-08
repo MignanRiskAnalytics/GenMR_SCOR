@@ -1460,7 +1460,7 @@ class EnvLayer_urbLand:
         self.built_yr = np.full((self.grid.nx,self.grid.ny), np.nan)
         self.built_yr[self.built == 1] = self.year
         self.bldg_Nstories = np.full((self.grid.nx, self.grid.ny), np.nan)
-        self._bldg_blockValue = np.full((self.grid.nx, self.grid.ny), np.nan)   # backing attribute for bldg_blockValue
+        self._bldg_blockValue = None
 
     def generate(self):
         # generate city with intertwinned road network
@@ -2284,6 +2284,20 @@ class EnvLayer_urbLand:
 
         return T_index
 
+    @property
+    def kcal_prod(self):
+        Acell = (self.grid.w * 1e3) ** 2     # m2
+        kcal_prod = np.full_like(self.S, np.nan)
+        wheat_mask = self.S == 5
+        maize_mask = self.S == 6
+        kcal_prod[wheat_mask] = self.par['crop_yield_perm2'][0] * Acell * self.par['crop_kcal_perkg'][0] * \
+                                self.par['crop_edible_fraction'][0] * (1 - self.par['crop_loss_fraction'])
+        kcal_prod[maize_mask] = self.par['crop_yield_perm2'][1] * Acell * self.par['crop_kcal_perkg'][1] * \
+                                self.par['crop_edible_fraction'][1] * (1 - self.par['crop_loss_fraction'])
+        return kcal_prod
+
+
+
 
 
 ## ENERGY SYSTEMS ##
@@ -2997,6 +3011,7 @@ class EnvLayer_socioeco:
         self.urb = urbLandLayer
         self.energy = energyLayer
         self.rng = np.random.default_rng(self.par['rdm_seed'])
+        self.kcal_peryr_need = self.urb.pop_night * self.par['kcal_target_perday'] * 365.
 
         self.hosp_coords = None
         self.pol_coords = None
