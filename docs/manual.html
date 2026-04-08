@@ -191,6 +191,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.get_d4mkd"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_d4mkd()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.get_state_built"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_state_built()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.industrialZones"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.industrialZones</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.kcal_prod"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.kcal_prod</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.pop_day"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.pop_day</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.pop_night"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.pop_night</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.roadNet_coord"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.roadNet_coord</span></code></a></li>
@@ -294,12 +295,15 @@
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.Src.VE_char"><code class="docutils literal notranslate"><span class="pre">Src.VE_char</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_BI_duration"><code class="docutils literal notranslate"><span class="pre">calc_BI_duration()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_BI_from_BO"><code class="docutils literal notranslate"><span class="pre">calc_BI_from_BO()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_EQ_length2magnitude"><code class="docutils literal notranslate"><span class="pre">calc_EQ_length2magnitude()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_EQ_magnitude2length"><code class="docutils literal notranslate"><span class="pre">calc_EQ_magnitude2length()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_Lbd_GPD"><code class="docutils literal notranslate"><span class="pre">calc_Lbd_GPD()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_Lbd_exponential"><code class="docutils literal notranslate"><span class="pre">calc_Lbd_exponential()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_Lbd_powerlaw"><code class="docutils literal notranslate"><span class="pre">calc_Lbd_powerlaw()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_PET"><code class="docutils literal notranslate"><span class="pre">calc_PET()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_Sf"><code class="docutils literal notranslate"><span class="pre">calc_Sf()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_e0"><code class="docutils literal notranslate"><span class="pre">calc_e0()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_lbd_Dr"><code class="docutils literal notranslate"><span class="pre">calc_lbd_Dr()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_qsat"><code class="docutils literal notranslate"><span class="pre">calc_qsat()</span></code></a></li>
@@ -333,6 +337,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_ndays_inMonth"><code class="docutils literal notranslate"><span class="pre">get_ndays_inMonth()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_neighborhood_ind"><code class="docutils literal notranslate"><span class="pre">get_neighborhood_ind()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_net_coord"><code class="docutils literal notranslate"><span class="pre">get_net_coord()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_val_grid2loc"><code class="docutils literal notranslate"><span class="pre">get_val_grid2loc()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.graph_to_full_adjacency"><code class="docutils literal notranslate"><span class="pre">graph_to_full_adjacency()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.incrementing"><code class="docutils literal notranslate"><span class="pre">incrementing()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.init_io"><code class="docutils literal notranslate"><span class="pre">init_io()</span></code></a></li>
@@ -427,6 +432,7 @@
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-5-blackout-case">C.5. Blackout case</a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-6-business-interruption-case">C.6. Business interruption case</a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-7-public-safety-service-case">C.7. Public safety service case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-8-social-unrest-case">C.8. Social unrest case</a></li>
 </ul>
 </li>
 </ul>
@@ -2214,6 +2220,11 @@ following White et al. (1997), using:
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.kcal_prod">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kcal_prod</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand.kcal_prod" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.pop_day">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pop_day</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand.pop_day" title="Link to this definition"></a></dt>
 <dd><p>Daytime population per cell (persons).</p>
@@ -2730,12 +2741,14 @@ as well as intensity and loss footprint calculations.</p>
 <section id="peril-models-v1-1-2">
 <h4>Peril models (v1.1.2)<a class="headerlink" href="#peril-models-v1-1-2" title="Link to this heading"></a></h4>
 <ul class="simple">
-<li><p>BO: Blackout - IN CONSTRUCTION</p></li>
+<li><p>BI: Business interruption</p></li>
+<li><p>BO: Blackout</p></li>
 <li><p>CS: Convective storm</p></li>
 <li><p>Dr: Drought</p></li>
 <li><p>HW: Heatwave</p></li>
 <li><p>Li: Lightning</p></li>
 <li><p>PI: Pest infestation</p></li>
+<li><p>Sf: Public service failure</p></li>
 <li><p>To: Tornado</p></li>
 <li><p>WS: Windstorm</p></li>
 </ul>
@@ -2743,8 +2756,6 @@ as well as intensity and loss footprint calculations.</p>
 <section id="planned-peril-models-v1-1-2">
 <h4>Planned peril models (v1.1.2)<a class="headerlink" href="#planned-peril-models-v1-1-2" title="Link to this heading"></a></h4>
 <ul class="simple">
-<li><p>BI: Business interruption</p></li>
-<li><p>Sf: Public service failure</p></li>
 <li><p>SU: Social unrest</p></li>
 </ul>
 <dl class="field-list simple">
@@ -2755,7 +2766,7 @@ as well as intensity and loss footprint calculations.</p>
 <dd class="field-even"><p>1.1.2</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2026-03-31</p>
+<dd class="field-odd"><p>2026-04-08</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -3805,6 +3816,66 @@ assigned a unique identifier.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="GenMR.perils.calc_BI_duration">
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">calc_BI_duration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">MDR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thresholds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.1,</span> <span class="pre">0.3,</span> <span class="pre">0.6]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.01,</span> <span class="pre">0.05,</span> <span class="pre">0.25,</span> <span class="pre">0.5]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.calc_BI_duration" title="Link to this definition"></a></dt>
+<dd><p>Compute business interruption (BI) duration from Mean Damage Ratio (MDR).</p>
+<p>This function maps damage levels (MDR ∈ [0,1]) to downtime durations
+(in fraction of year) using a piecewise-constant relationship.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>MDR</strong> (<em>ndarray</em>) – Mean Damage Ratio per cell (0-1).</p></li>
+<li><p><strong>thresholds</strong> (<em>list</em><em> of </em><em>float</em><em>, </em><em>optional</em>) – Increasing MDR thresholds defining damage intervals. Default: [0.1, 0.3, 0.6]</p></li>
+<li><p><strong>values</strong> (<em>list</em><em> of </em><em>float</em><em>, </em><em>optional</em>) – <p>Duration values (in years) for each interval. Must have length = len(thresholds) + 1.
+Default: [0.01, 0.05, 0.25, 0.75]</p>
+<p>Interpretation (default):
+- MDR &lt; 0.1  → ~4 days disruption
+- 0.1–0.3    → ~2–3 weeks
+- 0.3–0.6    → ~3 months
+- &gt; 0.6      → ~6 months</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>duration</strong> – Business interruption duration per cell (in years).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.perils.calc_BI_from_BO">
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">calc_BI_from_BO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">load_node_served</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_node_demand</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Biz_expo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">demand_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rdm_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.calc_BI_from_BO" title="Link to this definition"></a></dt>
+<dd><p>Compute the Business Interruption (BI) footprint due to a power blackout.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>load_node_served</strong> (<em>ndarray</em><em> of </em><em>shape</em><em> (</em><em>n_nodes</em><em>,</em><em>)</em>) – Available electricity supply at each load node (same units as demand).</p></li>
+<li><p><strong>load_node_demand</strong> (<em>ndarray</em><em> of </em><em>shape</em><em> (</em><em>n_nodes</em><em>,</em><em>)</em>) – Total electricity demand aggregated per load node.</p></li>
+<li><p><strong>load_ID</strong> (<em>ndarray</em><em> of </em><em>shape</em><em> (</em><em>nx</em><em>, </em><em>ny</em><em>)</em>) – Mapping of each mesh/grid cell to its serving load node.
+Cells outside urban areas can be NaN.</p></li>
+<li><p><strong>Biz_expo</strong> (<em>ndarray</em><em> of </em><em>shape</em><em> (</em><em>nx</em><em>, </em><em>ny</em><em>)</em>) – Economic exposure (EUR/yr) of each cell that could be affected by BI.</p></li>
+<li><p><strong>demand_cell</strong> (<em>ndarray</em><em> of </em><em>shape</em><em> (</em><em>nx</em><em>, </em><em>ny</em><em>)</em>) – Electricity demand per grid cell.</p></li>
+<li><p><strong>rdm_seed</strong> (<em>int</em><em>, </em><em>optional</em>) – Seed for reproducible random allocation of partial service.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>BI</strong> – Estimated business interruption per cell (EUR/yr).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray of shape (nx, ny)</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Random allocation of partially served cells ensures that the sum of cell-level
+served demand does not exceed the node supply.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="GenMR.perils.calc_EQ_length2magnitude">
 <span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">calc_EQ_length2magnitude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.calc_EQ_length2magnitude" title="Link to this definition"></a></dt>
 <dd><p>Convert earthquake rupture length to moment magnitude.</p>
@@ -3939,6 +4010,11 @@ which assumes a clear sky. When cloudy = True,</p>
 <p>Thornthwaite (1948), An approach toward a rational classification of climate.
 Geographical Review, 38(1), 55–94.</p>
 </dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.perils.calc_Sf">
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">calc_Sf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">socioecoLayer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fp_dmg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.calc_Sf" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="GenMR.perils.calc_e0">
@@ -4356,7 +4432,7 @@ core GenMR workflows by streamlining data handling, computation, and visualisati
 <dd class="field-even"><p>1.1.2</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2026-04-01</p>
+<dd class="field-odd"><p>2026-04-08</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -4659,6 +4735,12 @@ Both arrays exclude the focal cell <cite>(i, j)</cite>.</p>
 </p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.get_val_grid2loc">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">get_val_grid2loc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loc_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.get_val_grid2loc" title="Link to this definition"></a></dt>
+<dd><p>Estimate the values at loc_coords given meshed values in grid.</p>
 </dd></dl>
 
 <dl class="py function">
