@@ -21,25 +21,25 @@ Peril models (v1.1.1)
 
 Peril models (v1.1.2)
 ---------------------
-* BO: Blackout - IN CONSTRUCTION
+* BI: Business interruption
+* BO: Blackout
 * CS: Convective storm
 * Dr: Drought
 * HW: Heatwave
 * Li: Lightning
 * PI: Pest infestation
+* Sf: Public service failure
 * To: Tornado
 * WS: Windstorm
 
 Planned peril models (v1.1.2)
 -----------------------------
-* BI: Business interruption
-* Sf: Public service failure
 * SU: Social unrest
 
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-03-31
+:Date: 2026-04-08
 :License: AGPL-3
 """
 
@@ -2750,6 +2750,129 @@ def run_BO_flow(energyLayer, par, failed_nodes, failed_lines,
     BO_loads = [node_names[i] for i in indL if node_demand_served[i] == 0]
  
     return BO_loads, g_BO, g_dmg, g_intact, node_demand_served
+
+
+
+## BI case ## - kept separate of any class for now (secondary peril with specific loss metric, to update in v.1.2.x)
+def calc_BI_duration(MDR, thresholds = [.1, .3, .6], values = [.01, .05, .25, .5]):
+    '''
+    Compute business interruption (BI) duration from Mean Damage Ratio (MDR).
+
+    This function maps damage levels (MDR ∈ [0,1]) to downtime durations
+    (in fraction of year) using a piecewise-constant relationship.
+
+    Parameters
+    ----------
+    MDR : ndarray
+        Mean Damage Ratio per cell (0-1).
+
+    thresholds : list of float, optional
+        Increasing MDR thresholds defining damage intervals. Default: [0.1, 0.3, 0.6]
+
+    values : list of float, optional
+        Duration values (in years) for each interval. Must have length = len(thresholds) + 1.
+        Default: [0.01, 0.05, 0.25, 0.75]
+
+        Interpretation (default):
+        - MDR < 0.1  → ~4 days disruption
+        - 0.1–0.3    → ~2–3 weeks
+        - 0.3–0.6    → ~3 months
+        - > 0.6      → ~6 months
+
+    Returns
+    -------
+    duration : ndarray
+        Business interruption duration per cell (in years).
+    '''
+    duration = np.zeros_like(MDR, dtype=float)
+
+    t1, t2, t3 = thresholds
+    v1, v2, v3, v4 = values
+
+    duration[MDR < t1] = v1
+    duration[(MDR >= t1) & (MDR < t2)] = v2
+    duration[(MDR >= t2) & (MDR < t3)] = v3
+    duration[MDR >= t3] = v4
+    return duration
+
+def calc_BI_from_BO(load_node_served, load_node_demand, load_ID, Biz_expo, demand_cell, rdm_seed = None):
+    '''
+    Compute the Business Interruption (BI) footprint due to a power blackout.
+
+    Parameters
+    ----------
+    load_node_served : ndarray of shape (n_nodes,)
+        Available electricity supply at each load node (same units as demand).
+    load_node_demand : ndarray of shape (n_nodes,)
+        Total electricity demand aggregated per load node.
+    load_ID : ndarray of shape (nx, ny)
+        Mapping of each mesh/grid cell to its serving load node.
+        Cells outside urban areas can be NaN.
+    Biz_expo : ndarray of shape (nx, ny)
+        Economic exposure (EUR/yr) of each cell that could be affected by BI.
+    demand_cell : ndarray of shape (nx, ny)
+        Electricity demand per grid cell.
+    rdm_seed : int, optional
+        Seed for reproducible random allocation of partial service.
+
+    Returns
+    -------
+    BI : ndarray of shape (nx, ny)
+        Estimated business interruption per cell (EUR/yr).
+
+    Notes
+    -----
+    - Random allocation of partially served cells ensures that the sum of cell-level
+      served demand does not exceed the node supply.
+    '''
+    rng = np.random.default_rng(rdm_seed)
+    
+    BI = np.full_like(Biz_expo, np.nan)
+
+    valid_mask = ~np.isnan(load_ID)
+    node_ids = load_ID[valid_mask].astype(int)
+
+    for node in np.unique(node_ids):
+        cell_mask = (load_ID == node)
+        served = load_node_served[node]
+        demand = load_node_demand[node]
+
+        if served <= 0:         # full blackout
+            BI[cell_mask] = Biz_expo[cell_mask]
+            continue
+        elif served >= demand:  # fully served (no BI)
+            continue
+        else:                   # partial service
+            frac = served / demand
+            cell_ind = np.argwhere(cell_mask)
+            d = demand_cell[cell_mask]
+            order = np.argsort(rng.random(len(d)))
+            cum_demand = np.cumsum(d[order])
+            served_cells = cum_demand <= served
+            served_idx = cell_ind[order][served_cells]
+            not_served_idx = cell_ind[order][~served_cells]
+            BI[tuple(not_served_idx.T)] = Biz_expo[tuple(not_served_idx.T)]
+    return BI
+
+
+## Sf case ## - kept separate of any class for now (secondary invisible peril, to update in v.1.2.x)
+def calc_Sf(socioecoLayer, par, fp_dmg):
+    '''
+    '''
+    MDR_hosp = GenMR_utils.get_val_grid2loc(socioecoLayer.hosp_coords, fp_dmg, socioecoLayer.grid)
+    MDR_pol  = GenMR_utils.get_val_grid2loc(socioecoLayer.pol_coords, fp_dmg, socioecoLayer.grid)
+    MDR_fire = GenMR_utils.get_val_grid2loc(socioecoLayer.fire_coords, fp_dmg, socioecoLayer.grid)
+
+    hosp_OFF = MDR_hosp > par['MDR_th']
+    pol_OFF  = MDR_pol > par['MDR_th']
+    fire_OFF = MDR_fire > par['MDR_th']
+
+    Sf_hosp = np.round(np.sum(hosp_OFF) / len(socioecoLayer.hosp_coords) * 100, decimals = 2)
+    Sf_pol = np.round(np.sum(pol_OFF) / len(socioecoLayer.pol_coords) * 100, decimals = 2)
+    Sf_fire = np.round(np.sum(fire_OFF) / len(socioecoLayer.fire_coords) * 100, decimals = 2)
+    
+    return Sf_hosp, Sf_pol, Sf_fire, hosp_OFF, pol_OFF, fire_OFF
+
 
 
 

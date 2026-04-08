@@ -8,7 +8,7 @@ core GenMR workflows by streamlining data handling, computation, and visualisati
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-04-01
+:Date: 2026-04-08
 :License: AGPL-3
 """
 
@@ -26,6 +26,7 @@ from matplotlib.colors import ListedColormap
 from shapely.geometry import Point
 
 import networkx as netx
+from scipy.spatial import cKDTree
 
 
 
@@ -421,6 +422,18 @@ def get_S_floor(size, Si):
     idx = np.searchsorted(Si, size, side='right') - 1
     idx = np.clip(idx, 0, len(Si) - 1)
     return Si[idx]
+
+
+def get_val_grid2loc(loc_coords, fp, grid):
+    '''
+    Estimate the values at loc_coords given meshed values in grid.
+    '''
+    cell_coords = np.column_stack((grid.xx.ravel(), grid.yy.ravel()))
+    tree = cKDTree(cell_coords)
+    _, idx = tree.query(loc_coords)
+    val_flat = fp.ravel()[idx]
+    return val_flat
+
 
 
 ######################
