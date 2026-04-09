@@ -1460,7 +1460,6 @@ class EnvLayer_urbLand:
         self.built_yr = np.full((self.grid.nx,self.grid.ny), np.nan)
         self.built_yr[self.built == 1] = self.year
         self.bldg_Nstories = np.full((self.grid.nx, self.grid.ny), np.nan)
-        self._bldg_blockValue = None
 
     def generate(self):
         # generate city with intertwinned road network
@@ -1724,41 +1723,17 @@ class EnvLayer_urbLand:
         Huizinga J, de Moel H, Szewczyk W (2017), Global Flood Depth-Damage Functions. Methodology and the Database with Guidelines. 
         JRC Technical Reports. EUR 28552 EN.
         '''
-        if not hasattr(self, "_bldg_blockValue") or self._bldg_blockValue is None:
-            c1 = [24.1, 30.8, 33.6]      # tab.3.25
-            c2 = [.385, .325, .357]      # tab.3.25
-            val = np.full((self.grid.nx, self.grid.ny), np.nan)
-            indR = self.S == 2
-            indI = self.S == 3
-            indC = self.S == 4
-            Aratio = self._get_Aratio_map()
-            val[indR] = c1[0] * self.par['GPD_percapita_EUR'] **c2[0] * (self.grid.w*1e3)**2 * self.bldg_Nstories[indR] * Aratio[indR]
-            val[indI] = c1[1] * self.par['GPD_percapita_EUR'] **c2[1] * (self.grid.w*1e3)**2 * self.bldg_Nstories[indI] * Aratio[indI]
-            val[indC] = c1[2] * self.par['GPD_percapita_EUR'] **c2[2] * (self.grid.w*1e3)**2 * self.bldg_Nstories[indC] * Aratio[indC]
-            self._bldg_blockValue = val
-        return self._bldg_blockValue
-
-    @bldg_blockValue.setter
-    def bldg_blockValue(self, value):
-        self._bldg_blockValue = value
-
-    def update_bldg_blockValue(self, socioecolayer):
-        '''
-        Update bldg_blockValue property given wealth distribution
-        '''
-        res_mask = (self.S == 2)
-        wealth_factor = 1 + socioecolayer.par['wealth']['contrast'] * socioecolayer.wealth_index
-
-        total_base = np.sum(self.bldg_blockValue[res_mask])
-        total_modif = np.sum(self.bldg_blockValue[res_mask] * wealth_factor[res_mask])
-
-        # correction factor to enforce sum conservation
-        correction = total_base / total_modif
-        wealth_factor[res_mask] *= correction
-
-        bldg_blockValue_updated = self.bldg_blockValue.copy()
-        bldg_blockValue_updated[res_mask] = bldg_blockValue_updated[res_mask] * wealth_factor[res_mask]
-        self.bldg_blockValue = bldg_blockValue_updated
+        c1 = [24.1, 30.8, 33.6]      # tab.3.25
+        c2 = [.385, .325, .357]      # tab.3.25
+        val = np.full((self.grid.nx, self.grid.ny), np.nan)
+        indR = self.S == 2
+        indI = self.S == 3
+        indC = self.S == 4
+        Aratio = self._get_Aratio_map()
+        val[indR] = c1[0] * self.par['GPD_percapita_EUR'] **c2[0] * (self.grid.w*1e3)**2 * self.bldg_Nstories[indR] * Aratio[indR]
+        val[indI] = c1[1] * self.par['GPD_percapita_EUR'] **c2[1] * (self.grid.w*1e3)**2 * self.bldg_Nstories[indI] * Aratio[indI]
+        val[indC] = c1[2] * self.par['GPD_percapita_EUR'] **c2[2] * (self.grid.w*1e3)**2 * self.bldg_Nstories[indC] * Aratio[indC]
+        return val
 
 
     @cached_property
@@ -3160,6 +3135,25 @@ class EnvLayer_socioeco:
         wealth_max = np.nanmax(wealth_index)
         self.wealth_index = (wealth_index - wealth_min) / (wealth_max - wealth_min)
 
+    @property
+    def bldg_blockValue_modif(self):
+        '''
+        Update bldg_blockValue property given wealth distribution
+        '''
+        res_mask = (self.urb.S == 2)
+        wealth_factor = 1 + self.par['wealth']['contrast'] * self.wealth_index
+
+        total_base = np.sum(self.urb.bldg_blockValue[res_mask])
+        total_modif = np.sum(self.urb.bldg_blockValue[res_mask] * wealth_factor[res_mask])
+
+        # correction factor to enforce sum conservation
+        correction = total_base / total_modif
+        wealth_factor[res_mask] *= correction
+
+        bldg_blockValue_modif = self.urb.bldg_blockValue.copy()
+        bldg_blockValue_modif[res_mask] = bldg_blockValue_modif[res_mask] * wealth_factor[res_mask]
+        return bldg_blockValue_modif
+
 
 
 ############
@@ -3332,7 +3326,7 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-', box =
             plt.plot(envLayer.roadNet_coord[2], envLayer.roadNet_coord[3], color='darkred', lw = 1)
         elif attr == 'bldg_blockValue':
             img = plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.bldg_blockValue, cmap = 'inferno_r', alpha = alpha)
-            fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'Value [$]')
+            fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'Value (EUR)')
         elif attr == 'built_yr':
             img = plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.built_yr, cmap = 'inferno_r', alpha = alpha,\
                                 vmin = envLayer.par['city_yr0'], vmax = np.nanmax(envLayer.built_yr))
@@ -3418,6 +3412,9 @@ def plot_EnvLayer_attr(envLayer, attr, hillshading_z = '', file_ext = '-', box =
         elif attr == 'wealth_index':
             img = plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.wealth_index, cmap = 'seismic', vmin = 0, vmax = 1, alpha = alpha)
             fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'Wealth index')
+        elif attr == 'bldg_blockValue_modif':
+            img = plt.pcolormesh(envLayer.grid.xx, envLayer.grid.yy, envLayer.bldg_blockValue_modif, cmap = 'inferno_r', alpha = alpha)
+            fig.colorbar(img, ax = ax, fraction = .04, pad = .04, label = 'Value (EUR)')
         elif attr == 'socialsafFacilities':
             plt.scatter(envLayer.hosp_coords[:,0], envLayer.hosp_coords[:,1], color = 'blue', marker = 's', label = 'hospital')
             plt.scatter(envLayer.pol_coords[:,0], envLayer.pol_coords[:,1], color = 'black', marker = '.', label = 'police')
