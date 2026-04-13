@@ -2820,6 +2820,65 @@ def calc_BI_fromDmg(fp_dmg, expo_biz, par):
     return BI_fromDmg_fp, BI_duration_da
 
 
+def get_damaged_and_tripped(g_intact, g_dmg, g_BO):
+    '''
+    Extract damaged (from previous event) and tripped (from blackout cascade) components
+    by comparing the 3 graph states.
+
+    Parameters
+    ----------
+    g_intact : networkx.Graph
+        Original undamaged power grid.
+    g_dmg : networkx.Graph
+        Grid after physical damage (nodes/edges destroyed by the event).
+    g_BO : networkx.Graph
+        Grid after blackout cascade (additional line trips due to overload).
+
+    Returns
+    -------
+    damaged_nodes : set
+        Nodes physically destroyed.
+    damaged_edges : set
+        Edges physically destroyed.
+    tripped_edges : set
+        Edges tripped during blackout cascade,
+        excluding edges already counted as physically damaged.
+    '''
+    damaged_nodes = set(g_intact.nodes) - set(g_dmg.nodes)
+    damaged_edges = set(g_intact.edges) - set(g_dmg.edges)
+    tripped_edges = set(g_dmg.edges) - set(g_BO.edges)
+    tripped_edges -= damaged_edges
+    return damaged_nodes, damaged_edges, tripped_edges
+
+def calc_BI_duration_fromBO(g_intact, g_dmg, g_BO, par):
+    '''
+    Estimate blackout duration from component counts and reconstruction durations for 
+    business interruption calculations.
+
+    Parameters
+    ----------
+    g_intact : networkx.Graph
+        Original undamaged power grid.
+    g_dmg : networkx.Graph
+        Grid after physical damage (nodes/edges destroyed by the event).
+    g_BO : networkx.Graph
+        Grid after blackout cascade (additional line trips due to overload).
+    par : dict
+        Repair duration parameters with ``'daysOFF_grid*_*'`` keys:
+
+    Returns
+    -------
+    BI_duration_fromBO : float
+        Total estimated blackout duration in days, representing the time
+        until full grid restoration and end of business interruption.
+    '''
+    damaged_nodes, damaged_edges, tripped_edges = get_damaged_and_tripped(g_intact, g_dmg, g_BO)
+    work_damaged_nodes = len(damaged_nodes) * par['daysOFF_gridNode_dmg'] if damaged_nodes else 0
+    work_damaged_edges = len(damaged_edges) * par['daysOFF_gridLine_dmg'] if damaged_edges else 0
+    work_tripped_edges = len(tripped_edges) * par['daysOFF_gridLine_trip'] if tripped_edges else 0
+    BI_duration_fromBO = work_damaged_nodes + work_damaged_edges + work_tripped_edges
+    return BI_duration_fromBO
+
 def calc_BI_from_BO(load_node_served, load_node_demand, load_ID, expo_biz, demand_cell, rdm_seed = None):
     '''
     Compute the Business Interruption (BI) footprint due to a power blackout.
@@ -2877,6 +2936,7 @@ def calc_BI_from_BO(load_node_served, load_node_demand, load_ID, expo_biz, deman
 #            served_idx = cell_ind[order][served_cells]
             not_served_idx = cell_ind[order][~served_cells]
             BI[tuple(not_served_idx.T)] = expo_biz[tuple(not_served_idx.T)]
+
     return BI
 
 
