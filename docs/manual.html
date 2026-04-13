@@ -127,6 +127,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.EnvLayer_socioeco"><code class="docutils literal notranslate"><span class="pre">EnvLayer_socioeco</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_socioeco.ID"><code class="docutils literal notranslate"><span class="pre">EnvLayer_socioeco.ID</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_socioeco.load_ID"><code class="docutils literal notranslate"><span class="pre">EnvLayer_socioeco.load_ID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_socioeco.bldg_blockValue_modif"><code class="docutils literal notranslate"><span class="pre">EnvLayer_socioeco.bldg_blockValue_modif</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_socioeco.build"><code class="docutils literal notranslate"><span class="pre">EnvLayer_socioeco.build()</span></code></a></li>
 </ul>
 </li>
@@ -197,7 +198,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.roadNet_coord"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.roadNet_coord</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.run"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.run()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.transform_landUse"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.transform_landUse()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_urbLand.update_bldg_blockValue"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.update_bldg_blockValue()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.environment.EnvObj_roadNetwork"><code class="docutils literal notranslate"><span class="pre">EnvObj_roadNetwork</span></code></a><ul>
@@ -227,7 +227,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#genmr-peril-implementation">GenMR Peril Implementation</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#peril-models-v1-1-1">Peril models (v1.1.1)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#peril-models-v1-1-2">Peril models (v1.1.2)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#planned-peril-models-v1-1-2">Planned peril models (v1.1.2)</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.CellularAutomaton_FF"><code class="docutils literal notranslate"><span class="pre">CellularAutomaton_FF</span></code></a><ul>
@@ -296,6 +295,8 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_BI_duration"><code class="docutils literal notranslate"><span class="pre">calc_BI_duration()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_BI_duration_fromBO"><code class="docutils literal notranslate"><span class="pre">calc_BI_duration_fromBO()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_BI_fromDmg"><code class="docutils literal notranslate"><span class="pre">calc_BI_fromDmg()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_BI_from_BO"><code class="docutils literal notranslate"><span class="pre">calc_BI_from_BO()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_EQ_length2magnitude"><code class="docutils literal notranslate"><span class="pre">calc_EQ_length2magnitude()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_EQ_magnitude2length"><code class="docutils literal notranslate"><span class="pre">calc_EQ_magnitude2length()</span></code></a></li>
@@ -311,6 +312,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.gen_BO_cascade_betweenness"><code class="docutils literal notranslate"><span class="pre">gen_BO_cascade_betweenness()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.gen_precipitation"><code class="docutils literal notranslate"><span class="pre">gen_precipitation()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.get_Dr"><code class="docutils literal notranslate"><span class="pre">get_Dr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.get_damaged_and_tripped"><code class="docutils literal notranslate"><span class="pre">get_damaged_and_tripped()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.get_peril_evID"><code class="docutils literal notranslate"><span class="pre">get_peril_evID()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.incrementing"><code class="docutils literal notranslate"><span class="pre">incrementing()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.plot_hazFootprints"><code class="docutils literal notranslate"><span class="pre">plot_hazFootprints()</span></code></a></li>
@@ -1279,6 +1281,12 @@ population (day/night), and building properties.</p></li>
 <li><p>Demand depends on land-use type (RES, IND, COM) and building characteristics.</p></li>
 <li><p>Mesh-cell demand is aggregated to the nearest load node using a KD-tree.</p></li>
 </ul>
+<dl class="py property">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_socioeco.bldg_blockValue_modif">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bldg_blockValue_modif</span></span><a class="headerlink" href="#GenMR.environment.EnvLayer_socioeco.bldg_blockValue_modif" title="Link to this definition"></a></dt>
+<dd><p>Update bldg_blockValue property given wealth distribution</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="GenMR.environment.EnvLayer_socioeco.build">
 <span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_socioeco.build" title="Link to this definition"></a></dt>
@@ -2297,12 +2305,6 @@ repulsion for conversion.</p>
 Environment and Planning B: Planning and Design, 24, 323-343.</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_urbLand.update_bldg_blockValue">
-<span class="sig-name descname"><span class="pre">update_bldg_blockValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">socioecolayer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_urbLand.update_bldg_blockValue" title="Link to this definition"></a></dt>
-<dd><p>Update bldg_blockValue property given wealth distribution</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -2749,14 +2751,9 @@ as well as intensity and loss footprint calculations.</p>
 <li><p>Li: Lightning</p></li>
 <li><p>PI: Pest infestation</p></li>
 <li><p>Sf: Public service failure</p></li>
+<li><p>SU: Social unrest - IN CONSTRUCTION</p></li>
 <li><p>To: Tornado</p></li>
 <li><p>WS: Windstorm</p></li>
-</ul>
-</section>
-<section id="planned-peril-models-v1-1-2">
-<h4>Planned peril models (v1.1.2)<a class="headerlink" href="#planned-peril-models-v1-1-2" title="Link to this heading"></a></h4>
-<ul class="simple">
-<li><p>SU: Social unrest</p></li>
 </ul>
 <dl class="field-list simple">
 <dt class="field-odd">Author<span class="colon">:</span></dt>
@@ -2766,7 +2763,7 @@ as well as intensity and loss footprint calculations.</p>
 <dd class="field-even"><p>1.1.2</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2026-04-08</p>
+<dd class="field-odd"><p>2026-04-13</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -3673,14 +3670,14 @@ temperature variance is equal to sigma_daily², independently of rho.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="GenMR.perils.RiskFootprintGenerator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">RiskFootprintGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">catalog_hazFootprints</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">urbLandLayer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evtable</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.RiskFootprintGenerator" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">RiskFootprintGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">catalog_hazFootprints</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bldg_blockValue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evtable</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.RiskFootprintGenerator" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Generate risk footprints (damage and loss) for a set of hazard footprints.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>catalog_hazFootprints</strong> (<em>dict</em>) – Dictionary of hazard footprints with event IDs as keys and 2D arrays as values.</p></li>
-<li><p><strong>urbLandLayer</strong> (<em>object</em>) – Urban land layer containing building values (attribute <cite>bldg_value</cite>).</p></li>
+<li><p><strong>.bldg_blockValue</strong> (<em>ndarray</em>) – Exposure defined in terms of building block values.</p></li>
 <li><p><strong>evtable</strong> (<em>pandas.DataFrame</em>) – Event table with at least a column ‘evID’; a ‘loss’ column will be added.</p></li>
 </ul>
 </dd>
@@ -3817,27 +3814,33 @@ assigned a unique identifier.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="GenMR.perils.calc_BI_duration">
-<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">calc_BI_duration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">MDR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thresholds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.1,</span> <span class="pre">0.3,</span> <span class="pre">0.6]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.01,</span> <span class="pre">0.05,</span> <span class="pre">0.25,</span> <span class="pre">0.5]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.calc_BI_duration" title="Link to this definition"></a></dt>
-<dd><p>Compute business interruption (BI) duration from Mean Damage Ratio (MDR).</p>
-<p>This function maps damage levels (MDR ∈ [0,1]) to downtime durations
-(in fraction of year) using a piecewise-constant relationship.</p>
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">calc_BI_duration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">MDR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.calc_BI_duration" title="Link to this definition"></a></dt>
+<dd><p>Compute business interruption (BI) duration as a function of Mean Damage Ratio (MDR).</p>
+<p>The BI duration is defined as a piecewise-linear function of MDR:
+- No interruption for MDR &lt; mdr_min
+- Linear increase from dt_min to dt_max for mdr_min ≤ MDR &lt; mdr_clip
+- Constant maximum duration dt_max for MDR ≥ mdr_clip</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>MDR</strong> (<em>ndarray</em>) – Mean Damage Ratio per cell (0-1).</p></li>
-<li><p><strong>thresholds</strong> (<em>list</em><em> of </em><em>float</em><em>, </em><em>optional</em>) – Increasing MDR thresholds defining damage intervals. Default: [0.1, 0.3, 0.6]</p></li>
-<li><p><strong>values</strong> (<em>list</em><em> of </em><em>float</em><em>, </em><em>optional</em>) – <p>Duration values (in years) for each interval. Must have length = len(thresholds) + 1.
-Default: [0.01, 0.05, 0.25, 0.75]</p>
-<p>Interpretation (default):
-- MDR &lt; 0.1  → ~4 days disruption
-- 0.1–0.3    → ~2–3 weeks
-- 0.3–0.6    → ~3 months
-- &gt; 0.6      → ~6 months</p>
+<li><p><strong>MDR</strong> (<em>array_like</em>) – Mean Damage Ratio.</p></li>
+<li><p><strong>par</strong> (<em>dict</em>) – <p>Dictionary of model parameters with keys:
+- ‘MDR_th’ : list or tuple of float</p>
+<blockquote>
+<div><p>MDR thresholds [mdr_min, mdr_clip] defining the onset and saturation of BI.</p>
+</div></blockquote>
+<ul>
+<li><dl class="simple">
+<dt>’daysOFF_MDR’<span class="classifier">list or tuple of float</span></dt><dd><p>Corresponding BI durations [dt_min, dt_max] in days.</p>
+</dd>
+</dl>
+</li>
+</ul>
 </p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>duration</strong> – Business interruption duration per cell (in years).</p>
+<dd class="field-even"><p><strong>duration_da</strong> – Array of BI duration (in days).</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>
@@ -3846,8 +3849,70 @@ Default: [0.01, 0.05, 0.25, 0.75]</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="GenMR.perils.calc_BI_duration_fromBO">
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">calc_BI_duration_fromBO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">g_intact</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_dmg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_BO</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.calc_BI_duration_fromBO" title="Link to this definition"></a></dt>
+<dd><p>Estimate blackout duration from component counts and reconstruction durations for
+business interruption calculations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>g_intact</strong> (<em>networkx.Graph</em>) – Original undamaged power grid.</p></li>
+<li><p><strong>g_dmg</strong> (<em>networkx.Graph</em>) – Grid after physical damage (nodes/edges destroyed by the event).</p></li>
+<li><p><strong>g_BO</strong> (<em>networkx.Graph</em>) – Grid after blackout cascade (additional line trips due to overload).</p></li>
+<li><p><strong>par</strong> (<em>dict</em>) – Repair duration parameters with <code class="docutils literal notranslate"><span class="pre">'daysOFF_grid*_*'</span></code> keys:</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>BI_duration_fromBO</strong> – Total estimated blackout duration in days, representing the time
+until full grid restoration and end of business interruption.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.perils.calc_BI_fromDmg">
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">calc_BI_fromDmg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fp_dmg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expo_biz</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.calc_BI_fromDmg" title="Link to this definition"></a></dt>
+<dd><p>Estimate business interruption (BI) losses due to physical damage.</p>
+<p>BI is assumed to occur only when the Mean Damage Ratio (MDR) exceeds a minimum
+threshold. When triggered, the full business exposure is considered interrupted
+for a duration computed by <a class="reference internal" href="#GenMR.perils.calc_BI_duration" title="GenMR.perils.calc_BI_duration"><code class="xref py py-func docutils literal notranslate"><span class="pre">calc_BI_duration()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fp_dmg</strong> (<em>array_like</em>) – Damage footprint.</p></li>
+<li><p><strong>expo_biz</strong> (<em>array_like</em>) – Business exposure footprint.</p></li>
+<li><p><strong>par</strong> (<em>dict</em>) – <p>Dictionary of model parameters with keys:</p>
+<ul>
+<li><dl class="simple">
+<dt>’MDR_th’<span class="classifier">list or tuple of float</span></dt><dd><p>Thresholds [mdr_min, mdr_clip] controlling BI onset and saturation.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>’daysOFF_MDR’<span class="classifier">list or tuple of float</span></dt><dd><p>BI durations [dt_min, dt_max] in days.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>BI_fromDmg_fp</strong> (<em>ndarray</em>) – Business interruption losses, expressed in the same unit as <code class="docutils literal notranslate"><span class="pre">expo_biz</span></code> (scaled by fraction of year).</p></li>
+<li><p><strong>BI_duration_da</strong> (<em>ndarray</em>) – BI duration in days.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="GenMR.perils.calc_BI_from_BO">
-<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">calc_BI_from_BO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">load_node_served</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_node_demand</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Biz_expo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">demand_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rdm_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.calc_BI_from_BO" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">calc_BI_from_BO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">load_node_served</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_node_demand</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expo_biz</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">demand_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rdm_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.calc_BI_from_BO" title="Link to this definition"></a></dt>
 <dd><p>Compute the Business Interruption (BI) footprint due to a power blackout.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -3856,7 +3921,7 @@ Default: [0.01, 0.05, 0.25, 0.75]</p>
 <li><p><strong>load_node_demand</strong> (<em>ndarray</em><em> of </em><em>shape</em><em> (</em><em>n_nodes</em><em>,</em><em>)</em>) – Total electricity demand aggregated per load node.</p></li>
 <li><p><strong>load_ID</strong> (<em>ndarray</em><em> of </em><em>shape</em><em> (</em><em>nx</em><em>, </em><em>ny</em><em>)</em>) – Mapping of each mesh/grid cell to its serving load node.
 Cells outside urban areas can be NaN.</p></li>
-<li><p><strong>Biz_expo</strong> (<em>ndarray</em><em> of </em><em>shape</em><em> (</em><em>nx</em><em>, </em><em>ny</em><em>)</em>) – Economic exposure (EUR/yr) of each cell that could be affected by BI.</p></li>
+<li><p><strong>expo_biz</strong> (<em>ndarray</em><em> of </em><em>shape</em><em> (</em><em>nx</em><em>, </em><em>ny</em><em>)</em>) – Economic exposure (EUR/yr) of each cell that could be affected by BI.</p></li>
 <li><p><strong>demand_cell</strong> (<em>ndarray</em><em> of </em><em>shape</em><em> (</em><em>nx</em><em>, </em><em>ny</em><em>)</em>) – Electricity demand per grid cell.</p></li>
 <li><p><strong>rdm_seed</strong> (<em>int</em><em>, </em><em>optional</em>) – Seed for reproducible random allocation of partial service.</p></li>
 </ul>
@@ -4200,6 +4265,31 @@ precipitation using a constant precipitation efficiency.</p>
 <li><p><strong>events</strong> (<em>list of tuple</em>) – List of (start_index, end_index) pairs for each drought,
 where indices are inclusive and zero-based.</p></li>
 <li><p><strong>durations</strong> (<em>list of int</em>) – Durations (in months) of all detected droughts.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.perils.get_damaged_and_tripped">
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">get_damaged_and_tripped</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">g_intact</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_dmg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_BO</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.get_damaged_and_tripped" title="Link to this definition"></a></dt>
+<dd><p>Extract damaged (from previous event) and tripped (from blackout cascade) components
+by comparing the 3 graph states.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>g_intact</strong> (<em>networkx.Graph</em>) – Original undamaged power grid.</p></li>
+<li><p><strong>g_dmg</strong> (<em>networkx.Graph</em>) – Grid after physical damage (nodes/edges destroyed by the event).</p></li>
+<li><p><strong>g_BO</strong> (<em>networkx.Graph</em>) – Grid after blackout cascade (additional line trips due to overload).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>damaged_nodes</strong> (<em>set</em>) – Nodes physically destroyed.</p></li>
+<li><p><strong>damaged_edges</strong> (<em>set</em>) – Edges physically destroyed.</p></li>
+<li><p><strong>tripped_edges</strong> (<em>set</em>) – Edges tripped during blackout cascade,
+excluding edges already counted as physically damaged.</p></li>
 </ul>
 </p>
 </dd>
