@@ -29,17 +29,14 @@ Peril models (v1.1.2)
 * Li: Lightning
 * PI: Pest infestation
 * Sf: Public service failure
+* SU: Social unrest - IN CONSTRUCTION
 * To: Tornado
 * WS: Windstorm
-
-Planned peril models (v1.1.2)
------------------------------
-* SU: Social unrest
 
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-04-08
+:Date: 2026-04-13
 :License: AGPL-3
 """
 
@@ -2754,48 +2751,76 @@ def run_BO_flow(energyLayer, par, failed_nodes, failed_lines,
 
 
 ## BI case ## - kept separate of any class for now (secondary peril with specific loss metric, to update in v.1.2.x)
-def calc_BI_duration(MDR, thresholds = [.1, .3, .6], values = [.01, .05, .25, .5]):
+def calc_BI_duration(MDR, par):
     '''
-    Compute business interruption (BI) duration from Mean Damage Ratio (MDR).
+    Compute business interruption (BI) duration as a function of Mean Damage Ratio (MDR).
 
-    This function maps damage levels (MDR ∈ [0,1]) to downtime durations
-    (in fraction of year) using a piecewise-constant relationship.
+    The BI duration is defined as a piecewise-linear function of MDR:
+    - No interruption for MDR < mdr_min
+    - Linear increase from dt_min to dt_max for mdr_min ≤ MDR < mdr_clip
+    - Constant maximum duration dt_max for MDR ≥ mdr_clip
 
     Parameters
     ----------
-    MDR : ndarray
-        Mean Damage Ratio per cell (0-1).
-
-    thresholds : list of float, optional
-        Increasing MDR thresholds defining damage intervals. Default: [0.1, 0.3, 0.6]
-
-    values : list of float, optional
-        Duration values (in years) for each interval. Must have length = len(thresholds) + 1.
-        Default: [0.01, 0.05, 0.25, 0.75]
-
-        Interpretation (default):
-        - MDR < 0.1  → ~4 days disruption
-        - 0.1–0.3    → ~2–3 weeks
-        - 0.3–0.6    → ~3 months
-        - > 0.6      → ~6 months
+    MDR : array_like
+        Mean Damage Ratio.
+    par : dict
+        Dictionary of model parameters with keys:
+        - 'MDR_th' : list or tuple of float
+            MDR thresholds [mdr_min, mdr_clip] defining the onset and saturation of BI.
+        - 'daysOFF_MDR' : list or tuple of float
+            Corresponding BI durations [dt_min, dt_max] in days.
 
     Returns
     -------
-    duration : ndarray
-        Business interruption duration per cell (in years).
+    duration_da : ndarray
+        Array of BI duration (in days).
     '''
-    duration = np.zeros_like(MDR, dtype=float)
+    mdr_min, mdr_clip = par['MDR_th']
+    dt_min, dt_max = par['daysOFF_MDR']
+    duration_da = np.zeros_like(MDR, dtype=float)
+    mask = (MDR >= mdr_min) & (MDR < mdr_clip)
+    duration_da[mask] = dt_min + (MDR[mask] - mdr_min) / (mdr_clip - mdr_min) * (dt_max - dt_min) 
+    duration_da[MDR >= mdr_clip] = dt_max
+    return duration_da
 
-    t1, t2, t3 = thresholds
-    v1, v2, v3, v4 = values
+def calc_BI_fromDmg(fp_dmg, expo_biz, par):
+    '''
+    Estimate business interruption (BI) losses due to physical damage.
 
-    duration[MDR < t1] = v1
-    duration[(MDR >= t1) & (MDR < t2)] = v2
-    duration[(MDR >= t2) & (MDR < t3)] = v3
-    duration[MDR >= t3] = v4
-    return duration
+    BI is assumed to occur only when the Mean Damage Ratio (MDR) exceeds a minimum
+    threshold. When triggered, the full business exposure is considered interrupted
+    for a duration computed by :func:`calc_BI_duration`.
 
-def calc_BI_from_BO(load_node_served, load_node_demand, load_ID, Biz_expo, demand_cell, rdm_seed = None):
+    Parameters
+    ----------
+    fp_dmg : array_like
+        Damage footprint.
+    expo_biz : array_like
+        Business exposure footprint.
+    par : dict
+        Dictionary of model parameters with keys:
+        
+        - 'MDR_th' : list or tuple of float
+            Thresholds [mdr_min, mdr_clip] controlling BI onset and saturation.
+        - 'daysOFF_MDR' : list or tuple of float
+            BI durations [dt_min, dt_max] in days.
+
+    Returns
+    -------
+    BI_fromDmg_fp : ndarray
+        Business interruption losses, expressed in the same unit as ``expo_biz`` (scaled by fraction of year).
+    BI_duration_da : ndarray
+        BI duration in days.
+    '''
+    BI_duration_da = calc_BI_duration(fp_dmg, par)
+    BI_duration_da = np.where(fp_dmg >= par['MDR_th'][0], BI_duration_da, np.nan)
+    expo_biz_impacted = np.where(fp_dmg >= par['MDR_th'][0], expo_biz, np.nan)
+    BI_fromDmg_fp = expo_biz_impacted * BI_duration_da / 365.
+    return BI_fromDmg_fp, BI_duration_da
+
+
+def calc_BI_from_BO(load_node_served, load_node_demand, load_ID, expo_biz, demand_cell, rdm_seed = None):
     '''
     Compute the Business Interruption (BI) footprint due to a power blackout.
 
@@ -2808,7 +2833,7 @@ def calc_BI_from_BO(load_node_served, load_node_demand, load_ID, Biz_expo, deman
     load_ID : ndarray of shape (nx, ny)
         Mapping of each mesh/grid cell to its serving load node.
         Cells outside urban areas can be NaN.
-    Biz_expo : ndarray of shape (nx, ny)
+    expo_biz : ndarray of shape (nx, ny)
         Economic exposure (EUR/yr) of each cell that could be affected by BI.
     demand_cell : ndarray of shape (nx, ny)
         Electricity demand per grid cell.
@@ -2827,7 +2852,7 @@ def calc_BI_from_BO(load_node_served, load_node_demand, load_ID, Biz_expo, deman
     '''
     rng = np.random.default_rng(rdm_seed)
     
-    BI = np.full_like(Biz_expo, np.nan)
+    BI = np.full_like(expo_biz, np.nan)
 
     valid_mask = ~np.isnan(load_ID)
     node_ids = load_ID[valid_mask].astype(int)
@@ -2838,20 +2863,20 @@ def calc_BI_from_BO(load_node_served, load_node_demand, load_ID, Biz_expo, deman
         demand = load_node_demand[node]
 
         if served <= 0:         # full blackout
-            BI[cell_mask] = Biz_expo[cell_mask]
+            BI[cell_mask] = expo_biz[cell_mask]
             continue
         elif served >= demand:  # fully served (no BI)
             continue
         else:                   # partial service
-            frac = served / demand
+#            frac = served / demand
             cell_ind = np.argwhere(cell_mask)
             d = demand_cell[cell_mask]
             order = np.argsort(rng.random(len(d)))
             cum_demand = np.cumsum(d[order])
             served_cells = cum_demand <= served
-            served_idx = cell_ind[order][served_cells]
+#            served_idx = cell_ind[order][served_cells]
             not_served_idx = cell_ind[order][~served_cells]
-            BI[tuple(not_served_idx.T)] = Biz_expo[tuple(not_served_idx.T)]
+            BI[tuple(not_served_idx.T)] = expo_biz[tuple(not_served_idx.T)]
     return BI
 
 
@@ -3549,14 +3574,14 @@ class RiskFootprintGenerator:
     ----------
     catalog_hazFootprints : dict
         Dictionary of hazard footprints with event IDs as keys and 2D arrays as values.
-    urbLandLayer : object
-        Urban land layer containing building values (attribute `bldg_value`).
+    .bldg_blockValue : ndarray
+        Exposure defined in terms of building block values.
     evtable : pandas.DataFrame
         Event table with at least a column 'evID'; a 'loss' column will be added.
     '''
-    def __init__(self, catalog_hazFootprints, urbLandLayer, evtable):
+    def __init__(self, catalog_hazFootprints, bldg_blockValue, evtable):
         self.catalog_hazFootprints = catalog_hazFootprints
-        self.expo_value = urbLandLayer.bldg_blockValue.astype(float, copy=True)
+        self.expo_value = bldg_blockValue.astype(float, copy=True)
         self.ELT = evtable.copy()
         self.ELT['loss'] = np.nan
         self.evIDs_wFp = list(catalog_hazFootprints.keys())
