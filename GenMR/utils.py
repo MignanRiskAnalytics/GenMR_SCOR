@@ -8,7 +8,7 @@ core GenMR workflows by streamlining data handling, computation, and visualisati
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-04-08
+:Date: 2026-04-14
 :License: AGPL-3
 """
 
@@ -27,6 +27,7 @@ from shapely.geometry import Point
 
 import networkx as netx
 from scipy.spatial import cKDTree
+from scipy.signal import fftconvolve
 
 
 
@@ -127,17 +128,6 @@ def load_pickle2class(filename):
     file = open(wd + filename, 'rb')
     data = pickle.load(file)
     return data
-
-
-
-#######################
-## LIST MANIPULATION ##
-#######################
-#def flatten_list(nestedlist):
-#    '''
-#    Return a flatten list from a nested list.
-#    '''
-#    return [item for sublist in nestedlist for item in sublist]
 
 
 
@@ -434,6 +424,107 @@ def get_val_grid2loc(loc_coords, fp, grid):
     val_flat = fp.ravel()[idx]
     return val_flat
 
+def def_distance_kernel(d0, dx):
+    '''
+    Build a 2-D unnormalised exponential decay kernel.
+
+    Parameters
+    ----------
+    d0 : float
+        Spatial decay length (km). The kernel drops to ``1/e`` at this distance from the centre.
+    dx : float
+        Grid spacing (km).
+
+    Returns
+    -------
+    kernel : np.ndarray, shape (2R+1, 2R+1)
+        2-D exponential decay kernel, where ``R = int(4 * d0 / dx)``.
+    '''
+    R = int(4 * d0 / dx) # kernel size: cover ~4 decay lengths
+    x = np.arange(-R, R + 1)
+    y = np.arange(-R, R + 1)
+    X, Y = np.meshgrid(x, y)
+    dist = np.sqrt(X**2 + Y**2) * dx
+    kernel = np.exp(-dist / d0)
+    return kernel
+
+def gen_convmap4fp(fp, d0, dx):
+    '''
+    Convolve a 2-D footprint field with an exponential decay kernel.
+
+    NaN values in ``fp`` are treated as zero prior to convolution.
+
+    Parameters
+    ----------
+    fp : np.ndarray, shape (ny, nx)
+        Input footprint field.
+    d0 : float
+        Spatial decay length passed to ``def_distance_kernel`` (km).
+    dx : float
+        Grid spacing (km).
+
+    Returns
+    -------
+    result : np.ndarray, shape (ny, nx)
+        Smoothed map.
+    '''
+    kernel = def_distance_kernel(d0, dx)
+    fp_clean = np.nan_to_num(fp, nan=0.)
+    result = fftconvolve(fp_clean, kernel, mode='same')
+    return result
+
+def rasterize_pts2grid(coords, grid):
+    '''
+    Rasterise point locations onto a 2-D grid.
+
+    Each point is assigned to its nearest grid cell (nearest-neighbour).
+    Cells with one or more points are accumulated (count of points per cell); all others remain 0.
+
+    Parameters
+    ----------
+    coords : array-like, shape (N, 2)
+        Point coordinates as (x, y) pairs, in the same units as the grid.
+    grid : object
+        Grid object with attributes ``xx`` and ``yy`` (2-D coordinate
+        arrays, km).
+
+    Returns
+    -------
+    field : np.ndarray, shape (ny, nx)
+        Binary raster with 1 at occupied cells and 0 elsewhere.
+    '''
+    field = np.zeros_like(grid.xx, dtype = float)
+    for x, y in coords:
+        d = (grid.xx - x)**2 + (grid.yy - y)**2
+        idx = np.unravel_index(np.argmin(d), grid.xx.shape)
+        field[idx] += 1
+    return field
+
+def gen_convmap4pts(coords, d0, grid):
+    '''
+    Convolve point locations with an exponential decay kernel in a grid.
+
+    Points are first rasterised onto the grid (see ``rasterize_pts2grid``),
+    then convolved with an exponential decay kernel of decay length ``d0``.
+
+    Parameters
+    ----------
+    coords : array-like, shape (N, 2)
+        Point coordinates as (x, y) pairs (km).
+    d0 : float
+        Spatial decay length passed to ``def_distance_kernel`` (km).
+    grid : object
+        Grid.
+
+    Returns
+    -------
+    result : np.ndarray, shape (ny, nx)
+        Smoothed point-source map.
+    '''
+    field4pts = rasterize_pts2grid(coords, grid)
+    kernel = def_distance_kernel(d0, grid.w)
+    result = fftconvolve(field4pts, kernel, mode='same')
+    return result
 
 
 ######################

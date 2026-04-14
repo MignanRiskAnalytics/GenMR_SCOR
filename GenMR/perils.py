@@ -2959,6 +2959,105 @@ def calc_Sf(socioecoLayer, par, fp_dmg):
     return Sf_hosp, Sf_pol, Sf_fire, hosp_OFF, pol_OFF, fire_OFF
 
 
+## SU case ## - kept separate of any class for now (secondary invisible peril, to update in v.1.2.x)
+def safe_normalise(arr):
+    m = np.nanmax(arr)
+    return arr / m if m > 0 else np.zeros_like(arr)
+
+def calc_SU_seed(BIduration_fp, Sf_off, food_scarcity, socioecoLayer, par):
+    '''
+    Compute the social unrest (SU) seed footprint from 3 grievance components.
+
+    Grievance is modelled following Maslow's Hierarchy of Needs, combining:
+
+    - **G1** (esteem): job loss due to prolonged business interruption (BI),
+      spatially smoothed over labour catchment areas.
+    - **G2** (safety): loss of access to public safety services (hospitals,
+      police, fire), spatially smoothed over local service areas.
+    - **G3** (physiological): food insecurity from scarcity, distributed
+      preferentially to wealthier cells first.
+
+    All grievance layers are amplified by a poverty factor
+    ``(1 - wealth_index) ** wealth_alpha``, concentrating unrest in
+    lower-wealth areas. The three layers are combined as a weighted sum
+    using Maslow-inspired weights (physiological > safety > esteem).
+
+    Parameters
+    ----------
+    BIduration_fp : np.ndarray, shape (ny, nx)
+        Business interruption duration field (days).
+    Sf_off : list of three bool array-like
+        Boolean masks indicating which facilities are offline, ordered as
+        [hospitals, police stations, fire stations].
+    food_scarcity : float
+        Fraction of total regional food demand that is unavailable,
+        in [0, 1]. A value of 0 means full supply; 1 means zero food supply
+    socioecoLayer : object
+        Socioeconomic layer object.
+    par : dict
+        Model parameter dictionary.
+
+    Returns
+    -------
+    SU0_fp : np.ndarray, shape (ny, nx)
+        Social unrest seed footprint, the weighted sum of G1, G2, G3.
+    map_G1 : np.ndarray, shape (ny, nx)
+        Grievance layer 1 - job loss, poverty-amplified.
+    map_G2 : np.ndarray, shape (ny, nx)
+        Grievance layer 2 - lost public safety access, poverty-amplified.
+    map_G3 : np.ndarray, shape (ny, nx)
+        Grievance layer 3 - food insecurity, poverty-amplified.
+    map_jobloss : np.ndarray, shape (ny, nx)
+        Spatially smoothed job loss field (pre poverty amplification).
+    map_Sf : np.ndarray, shape (ny, nx)
+        Spatially smoothed lost public safety facilities field
+        (pre poverty amplification).
+    map_foodloss : np.ndarray, shape (ny, nx)
+        Fractional food deficit per cell (unmet need / total need).
+    '''
+    grid = socioecoLayer.grid
+    poverty_f = (1 - socioecoLayer.wealth_index)**par['wealth_alpha']
+    
+    ## G1: loss of job ##
+    jobloss_fp = np.zeros_like(BIduration_fp)
+    ind_jobloss = (BIduration_fp >= par['BI2jobloss_mon_th'] * 30.) & (~np.isnan(BIduration_fp))
+    jobloss_fp[ind_jobloss] = BIduration_fp[ind_jobloss] / np.nanmax(BIduration_fp)
+    map_jobloss = safe_normalise(GenMR_utils.gen_convmap4fp(jobloss_fp, par['G1_decay_km'], grid.w))
+    map_G1 = map_jobloss * poverty_f
+
+    ## G2: loss of public safety ##
+    Sf_coords = np.vstack([socioecoLayer.hosp_coords[Sf_off[0]], \
+                           socioecoLayer.pol_coords[Sf_off[1]], \
+                           socioecoLayer.fire_coords[Sf_off[2]]])
+    map_Sf = safe_normalise(GenMR_utils.gen_convmap4pts(Sf_coords, par['G2_decay_km'], grid))
+    map_G2 = map_Sf * poverty_f
+
+    ## G3: loss of food ##
+    kcal_demand_tot = np.nansum(socioecoLayer.kcal_peryr_need)
+    kcal_need = socioecoLayer.kcal_peryr_need.flatten()
+    wealth = socioecoLayer.wealth_index.flatten()
+    indsort = np.argsort(-wealth)  # from richest to poorest
+    available_kcal = (1 - food_scarcity) * kcal_demand_tot
+    cell_supplied = np.zeros_like(kcal_need)
+    for ind in indsort:
+        need = kcal_need[ind]
+        if available_kcal >= need:
+            cell_supplied[ind] = need
+            available_kcal -= need
+        else:
+            cell_supplied[ind] = available_kcal
+            available_kcal = 0
+    G3_flat = 1 - cell_supplied / kcal_need
+    map_G3 = G3_flat.reshape(grid.xx.shape) * poverty_f
+    map_G3[socioecoLayer.urb.S != 2] = np.nan
+
+    map_foodloss = (socioecoLayer.kcal_peryr_need - cell_supplied.reshape(grid.xx.shape)) / \
+                    socioecoLayer.kcal_peryr_need
+    map_foodloss[socioecoLayer.urb.S != 2] = np.nan
+
+    SU0_fp = par['Maslow_w'][0] * map_G1 + par['Maslow_w'][1] * map_G2 + par['Maslow_w'][2] * map_G3
+    
+    return SU0_fp, map_G1, map_G2, map_G3, map_jobloss, map_Sf, map_foodloss
 
 
 
