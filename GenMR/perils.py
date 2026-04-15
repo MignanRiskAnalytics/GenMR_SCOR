@@ -2813,9 +2813,9 @@ def calc_BI_fromDmg(fp_dmg, expo_biz, par):
     BI_duration_da : ndarray
         BI duration in days.
     '''
-    BI_duration_da = calc_BI_duration(fp_dmg, par)
-    BI_duration_da = np.where(fp_dmg >= par['MDR_th'][0], BI_duration_da, np.nan)
     expo_biz_impacted = np.where(fp_dmg >= par['MDR_th'][0], expo_biz, np.nan)
+    BI_duration_da = calc_BI_duration(fp_dmg, par)
+    BI_duration_da = np.where(expo_biz_impacted >= 0., BI_duration_da, np.nan)
     BI_fromDmg_fp = expo_biz_impacted * BI_duration_da / 365.
     return BI_fromDmg_fp, BI_duration_da
 
