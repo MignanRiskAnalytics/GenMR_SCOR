@@ -304,6 +304,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_Lbd_exponential"><code class="docutils literal notranslate"><span class="pre">calc_Lbd_exponential()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_Lbd_powerlaw"><code class="docutils literal notranslate"><span class="pre">calc_Lbd_powerlaw()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_PET"><code class="docutils literal notranslate"><span class="pre">calc_PET()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_SU_seed"><code class="docutils literal notranslate"><span class="pre">calc_SU_seed()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_Sf"><code class="docutils literal notranslate"><span class="pre">calc_Sf()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_e0"><code class="docutils literal notranslate"><span class="pre">calc_e0()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.calc_lbd_Dr"><code class="docutils literal notranslate"><span class="pre">calc_lbd_Dr()</span></code></a></li>
@@ -320,6 +321,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.plot_vulnFunctions"><code class="docutils literal notranslate"><span class="pre">plot_vulnFunctions()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.run_BO_betweenness"><code class="docutils literal notranslate"><span class="pre">run_BO_betweenness()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.run_BO_flow"><code class="docutils literal notranslate"><span class="pre">run_BO_flow()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.safe_normalise"><code class="docutils literal notranslate"><span class="pre">safe_normalise()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.update_soil_moisture"><code class="docutils literal notranslate"><span class="pre">update_soil_moisture()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.vuln_f"><code class="docutils literal notranslate"><span class="pre">vuln_f()</span></code></a></li>
 </ul>
@@ -331,7 +333,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.cmap_peril"><code class="docutils literal notranslate"><span class="pre">cmap_peril()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.col_peril"><code class="docutils literal notranslate"><span class="pre">col_peril()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.col_state_h"><code class="docutils literal notranslate"><span class="pre">col_state_h()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.def_distance_kernel"><code class="docutils literal notranslate"><span class="pre">def_distance_kernel()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.fetch_A0"><code class="docutils literal notranslate"><span class="pre">fetch_A0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.gen_convmap4fp"><code class="docutils literal notranslate"><span class="pre">gen_convmap4fp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.gen_convmap4pts"><code class="docutils literal notranslate"><span class="pre">gen_convmap4pts()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_S_ceil"><code class="docutils literal notranslate"><span class="pre">get_S_ceil()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_S_floor"><code class="docutils literal notranslate"><span class="pre">get_S_floor()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.get_edge_width"><code class="docutils literal notranslate"><span class="pre">get_edge_width()</span></code></a></li>
@@ -349,6 +354,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.norm_z"><code class="docutils literal notranslate"><span class="pre">norm_z</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.partitioning"><code class="docutils literal notranslate"><span class="pre">partitioning()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.pooling"><code class="docutils literal notranslate"><span class="pre">pooling()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.rasterize_pts2grid"><code class="docutils literal notranslate"><span class="pre">rasterize_pts2grid()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.sample_points_in_polygon"><code class="docutils literal notranslate"><span class="pre">sample_points_in_polygon()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.save_class2pickle"><code class="docutils literal notranslate"><span class="pre">save_class2pickle()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.save_dict2json"><code class="docutils literal notranslate"><span class="pre">save_dict2json()</span></code></a></li>
@@ -4077,6 +4083,51 @@ Geographical Review, 38(1), 55–94.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="GenMR.perils.calc_SU_seed">
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">calc_SU_seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">BIduration_fp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Sf_off</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">food_scarcity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">socioecoLayer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.calc_SU_seed" title="Link to this definition"></a></dt>
+<dd><p>Compute the social unrest (SU) seed footprint from 3 grievance components.</p>
+<p>Grievance is modelled following Maslow’s Hierarchy of Needs, combining:</p>
+<ul class="simple">
+<li><p><strong>G1</strong> (esteem): job loss due to prolonged business interruption (BI),
+spatially smoothed over labour catchment areas.</p></li>
+<li><p><strong>G2</strong> (safety): loss of access to public safety services (hospitals,
+police, fire), spatially smoothed over local service areas.</p></li>
+<li><p><strong>G3</strong> (physiological): food insecurity from scarcity, distributed
+preferentially to wealthier cells first.</p></li>
+</ul>
+<p>All grievance layers are amplified by a poverty factor
+<code class="docutils literal notranslate"><span class="pre">(1</span> <span class="pre">-</span> <span class="pre">wealth_index)</span> <span class="pre">**</span> <span class="pre">wealth_alpha</span></code>, concentrating unrest in
+lower-wealth areas. The three layers are combined as a weighted sum
+using Maslow-inspired weights (physiological &gt; safety &gt; esteem).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>BIduration_fp</strong> (<em>np.ndarray</em><em>, </em><em>shape</em><em> (</em><em>ny</em><em>, </em><em>nx</em><em>)</em>) – Business interruption duration field (days).</p></li>
+<li><p><strong>Sf_off</strong> (<em>list</em><em> of </em><em>three bool array-like</em>) – Boolean masks indicating which facilities are offline, ordered as
+[hospitals, police stations, fire stations].</p></li>
+<li><p><strong>food_scarcity</strong> (<em>float</em>) – Fraction of total regional food demand that is unavailable,
+in [0, 1]. A value of 0 means full supply; 1 means zero food supply</p></li>
+<li><p><strong>socioecoLayer</strong> (<em>object</em>) – Socioeconomic layer object.</p></li>
+<li><p><strong>par</strong> (<em>dict</em>) – Model parameter dictionary.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>SU0_fp</strong> (<em>np.ndarray, shape (ny, nx)</em>) – Social unrest seed footprint, the weighted sum of G1, G2, G3.</p></li>
+<li><p><strong>map_G1</strong> (<em>np.ndarray, shape (ny, nx)</em>) – Grievance layer 1 - job loss, poverty-amplified.</p></li>
+<li><p><strong>map_G2</strong> (<em>np.ndarray, shape (ny, nx)</em>) – Grievance layer 2 - lost public safety access, poverty-amplified.</p></li>
+<li><p><strong>map_G3</strong> (<em>np.ndarray, shape (ny, nx)</em>) – Grievance layer 3 - food insecurity, poverty-amplified.</p></li>
+<li><p><strong>map_jobloss</strong> (<em>np.ndarray, shape (ny, nx)</em>) – Spatially smoothed job loss field (pre poverty amplification).</p></li>
+<li><p><strong>map_Sf</strong> (<em>np.ndarray, shape (ny, nx)</em>) – Spatially smoothed lost public safety facilities field
+(pre poverty amplification).</p></li>
+<li><p><strong>map_foodloss</strong> (<em>np.ndarray, shape (ny, nx)</em>) – Fractional food deficit per cell (unmet need / total need).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="GenMR.perils.calc_Sf">
 <span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">calc_Sf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">socioecoLayer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fp_dmg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.calc_Sf" title="Link to this definition"></a></dt>
 <dd></dd></dl>
@@ -4458,6 +4509,11 @@ final state (i.e., fully blacked out).</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="GenMR.perils.safe_normalise">
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">safe_normalise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.safe_normalise" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="GenMR.perils.update_soil_moisture">
 <span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">update_soil_moisture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">P</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ET</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Smax</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.update_soil_moisture" title="Link to this definition"></a></dt>
 <dd><p>Monthly soil water balance.</p>
@@ -4522,7 +4578,7 @@ core GenMR workflows by streamlining data handling, computation, and visualisati
 <dd class="field-even"><p>1.1.2</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2026-04-08</p>
+<dd class="field-odd"><p>2026-04-14</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -4662,6 +4718,26 @@ code representing the state:</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.def_distance_kernel">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">def_distance_kernel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.def_distance_kernel" title="Link to this definition"></a></dt>
+<dd><p>Build a 2-D unnormalised exponential decay kernel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d0</strong> (<em>float</em>) – Spatial decay length (km). The kernel drops to <code class="docutils literal notranslate"><span class="pre">1/e</span></code> at this distance from the centre.</p></li>
+<li><p><strong>dx</strong> (<em>float</em>) – Grid spacing (km).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>kernel</strong> – 2-D exponential decay kernel, where <code class="docutils literal notranslate"><span class="pre">R</span> <span class="pre">=</span> <span class="pre">int(4</span> <span class="pre">*</span> <span class="pre">d0</span> <span class="pre">/</span> <span class="pre">dx)</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray, shape (2R+1, 2R+1)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="GenMR.utils.fetch_A0">
 <span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">fetch_A0</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.fetch_A0" title="Link to this definition"></a></dt>
 <dd><p>Fetch the predefined area value corresponding to a specified geographical level.</p>
@@ -4680,6 +4756,51 @@ code representing the state:</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.gen_convmap4fp">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">gen_convmap4fp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.gen_convmap4fp" title="Link to this definition"></a></dt>
+<dd><p>Convolve a 2-D footprint field with an exponential decay kernel.</p>
+<p>NaN values in <code class="docutils literal notranslate"><span class="pre">fp</span></code> are treated as zero prior to convolution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fp</strong> (<em>np.ndarray</em><em>, </em><em>shape</em><em> (</em><em>ny</em><em>, </em><em>nx</em><em>)</em>) – Input footprint field.</p></li>
+<li><p><strong>d0</strong> (<em>float</em>) – Spatial decay length passed to <code class="docutils literal notranslate"><span class="pre">def_distance_kernel</span></code> (km).</p></li>
+<li><p><strong>dx</strong> (<em>float</em>) – Grid spacing (km).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>result</strong> – Smoothed map.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray, shape (ny, nx)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.gen_convmap4pts">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">gen_convmap4pts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.gen_convmap4pts" title="Link to this definition"></a></dt>
+<dd><p>Convolve point locations with an exponential decay kernel in a grid.</p>
+<p>Points are first rasterised onto the grid (see <code class="docutils literal notranslate"><span class="pre">rasterize_pts2grid</span></code>),
+then convolved with an exponential decay kernel of decay length <code class="docutils literal notranslate"><span class="pre">d0</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>coords</strong> (<em>array-like</em><em>, </em><em>shape</em><em> (</em><em>N</em><em>, </em><em>2</em><em>)</em>) – Point coordinates as (x, y) pairs (km).</p></li>
+<li><p><strong>d0</strong> (<em>float</em>) – Spatial decay length passed to <code class="docutils literal notranslate"><span class="pre">def_distance_kernel</span></code> (km).</p></li>
+<li><p><strong>grid</strong> (<em>object</em>) – Grid.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>result</strong> – Smoothed point-source map.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray, shape (ny, nx)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -4982,6 +5103,29 @@ where nx and ny are the dimensions of the input matrix.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.rasterize_pts2grid">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">rasterize_pts2grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.rasterize_pts2grid" title="Link to this definition"></a></dt>
+<dd><p>Rasterise point locations onto a 2-D grid.</p>
+<p>Each point is assigned to its nearest grid cell (nearest-neighbour).
+Cells with one or more points are accumulated (count of points per cell); all others remain 0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>coords</strong> (<em>array-like</em><em>, </em><em>shape</em><em> (</em><em>N</em><em>, </em><em>2</em><em>)</em>) – Point coordinates as (x, y) pairs, in the same units as the grid.</p></li>
+<li><p><strong>grid</strong> (<em>object</em>) – Grid object with attributes <code class="docutils literal notranslate"><span class="pre">xx</span></code> and <code class="docutils literal notranslate"><span class="pre">yy</span></code> (2-D coordinate
+arrays, km).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>field</strong> – Binary raster with 1 at occupied cells and 0 elsewhere.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray, shape (ny, nx)</p>
 </dd>
 </dl>
 </dd></dl>
