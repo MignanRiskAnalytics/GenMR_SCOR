@@ -29,14 +29,14 @@ Peril models (v1.1.2)
 * Li: Lightning
 * PI: Pest infestation
 * Sf: Public service failure
-* SU: Social unrest - IN CONSTRUCTION
+* SU: Social unrest
 * To: Tornado
 * WS: Windstorm
 
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-04-13
+:Date: 2026-04-16
 :License: AGPL-3
 """
 
@@ -3058,6 +3058,168 @@ def calc_SU_seed(BIduration_fp, Sf_off, food_scarcity, socioecoLayer, par):
     SU0_fp = par['Maslow_w'][0] * map_G1 + par['Maslow_w'][1] * map_G2 + par['Maslow_w'][2] * map_G3
     
     return SU0_fp, map_G1, map_G2, map_G3, map_jobloss, map_Sf, map_foodloss
+
+def get_reachable_targets(SU_fp, BIduration_fp, socioecoLayer, par):
+    '''
+    Identify commercial (COM) grid cells that are reachable from active social unrest (SU) sources.
+
+    Parameters
+    ----------
+    SU_fp : ndarray
+        Social unrest seed event footprint.
+    BIduration_fp : ndarray
+        Business interruption (BI) duration (in days).
+    socioecoLayer : object
+        Socioeconomic layer containing spatial grids and urban classification.
+        Must provide:
+            - grid.xx, grid.yy : 2D coordinate arrays
+            - urb.S : 2D array of land-use classes (COM == 4)
+    par : dict
+        Dictionary of parameters.
+
+    Returns
+    -------
+    reachable_COM : ndarray of bool
+        Boolean mask of commercial cells that are both intact (or rebuilt) and reachable
+        from active SU sources.
+    SU_buffered : ndarray of bool
+        Boolean mask of all cells within the reach distance of active SU cells.
+    '''
+    SU_active = SU_fp >= par['G_th']
+    
+    SU_yx = np.argwhere(SU_active)
+    SU_x = socioecoLayer.grid.xx[SU_yx[:,0], SU_yx[:,1]]
+    SU_y = socioecoLayer.grid.yy[SU_yx[:,0], SU_yx[:,1]]
+    
+    SU_buffered = np.zeros_like(SU_fp, dtype = bool)
+    for sx, sy in zip(SU_x, SU_y):
+        dist = np.sqrt((socioecoLayer.grid.xx - sx)**2 + (socioecoLayer.grid.yy - sy)**2)
+        SU_buffered |= (dist <= par['R_reach_km'])
+    
+    COM_intact = (socioecoLayer.urb.S == 4) & (np.isnan(BIduration_fp) | \
+                 (BIduration_fp < par['BI2jobloss_mon_th'] * 30.))
+
+    reachable_COM = SU_buffered & COM_intact
+    return reachable_COM, SU_buffered
+
+def propagate_SU(SU0_fp, BIduration0_fp, Sf_off, food_scarcity, socioecoLayer, par, plt_box = None):
+    '''
+    Simulate social unrest (SU) propagation with parallel ignition of independent SU regions.
+
+
+    Parameters
+    ----------
+    SU0_fp : ndarray
+        Social unrest seed event footprint.
+    BIduration0_fp : ndarray
+        Initial BI duration footprint (in days).
+    Sf_off : list of three bool array-like
+        Boolean masks indicating which facilities are offline, ordered as
+        [hospitals, police stations, fire stations].
+    food_scarcity : float
+        Fraction of total regional food demand that is unavailable,
+        in [0, 1]. A value of 0 means full supply; 1 means zero food supply
+    socioecoLayer : object
+        Socioeconomic layer with spatial grid and land-use information.
+    par : dict
+        Dictionary of model parameters.
+
+    Returns
+    -------
+    SU_dmg_fp : ndarray
+        Social unrest damage footprint (1 = burned).
+    SU_fp : ndarray
+        Social unrest event footprint after propagation.
+    BIduration_wSU_fp : ndarray
+        Updated BI duration footprint including social unrest effects.
+
+    Notes
+    -----
+    - Multiple SU clusters can trigger damage in parallel during each iteration.
+    - Each connected SU-buffered component selects one random reachable commercial block to ignite.
+    - Propagation stops when no further damage occurs or no active SU cells remain.
+    - Optional visualization frames are saved if `plot_steps` is enabled.
+    - Connected components (during fire) are computed using 4-connectivity.
+    '''
+    movie_path = 'figs/SU_CA_frames/'
+    if par['SU']['plot_steps'] and not os.path.exists(movie_path):
+            os.makedirs(movie_path)
+    
+    SU_fp = SU0_fp.copy()
+    BIduration_wSU_fp = BIduration0_fp.copy()
+    
+    SU_dmg_fp = np.zeros_like(SU_fp)
+    COM_grid = (socioecoLayer.urb.S == 4).astype(int)
+    COM_clumps = measure.label(COM_grid, connectivity=1)
+
+    for step in range(par['SU']['max_iter']):
+        SU_active = SU_fp >= par['SU']['G_th']
+        if not np.any(SU_active):
+            break
+
+        # entire grid field
+        reachable_COM, SU_buffered = get_reachable_targets(SU_fp, BIduration_wSU_fp, socioecoLayer, par['SU'])
+
+        # separate independent SU seeds
+        SU_comps = measure.label(SU_buffered, connectivity=1)
+        any_damage = False
+        for comp_id in range(1, SU_comps.max() + 1):
+            # get SU_buffered for clump
+            SU_buffered_comp = SU_comps == comp_id
+            reachable_COM_comp = reachable_COM & SU_buffered_comp
+            if np.sum(reachable_COM_comp) == 0:
+                continue
+
+            # target random reachable COM block
+            ind = np.argwhere(reachable_COM_comp)
+            row, col = ind[np.random.randint(len(ind))]
+            # fire to all connected COM blocks
+            indFi = COM_clumps == COM_clumps[row, col]
+            # update SU-triggered building damage (MDR fire = 1) + BI
+            SU_dmg_fp[indFi] = 1.
+            BI_fromSU_duration = calc_BI_duration(SU_dmg_fp, par['BI'])
+            BIduration_wSU_fp[indFi] = BI_fromSU_duration[indFi]
+            any_damage = True
+
+        if not any_damage:
+            break
+
+        SU_fp, *_ = calc_SU_seed(BIduration_wSU_fp, Sf_off, food_scarcity, socioecoLayer, par['SU'])
+            
+        print(f"{step+1}/{par['SU']['max_iter']}: Cum. number of burned COM blocks = {np.sum(SU_dmg_fp)}")
+        
+        if par['SU']['plot_steps']:
+            ###############################################
+            grid = socioecoLayer.grid
+            plt.rcParams['font.size'] = '16'
+            fig, ax = plt.subplots(1,1, figsize=(20,18))
+            SU_plt = np.full_like(SU_fp, np.nan)
+            SU_plt[SU_fp >= par['SU']['G_th']] = 1
+            SU_dmg_plt = SU_dmg_fp.copy()
+            SU_dmg_plt[SU_dmg_fp == 0] = np.nan
+            reachable_COM_plt = reachable_COM.astype(float)
+            reachable_COM_plt[reachable_COM_plt == 0] = np.nan
+            ax.pcolormesh(grid.xx, grid.yy,socioecoLayer.urb.S, cmap=GenMR_utils.col_S,vmin=-1,vmax=7,alpha=.2,zorder=1)
+            ax.pcolormesh(grid.xx, grid.yy, SU_buffered.astype(int), cmap='Reds',vmin=0,vmax=10,alpha=.5, zorder=2)
+            ax.pcolormesh(grid.xx, grid.yy, SU_plt, cmap='Greys', vmin = 0, vmax = 1, zorder = 3)
+            ax.pcolormesh(grid.xx, grid.yy, reachable_COM_plt, cmap = 'Greens', vmin=0, vmax=2, zorder = 4)
+            ax.pcolormesh(grid.xx, grid.yy, SU_dmg_plt, cmap='Reds', vmin = 0, vmax = 1, zorder = 5)
+            ax.set_xlabel('$x$ (km)')
+            ax.set_ylabel('$y$ (km)')
+            ax.set_title('SU final footprint', pad = 10)
+            ax.set_xlim(plt_box[0], plt_box[1])
+            ax.set_ylim(plt_box[2], plt_box[3])
+            ax.set_aspect(1)
+            plt.tight_layout()
+            plt.savefig(f'{movie_path}iter{step}.jpg')
+            plt.close()
+            ###############################################
+        
+    return SU_dmg_fp, SU_fp, BIduration_wSU_fp
+
+
+
+
 
 
 
