@@ -315,10 +315,12 @@
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.get_Dr"><code class="docutils literal notranslate"><span class="pre">get_Dr()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.get_damaged_and_tripped"><code class="docutils literal notranslate"><span class="pre">get_damaged_and_tripped()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.get_peril_evID"><code class="docutils literal notranslate"><span class="pre">get_peril_evID()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.get_reachable_targets"><code class="docutils literal notranslate"><span class="pre">get_reachable_targets()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.incrementing"><code class="docutils literal notranslate"><span class="pre">incrementing()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.plot_hazFootprints"><code class="docutils literal notranslate"><span class="pre">plot_hazFootprints()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.plot_src"><code class="docutils literal notranslate"><span class="pre">plot_src()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.plot_vulnFunctions"><code class="docutils literal notranslate"><span class="pre">plot_vulnFunctions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.propagate_SU"><code class="docutils literal notranslate"><span class="pre">propagate_SU()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.run_BO_betweenness"><code class="docutils literal notranslate"><span class="pre">run_BO_betweenness()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.run_BO_flow"><code class="docutils literal notranslate"><span class="pre">run_BO_flow()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.safe_normalise"><code class="docutils literal notranslate"><span class="pre">safe_normalise()</span></code></a></li>
@@ -2757,7 +2759,7 @@ as well as intensity and loss footprint calculations.</p>
 <li><p>Li: Lightning</p></li>
 <li><p>PI: Pest infestation</p></li>
 <li><p>Sf: Public service failure</p></li>
-<li><p>SU: Social unrest - IN CONSTRUCTION</p></li>
+<li><p>SU: Social unrest</p></li>
 <li><p>To: Tornado</p></li>
 <li><p>WS: Windstorm</p></li>
 </ul>
@@ -2769,7 +2771,7 @@ as well as intensity and loss footprint calculations.</p>
 <dd class="field-even"><p>1.1.2</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2026-04-13</p>
+<dd class="field-odd"><p>2026-04-16</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -4367,6 +4369,38 @@ characters correspond to the peril type.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="GenMR.perils.get_reachable_targets">
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">get_reachable_targets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">SU_fp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BIduration_fp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">socioecoLayer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.get_reachable_targets" title="Link to this definition"></a></dt>
+<dd><p>Identify commercial (COM) grid cells that are reachable from active social unrest (SU) sources.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>SU_fp</strong> (<em>ndarray</em>) – Social unrest seed event footprint.</p></li>
+<li><p><strong>BIduration_fp</strong> (<em>ndarray</em>) – Business interruption (BI) duration (in days).</p></li>
+<li><p><strong>socioecoLayer</strong> (<em>object</em>) – <p>Socioeconomic layer containing spatial grids and urban classification.
+Must provide:</p>
+<blockquote>
+<div><ul>
+<li><p>grid.xx, grid.yy : 2D coordinate arrays</p></li>
+<li><p>urb.S : 2D array of land-use classes (COM == 4)</p></li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>par</strong> (<em>dict</em>) – Dictionary of parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>reachable_COM</strong> (<em>ndarray of bool</em>) – Boolean mask of commercial cells that are both intact (or rebuilt) and reachable
+from active SU sources.</p></li>
+<li><p><strong>SU_buffered</strong> (<em>ndarray of bool</em>) – Boolean mask of all cells within the reach distance of active SU cells.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="GenMR.perils.incrementing">
 <span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">incrementing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xbin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.incrementing" title="Link to this definition"></a></dt>
 <dd><p>Generate an array of evenly spaced values within a specified interval.</p>
@@ -4436,6 +4470,42 @@ For logarithmic scale, this represents the step in log10 space.</p></li>
 <dt class="sig sig-object py" id="GenMR.perils.plot_vulnFunctions">
 <span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">plot_vulnFunctions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.plot_vulnFunctions" title="Link to this definition"></a></dt>
 <dd><p>Plot vulnerability (MDR) functions for different perils.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.perils.propagate_SU">
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">propagate_SU</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">SU0_fp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BIduration0_fp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Sf_off</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">food_scarcity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">socioecoLayer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plt_box</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.propagate_SU" title="Link to this definition"></a></dt>
+<dd><p>Simulate social unrest (SU) propagation with parallel ignition of independent SU regions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>SU0_fp</strong> (<em>ndarray</em>) – Social unrest seed event footprint.</p></li>
+<li><p><strong>BIduration0_fp</strong> (<em>ndarray</em>) – Initial BI duration footprint (in days).</p></li>
+<li><p><strong>Sf_off</strong> (<em>list</em><em> of </em><em>three bool array-like</em>) – Boolean masks indicating which facilities are offline, ordered as
+[hospitals, police stations, fire stations].</p></li>
+<li><p><strong>food_scarcity</strong> (<em>float</em>) – Fraction of total regional food demand that is unavailable,
+in [0, 1]. A value of 0 means full supply; 1 means zero food supply</p></li>
+<li><p><strong>socioecoLayer</strong> (<em>object</em>) – Socioeconomic layer with spatial grid and land-use information.</p></li>
+<li><p><strong>par</strong> (<em>dict</em>) – Dictionary of model parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>SU_dmg_fp</strong> (<em>ndarray</em>) – Social unrest damage footprint (1 = burned).</p></li>
+<li><p><strong>SU_fp</strong> (<em>ndarray</em>) – Social unrest event footprint after propagation.</p></li>
+<li><p><strong>BIduration_wSU_fp</strong> (<em>ndarray</em>) – Updated BI duration footprint including social unrest effects.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Multiple SU clusters can trigger damage in parallel during each iteration.</p></li>
+<li><p>Each connected SU-buffered component selects one random reachable commercial block to ignite.</p></li>
+<li><p>Propagation stops when no further damage occurs or no active SU cells remain.</p></li>
+<li><p>Optional visualization frames are saved if <cite>plot_steps</cite> is enabled.</p></li>
+<li><p>Connected components (during fire) are computed using 4-connectivity.</p></li>
+</ul>
 </dd></dl>
 
 <dl class="py function">
