@@ -2790,7 +2790,7 @@ class EnvLayer_energy:
 
 
     ## POWER DISTRIBUTION ONCE NODE_DEMAND KNOWN ##
-    def _compute_flows_dc(self, powergrid, node_supply, node_demand):
+    def _compute_flows_dc(self, powergrid, node_supply, node_demand, slack_id=0):
         # relabel nodes to contiguous 0..N-1
         # (necessary after node removals leave gaps in node indices during blackout - see perils.py)
         nodes = list(powergrid.nodes())
@@ -2817,7 +2817,7 @@ class EnvLayer_energy:
                     node_demand_served_g[i] = node_demand_g[i] * scale
 
         b = node_supply_g - node_demand_served_g
-        b[-1] -= np.sum(b)
+        b[slack_id] -= np.sum(b)
         L = networkx.laplacian_matrix(g).astype(float).tolil()
         for comp in networkx.connected_components(g):
             ref = min(comp)
