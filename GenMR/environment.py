@@ -2801,6 +2801,14 @@ class EnvLayer_energy:
         node_supply_g = np.array([node_supply[i] for i in nodes])
         node_demand_g = np.array([node_demand[i] for i in nodes])
 
+        nodes_present = list(powergrid.nodes())  # after relabeling inside _compute_flows_dc
+        if slack_id in nodes_present:
+            slack_id_eff = slack_id
+        else:
+            # fall back to first available generator
+            slack_id_eff = next((mapping[i] for i in nodes if node_supply_g[mapping[i]] > 0),
+            0)  # last resort if no generators present (pure load island)
+
         # per-component load shedding
         node_demand_served_g = node_demand_g.copy().astype(float)
         for comp in networkx.connected_components(g):
@@ -2817,7 +2825,7 @@ class EnvLayer_energy:
                     node_demand_served_g[i] = node_demand_g[i] * scale
 
         b = node_supply_g - node_demand_served_g
-        b[slack_id] -= np.sum(b)
+        b[slack_id_eff] -= np.sum(b)
         L = networkx.laplacian_matrix(g).astype(float).tolil()
         for comp in networkx.connected_components(g):
             ref = min(comp)
@@ -2848,7 +2856,7 @@ class EnvLayer_energy:
 
 
 
-    def solve_power_flow(self, node_demand_day, node_demand_night, load_ID):
+    def solve_power_flow(self, node_demand_day, node_demand_night, load_ID, slack_id = 0):
         '''
         Solve DC power flow for day and night demand.
  
@@ -2887,7 +2895,7 @@ class EnvLayer_energy:
             print(f"Power deficit (day): {balance_day:.2f} MW — generators undersized for demand.")
         else:
             print(f"Power surplus (day): {balance_day:.2f} MW")
-        self.flows_day, self.theta_day, self.node_demand_served_day = self._compute_flows_dc(powergrid_g, node_supply, node_demand_full)
+        self.flows_day, self.theta_day, self.node_demand_served_day = self._compute_flows_dc(powergrid_g, node_supply, node_demand_full, slack_id = slack_id)
         served_day = node_supply.copy()
         for (i, j) in powergrid_g.edges():
             f = self.flows_day[(i, j)]
@@ -2905,7 +2913,7 @@ class EnvLayer_energy:
             print(f"Power deficit (night): {balance_night:.2f} MW — generators undersized for demand.")
         else:
             print(f"Power surplus (night): {balance_night:.2f} MW")
-        self.flows_night, self.theta_night, self.node_demand_served_night = self._compute_flows_dc(powergrid_g, node_supply, node_demand_full)
+        self.flows_night, self.theta_night, self.node_demand_served_night = self._compute_flows_dc(powergrid_g, node_supply, node_demand_full, slack_id = slack_id)
         served_night = node_supply.copy()
         for (i, j) in powergrid_g.edges():
             f = self.flows_night[(i, j)]
