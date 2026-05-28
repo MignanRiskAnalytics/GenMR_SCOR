@@ -2602,8 +2602,7 @@ class HazardFootprintGenerator:
 
 
 ## BO case ## - kept separate of any class for now (secondary invisible peril with stochastic element rupture, to update in v.1.2.x)
-def run_BO_flow(energyLayer, par, failed_nodes, failed_lines,
-                period='day', print_casc=False):
+def run_BO_flow(energyLayer, par, failed_nodes, failed_lines, slack_id=0, period='day', print_casc=False):
     '''
     Run a blackout cascade scenario on a power grid using DC power flow.
  
@@ -2627,6 +2626,8 @@ def run_BO_flow(energyLayer, par, failed_nodes, failed_lines,
         Names of nodes to be removed initially.
     failed_lines : list of tuple of str
         List of edges (node_name_1, node_name_2) to be removed initially.
+    slack_id : integer
+        Index of the node acting as slack node.
     period : {'day', 'night'}, optional
         Demand profile to use. Default is ``'day'``.
     print_casc : bool, optional
@@ -2659,7 +2660,7 @@ def run_BO_flow(energyLayer, par, failed_nodes, failed_lines,
  
     #######################################################
     ## Step 1: edge capacities from intact network flows ##
-    flows_intact, _, _ = energyLayer._compute_flows_dc(g_intact, node_supply, node_demand)
+    flows_intact, _, _ = energyLayer._compute_flows_dc(g_intact, node_supply, node_demand, slack_id = slack_id)
     edge_capacity = {}
     for (i, j), f in flows_intact.items():
         key = (min(i, j), max(i, j))
@@ -2710,7 +2711,7 @@ def run_BO_flow(energyLayer, par, failed_nodes, failed_lines,
                         node_supply_dmg[i] = 0.
                 g.remove_nodes_from(comp)
 
-        flows, _, _ = energyLayer._compute_flows_dc(g, node_supply_dmg, node_demand) 
+        flows, _, _ = energyLayer._compute_flows_dc(g, node_supply_dmg, node_demand, slack_id = slack_id) 
 
         if print_casc and step == 0:
             n_over = sum(1 for (i, j) in g.edges()
@@ -2742,11 +2743,11 @@ def run_BO_flow(energyLayer, par, failed_nodes, failed_lines,
     ## Step 4: final served demand ##
     # node_demand_served[i] = power actually delivered to node i
     # (zero for blackout islands, scaled down for partial-supply islands)
-    _, _, node_demand_served = energyLayer._compute_flows_dc(g_BO, node_supply_dmg, node_demand)
+    _, _, node_demand_served = energyLayer._compute_flows_dc(g_BO, node_supply_dmg, node_demand, slack_id = slack_id)
  
     BO_loads = [node_names[i] for i in indL if node_demand_served[i] == 0]
  
-    return BO_loads, g_BO, g_dmg, g_intact, node_demand_served
+    return BO_loads, g_BO, g_dmg, g_intact, node_demand_served, node_supply_dmg
 
 
 
