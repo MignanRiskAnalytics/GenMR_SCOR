@@ -2602,7 +2602,7 @@ class HazardFootprintGenerator:
 
 
 ## BO case ## - kept separate of any class for now (secondary invisible peril with stochastic element rupture, to update in v.1.2.x)
-def run_BO_flow(energyLayer, par, failed_nodes, failed_lines, slack_id=0, period='day', print_casc=False):
+def run_BO_flow(energyLayer, par, failed_nodes, failed_lines, slack_id=0, period='day', node_demand_stressed = None, print_casc=False):
     '''
     Run a blackout cascade scenario on a power grid using DC power flow.
  
@@ -2630,6 +2630,8 @@ def run_BO_flow(energyLayer, par, failed_nodes, failed_lines, slack_id=0, period
         Index of the node acting as slack node.
     period : {'day', 'night'}, optional
         Demand profile to use. Default is ``'day'``.
+    node_demand_stressed : ndarray, optional
+        Actual demand if different from baseline powergrid demand (e.g., during heatwave). Default is None.
     print_casc : bool, optional
         If True, print diagnostic information during cascade iterations.
 
@@ -2665,6 +2667,10 @@ def run_BO_flow(energyLayer, par, failed_nodes, failed_lines, slack_id=0, period
     for (i, j), f in flows_intact.items():
         key = (min(i, j), max(i, j))
         edge_capacity[key] = (1 + par['tolerance']) * max(abs(f), par['min_capacity_MW'])
+
+    # switch to stressed demand
+    if node_demand_stressed is not None:
+        node_demand = node_demand_stressed
 
     ##################################
     ## Step 2: apply initial damage ##
