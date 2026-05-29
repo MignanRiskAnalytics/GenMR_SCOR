@@ -2790,7 +2790,7 @@ class EnvLayer_energy:
 
 
     ## POWER DISTRIBUTION ONCE NODE_DEMAND KNOWN ##
-    def _compute_flows_dc(self, powergrid, node_supply, node_demand, slack_id=0):
+    def _compute_flows_dc(self, powergrid, node_supply, node_demand, slack_id=0, rebalance=False):
         # relabel nodes to contiguous 0..N-1
         # (necessary after node removals leave gaps in node indices during blackout - see perils.py)
         nodes = list(powergrid.nodes())
@@ -2819,7 +2819,7 @@ class EnvLayer_energy:
                 continue
             if S <= 0:
                 node_demand_served_g[comp] = 0.
-            elif S < D:
+            elif S < D and rebalance:
                 scale = S / D
                 for i in comp:
                     node_demand_served_g[i] = node_demand_g[i] * scale

@@ -2664,7 +2664,7 @@ def run_BO_flow(energyLayer, par, failed_nodes, failed_lines, slack_id=0, period
     edge_capacity = {}
     for (i, j), f in flows_intact.items():
         key = (min(i, j), max(i, j))
-        edge_capacity[key] = (1 + par['tolerance']) * max(abs(f), 1e-6)
+        edge_capacity[key] = (1 + par['tolerance']) * max(abs(f), par['min_capacity_MW'])
 
     ##################################
     ## Step 2: apply initial damage ##
