@@ -282,8 +282,9 @@
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.model_SS_Bathtub"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.model_SS_Bathtub()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.model_To_analytical"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.model_To_analytical()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.pdf_T_advectivemodel"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.pdf_T_advectivemodel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.sample_T_AR1process"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.sample_T_AR1process()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.sample_T_advectivemodel"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.sample_T_advectivemodel()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.sample_T_daily"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.sample_T_daily()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.sample_T_daily_DEPRECATED"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.sample_T_daily_DEPRECATED()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.RiskFootprintGenerator"><code class="docutils literal notranslate"><span class="pre">RiskFootprintGenerator</span></code></a></li>
@@ -481,7 +482,7 @@
 <h1>Tutorial 1: Generating a virtual environment for the GenMR digital template<a class="headerlink" href="#tutorial-1-generating-a-virtual-environment-for-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 1.1.2<br />
-<strong>Last Updated:</strong> 2026-04-30<br />
+<strong>Last Updated:</strong> 2026-05-29<br />
 <strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
 <p>The <em>digital template</em>, first described in <a class="reference external" href="https://www.mdpi.com/1660-4601/19/23/16097">Mignan (2022)</a> and used in the CAT Risk Modelling Sandbox (<a class="reference external" href="https://github.com/amignan/Intro2CATriskModelling/blob/main/CATRiskModellingSandbox_tutorial.ipynb">Mignan, 2024</a>), is a microcosm simulation of the complex Earth system for catastrophe dynamics R&amp;D, multi-risk prototyping in the Generic Multi-Risk (GenMR) framework, and catastrophe risk eduction. It is defined as a virtual environment populated by loss-generating events that interact with each other and with the environment. The virtual environment, built in this tutorial, is composed of <em>environmental layers</em> that consist of sets of variables <span class="math notranslate nohighlight">\(\theta(x,y)\)</span> defined in a spatial grid of coordinates <span class="math notranslate nohighlight">\((x,y)\)</span>. Each layer may be altered by <em>environmental objects</em> located within the layer. The parsimonious complex Earth system finally consists of a stack of interacting environmental layers defined in the natural, technological and socio-economic systems. The loss-generating events that populate the virtual environment will be defined in the next tutorial, and their interactions potentially leading to compound catastrophes in a third and final tutorial.</p>
 <p>The modelled environmental layers and associated objects as listed in Table 1 (see also Fig. 1). This tutorial provides a concise overview of these layers using a default parameterisation, with alternative scenarios to be introduced later in How-To Guides. The outputs generated here will serve as input for hazard and risk assessment in the subsequent tutorials.</p>
@@ -787,7 +788,7 @@ The environmental layers are generated as follows:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c0c75355c0ed7bdce87e27982673895616ca617881701b00836efa47df5d510a.png" src="../_images/c0c75355c0ed7bdce87e27982673895616ca617881701b00836efa47df5d510a.png" />
+<img alt="../_images/4eb1316087d207e90b154d597a23d1b49aebf30e6aafe1e15a3583aa75cc5eb0.png" src="../_images/4eb1316087d207e90b154d597a23d1b49aebf30e6aafe1e15a3583aa75cc5eb0.png" />
 </div>
 </div>
 <p>The function <code class="docutils literal notranslate"><span class="pre">plot_EnvLayer_attr()</span></code> plots individual variables and properties from environmental layers. If the elevation is given in the argument <code class="docutils literal notranslate"><span class="pre">hillshading_z</span></code>, hill shading is added in the background. An optional argument <code class="docutils literal notranslate"><span class="pre">box</span> <span class="pre">=</span> <span class="pre">[xmin,</span> <span class="pre">xmax,</span> <span class="pre">ymin,</span> <span class="pre">ymax]</span></code> can be provided to restrict the plot to a specified spatial subset of the domain. The list of possible attributes is given in Tab. A2.</p>
@@ -996,7 +997,7 @@ Total population: 19.83 million people
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f382526a783ce03de6cd4f47d603d5ee503df693dc6c2be44676390b967dfee0.png" src="../_images/f382526a783ce03de6cd4f47d603d5ee503df693dc6c2be44676390b967dfee0.png" />
+<img alt="../_images/e197a77cac967b598f967ae54259d658e30810accfc0e2d89fb3f7903d950ddb.png" src="../_images/e197a77cac967b598f967ae54259d658e30810accfc0e2d89fb3f7903d950ddb.png" />
 <img alt="../_images/ec6179264662f640c058d3bf184898ea47a5b3674ff3178fa577f7b5566b0870.png" src="../_images/ec6179264662f640c058d3bf184898ea47a5b3674ff3178fa577f7b5566b0870.png" />
 <img alt="../_images/883c40ad3cb74765b484a137a5d9c6042fdf321a74cdd4fe60dcc636b982856f.png" src="../_images/883c40ad3cb74765b484a137a5d9c6042fdf321a74cdd4fe60dcc636b982856f.png" />
 </div>
@@ -1117,7 +1118,9 @@ Total population: 19.83 million people
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;***&#39;</span><span class="p">)</span>
 
 <span class="c1"># update previous layers:</span>
-<span class="n">energyLayer</span><span class="o">.</span><span class="n">solve_power_flow</span><span class="p">(</span><span class="n">socioecoLayer</span><span class="o">.</span><span class="n">node_demand_day</span><span class="p">,</span> <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">node_demand_night</span><span class="p">,</span> <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">load_ID</span><span class="p">)</span>
+<span class="n">slack_id</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">node_names</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;Gdam&#39;</span><span class="p">))</span>
+<span class="n">energyLayer</span><span class="o">.</span><span class="n">solve_power_flow</span><span class="p">(</span><span class="n">socioecoLayer</span><span class="o">.</span><span class="n">node_demand_day</span><span class="p">,</span> <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">node_demand_night</span><span class="p">,</span> \
+                             <span class="n">socioecoLayer</span><span class="o">.</span><span class="n">load_ID</span><span class="p">,</span> <span class="n">slack_id</span> <span class="o">=</span> <span class="n">slack_id</span><span class="p">)</span>
 
 <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">save_class2pickle</span><span class="p">(</span><span class="n">socioecoLayer</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;envLayer_socioeco&#39;</span><span class="p">)</span>
 <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">save_class2pickle</span><span class="p">(</span><span class="n">energyLayer</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;envLayer_energy&#39;</span><span class="p">)</span>     <span class="c1"># previous file overwritten</span>

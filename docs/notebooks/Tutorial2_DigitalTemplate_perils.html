@@ -281,8 +281,9 @@
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.model_SS_Bathtub"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.model_SS_Bathtub()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.model_To_analytical"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.model_To_analytical()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.pdf_T_advectivemodel"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.pdf_T_advectivemodel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.sample_T_AR1process"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.sample_T_AR1process()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.sample_T_advectivemodel"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.sample_T_advectivemodel()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.sample_T_daily"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.sample_T_daily()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.sample_T_daily_DEPRECATED"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.sample_T_daily_DEPRECATED()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.RiskFootprintGenerator"><code class="docutils literal notranslate"><span class="pre">RiskFootprintGenerator</span></code></a></li>
@@ -480,7 +481,7 @@
 <h1>Tutorial 2: Implementing perils in the GenMR digital template<a class="headerlink" href="#tutorial-2-implementing-perils-in-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 1.1.2<br />
-<strong>Last Updated:</strong> 2026-05-04<br />
+<strong>Last Updated:</strong> 2026-06-12<br />
 <strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
 <p>Once a virtual environment has been generated (see previous tutorial), stochastic events are modelled to populate it. Table 1 lists the perils included in version 1.1.2.</p>
 <br>
@@ -765,7 +766,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/118cfc29156044626f83e46f2f4f5b7f89ac0bb5f6084217b90e37a1f08850e6.png" src="../_images/118cfc29156044626f83e46f2f4f5b7f89ac0bb5f6084217b90e37a1f08850e6.png" />
+<img alt="../_images/db37f898fb9ae286a9f5093813a131f945fd0e0ec36291c178df6c7a8c7ec81e.png" src="../_images/db37f898fb9ae286a9f5093813a131f945fd0e0ec36291c178df6c7a8c7ec81e.png" />
 </div>
 </div>
 <p>Note that the configuration of the digital template environment may be changed through Tutorial 1.</p>
@@ -810,8 +811,7 @@
                  <span class="s1">&#39;Dt_da&#39;</span><span class="p">:</span> <span class="mf">3.</span><span class="p">,</span>                     <span class="c1"># Minimum duration (days)</span>
                  <span class="s1">&#39;Si_da&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span>            <span class="c1"># Fixed event sizes (days) - for sake of illustration</span>
                  <span class="s1">&#39;sigmaT_yearly&#39;</span><span class="p">:</span> <span class="mf">.55</span><span class="p">,</span>            <span class="c1"># Temp. std. dev. - value from Olonscheck et al. (2021)</span>
-                 <span class="s1">&#39;sigmaT_daily&#39;</span><span class="p">:</span> <span class="mf">2.</span><span class="p">,</span>              <span class="c1"># Temp. std. dev. - value to be confirmed</span>
-                 <span class="s1">&#39;corrT&#39;</span><span class="p">:</span> <span class="mf">.8</span><span class="p">,</span>                     <span class="c1"># Correlation coeff. of AR(1) process for daily temp. (val. TBC)</span>
+                 <span class="s1">&#39;T_AR1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">.9</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">],</span>              <span class="c1"># AR(1) process 0: corr. phi, 1: std dev (fitted west EU...)</span>
                  <span class="s1">&#39;Dt_max_da&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>                 <span class="c1"># for Tutorial 2: HW defined over a month max</span>
                  <span class="s1">&#39;month&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>                      <span class="c1"># Calendar month (July = 7) when heatwave occurrence explored</span>
                  <span class="s1">&#39;lat_deg&#39;</span><span class="p">:</span> <span class="n">grid</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;lat_deg&#39;</span><span class="p">]}</span>
@@ -852,7 +852,8 @@
 
 <span class="c1">## TECHNOLOGICAL ##</span>
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;BO&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;power grid&#39;</span><span class="p">,</span>
-                 <span class="s1">&#39;tolerance&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>                  <span class="c1"># tolerance to overload (≥ 0)</span>
+                 <span class="s1">&#39;tolerance&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>                  <span class="c1"># tolerance to overload (≥ 0)</span>
+                 <span class="s1">&#39;min_capacity_MW&#39;</span><span class="p">:</span> <span class="mf">1.</span><span class="p">}</span>           <span class="c1"># minimum powergrid branch capacity</span>
 <span class="n">CI_x</span><span class="p">,</span> <span class="n">CI_y</span> <span class="o">=</span> <span class="n">energyLayer</span><span class="o">.</span><span class="n">CI_refinery</span><span class="o">.</span><span class="n">centroid</span>
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;Ex&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;refinery&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">CI_x</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="n">CI_y</span><span class="p">}</span>  <span class="c1"># harbor refinery as source of explosions</span>
 
@@ -2012,7 +2013,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>generating footprints for: AI... Dr... EQ... HW... (loading from cache)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>generating footprints for: AI... Dr... EQ... HW... (computing)
+Fetching footprints from potential footprints
 PI... (loading from cache)
 RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf... SS... SU... catalogue completed
 </pre></div>
@@ -2041,7 +2043,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/77ba40662ad5c5fb077f0c80ca290ca921dbdd0f78c9d684146dbdb15904e945.png" src="../_images/77ba40662ad5c5fb077f0c80ca290ca921dbdd0f78c9d684146dbdb15904e945.png" />
+<img alt="../_images/5b3fc61e540cd51ce3a788452b3dfb5230cdc73240a295970f19044c29e015ea.png" src="../_images/5b3fc61e540cd51ce3a788452b3dfb5230cdc73240a295970f19044c29e015ea.png" />
 </div>
 </div>
 <p><strong>Note:</strong> Observe the <code class="docutils literal notranslate"><span class="pre">TC</span></code> footprint boundary effect (cyclonic eye), which is due to the track artificially starting at <code class="docutils literal notranslate"><span class="pre">grid.xmin</span></code>.</p>
@@ -2357,7 +2359,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>atmosphere</td>
       <td>HW1</td>
       <td>7.000000</td>
-      <td>7.400000e-04</td>
+      <td>1.560000e-03</td>
     </tr>
     <tr>
       <th>34</th>
@@ -2365,7 +2367,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>atmosphere</td>
       <td>HW2</td>
       <td>14.000000</td>
-      <td>1.700000e-04</td>
+      <td>6.500000e-04</td>
     </tr>
     <tr>
       <th>35</th>
@@ -2972,7 +2974,7 @@ Loading from cache potential footprints
 Fetching footprints from potential footprints
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Fetching WF footprints from cache: 100%|███████| 10/10 [00:00&lt;00:00, 239.78it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Fetching WF footprints from cache: 100%|████████| 10/10 [00:00&lt;00:00, 36.21it/s]
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>FF_fromRS1 (loaded from cache)
@@ -2982,9 +2984,6 @@ LS_fromRS1 (loaded from cache)
 LS_fromRS2 (loaded from cache)
 LS_fromRS3 (loaded from cache)
 ... catalogue completed
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>dict_keys([&#39;WF1&#39;, &#39;WF2&#39;, &#39;WF3&#39;, &#39;WF4&#39;, &#39;WF5&#39;, &#39;WF6&#39;, &#39;WF7&#39;, &#39;WF8&#39;, &#39;WF9&#39;, &#39;WF10&#39;, &#39;FF_fromRS1&#39;, &#39;FF_fromRS2&#39;, &#39;FF_fromRS3&#39;, &#39;LS_fromRS1&#39;, &#39;LS_fromRS2&#39;, &#39;LS_fromRS3&#39;])
@@ -3007,7 +3006,7 @@ LS_fromRS3 (loaded from cache)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/dd61e6f8193d1712f98771248d0c0120da16ba1d50a8f3585260edef049a93c3.png" src="../_images/dd61e6f8193d1712f98771248d0c0120da16ba1d50a8f3585260edef049a93c3.png" />
+<img alt="../_images/b202c2dd88a0ae7d24edda83bc79691d7862098c0ef51c8b974768a22a206114.png" src="../_images/b202c2dd88a0ae7d24edda83bc79691d7862098c0ef51c8b974768a22a206114.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -3109,7 +3108,7 @@ LS_fromRS3 (loaded from cache)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Computing MDR &amp; Loss: 100%|█████████████████████| 76/76 [00:01&lt;00:00, 40.95it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Computing MDR &amp; Loss: 100%|█████████████████████| 76/76 [00:02&lt;00:00, 26.83it/s]
 </pre></div>
 </div>
 <div class="output text_html"><div>
@@ -3442,7 +3441,7 @@ LS_fromRS3 (loaded from cache)
       <td>atmosphere</td>
       <td>HW1</td>
       <td>7.000000</td>
-      <td>NaN</td>
+      <td>1.560000e-03</td>
       <td>NaN</td>
     </tr>
     <tr>
@@ -3451,7 +3450,7 @@ LS_fromRS3 (loaded from cache)
       <td>atmosphere</td>
       <td>HW2</td>
       <td>14.000000</td>
-      <td>NaN</td>
+      <td>6.500000e-04</td>
       <td>NaN</td>
     </tr>
     <tr>
@@ -3460,7 +3459,7 @@ LS_fromRS3 (loaded from cache)
       <td>atmosphere</td>
       <td>HW3</td>
       <td>30.000000</td>
-      <td>NaN</td>
+      <td>1.000000e-05</td>
       <td>NaN</td>
     </tr>
     <tr>
@@ -3469,7 +3468,7 @@ LS_fromRS3 (loaded from cache)
       <td>crops</td>
       <td>PI1</td>
       <td>50.000000</td>
-      <td>NaN</td>
+      <td>3.950000e-03</td>
       <td>NaN</td>
     </tr>
     <tr>
@@ -3478,7 +3477,7 @@ LS_fromRS3 (loaded from cache)
       <td>crops</td>
       <td>PI2</td>
       <td>65.000000</td>
-      <td>NaN</td>
+      <td>0.000000e+00</td>
       <td>NaN</td>
     </tr>
     <tr>
@@ -4078,7 +4077,7 @@ LS_fromRS3 (loaded from cache)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/358c4f6393750d8ea8393492bf84e457b8e835cc456961ffbab88dfa02317310.png" src="../_images/358c4f6393750d8ea8393492bf84e457b8e835cc456961ffbab88dfa02317310.png" />
+<img alt="../_images/5e81ddcdf119d6932bb6985a8341340d0c1c381c36ed74541914c7d4614d7b96.png" src="../_images/5e81ddcdf119d6932bb6985a8341340d0c1c381c36ed74541914c7d4614d7b96.png" />
 </div>
 </div>
 </section>
@@ -4386,7 +4385,7 @@ In anticyclone regime, drought duration = 7 months in stressed soil water condit
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/cfd7f2e25ed6264152edaeb8c39c0c5dbf9e4878dc02cd7e3fe7a8d164b4b80d.png" src="../_images/cfd7f2e25ed6264152edaeb8c39c0c5dbf9e4878dc02cd7e3fe7a8d164b4b80d.png" />
+<img alt="../_images/e950c582daa328db2161c3fc233d3672d9a44800d637d275ce92de598bb6888d.png" src="../_images/e950c582daa328db2161c3fc233d3672d9a44800d637d275ce92de598bb6888d.png" />
 </div>
 </div>
 </section>
@@ -4457,7 +4456,7 @@ In anticyclone regime, drought duration = 7 months in stressed soil water condit
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/93b0b0994f20be1d5ab582e2206a831c72ecfe02c97a18b06e2583e49365549e.png" src="../_images/93b0b0994f20be1d5ab582e2206a831c72ecfe02c97a18b06e2583e49365549e.png" />
+<img alt="../_images/06c5052a07ad6af2d8f09cf9dc66347d815e29f0a260814f1632fd7acb3387c7.png" src="../_images/06c5052a07ad6af2d8f09cf9dc66347d815e29f0a260814f1632fd7acb3387c7.png" />
 </div>
 </div>
 </section>
@@ -4593,15 +4592,13 @@ In anticyclone regime, drought duration = 7 months in stressed soil water condit
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">norm</span>
 
 <span class="n">nsig</span> <span class="o">=</span> <span class="mi">3</span>                                       <span class="c1"># mean temperature extreme observed at nsigma</span>
-<span class="n">rdm_seed</span> <span class="o">=</span> <span class="mi">4</span>                                   <span class="c1"># None or integer - to test different daily fluctuations</span>
+<span class="n">rdm_seed</span> <span class="o">=</span> <span class="mi">1</span>                                   <span class="c1"># None or integer - to test different daily fluctuations</span>
 <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">40</span>                            <span class="c1"># range considered</span>
 <span class="n">month</span> <span class="o">=</span> <span class="mi">7</span>
 
 <span class="n">T_th</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;HW&#39;</span><span class="p">][</span><span class="s1">&#39;T_th&#39;</span><span class="p">]</span>
 <span class="n">Dt</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;HW&#39;</span><span class="p">][</span><span class="s1">&#39;Dt_da&#39;</span><span class="p">]</span>
 <span class="n">sigmaT_yearly</span> <span class="o">=</span><span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;HW&#39;</span><span class="p">][</span><span class="s1">&#39;sigmaT_yearly&#39;</span><span class="p">]</span>
-<span class="n">sigmaT_daily</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;HW&#39;</span><span class="p">][</span><span class="s1">&#39;sigmaT_daily&#39;</span><span class="p">]</span>
-<span class="n">corrT</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;HW&#39;</span><span class="p">][</span><span class="s1">&#39;corrT&#39;</span><span class="p">]</span>
 <span class="n">Ndays</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;HW&#39;</span><span class="p">][</span><span class="s1">&#39;Dt_max_da&#39;</span><span class="p">]</span>
 <span class="n">dayi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;HW&#39;</span><span class="p">][</span><span class="s1">&#39;Dt_max_da&#39;</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span>
 <span class="n">lat</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;lat_deg&#39;</span><span class="p">]</span>
@@ -4616,18 +4613,18 @@ In anticyclone regime, drought duration = 7 months in stressed soil water condit
 <span class="n">Tadv_nsig</span> <span class="o">=</span> <span class="n">T0</span> <span class="o">+</span> <span class="n">nsig</span> <span class="o">*</span> <span class="n">Tadv_sigma</span>             <span class="c1"># nsigma advective event</span>
                                                <span class="c1"># note: the stochastic version also includes sigmaT_yearly role</span>
 <span class="c1"># temperature daily variations over Ndays</span>
-<span class="n">Tdaily_stoch_nsig</span> <span class="o">=</span> <span class="n">GenMR_perils</span><span class="o">.</span><span class="n">HazardFootprintGenerator</span><span class="o">.</span><span class="n">sample_T_daily</span><span class="p">(</span><span class="n">Tadv_nsig</span><span class="p">,</span> \
-                                 <span class="n">sigmaT_daily</span><span class="p">,</span> <span class="n">Ndays</span> <span class="o">=</span> <span class="n">Ndays</span><span class="p">,</span> <span class="n">rho</span> <span class="o">=</span> <span class="n">corrT</span><span class="p">,</span> <span class="n">seed</span> <span class="o">=</span> <span class="n">rdm_seed</span><span class="p">)</span>
+<span class="n">T_plt</span> <span class="o">=</span> <span class="n">Tadv_nsig</span>   <span class="c1"># close enough to HW threshold to observe HW periods</span>
+<span class="n">Tdaily_stoch_plt</span> <span class="o">=</span> <span class="n">GenMR_perils</span><span class="o">.</span><span class="n">HazardFootprintGenerator</span><span class="o">.</span><span class="n">sample_T_AR1process</span><span class="p">(</span><span class="n">T_plt</span><span class="p">,</span> <span class="n">Ndays</span><span class="p">,</span> \
+                        <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;HW&#39;</span><span class="p">][</span><span class="s1">&#39;T_AR1&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;HW&#39;</span><span class="p">][</span><span class="s1">&#39;T_AR1&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">seed</span> <span class="o">=</span> <span class="n">rdm_seed</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;T0=</span><span class="si">{</span><span class="n">T0</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1">°C, </span><span class="si">{</span><span class="n">nsig</span><span class="si">}</span><span class="s1">sigma=</span><span class="si">{</span><span class="n">Tadv_nsig</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1">°C, daily max=</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">Tdaily_stoch_nsig</span><span class="p">)</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1">°C&#39;</span><span class="p">)</span>
+<span class="c1"># for illustration: extract heatwave events according to time series only</span>
+<span class="n">HW_ti_plt</span><span class="p">,</span> <span class="n">HW_Dt_plt</span> <span class="o">=</span> <span class="n">GenMR_perils</span><span class="o">.</span><span class="n">HazardFootprintGenerator</span><span class="o">.</span><span class="n">get_HW_atloc</span><span class="p">(</span><span class="n">Tdaily_stoch_plt</span><span class="p">,</span> <span class="n">T_th</span><span class="p">,</span> <span class="n">Dt</span><span class="p">)</span>
 
-<span class="c1"># extract heatwave events according to time series only (loc where T = Tdaily_stoch_nsig)</span>
-<span class="n">HW_ti_nsig</span><span class="p">,</span> <span class="n">HW_Dt_nsig</span> <span class="o">=</span> <span class="n">GenMR_perils</span><span class="o">.</span><span class="n">HazardFootprintGenerator</span><span class="o">.</span><span class="n">get_HW_atloc</span><span class="p">(</span><span class="n">Tdaily_stoch_nsig</span><span class="p">,</span> <span class="n">T_th</span><span class="p">,</span> <span class="n">Dt</span><span class="p">)</span>
 
-<span class="c1"># define nsigma HW footprint</span>
+<span class="c1"># define HW footprint</span>
 <span class="n">DTadv_nsig</span> <span class="o">=</span> <span class="n">Tadv_nsig</span> <span class="o">-</span> <span class="n">T0</span>                          <span class="c1"># advection shift</span>
 <span class="n">Tmap_mean</span> <span class="o">=</span> <span class="n">atmoLayer</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="n">month</span><span class="o">-</span><span class="mi">1</span><span class="p">,:,:]</span> <span class="o">+</span> <span class="n">DTadv_nsig</span>    <span class="c1"># mean temp. map of the nsigma day, before daily fluctuations</span>
-<span class="n">DTdaily_stoch</span> <span class="o">=</span> <span class="n">Tdaily_stoch_nsig</span> <span class="o">-</span> <span class="n">Tadv_nsig</span>        <span class="c1"># daily fluctuations</span>
+<span class="n">DTdaily_stoch</span> <span class="o">=</span> <span class="n">Tdaily_stoch_plt</span> <span class="o">-</span> <span class="n">Tadv_nsig</span>         <span class="c1"># daily fluctuations</span>
 
 <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="n">Tmap_mean</span><span class="o">.</span><span class="n">shape</span>
 <span class="n">Tmap_daily_stoch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">Ndays</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">))</span>
@@ -4694,10 +4691,10 @@ In anticyclone regime, drought duration = 7 months in stressed soil water condit
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span> <span class="o">=</span> <span class="mi">12</span><span class="p">)</span>
 
 <span class="n">dayi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">Ndays</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">dayi</span><span class="p">,</span> <span class="n">Tdaily_stoch_nsig</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;black&#39;</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="ow">in</span> <span class="n">HW_ti_nsig</span><span class="p">:</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">dayi</span><span class="p">,</span> <span class="n">Tdaily_stoch_plt</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;black&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="ow">in</span> <span class="n">HW_ti_plt</span><span class="p">:</span>
     <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="n">dayi</span><span class="p">[</span><span class="n">start</span><span class="p">]</span> <span class="o">-</span> <span class="mf">.5</span><span class="p">,</span> <span class="n">dayi</span><span class="p">[</span><span class="n">end</span><span class="p">]</span> <span class="o">+</span> <span class="mf">.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;darkred&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.2</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">Tadv_nsig</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span> <span class="o">=</span> <span class="s1">&#39;dotted&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">T_plt</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span> <span class="o">=</span> <span class="s1">&#39;dotted&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">T_th</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;darkred&#39;</span><span class="p">,</span> <span class="n">linestyle</span> <span class="o">=</span> <span class="s1">&#39;dashed&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">T_th</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="n">T_th</span><span class="o">+</span><span class="mi">5</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Day of the month&#39;</span><span class="p">)</span>
@@ -4718,10 +4715,7 @@ In anticyclone regime, drought duration = 7 months in stressed soil water condit
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>T0=24.4°C, 3sigma=34.3°C, daily max=37.8°C
-</pre></div>
-</div>
-<img alt="../_images/89ae7c334f7bf259e07aaec23176d92ebaa719d870eaaba82179dd2ae6841db6.png" src="../_images/89ae7c334f7bf259e07aaec23176d92ebaa719d870eaaba82179dd2ae6841db6.png" />
+<img alt="../_images/2646bc7ca7c90edf2fbebaf700c1000947e635b3deed11ee5e3b57b3fba46e0a.png" src="../_images/2646bc7ca7c90edf2fbebaf700c1000947e635b3deed11ee5e3b57b3fba46e0a.png" />
 </div>
 </div>
 </section>
@@ -4792,7 +4786,7 @@ In anticyclone regime, drought duration = 7 months in stressed soil water condit
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## SCENARIO ##</span>
 <span class="n">period</span> <span class="o">=</span> <span class="s1">&#39;day&#39;</span>                       <span class="c1"># &#39;day&#39; or &#39;night&#39;</span>
-<span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;BO&#39;</span><span class="p">][</span><span class="s1">&#39;tolerance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>       <span class="c1"># high value to correct simplified topology (more redundancies in reality)</span>
+<span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;BO&#39;</span><span class="p">][</span><span class="s1">&#39;tolerance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>       <span class="c1"># high value to correct simplified topology (more redundancies in reality)</span>
                                      <span class="c1"># and lack of protection systems present in reality</span>
                                      <span class="c1"># value of 2 from trial and error, rare cascades when 1 element removed</span>
 
@@ -4811,15 +4805,12 @@ In anticyclone regime, drought duration = 7 months in stressed soil water condit
 <span class="c1">#failed_lines = [(&#39;T111&#39;, &#39;T112&#39;), (&#39;T165&#39;, &#39;T166&#39;), (&#39;T140&#39;, &#39;T141&#39;)]</span>
 <span class="c1">#failed_lines = [(&#39;T165&#39;, &#39;T166&#39;), (&#39;T140&#39;, &#39;T141&#39;)]</span>
 <span class="c1">#failed_lines = [(&#39;T140&#39;, &#39;T141&#39;)]</span>
-<span class="n">failed_lines</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;L33&#39;</span><span class="p">,</span> <span class="s1">&#39;L35&#39;</span><span class="p">)]</span>
+<span class="n">failed_lines</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;L33&#39;</span><span class="p">,</span> <span class="s1">&#39;L35&#39;</span><span class="p">)]</span>   <span class="c1"># ***</span>
 <span class="c1">#failed_lines = [(&#39;L13&#39;, &#39;L19&#39;)]</span>
 <span class="c1">#failed_lines = [(&#39;L16&#39;, &#39;L22&#39;)]</span>
 <span class="c1">#failed_lines = [(&#39;L5&#39;, &#39;L6&#39;), (&#39;L2&#39;, &#39;L6&#39;)]</span>
 <span class="c1">##############</span>
 
-
-<span class="n">BO_loads</span><span class="p">,</span> <span class="n">g_BO</span><span class="p">,</span> <span class="n">g_dmg</span><span class="p">,</span> <span class="n">g_intact</span><span class="p">,</span> <span class="n">node_served_BO</span> <span class="o">=</span> <span class="n">GenMR_perils</span><span class="o">.</span><span class="n">run_BO_flow</span><span class="p">(</span><span class="n">energyLayer</span><span class="p">,</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;BO&#39;</span><span class="p">],</span> \
-                                                  <span class="n">failed_nodes</span><span class="p">,</span> <span class="n">failed_lines</span><span class="p">,</span> <span class="n">period</span> <span class="o">=</span> <span class="n">period</span><span class="p">,</span> <span class="n">print_casc</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 
 
 <span class="n">powergrid_g</span><span class="p">,</span> <span class="n">node_names</span><span class="p">,</span> <span class="n">node_coords</span><span class="p">,</span> <span class="n">node_supply</span> <span class="o">=</span> <span class="n">energyLayer</span><span class="o">.</span><span class="n">powergrid</span>
@@ -4832,6 +4823,7 @@ In anticyclone regime, drought duration = 7 months in stressed soil water condit
 <span class="n">S_coords</span> <span class="o">=</span> <span class="n">node_coords</span><span class="p">[</span><span class="n">indS</span><span class="p">]</span>
 <span class="n">G_coords</span> <span class="o">=</span> <span class="n">node_coords</span><span class="p">[</span><span class="n">indG</span><span class="p">]</span>
 <span class="n">edges</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">powergrid_g</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
+<span class="n">slack_id</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">node_names</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;Gdam&#39;</span><span class="p">))</span>
 
 <span class="k">if</span> <span class="n">period</span> <span class="o">==</span> <span class="s1">&#39;day&#39;</span><span class="p">:</span>
     <span class="n">node_served</span> <span class="o">=</span> <span class="n">energyLayer</span><span class="o">.</span><span class="n">node_served_day</span>
@@ -4841,6 +4833,13 @@ In anticyclone regime, drought duration = 7 months in stressed soil water condit
     <span class="n">node_served</span> <span class="o">=</span> <span class="n">energyLayer</span><span class="o">.</span><span class="n">node_served_night</span>
     <span class="n">node_demand</span> <span class="o">=</span> <span class="n">energyLayer</span><span class="o">.</span><span class="n">node_demand_served_night</span>
 <span class="c1">#    node_demand = socioecoLayer.node_demand_night</span>
+
+
+<span class="n">BO_loads</span><span class="p">,</span> <span class="n">g_BO</span><span class="p">,</span> <span class="n">g_dmg</span><span class="p">,</span> <span class="n">g_intact</span><span class="p">,</span> <span class="n">node_served_BO</span><span class="p">,</span> <span class="n">node_supply_dmg</span> <span class="o">=</span> <span class="n">GenMR_perils</span><span class="o">.</span><span class="n">run_BO_flow</span><span class="p">(</span><span class="n">energyLayer</span><span class="p">,</span> 
+                                                  <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;BO&#39;</span><span class="p">],</span> \
+                                                  <span class="n">failed_nodes</span><span class="p">,</span> <span class="n">failed_lines</span><span class="p">,</span> <span class="n">slack_id</span> <span class="o">=</span> <span class="n">slack_id</span><span class="p">,</span> \
+                                                  <span class="n">period</span> <span class="o">=</span> <span class="n">period</span><span class="p">,</span> <span class="n">print_casc</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
 
 <span class="n">n_nodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_names</span><span class="p">)</span>
 <span class="n">A_dmg</span> <span class="o">=</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">graph_to_full_adjacency</span><span class="p">(</span><span class="n">g_dmg</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">)</span>
@@ -4884,7 +4883,7 @@ In anticyclone regime, drought duration = 7 months in stressed soil water condit
 
 <span class="c1">#node_demand_full = np.zeros(n_nodes)</span>
 <span class="c1">#node_demand_full[indL] = node_demand</span>
-<span class="n">flows_op</span> <span class="o">=</span> <span class="n">energyLayer</span><span class="o">.</span><span class="n">_compute_flows_dc</span><span class="p">(</span><span class="n">powergrid_g</span><span class="p">,</span> <span class="n">node_supply</span><span class="p">,</span> <span class="n">node_demand</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">flows_op</span> <span class="o">=</span> <span class="n">energyLayer</span><span class="o">.</span><span class="n">_compute_flows_dc</span><span class="p">(</span><span class="n">powergrid_g</span><span class="p">,</span> <span class="n">node_supply</span><span class="p">,</span> <span class="n">node_demand</span><span class="p">,</span> <span class="n">slack_id</span> <span class="o">=</span> <span class="n">slack_id</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">edge_width_op</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
     <span class="n">f</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">flows_op</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">),</span> <span class="n">flows_op</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">)))</span>
@@ -4955,11 +4954,12 @@ In anticyclone regime, drought duration = 7 months in stressed soil water condit
     <span class="k">else</span><span class="p">:</span>
         <span class="n">edge_col_BO</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;green&#39;</span><span class="p">)</span>
 
-<span class="n">node_supply_dmg</span> <span class="o">=</span> <span class="n">node_supply</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">failed_nodes</span><span class="p">:</span>
-    <span class="n">idx</span> <span class="o">=</span> <span class="n">node_names_list</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-    <span class="n">node_supply_dmg</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>          <span class="c1"># zero generator supply if applicable</span>
-<span class="n">flows_BO</span> <span class="o">=</span> <span class="n">energyLayer</span><span class="o">.</span><span class="n">_compute_flows_dc</span><span class="p">(</span><span class="n">g_BO</span><span class="p">,</span> <span class="n">node_supply_dmg</span><span class="p">,</span> <span class="n">node_demand</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="c1">#node_supply_dmg = node_supply.copy().astype(float)</span>
+<span class="c1">#for name in failed_nodes:</span>
+<span class="c1">#    idx = node_names_list.index(name)</span>
+<span class="c1">#    node_supply_dmg[idx] = 0.          # zero generator supply if applicable</span>
+
+<span class="n">flows_BO</span> <span class="o">=</span> <span class="n">energyLayer</span><span class="o">.</span><span class="n">_compute_flows_dc</span><span class="p">(</span><span class="n">g_BO</span><span class="p">,</span> <span class="n">node_supply_dmg</span><span class="p">,</span> <span class="n">node_demand</span><span class="p">,</span> <span class="n">slack_id</span> <span class="o">=</span> <span class="n">slack_id</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">edge_width_BO</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
     <span class="n">f</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">flows_BO</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">),</span> <span class="n">flows_BO</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">)))</span>
@@ -4987,35 +4987,34 @@ In anticyclone regime, drought duration = 7 months in stressed soil water condit
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[step 0] overloaded edges: 4 / 252
-[cascade] step 1, failing edges: [(12, 18), (18, 19), (24, 25), (25, 28)]
-[cascade] step 2, failing edges: [(4, 5), (7, 11), (8, 12), (11, 12), (11, 17)]
-[cascade] no more overloads — stopped after 2 step(s).
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[step 0] overloaded edges: 10 / 252
+[cascade] step 1, failing edges: [(8, np.int64(12)), (9, np.int64(10)), (9, np.int64(15)), (11, np.int64(12)), (11, np.int64(17)), (12, np.int64(18)), (18, np.int64(19)), (24, np.int64(25)), (25, np.int64(28)), (28, np.int64(32))]
+[cascade] no more overloads — stopped after 1 step(s).
 Operational grid - Power supply (MW) per load node:
- [243.29443393 255.9815103  108.67470636 181.15234868 224.21642874
- 154.24043198 138.45658502 154.28320645 102.03272798 285.66824754
- 117.31075506 204.48817966 135.02416774 171.18535095  84.57843787
- 479.36494695  93.08021596 135.16738026 110.9104154  110.82995987
-  53.42251121 405.0518215  164.11417477 101.10820031 104.24601113
-  73.75710601 386.74655528 138.06193829 151.13727647  32.28974321
- 487.53527058 121.89610898  83.97592442 237.43379561 185.40734005
- 168.56069754  60.97150605 276.82288953  92.11370765  51.99810236
-  24.51820927]
+ [249.25382068 244.92499118 113.77183873 181.15234868 227.25538901
+ 147.31680893 142.29796826 154.28320645 102.04749    288.24408734
+ 114.73491526 204.5314592  137.74974547 168.4450112   84.57843787
+ 479.36494695  93.08021596 135.16738026 112.45537136 109.28500391
+  53.42251121 405.0518215  164.11417477 101.10820031 105.78730767
+  72.21580947 392.02166719 141.50955194 154.09336249  32.28974321
+ 482.26015867 118.52968641  81.0198384  239.79748706 187.55026817
+ 166.19700609  58.74738686 276.82288953  92.11370765  52.32794301
+  24.18836862]
 Load nodes offline during blackout:
- [&#39;L12&#39;, &#39;L35&#39;, &#39;L37&#39;, &#39;L39&#39;, &#39;L40&#39;, &#39;L41&#39;]
+ [&#39;L35&#39;, &#39;L37&#39;, &#39;L39&#39;, &#39;L40&#39;, &#39;L41&#39;]
 During blackout - Power supply (MW) per load node:
- [243.29443393 255.9815103  108.67470636 181.15234868 224.21642874
- 154.24043198 138.45658502 154.28320645 102.03272798 285.66824754
- 117.31075506   0.         135.02416774 171.18535095  84.57843787
- 479.36494695  73.67607364 106.98945806  87.78926701 110.82995987
-  53.42251121 405.0518215  129.9018046   80.03048913  82.51417031
-  73.75710601 386.74655528 109.28059661 151.13727647  32.28974321
- 487.53527058  96.48480731  83.97592442 237.43379561   0.
- 168.56069754   0.         276.82288953   0.           0.
+ [249.25382068 244.92499118 113.77183873 181.15234868 227.25538901
+ 147.31680893 142.29796826 154.28320645 102.04749    288.24408734
+ 114.73491526 204.5314592  137.74974547 168.4450112   84.57843787
+ 479.36494695  93.08021596 135.16738026 112.45537136 109.28500391
+  53.42251121 405.0518215  164.11417477 101.10820031 105.78730767
+  72.21580947 392.02166719 141.50955194 154.09336249  32.28974321
+ 482.26015867 118.52968641  81.0198384  239.79748706   0.
+ 166.19700609   0.         276.82288953   0.           0.
    0.        ]
 </pre></div>
 </div>
-<img alt="../_images/a642f17e70ab77c880801ec5cab58fcaab600dc3ef3f1d555fb36173c9773ef6.png" src="../_images/a642f17e70ab77c880801ec5cab58fcaab600dc3ef3f1d555fb36173c9773ef6.png" />
+<img alt="../_images/f8146dd00c2729347a10dc18ef6914652aa9079cd2c8f1d1dfb7b6d6175dd9a6.png" src="../_images/f8146dd00c2729347a10dc18ef6914652aa9079cd2c8f1d1dfb7b6d6175dd9a6.png" />
 </div>
 </div>
 </section>

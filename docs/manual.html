@@ -17,6 +17,8 @@
       <script src="_static/documentation_options.js?v=58fbf978"></script>
       <script src="_static/doctools.js?v=9a2dae69"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -280,8 +282,9 @@
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.model_SS_Bathtub"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.model_SS_Bathtub()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.model_To_analytical"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.model_To_analytical()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.pdf_T_advectivemodel"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.pdf_T_advectivemodel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.sample_T_AR1process"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.sample_T_AR1process()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.sample_T_advectivemodel"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.sample_T_advectivemodel()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.sample_T_daily"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.sample_T_daily()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.perils.HazardFootprintGenerator.sample_T_daily_DEPRECATED"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.sample_T_daily_DEPRECATED()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.RiskFootprintGenerator"><code class="docutils literal notranslate"><span class="pre">RiskFootprintGenerator</span></code></a></li>
@@ -1058,7 +1061,7 @@ b[S] = b[T] = 0  (passive routing)</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="GenMR.environment.EnvLayer_energy.solve_power_flow">
-<span class="sig-name descname"><span class="pre">solve_power_flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_demand_day</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_demand_night</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_ID</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_energy.solve_power_flow" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">solve_power_flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_demand_day</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_demand_night</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slack_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_energy.solve_power_flow" title="Link to this definition"></a></dt>
 <dd><p>Solve DC power flow for day and night demand.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2771,7 +2774,7 @@ as well as intensity and loss footprint calculations.</p>
 <dd class="field-even"><p>1.1.2</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2026-04-16</p>
+<dd class="field-odd"><p>2026-06-12</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -3602,6 +3605,35 @@ Higher-Order Changes. J. Climate 35, 387-403.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="GenMR.perils.HazardFootprintGenerator.sample_T_AR1process">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample_T_AR1process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.HazardFootprintGenerator.sample_T_AR1process" title="Link to this definition"></a></dt>
+<dd><p>Generate a stationary AR(1) time series around a fixed mean.</p>
+<p>This function simulates an autoregressive process of order 1 (AR(1))
+with Gaussian innovations and mean reversion toward a constant mean μ.</p>
+<p>The process follows:</p>
+<div class="math notranslate nohighlight">
+\[T_t = \mu + \phi (T_{t-1} - \mu) + \epsilon_t,\]</div>
+<p>where epsilon_t sim mathcal{N}(0, sigma^2).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mu</strong> (<em>float</em>) – Equilibrium mean (long-term average state of the process).</p></li>
+<li><p><strong>N</strong> (<em>int</em>) – Length of the time series to generate.</p></li>
+<li><p><strong>phi</strong> (<em>float</em>) – AR(1) persistence parameter.</p></li>
+<li><p><strong>sigma</strong> (<em>float</em>) – Standard deviation of the Gaussian innovation term.</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em>, </em><em>optional</em>) – Random seed for reproducibility.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>T</strong> – Simulated AR(1) time series.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray of shape (N,)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="GenMR.perils.HazardFootprintGenerator.sample_T_advectivemodel">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample_T_advectivemodel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu0_stoch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.HazardFootprintGenerator.sample_T_advectivemodel" title="Link to this definition"></a></dt>
 <dd><p>Sample stochastic temperatures from the 3-Gaussian advective PDF.</p>
@@ -3624,8 +3656,8 @@ treated independently to generate a stochastic temperature sample.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="GenMR.perils.HazardFootprintGenerator.sample_T_daily">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample_T_daily</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T_adv_stoch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_daily</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ndays</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.HazardFootprintGenerator.sample_T_daily" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="GenMR.perils.HazardFootprintGenerator.sample_T_daily_DEPRECATED">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample_T_daily_DEPRECATED</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T_adv_stoch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_daily</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ndays</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.HazardFootprintGenerator.sample_T_daily_DEPRECATED" title="Link to this definition"></a></dt>
 <dd><p>Generate a daily temperature time series for a month around a given stochastic monthly mean,
 with temporal correlation.</p>
 <p>The daily temperatures are generated using a first-order autoregressive
@@ -4538,7 +4570,7 @@ simulates cascading failures using <code class="docutils literal notranslate"><s
 
 <dl class="py function">
 <dt class="sig sig-object py" id="GenMR.perils.run_BO_flow">
-<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">run_BO_flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energyLayer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'day'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_casc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.run_BO_flow" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">run_BO_flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energyLayer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slack_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'day'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_demand_stressed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_casc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.run_BO_flow" title="Link to this definition"></a></dt>
 <dd><p>Run a blackout cascade scenario on a power grid using DC power flow.</p>
 <dl class="simple">
 <dt>Logic:</dt><dd><ol class="arabic simple">
@@ -4560,7 +4592,9 @@ _compute_flows_dc handles island load shedding internally at each step.</p></li>
 <li><p><strong>par</strong> (<em>dict</em>) – Model parameters. Must contain <code class="docutils literal notranslate"><span class="pre">'tolerance'</span></code>.</p></li>
 <li><p><strong>failed_nodes</strong> (<em>list</em><em> of </em><em>str</em>) – Names of nodes to be removed initially.</p></li>
 <li><p><strong>failed_lines</strong> (<em>list</em><em> of </em><em>tuple</em><em> of </em><em>str</em>) – List of edges (node_name_1, node_name_2) to be removed initially.</p></li>
+<li><p><strong>slack_id</strong> (<em>integer</em>) – Index of the node acting as slack node.</p></li>
 <li><p><strong>period</strong> (<em>{'day'</em><em>, </em><em>'night'}</em><em>, </em><em>optional</em>) – Demand profile to use. Default is <code class="docutils literal notranslate"><span class="pre">'day'</span></code>.</p></li>
+<li><p><strong>node_demand_stressed</strong> (<em>ndarray</em><em>, </em><em>optional</em>) – Actual demand if different from baseline powergrid demand (e.g., during heatwave). Default is None.</p></li>
 <li><p><strong>print_casc</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, print diagnostic information during cascade iterations.</p></li>
 </ul>
 </dd>
