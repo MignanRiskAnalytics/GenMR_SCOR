@@ -36,7 +36,7 @@ Peril models (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.1.2
-:Date: 2026-04-16
+:Date: 2026-06-12
 :License: AGPL-3
 """
 
@@ -1832,8 +1832,55 @@ class HazardFootprintGenerator:
             T_stoch[i] = np.random.choice(Ti, p = pdf)
         return T_stoch
 
+
     @staticmethod
-    def sample_T_daily(T_adv_stoch, sigma_daily, Ndays=30, rho=0.7, seed=None):
+    def sample_T_AR1process(mu, N, phi, sigma, seed = None):
+        '''
+        Generate a stationary AR(1) time series around a fixed mean.
+
+        This function simulates an autoregressive process of order 1 (AR(1))
+        with Gaussian innovations and mean reversion toward a constant mean μ.
+
+        The process follows:
+
+        .. math::
+
+            T_t = \\mu + \\phi (T_{t-1} - \\mu) + \\epsilon_t,
+
+        where \\epsilon_t \\sim \\mathcal{N}(0, \\sigma^2).
+
+        Parameters
+        ----------
+        mu : float
+            Equilibrium mean (long-term average state of the process).
+        N : int
+            Length of the time series to generate.
+        phi : float
+            AR(1) persistence parameter.
+        sigma : float
+            Standard deviation of the Gaussian innovation term.
+        seed : int, optional
+            Random seed for reproducibility.
+
+        Returns
+        -------
+        T : ndarray of shape (N,)
+            Simulated AR(1) time series.
+        '''
+        rng = np.random.default_rng(seed)
+
+        eps = rng.normal(0, sigma, N)
+        T = np.empty(N)
+
+        T[0] = mu              # start at equilibrium mean
+        for t in range(1, N):
+            T[t] = mu + phi * (T[t-1] - mu) + eps[t]
+
+        return T
+
+
+    @staticmethod
+    def sample_T_daily_DEPRECATED(T_adv_stoch, sigma_daily, Ndays=30, rho=0.7, seed=None):
         '''
         Generate a daily temperature time series for a month around a given stochastic monthly mean,
         with temporal correlation.
@@ -2058,7 +2105,7 @@ class HazardFootprintGenerator:
         Ndays = src.par['HW']['Dt_max_da']
         dayi = np.arange(src.par['HW']['Dt_max_da'])+1
         Ti = np.arange(Tmin, Tmax, 1)
-        Tmin_compute = T_th_HW - src.par['HW']['sigmaT_daily']
+        Tmin_compute = T_th_HW - 2 * src.par['HW']['T_AR1'][1]               # WARNING: threshold to validate
         mon_i = src.par['HW']['month'] - 1
         T0 = np.max(atmoLayer.T[mon_i])
 
@@ -2074,8 +2121,10 @@ class HazardFootprintGenerator:
                 print(f'{sim}/{Nsim}', end = '\r', flush = True)
             if Tadv_sim[sim] > Tmin_compute:
                 T_map_mean = atmoLayer.T[mon_i,:,:] + DTadv_sim[sim]
-                T_daily_stoch = HazardFootprintGenerator.sample_T_daily(Tadv_sim[sim], src.par['HW']['sigmaT_daily'], \
-                                            Ndays = Ndays, rho = src.par['HW']['corrT'])    
+
+                T_daily_stoch = HazardFootprintGenerator.sample_T_AR1process(Tadv_sim[sim], Ndays, src.par['HW']['T_AR1'][0], src.par['HW']['T_AR1'][1])
+#                T_daily_stoch = HazardFootprintGenerator.sample_T_daily(Tadv_sim[sim], src.par['HW']['sigmaT_daily'], \
+#                                            Ndays = Ndays, rho = src.par['HW']['corrT'])    
                 dT_daily_stoch = T_daily_stoch - Tadv_sim[sim]
 
                 T_map_daily_stoch = np.empty((Ndays, nx, ny))
