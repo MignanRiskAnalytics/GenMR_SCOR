@@ -480,8 +480,8 @@
   <section class="tex2jax_ignore mathjax_ignore" id="tutorial-2-implementing-perils-in-the-genmr-digital-template">
 <h1>Tutorial 2: Implementing perils in the GenMR digital template<a class="headerlink" href="#tutorial-2-implementing-perils-in-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
-<strong>Version:</strong> 1.1.2<br />
-<strong>Last Updated:</strong> 2026-06-12<br />
+<strong>Version:</strong> 1.2.1<br />
+<strong>Last Updated:</strong> 2026-06-29<br />
 <strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
 <p>Once a virtual environment has been generated (see previous tutorial), stochastic events are modelled to populate it. Table 1 lists the perils included in version 1.1.2.</p>
 <br>
@@ -2013,8 +2013,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>generating footprints for: AI... Dr... EQ... HW... (computing)
-Fetching footprints from potential footprints
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>generating footprints for: AI... Dr... EQ... HW... (loading from cache)
 PI... (loading from cache)
 RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf... SS... SU... catalogue completed
 </pre></div>
@@ -2974,7 +2973,7 @@ Loading from cache potential footprints
 Fetching footprints from potential footprints
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Fetching WF footprints from cache: 100%|████████| 10/10 [00:00&lt;00:00, 36.21it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Fetching WF footprints from cache: 100%|████████| 10/10 [00:00&lt;00:00, 49.09it/s]
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>FF_fromRS1 (loaded from cache)
@@ -2984,6 +2983,9 @@ LS_fromRS1 (loaded from cache)
 LS_fromRS2 (loaded from cache)
 LS_fromRS3 (loaded from cache)
 ... catalogue completed
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>dict_keys([&#39;WF1&#39;, &#39;WF2&#39;, &#39;WF3&#39;, &#39;WF4&#39;, &#39;WF5&#39;, &#39;WF6&#39;, &#39;WF7&#39;, &#39;WF8&#39;, &#39;WF9&#39;, &#39;WF10&#39;, &#39;FF_fromRS1&#39;, &#39;FF_fromRS2&#39;, &#39;FF_fromRS3&#39;, &#39;LS_fromRS1&#39;, &#39;LS_fromRS2&#39;, &#39;LS_fromRS3&#39;])
@@ -3102,13 +3104,16 @@ LS_fromRS3 (loaded from cache)
 <span class="n">catalog_dmgFootprints</span> <span class="o">=</span> <span class="n">riskFootprints_all</span><span class="o">.</span><span class="n">catalog_dmgFootprints</span>
 <span class="n">catalog_lossFootprints</span> <span class="o">=</span> <span class="n">riskFootprints_all</span><span class="o">.</span><span class="n">catalog_lossFootprints</span>
 
+<span class="c1"># ELT saved in folder &#39;io/&#39; (an input of tutorial 3)</span>
+<span class="n">riskFootprints_all</span><span class="o">.</span><span class="n">ELT</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">(</span><span class="s1">&#39;io/ELT.parquet&#39;</span><span class="p">)</span>
+
 <span class="k">with</span> <span class="n">pd</span><span class="o">.</span><span class="n">option_context</span><span class="p">(</span><span class="s1">&#39;display.max_rows&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
     <span class="n">display</span><span class="p">(</span><span class="n">riskFootprints_all</span><span class="o">.</span><span class="n">ELT</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Computing MDR &amp; Loss: 100%|█████████████████████| 76/76 [00:02&lt;00:00, 26.83it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Computing MDR &amp; Loss: 100%|█████████████████████| 76/76 [00:01&lt;00:00, 39.77it/s]
 </pre></div>
 </div>
 <div class="output text_html"><div>

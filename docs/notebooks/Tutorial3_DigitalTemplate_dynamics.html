@@ -1,0 +1,718 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorial 3: Implementing multi-risk in the GenMR digital template &mdash; GenMR 1.1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=58fbf978"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GenMR
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../rationale.html">Rationale</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../rationale.html#compound-events">Compound events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rationale.html#generic-multi-risk-genmr-framework">Generic Multi-Risk (GenMR) framework</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rationale.html#past-developments">Past developments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rationale.html#new-developments">New developments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../rationale.html#digital-template">Digital Template</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rationale.html#id18">Past developments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rationale.html#id26">New developments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../rationale.html#tutorials">Tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rationale.html#how-to-guides">How-to guides</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rationale.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../manual.html">Reference manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../manual.html#module-GenMR.environment">GenMR.environment module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#genmr-virtual-environment-generator">GenMR Virtual Environment Generator</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#layers-and-related-objects-v1-1-1">Layers and Related Objects (v1.1.1)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#layers-and-related-objects-v1-1-2">Layers and Related Objects (v1.1.2)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.CriticalInfrastructure"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.CriticalInfrastructure.Ex_S_kton"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure.Ex_S_kton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.CriticalInfrastructure.area"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure.area</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.CriticalInfrastructure.centroid"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure.centroid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.CriticalInfrastructure.name"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.CriticalInfrastructure.polygon"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure.polygon</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.CriticalInfrastructure.zone_type"><code class="docutils literal notranslate"><span class="pre">CriticalInfrastructure.zone_type</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.ID"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.ID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.topo"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.topo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.par"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.par</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.grid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.grid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.T0"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.T0</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.T"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.T</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.calc_T0_EBCM"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.calc_T0_EBCM()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.calc_T_z"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.calc_T_z()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.calc_p_hydrostatic"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.calc_p_hydrostatic()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.calc_z_freeze"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.calc_z_freeze()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.calc_z_tropopause"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.calc_z_tropopause()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.z_freezinglevel"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.z_freezinglevel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_atmo.z_tropopause"><code class="docutils literal notranslate"><span class="pre">EnvLayer_atmo.z_tropopause</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.ID"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.ID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.powergrid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.powergrid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.CI_hydrodam"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.CI_hydrodam</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.CI_refinery"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.CI_refinery</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.CI_thermalplant"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.CI_thermalplant</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.CI_windfarm"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.CI_windfarm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.connect_generators_substations"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.connect_generators_substations()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.downscale_layers4powergrid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.downscale_layers4powergrid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.gen_loadnodes"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.gen_loadnodes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.gen_powergrid_1line_G2S"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.gen_powergrid_1line_G2S()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.gen_urbangrid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.gen_urbangrid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.get_windfarm_mask"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.get_windfarm_mask()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#id0"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.powergrid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.powergrid_nlines_G2S"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.powergrid_nlines_G2S</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.powergrid_nlines_G2S_OLD"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.powergrid_nlines_G2S_OLD</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.solve_power_flow"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.solve_power_flow()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_natLand"><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_natLand.ID"><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand.ID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_natLand.soil"><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand.soil</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_natLand.grid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand.grid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_natLand.topo"><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand.topo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_natLand.src"><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand.src</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_natLand.par"><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand.par</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_natLand.S"><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand.S</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_natLand.hW"><code class="docutils literal notranslate"><span class="pre">EnvLayer_natLand.hW</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_socioeco"><code class="docutils literal notranslate"><span class="pre">EnvLayer_socioeco</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_socioeco.ID"><code class="docutils literal notranslate"><span class="pre">EnvLayer_socioeco.ID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_socioeco.load_ID"><code class="docutils literal notranslate"><span class="pre">EnvLayer_socioeco.load_ID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_socioeco.bldg_blockValue_modif"><code class="docutils literal notranslate"><span class="pre">EnvLayer_socioeco.bldg_blockValue_modif</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_socioeco.build"><code class="docutils literal notranslate"><span class="pre">EnvLayer_socioeco.build()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_soil"><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_soil.ID"><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil.ID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_soil.topo"><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil.topo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_soil.par"><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil.par</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_soil.grid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil.grid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_soil.h"><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil.h</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_soil.hw"><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil.hw</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_soil.FS_state"><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil.FS_state</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_soil.FS_value"><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil.FS_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_soil.wetness"><code class="docutils literal notranslate"><span class="pre">EnvLayer_soil.wetness</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.ID"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.ID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.src"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.src</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.grid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.grid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.par"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.par</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.z"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.z</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.gridlow"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.gridlow</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.algo_diamondsquare"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.algo_diamondsquare()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.aspect"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.aspect</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.calc_d2coastline"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.calc_d2coastline()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.calc_d2river"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.calc_d2river()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.calc_topo_attributes"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.calc_topo_attributes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.coastline_coord"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.coastline_coord</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.model_cs_compoundbevel"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.model_cs_compoundbevel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.model_fr_diamondsquare"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.model_fr_diamondsquare()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.model_rv_dampedsine"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.model_rv_dampedsine()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.model_th_ellipsoid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.model_th_ellipsoid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.model_vo_cone"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.model_vo_cone()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.river_coord"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.river_coord</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_topo.slope"><code class="docutils literal notranslate"><span class="pre">EnvLayer_topo.slope</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.ID"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.ID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.grid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.grid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.topo"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.topo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.par"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.par</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.S"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.S</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.year"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.year</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.urban_yes"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.urban_yes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.disp_val"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.disp_val</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.max_roadsearch"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.max_roadsearch</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.roadNet"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.roadNet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.built"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.built</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.roads"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.roads</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.built_type"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.built_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.built_yr"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.built_yr</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.assign_bldg_Nstories"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.assign_bldg_Nstories()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.bldg_blockValue"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.bldg_blockValue</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.bldg_roofpitch"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.bldg_roofpitch</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.bldg_type"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.bldg_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.calc_Pr_urbanise"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.calc_Pr_urbanise()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.commercialZones"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.commercialZones</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.crop_T_suitability"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.crop_T_suitability()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.generate"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.generate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.get_S_urban"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_S_urban()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.get_d4mkd"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_d4mkd()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.get_state_built"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.get_state_built()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.industrialZones"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.industrialZones</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.kcal_prod"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.kcal_prod</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.pop_day"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.pop_day</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.pop_night"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.pop_night</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.roadNet_coord"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.roadNet_coord</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.run"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_urbLand.transform_landUse"><code class="docutils literal notranslate"><span class="pre">EnvLayer_urbLand.transform_landUse()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.EnvObj_roadNetwork"><code class="docutils literal notranslate"><span class="pre">EnvObj_roadNetwork</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvObj_roadNetwork.topo"><code class="docutils literal notranslate"><span class="pre">EnvObj_roadNetwork.topo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvObj_roadNetwork.land"><code class="docutils literal notranslate"><span class="pre">EnvObj_roadNetwork.land</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvObj_roadNetwork.par"><code class="docutils literal notranslate"><span class="pre">EnvObj_roadNetwork.par</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvObj_roadNetwork.grid"><code class="docutils literal notranslate"><span class="pre">EnvObj_roadNetwork.grid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvObj_roadNetwork.net"><code class="docutils literal notranslate"><span class="pre">EnvObj_roadNetwork.net</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvObj_roadNetwork.Rmax"><code class="docutils literal notranslate"><span class="pre">EnvObj_roadNetwork.Rmax</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvObj_roadNetwork.mask"><code class="docutils literal notranslate"><span class="pre">EnvObj_roadNetwork.mask</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvObj_roadNetwork.S"><code class="docutils literal notranslate"><span class="pre">EnvObj_roadNetwork.S</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvObj_roadNetwork.id"><code class="docutils literal notranslate"><span class="pre">EnvObj_roadNetwork.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvObj_roadNetwork.eps"><code class="docutils literal notranslate"><span class="pre">EnvObj_roadNetwork.eps</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvObj_roadNetwork.nodeID"><code class="docutils literal notranslate"><span class="pre">EnvObj_roadNetwork.nodeID</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.RasterGrid"><code class="docutils literal notranslate"><span class="pre">RasterGrid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.calc_FS"><code class="docutils literal notranslate"><span class="pre">calc_FS()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.calc_coord_river_dampedsine"><code class="docutils literal notranslate"><span class="pre">calc_coord_river_dampedsine()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.downscale_RasterGrid"><code class="docutils literal notranslate"><span class="pre">downscale_RasterGrid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.get_FS_state"><code class="docutils literal notranslate"><span class="pre">get_FS_state()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.plot_EnvLayer_attr"><code class="docutils literal notranslate"><span class="pre">plot_EnvLayer_attr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.environment.plot_EnvLayers"><code class="docutils literal notranslate"><span class="pre">plot_EnvLayers()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../manual.html#module-GenMR.perils">GenMR.perils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#genmr-peril-implementation">GenMR Peril Implementation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#peril-models-v1-1-1">Peril models (v1.1.1)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#peril-models-v1-1-2">Peril models (v1.1.2)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.CellularAutomaton_FF"><code class="docutils literal notranslate"><span class="pre">CellularAutomaton_FF</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.CellularAutomaton_FF.result"><code class="docutils literal notranslate"><span class="pre">CellularAutomaton_FF.result()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.CellularAutomaton_FF.run"><code class="docutils literal notranslate"><span class="pre">CellularAutomaton_FF.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.CellularAutomaton_FF.write_gif"><code class="docutils literal notranslate"><span class="pre">CellularAutomaton_FF.write_gif()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.CellularAutomaton_LS"><code class="docutils literal notranslate"><span class="pre">CellularAutomaton_LS</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.CellularAutomaton_LS.result"><code class="docutils literal notranslate"><span class="pre">CellularAutomaton_LS.result()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.CellularAutomaton_LS.run"><code class="docutils literal notranslate"><span class="pre">CellularAutomaton_LS.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.CellularAutomaton_LS.write_gif"><code class="docutils literal notranslate"><span class="pre">CellularAutomaton_LS.write_gif()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.CellularAutomaton_WF"><code class="docutils literal notranslate"><span class="pre">CellularAutomaton_WF</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.CellularAutomaton_WF.run"><code class="docutils literal notranslate"><span class="pre">CellularAutomaton_WF.run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.DynamicHazardFootprintGenerator"><code class="docutils literal notranslate"><span class="pre">DynamicHazardFootprintGenerator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.DynamicHazardFootprintGenerator.generate"><code class="docutils literal notranslate"><span class="pre">DynamicHazardFootprintGenerator.generate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.DynamicHazardFootprintGenerator.load_WF_CA_footprints"><code class="docutils literal notranslate"><span class="pre">DynamicHazardFootprintGenerator.load_WF_CA_footprints()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.EventSetGenerator"><code class="docutils literal notranslate"><span class="pre">EventSetGenerator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.EventSetGenerator.src"><code class="docutils literal notranslate"><span class="pre">EventSetGenerator.src</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.EventSetGenerator.sizeDistr"><code class="docutils literal notranslate"><span class="pre">EventSetGenerator.sizeDistr</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.EventSetGenerator.utils"><code class="docutils literal notranslate"><span class="pre">EventSetGenerator.utils</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.EventSetGenerator.ev_stoch"><code class="docutils literal notranslate"><span class="pre">EventSetGenerator.ev_stoch</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.EventSetGenerator.ev_char"><code class="docutils literal notranslate"><span class="pre">EventSetGenerator.ev_char</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.EventSetGenerator.generate"><code class="docutils literal notranslate"><span class="pre">EventSetGenerator.generate()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.add_v_forward"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.add_v_forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.calc4TC_I_v_ms"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc4TC_I_v_ms()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.calc4To_I_v_ms"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc4To_I_v_ms()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.calc_I_ash_m"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_I_ash_m()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.calc_I_blast_kPa"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_I_blast_kPa()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.calc_I_shaking_ms2"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_I_shaking_ms2()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.calc_PI_I"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_PI_I()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.calc_PI_growthrate"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_PI_growthrate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.calc_S_track"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_S_track()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.calc_lateral_distance_signed"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_lateral_distance_signed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.calc_v_from_EFscale"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.calc_v_from_EFscale()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.generate"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.generate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.get_HW_atloc"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.get_HW_atloc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.get_HW_footprint"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.get_HW_footprint()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.get_TC_timeshot"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.get_TC_timeshot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.model_HW_threshold"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.model_HW_threshold()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.model_PI_analytical"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.model_PI_analytical()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.model_SS_Bathtub"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.model_SS_Bathtub()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.model_To_analytical"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.model_To_analytical()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.pdf_T_advectivemodel"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.pdf_T_advectivemodel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.sample_T_AR1process"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.sample_T_AR1process()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.sample_T_advectivemodel"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.sample_T_advectivemodel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.sample_T_daily_DEPRECATED"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.sample_T_daily_DEPRECATED()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.RiskFootprintGenerator"><code class="docutils literal notranslate"><span class="pre">RiskFootprintGenerator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.Src"><code class="docutils literal notranslate"><span class="pre">Src</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.Src.AI_char"><code class="docutils literal notranslate"><span class="pre">Src.AI_char</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.Src.EQ_char"><code class="docutils literal notranslate"><span class="pre">Src.EQ_char</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.Src.FF_char"><code class="docutils literal notranslate"><span class="pre">Src.FF_char</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.Src.TC_char"><code class="docutils literal notranslate"><span class="pre">Src.TC_char</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.Src.To_char"><code class="docutils literal notranslate"><span class="pre">Src.To_char</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.Src.VE_char"><code class="docutils literal notranslate"><span class="pre">Src.VE_char</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.calc_BI_duration"><code class="docutils literal notranslate"><span class="pre">calc_BI_duration()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.calc_BI_duration_fromBO"><code class="docutils literal notranslate"><span class="pre">calc_BI_duration_fromBO()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.calc_BI_fromDmg"><code class="docutils literal notranslate"><span class="pre">calc_BI_fromDmg()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.calc_BI_from_BO"><code class="docutils literal notranslate"><span class="pre">calc_BI_from_BO()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.calc_EQ_length2magnitude"><code class="docutils literal notranslate"><span class="pre">calc_EQ_length2magnitude()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.calc_EQ_magnitude2length"><code class="docutils literal notranslate"><span class="pre">calc_EQ_magnitude2length()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.calc_Lbd_GPD"><code class="docutils literal notranslate"><span class="pre">calc_Lbd_GPD()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.calc_Lbd_exponential"><code class="docutils literal notranslate"><span class="pre">calc_Lbd_exponential()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.calc_Lbd_powerlaw"><code class="docutils literal notranslate"><span class="pre">calc_Lbd_powerlaw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.calc_PET"><code class="docutils literal notranslate"><span class="pre">calc_PET()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.calc_SU_seed"><code class="docutils literal notranslate"><span class="pre">calc_SU_seed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.calc_Sf"><code class="docutils literal notranslate"><span class="pre">calc_Sf()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.calc_e0"><code class="docutils literal notranslate"><span class="pre">calc_e0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.calc_lbd_Dr"><code class="docutils literal notranslate"><span class="pre">calc_lbd_Dr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.calc_qsat"><code class="docutils literal notranslate"><span class="pre">calc_qsat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.compute_node_supply_betweenness"><code class="docutils literal notranslate"><span class="pre">compute_node_supply_betweenness()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.gen_BO_cascade_betweenness"><code class="docutils literal notranslate"><span class="pre">gen_BO_cascade_betweenness()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.gen_precipitation"><code class="docutils literal notranslate"><span class="pre">gen_precipitation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.get_Dr"><code class="docutils literal notranslate"><span class="pre">get_Dr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.get_damaged_and_tripped"><code class="docutils literal notranslate"><span class="pre">get_damaged_and_tripped()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.get_peril_evID"><code class="docutils literal notranslate"><span class="pre">get_peril_evID()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.get_reachable_targets"><code class="docutils literal notranslate"><span class="pre">get_reachable_targets()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.incrementing"><code class="docutils literal notranslate"><span class="pre">incrementing()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.plot_hazFootprints"><code class="docutils literal notranslate"><span class="pre">plot_hazFootprints()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.plot_src"><code class="docutils literal notranslate"><span class="pre">plot_src()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.plot_vulnFunctions"><code class="docutils literal notranslate"><span class="pre">plot_vulnFunctions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.propagate_SU"><code class="docutils literal notranslate"><span class="pre">propagate_SU()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.run_BO_betweenness"><code class="docutils literal notranslate"><span class="pre">run_BO_betweenness()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.run_BO_flow"><code class="docutils literal notranslate"><span class="pre">run_BO_flow()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.safe_normalise"><code class="docutils literal notranslate"><span class="pre">safe_normalise()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.update_soil_moisture"><code class="docutils literal notranslate"><span class="pre">update_soil_moisture()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.vuln_f"><code class="docutils literal notranslate"><span class="pre">vuln_f()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../manual.html#module-GenMR.utils">GenMR.utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#genmr-utility-functions">GenMR Utility Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.calc_EP"><code class="docutils literal notranslate"><span class="pre">calc_EP()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.calc_riskmetrics_fromELT"><code class="docutils literal notranslate"><span class="pre">calc_riskmetrics_fromELT()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.cmap_peril"><code class="docutils literal notranslate"><span class="pre">cmap_peril()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.col_peril"><code class="docutils literal notranslate"><span class="pre">col_peril()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.col_state_h"><code class="docutils literal notranslate"><span class="pre">col_state_h()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.def_distance_kernel"><code class="docutils literal notranslate"><span class="pre">def_distance_kernel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.fetch_A0"><code class="docutils literal notranslate"><span class="pre">fetch_A0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.gen_convmap4fp"><code class="docutils literal notranslate"><span class="pre">gen_convmap4fp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.gen_convmap4pts"><code class="docutils literal notranslate"><span class="pre">gen_convmap4pts()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.get_S_ceil"><code class="docutils literal notranslate"><span class="pre">get_S_ceil()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.get_S_floor"><code class="docutils literal notranslate"><span class="pre">get_S_floor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.get_edge_width"><code class="docutils literal notranslate"><span class="pre">get_edge_width()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.get_ind_aspect2moore"><code class="docutils literal notranslate"><span class="pre">get_ind_aspect2moore()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.get_ndays_inMonth"><code class="docutils literal notranslate"><span class="pre">get_ndays_inMonth()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.get_neighborhood_ind"><code class="docutils literal notranslate"><span class="pre">get_neighborhood_ind()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.get_net_coord"><code class="docutils literal notranslate"><span class="pre">get_net_coord()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.get_val_grid2loc"><code class="docutils literal notranslate"><span class="pre">get_val_grid2loc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.graph_to_full_adjacency"><code class="docutils literal notranslate"><span class="pre">graph_to_full_adjacency()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.incrementing"><code class="docutils literal notranslate"><span class="pre">incrementing()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.init_io"><code class="docutils literal notranslate"><span class="pre">init_io()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.load_json2dict"><code class="docutils literal notranslate"><span class="pre">load_json2dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.load_pickle2class"><code class="docutils literal notranslate"><span class="pre">load_pickle2class()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.marker_peril"><code class="docutils literal notranslate"><span class="pre">marker_peril()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.norm_z"><code class="docutils literal notranslate"><span class="pre">norm_z</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.partitioning"><code class="docutils literal notranslate"><span class="pre">partitioning()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.pooling"><code class="docutils literal notranslate"><span class="pre">pooling()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.rasterize_pts2grid"><code class="docutils literal notranslate"><span class="pre">rasterize_pts2grid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.sample_points_in_polygon"><code class="docutils literal notranslate"><span class="pre">sample_points_in_polygon()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.save_class2pickle"><code class="docutils literal notranslate"><span class="pre">save_class2pickle()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.save_dict2json"><code class="docutils literal notranslate"><span class="pre">save_dict2json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.xy_to_rc"><code class="docutils literal notranslate"><span class="pre">xy_to_rc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.zero_boundary_2d"><code class="docutils literal notranslate"><span class="pre">zero_boundary_2d()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html">Tutorial 1: Environment generation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#natural-environment-generation">1. Natural environment generation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#grid-definition">1.1. Grid definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#natural-peril-definition-for-environmental-objects">1.2. Natural peril definition (for environmental objects)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#generating-the-topography-atmosphere-soil-and-natural-land-layers">1.3. Generating the topography, atmosphere, soil, and natural land layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#environmental-layer-variable-properties-plotting">1.4. Environmental layer variable &amp; properties plotting</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#technological-environment-generation">2. Technological environment generation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#generating-the-urban-land-layer-incl-crops">2.1. Generating the urban land layer (incl. crops)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#generating-the-urban-lan-intertwined-road-network-object">2.1.1. Generating the urban lan &amp; intertwined road network object</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#modelling-crops">2.1.2. Modelling crops</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#generating-the-energy-infrastructure">2.2. Generating the energy infrastructure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#environmental-layer-properties">2.3. Environmental layer properties</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#socio-economic-environment-generation">3. Socio-economic environment generation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#generating-the-socio-economic-layer">3.1. Generating the socio-economic layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#id1">3.2. Environmental layer properties</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#references">References</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#appendix">Appendix</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#a-variables-properties-of-environmental-layers">A. Variables &amp; properties of environmental layers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#a-1-variable-and-property-lists">A.1. Variable and property lists</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#a-2-a-note-on-environmental-layer-downscaling">A.2. A note on environmental layer downscaling</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#b-underlying-physical-processes">B. Underlying physical processes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#b-1-atmospheric-layer-temperature">B.1. Atmospheric layer: Temperature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#b-2-energy-ci-layer-power-grid">B.2. Energy CI layer: Power grid</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#b-3-socioeconomic-layer-updated-power-grid-flow">B.3. Socioeconomic layer: Updated power grid flow</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial1_DigitalTemplate_environment.html#b-4-socioeconomic-layer-wealth-distribution">B.4. Socioeconomic layer: Wealth distribution</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html">Tutorial 2: Peril implementation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#stochastic-event-set">1. Stochastic event set</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#peril-source-definition">1.1. Peril source definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#event-table-generation">1.2. Event table generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#intensity-footprint-catalogue-generation">1.3. Intensity footprint catalogue generation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#from-analytical-expressions-threshold-models">1.3.1. From analytical expressions &amp; threshold models</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#from-numerical-models-cellular-automata">1.3.2. From numerical models (cellular automata)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#probabilistic-risk-assessment">2. Probabilistic risk assessment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#vulnerability-curve-definition">2.1. Vulnerability curve definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#loss-footprint-catalogue-generation">2.2. Loss footprint catalogue generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#risk-metrics">2.3. Risk metrics</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#references">References</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#appendix">Appendix</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#a-peril-sources">A. Peril sources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#b-stochastic-event-set">B. Stochastic event set</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#b-1-drought-case">B.1. Drought case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#b-2-earthquake-case">B.2. Earthquake case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#b-3-lightning-case">B.3. Lightning case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#b-4-tornado-case">B.4. Tornado case</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-hazard-footprints">C. Hazard footprints</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-1-tropical-cyclone-case">C.1. Tropical cyclone case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-2-tornado-case">C.2. Tornado case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-3-heatwave-case-threshold-model">C.3. Heatwave case (threshold model)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-4-pest-infestation-case">C.4. Pest infestation case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-5-blackout-case">C.5. Blackout case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-6-business-interruption-case">C.6. Business interruption case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-7-public-safety-service-case">C.7. Public safety service case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-8-social-unrest-case">C.8. Social unrest case</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GenMR</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Tutorial 3: Implementing multi-risk in the GenMR digital template</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/notebooks/Tutorial3_DigitalTemplate_dynamics.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="tutorial-3-implementing-multi-risk-in-the-genmr-digital-template">
+<h1>Tutorial 3: Implementing multi-risk in the GenMR digital template<a class="headerlink" href="#tutorial-3-implementing-multi-risk-in-the-genmr-digital-template" title="Link to this heading"></a></h1>
+<p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
+<strong>Version:</strong> 1.2.1<br />
+<strong>Last Updated:</strong> 2026-06-29<br />
+<strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
+<p>IN CONSTRUCTION - Please come back in late September 2026 for the official version.</p>
+<p>A tutorial on catastrophe dynamics, demonstrating how to model chains-of-events and their cascading impacts.</p>
+<ul class="simple">
+<li><p><strong>v.1.2.1</strong> (ongoing, due Sep. 2026): Implementation of the Multi-Risk Core, consisting of the modelling of chains-of-events and risk drivers within the GenMR framework (including potentially some ad-hoc parameterisations before v.1.2.3).</p></li>
+<li><p><strong>v.1.2.2</strong> (Oct. 2026-Mar. 2027): Implementation of the generic hydropower-dam and dam flood model (led by UniL project partner) and integration into the digital template.</p></li>
+<li><p><strong>v.1.2.3</strong> (Jan. 2027-Jun. 2027): Interaction matrix encoding, with quantitative assessment of event–event and event–environment interactions within the digital template.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span> 
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>   <span class="c1"># commented, try to remove all warnings</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">GenMR</span><span class="w"> </span><span class="kn">import</span> <span class="n">perils</span> <span class="k">as</span> <span class="n">GenMR_perils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GenMR</span><span class="w"> </span><span class="kn">import</span> <span class="n">environment</span> <span class="k">as</span> <span class="n">GenMR_env</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GenMR</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span> <span class="k">as</span> <span class="n">GenMR_utils</span>
+
+
+<span class="c1"># load inputs (i.e., outputs from Tutorial 1)</span>
+<span class="n">file_src</span> <span class="o">=</span> <span class="s1">&#39;src.pkl&#39;</span>
+<span class="n">file_topoLayer</span> <span class="o">=</span> <span class="s1">&#39;envLayer_topo.pkl&#39;</span>
+<span class="n">file_atmoLayer</span> <span class="o">=</span> <span class="s1">&#39;envLayer_atmo.pkl&#39;</span>
+<span class="n">file_soilLayer</span> <span class="o">=</span> <span class="s1">&#39;envLayer_soil.pkl&#39;</span>
+<span class="n">file_urbLandLayer</span> <span class="o">=</span> <span class="s1">&#39;envLayer_urbLand.pkl&#39;</span>
+<span class="n">file_energyLayer</span> <span class="o">=</span> <span class="s1">&#39;envLayer_energy.pkl&#39;</span>
+<span class="n">file_socioecoLayer</span> <span class="o">=</span> <span class="s1">&#39;envLayer_socioeco.pkl&#39;</span>
+<span class="n">src</span> <span class="o">=</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">load_pickle2class</span><span class="p">(</span><span class="s1">&#39;/io/&#39;</span> <span class="o">+</span> <span class="n">file_src</span><span class="p">)</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">grid</span><span class="p">)</span>
+<span class="n">topoLayer</span> <span class="o">=</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">load_pickle2class</span><span class="p">(</span><span class="s1">&#39;/io/&#39;</span> <span class="o">+</span> <span class="n">file_topoLayer</span><span class="p">)</span>
+<span class="n">atmoLayer</span> <span class="o">=</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">load_pickle2class</span><span class="p">(</span><span class="s1">&#39;/io/&#39;</span> <span class="o">+</span> <span class="n">file_atmoLayer</span><span class="p">)</span>
+<span class="n">soilLayer</span> <span class="o">=</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">load_pickle2class</span><span class="p">(</span><span class="s1">&#39;/io/&#39;</span> <span class="o">+</span> <span class="n">file_soilLayer</span><span class="p">)</span>
+<span class="n">urbLandLayer</span> <span class="o">=</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">load_pickle2class</span><span class="p">(</span><span class="s1">&#39;/io/&#39;</span> <span class="o">+</span> <span class="n">file_urbLandLayer</span><span class="p">)</span>
+<span class="n">energyLayer</span> <span class="o">=</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">load_pickle2class</span><span class="p">(</span><span class="s1">&#39;/io/&#39;</span> <span class="o">+</span> <span class="n">file_energyLayer</span><span class="p">)</span>
+<span class="n">socioecoLayer</span> <span class="o">=</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">load_pickle2class</span><span class="p">(</span><span class="s1">&#39;/io/&#39;</span> <span class="o">+</span> <span class="n">file_socioecoLayer</span><span class="p">)</span>
+
+<span class="n">GenMR_env</span><span class="o">.</span><span class="n">plot_EnvLayers</span><span class="p">([</span><span class="n">topoLayer</span><span class="p">,</span> <span class="n">atmoLayer</span><span class="p">,</span> <span class="n">soilLayer</span><span class="p">,</span> <span class="n">urbLandLayer</span><span class="p">,</span> <span class="n">energyLayer</span><span class="p">,</span> 
+                          <span class="n">socioecoLayer</span><span class="p">],</span> <span class="n">file_ext</span> <span class="o">=</span> <span class="s1">&#39;jpg&#39;</span><span class="p">,</span> <span class="n">topo_bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/db37f898fb9ae286a9f5093813a131f945fd0e0ec36291c178df6c7a8c7ec81e.png" src="../_images/db37f898fb9ae286a9f5093813a131f945fd0e0ec36291c178df6c7a8c7ec81e.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># load inputs (i.e., outputs from Tutorial 2)</span>
+<span class="n">ELT</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="s1">&#39;io/ELT.parquet&#39;</span><span class="p">)</span>
+<span class="n">ELT</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>ID</th>
+      <th>srcID</th>
+      <th>evID</th>
+      <th>S</th>
+      <th>lbd</th>
+      <th>loss</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>AI</td>
+      <td>impact1</td>
+      <td>AI1</td>
+      <td>10.0</td>
+      <td>2.657777e-06</td>
+      <td>2.605143e+00</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>AI</td>
+      <td>impact2</td>
+      <td>AI2</td>
+      <td>10.0</td>
+      <td>2.657777e-06</td>
+      <td>0.000000e+00</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>AI</td>
+      <td>impact3</td>
+      <td>AI3</td>
+      <td>10.0</td>
+      <td>2.657777e-06</td>
+      <td>0.000000e+00</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>AI</td>
+      <td>impact4</td>
+      <td>AI4</td>
+      <td>100.0</td>
+      <td>2.509457e-07</td>
+      <td>1.930789e+10</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>AI</td>
+      <td>impact5</td>
+      <td>AI5</td>
+      <td>100.0</td>
+      <td>2.509457e-07</td>
+      <td>6.631966e+09</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>95</th>
+      <td>SS</td>
+      <td>coastline</td>
+      <td>SS_fromTC1</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1.612134e+09</td>
+    </tr>
+    <tr>
+      <th>96</th>
+      <td>SS</td>
+      <td>coastline</td>
+      <td>SS_fromTC2</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>5.392059e+09</td>
+    </tr>
+    <tr>
+      <th>97</th>
+      <td>SS</td>
+      <td>coastline</td>
+      <td>SS_fromTC3</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1.264042e+10</td>
+    </tr>
+    <tr>
+      <th>98</th>
+      <td>SS</td>
+      <td>coastline</td>
+      <td>SS_fromTC4</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2.948587e+10</td>
+    </tr>
+    <tr>
+      <th>99</th>
+      <td>SS</td>
+      <td>coastline</td>
+      <td>SS_fromTC5</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>3.643350e+10</td>
+    </tr>
+  </tbody>
+</table>
+<p>100 rows × 6 columns</p>
+</div></div></div>
+</div>
+<section id="time-series-modelling">
+<h2>1. Time-series modelling<a class="headerlink" href="#time-series-modelling" title="Link to this heading"></a></h2>
+<section id="year-event-table-yet-generation">
+<h3>1.1. Year event table (YET) generation<a class="headerlink" href="#year-event-table-yet-generation" title="Link to this heading"></a></h3>
+</section>
+<section id="seasonality-implementation">
+<h3>1.2. Seasonality implementation<a class="headerlink" href="#seasonality-implementation" title="Link to this heading"></a></h3>
+</section>
+</section>
+<section id="event-interaction-modelling">
+<h2>2. Event interaction modelling<a class="headerlink" href="#event-interaction-modelling" title="Link to this heading"></a></h2>
+<section id="transition-matrix-encoding">
+<h3>2.1. Transition matrix encoding<a class="headerlink" href="#transition-matrix-encoding" title="Link to this heading"></a></h3>
+<p>Framework in construction with ad-hoc transition matrix for validation tests.</p>
+<p><strong>WARNING:</strong> Transition matrix encoding for the Digital Template’s environment and perils will take place in v.1.2.3 (Jan. 2027-Jun. 2027).</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Arnaud Mignan.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

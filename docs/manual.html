@@ -514,10 +514,10 @@ defined as classes or methods.</p>
 <dd class="field-odd"><p>Arnaud Mignan, Mignan Risk Analytics GmbH</p>
 </dd>
 <dt class="field-even">Version<span class="colon">:</span></dt>
-<dd class="field-even"><p>1.1.2</p>
+<dd class="field-even"><p>1.2.1</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2026-04-07</p>
+<dd class="field-odd"><p>2026-06-24</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -661,7 +661,7 @@ defined as classes or methods.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="GenMR.environment.EnvLayer_atmo.calc_T0_EBCM">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calc_T0_EBCM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.141592653589793</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_atmo.calc_T0_EBCM" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calc_T0_EBCM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.141592653589793</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_atmo.calc_T0_EBCM" title="Link to this definition"></a></dt>
 <dd><p>Calculate the zonal and seasonal surface temperature in a simple Energy Balance Climate Model (EBCM).</p>
 <p>This function implements a 1-D diffusive EBM with constant albedo, solved analytically
 following North et al. (1981). It includes:</p>
@@ -677,6 +677,9 @@ following North et al. (1981). It includes:</p>
 <li><p><strong>mon</strong> (<em>int</em>) – Calendar month (1 = January, 12 = December). Used to compute the seasonal phase.</p></li>
 <li><p><strong>phase</strong> (<em>float</em><em>, </em><em>optional</em>) – Phase shift of the seasonal cycle in radians. Default is π,
 which aligns Northern Hemisphere summer with month ~6 (June).</p></li>
+<li><p><strong>s</strong> (<em>float</em><em>, </em><em>optional</em>) – Calibration factor applied to the seasonal component of the EBCM.
+The factor scales the amplitude of the annual temperature cycle while
+preserving its phase and annual mean. Default is 1 (no calibration).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
