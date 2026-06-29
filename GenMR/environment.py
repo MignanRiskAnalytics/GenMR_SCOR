@@ -27,8 +27,8 @@ Layers and Related Objects (v1.1.2)
 
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
-:Version: 1.1.2
-:Date: 2026-04-07
+:Version: 1.2.1
+:Date: 2026-06-24
 :License: AGPL-3
 """
 
@@ -708,7 +708,7 @@ class EnvLayer_atmo:
     
     
     @staticmethod
-    def calc_T0_EBCM(lat, mon, phase = np.pi):
+    def calc_T0_EBCM(lat, mon, phase = np.pi, s = 1.):
         '''
         Calculate the zonal and seasonal surface temperature in a simple Energy Balance Climate Model (EBCM).
 
@@ -728,6 +728,10 @@ class EnvLayer_atmo:
         phase : float, optional
             Phase shift of the seasonal cycle in radians. Default is π, 
             which aligns Northern Hemisphere summer with month ~6 (June).
+        s : float, optional
+            Calibration factor applied to the seasonal component of the EBCM.
+            The factor scales the amplitude of the annual temperature cycle while
+            preserving its phase and annual mean. Default is 1 (no calibration).
 
         Returns
         -------
@@ -766,7 +770,7 @@ class EnvLayer_atmo:
         # temporal effect (seasonality)
         t = (mon - .5)/12                   # time as fraction of year [0,1]
         P1 = x                              # first Legendre polynomial
-        T = T0 + T0 * np.cos(2*np.pi * t - phase) * P1 + T2 * P2      # eq.168
+        T = T0 + s * T0 * np.cos(2*np.pi * t - phase) * P1 + T2 * P2      # eq.168 with s=1 added
 
         return T, T_zonal, T0
 
