@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tutorial 3: Implementing multi-risk in the GenMR digital template &mdash; GenMR 1.1.1 documentation</title>
+  <title>Tutorial 3: Implementing risk dynamics in the GenMR digital template &mdash; GenMR 1.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
@@ -464,7 +464,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Tutorial 3: Implementing multi-risk in the GenMR digital template</li>
+      <li class="breadcrumb-item active">Tutorial 3: Implementing risk dynamics in the GenMR digital template</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/notebooks/Tutorial3_DigitalTemplate_dynamics.ipynb.txt" rel="nofollow"> View page source</a>
       </li>
@@ -474,18 +474,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="tutorial-3-implementing-multi-risk-in-the-genmr-digital-template">
-<h1>Tutorial 3: Implementing multi-risk in the GenMR digital template<a class="headerlink" href="#tutorial-3-implementing-multi-risk-in-the-genmr-digital-template" title="Link to this heading"></a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="tutorial-3-implementing-risk-dynamics-in-the-genmr-digital-template">
+<h1>Tutorial 3: Implementing risk dynamics in the GenMR digital template<a class="headerlink" href="#tutorial-3-implementing-risk-dynamics-in-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 1.2.1<br />
-<strong>Last Updated:</strong> 2026-06-29<br />
+<strong>Last Updated:</strong> 2026-06-30<br />
 <strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
-<p>IN CONSTRUCTION - Please come back in late September 2026 for the official version.</p>
+<p>IN CONSTRUCTION - Please check back in late September 2026 for the official release.</p>
 <p>A tutorial on catastrophe dynamics, demonstrating how to model chains-of-events and their cascading impacts.</p>
 <ul class="simple">
-<li><p><strong>v.1.2.1</strong> (ongoing, due Sep. 2026): Implementation of the Multi-Risk Core, consisting of the modelling of chains-of-events and risk drivers within the GenMR framework (including potentially some ad-hoc parameterisations before v.1.2.3).</p></li>
-<li><p><strong>v.1.2.2</strong> (Oct. 2026-Mar. 2027): Implementation of the generic hydropower-dam and dam flood model (led by UniL project partner) and integration into the digital template.</p></li>
-<li><p><strong>v.1.2.3</strong> (Jan. 2027-Jun. 2027): Interaction matrix encoding, with quantitative assessment of event–event and event–environment interactions within the digital template.</p></li>
+<li><p><span style="color: orange"><strong>v.1.2.1</strong> (ongoing, due Sep. 2026)</span>: Implementation of the Multi-Risk Core, consisting of the modelling of chains-of-events and risk drivers within the GenMR framework (including potentially some ad-hoc parameterisations before v.1.2.3).</p></li>
+<li><p><span style="color: red"><strong>v.1.2.2</strong> (Oct. 2026-Mar. 2027)</span>: Implementation of the generic hydropower-dam and dam flood model (led by UniL project partner) and integration into the digital template.</p></li>
+<li><p><span style="color: red"><strong>v.1.2.3</strong> (Jan. 2027-Jun. 2027)</span>: Interaction matrix encoding, with quantitative assessment of event–event and event–environment interactions within the digital template.</p></li>
 </ul>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -499,6 +499,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">GenMR</span><span class="w"> </span><span class="kn">import</span> <span class="n">perils</span> <span class="k">as</span> <span class="n">GenMR_perils</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">GenMR</span><span class="w"> </span><span class="kn">import</span> <span class="n">environment</span> <span class="k">as</span> <span class="n">GenMR_env</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GenMR</span><span class="w"> </span><span class="kn">import</span> <span class="n">dynamics</span> <span class="k">as</span> <span class="n">GenMR_dyn</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">GenMR</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span> <span class="k">as</span> <span class="n">GenMR_utils</span>
 
 
@@ -532,6 +533,9 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># load inputs (i.e., outputs from Tutorial 2)</span>
 <span class="n">ELT</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="s1">&#39;io/ELT.parquet&#39;</span><span class="p">)</span>
+<span class="n">ELT</span> <span class="o">=</span> <span class="n">ELT</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;lbd&#39;</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">])</span>
+<span class="n">perils</span> <span class="o">=</span> <span class="n">ELT</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
 <span class="n">ELT</span>
 </pre></div>
 </div>
@@ -569,7 +573,7 @@
       <td>AI</td>
       <td>impact1</td>
       <td>AI1</td>
-      <td>10.0</td>
+      <td>10.000000</td>
       <td>2.657777e-06</td>
       <td>2.605143e+00</td>
     </tr>
@@ -578,7 +582,7 @@
       <td>AI</td>
       <td>impact2</td>
       <td>AI2</td>
-      <td>10.0</td>
+      <td>10.000000</td>
       <td>2.657777e-06</td>
       <td>0.000000e+00</td>
     </tr>
@@ -587,7 +591,7 @@
       <td>AI</td>
       <td>impact3</td>
       <td>AI3</td>
-      <td>10.0</td>
+      <td>10.000000</td>
       <td>2.657777e-06</td>
       <td>0.000000e+00</td>
     </tr>
@@ -596,7 +600,7 @@
       <td>AI</td>
       <td>impact4</td>
       <td>AI4</td>
-      <td>100.0</td>
+      <td>100.000000</td>
       <td>2.509457e-07</td>
       <td>1.930789e+10</td>
     </tr>
@@ -605,84 +609,611 @@
       <td>AI</td>
       <td>impact5</td>
       <td>AI5</td>
-      <td>100.0</td>
+      <td>100.000000</td>
       <td>2.509457e-07</td>
       <td>6.631966e+09</td>
     </tr>
     <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
+      <th>5</th>
+      <td>AI</td>
+      <td>impact6</td>
+      <td>AI6</td>
+      <td>100.000000</td>
+      <td>2.509457e-07</td>
+      <td>7.254955e+09</td>
     </tr>
     <tr>
-      <th>95</th>
-      <td>SS</td>
-      <td>coastline</td>
-      <td>SS_fromTC1</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>1.612134e+09</td>
+      <th>6</th>
+      <td>AI</td>
+      <td>impact7</td>
+      <td>AI7</td>
+      <td>100.000000</td>
+      <td>2.509457e-07</td>
+      <td>5.730261e+05</td>
     </tr>
     <tr>
-      <th>96</th>
-      <td>SS</td>
-      <td>coastline</td>
-      <td>SS_fromTC2</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>5.392059e+09</td>
+      <th>7</th>
+      <td>AI</td>
+      <td>impact8</td>
+      <td>AI8</td>
+      <td>1000.000000</td>
+      <td>4.212292e-08</td>
+      <td>4.193045e+06</td>
     </tr>
     <tr>
-      <th>97</th>
-      <td>SS</td>
-      <td>coastline</td>
-      <td>SS_fromTC3</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>1.264042e+10</td>
+      <th>8</th>
+      <td>AI</td>
+      <td>impact9</td>
+      <td>AI9</td>
+      <td>1000.000000</td>
+      <td>4.212292e-08</td>
+      <td>4.612970e+10</td>
     </tr>
     <tr>
-      <th>98</th>
-      <td>SS</td>
-      <td>coastline</td>
-      <td>SS_fromTC4</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>2.948587e+10</td>
+      <th>9</th>
+      <td>AI</td>
+      <td>impact10</td>
+      <td>AI10</td>
+      <td>1000.000000</td>
+      <td>4.212292e-08</td>
+      <td>1.419336e+10</td>
     </tr>
     <tr>
-      <th>99</th>
-      <td>SS</td>
-      <td>coastline</td>
-      <td>SS_fromTC5</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>3.643350e+10</td>
+      <th>13</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ1</td>
+      <td>6.000000</td>
+      <td>6.855726e-03</td>
+      <td>8.407242e+06</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>EQ</td>
+      <td>fault2</td>
+      <td>EQ2</td>
+      <td>6.000000</td>
+      <td>6.855726e-03</td>
+      <td>7.353930e+09</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ3</td>
+      <td>6.000000</td>
+      <td>6.855726e-03</td>
+      <td>1.735134e+05</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ4</td>
+      <td>6.100000</td>
+      <td>5.445696e-03</td>
+      <td>3.612260e+05</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ5</td>
+      <td>6.100000</td>
+      <td>5.445696e-03</td>
+      <td>1.032197e+05</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ6</td>
+      <td>6.100000</td>
+      <td>5.445696e-03</td>
+      <td>5.868966e+06</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ7</td>
+      <td>6.200000</td>
+      <td>6.488506e-03</td>
+      <td>1.866050e+07</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ8</td>
+      <td>6.200000</td>
+      <td>6.488506e-03</td>
+      <td>2.331507e+05</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ9</td>
+      <td>6.300000</td>
+      <td>3.436002e-03</td>
+      <td>2.595636e+07</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ10</td>
+      <td>6.300000</td>
+      <td>3.436002e-03</td>
+      <td>6.388565e+05</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ11</td>
+      <td>6.300000</td>
+      <td>3.436002e-03</td>
+      <td>6.388565e+05</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ12</td>
+      <td>6.400000</td>
+      <td>4.093970e-03</td>
+      <td>2.420586e+06</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ13</td>
+      <td>6.400000</td>
+      <td>4.093970e-03</td>
+      <td>1.922223e+07</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>EQ</td>
+      <td>fault2</td>
+      <td>EQ14</td>
+      <td>6.500000</td>
+      <td>3.251956e-03</td>
+      <td>2.608644e+10</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ15</td>
+      <td>6.500000</td>
+      <td>3.251956e-03</td>
+      <td>1.576180e+06</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ16</td>
+      <td>6.600000</td>
+      <td>5.166241e-03</td>
+      <td>3.719422e+07</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ17</td>
+      <td>6.700000</td>
+      <td>4.103691e-03</td>
+      <td>6.402894e+07</td>
+    </tr>
+    <tr>
+      <th>30</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ18</td>
+      <td>6.800000</td>
+      <td>3.259678e-03</td>
+      <td>7.158208e+06</td>
+    </tr>
+    <tr>
+      <th>31</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ19</td>
+      <td>6.900000</td>
+      <td>2.589254e-03</td>
+      <td>5.777673e+07</td>
+    </tr>
+    <tr>
+      <th>32</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ20</td>
+      <td>7.000000</td>
+      <td>2.056718e-03</td>
+      <td>2.195578e+08</td>
+    </tr>
+    <tr>
+      <th>41</th>
+      <td>TC</td>
+      <td>stormtrack1</td>
+      <td>TC1</td>
+      <td>40.000000</td>
+      <td>2.841439e-04</td>
+      <td>4.003226e+10</td>
+    </tr>
+    <tr>
+      <th>42</th>
+      <td>TC</td>
+      <td>stormtrack2</td>
+      <td>TC2</td>
+      <td>50.000000</td>
+      <td>1.637893e-04</td>
+      <td>7.559231e+10</td>
+    </tr>
+    <tr>
+      <th>43</th>
+      <td>TC</td>
+      <td>stormtrack3</td>
+      <td>TC3</td>
+      <td>60.000000</td>
+      <td>4.064719e-05</td>
+      <td>1.973294e+11</td>
+    </tr>
+    <tr>
+      <th>44</th>
+      <td>TC</td>
+      <td>stormtrack4</td>
+      <td>TC4</td>
+      <td>60.000000</td>
+      <td>4.064719e-05</td>
+      <td>3.261860e+11</td>
+    </tr>
+    <tr>
+      <th>45</th>
+      <td>TC</td>
+      <td>stormtrack5</td>
+      <td>TC5</td>
+      <td>70.000000</td>
+      <td>3.110718e-05</td>
+      <td>4.358703e+11</td>
+    </tr>
+    <tr>
+      <th>46</th>
+      <td>To</td>
+      <td>vortexline1</td>
+      <td>To1</td>
+      <td>3.000000</td>
+      <td>4.537519e-05</td>
+      <td>0.000000e+00</td>
+    </tr>
+    <tr>
+      <th>47</th>
+      <td>To</td>
+      <td>vortexline2</td>
+      <td>To2</td>
+      <td>3.000000</td>
+      <td>4.537519e-05</td>
+      <td>0.000000e+00</td>
+    </tr>
+    <tr>
+      <th>48</th>
+      <td>To</td>
+      <td>vortexline3</td>
+      <td>To3</td>
+      <td>3.000000</td>
+      <td>4.537519e-05</td>
+      <td>0.000000e+00</td>
+    </tr>
+    <tr>
+      <th>49</th>
+      <td>To</td>
+      <td>vortexline4</td>
+      <td>To4</td>
+      <td>4.000000</td>
+      <td>5.712399e-06</td>
+      <td>0.000000e+00</td>
+    </tr>
+    <tr>
+      <th>50</th>
+      <td>To</td>
+      <td>vortexline5</td>
+      <td>To5</td>
+      <td>4.000000</td>
+      <td>5.712399e-06</td>
+      <td>1.416740e+10</td>
+    </tr>
+    <tr>
+      <th>51</th>
+      <td>To</td>
+      <td>vortexline6</td>
+      <td>To6</td>
+      <td>4.000000</td>
+      <td>5.712399e-06</td>
+      <td>7.348262e+09</td>
+    </tr>
+    <tr>
+      <th>52</th>
+      <td>To</td>
+      <td>vortexline7</td>
+      <td>To7</td>
+      <td>5.000000</td>
+      <td>7.191484e-07</td>
+      <td>2.466552e+10</td>
+    </tr>
+    <tr>
+      <th>53</th>
+      <td>To</td>
+      <td>vortexline8</td>
+      <td>To8</td>
+      <td>5.000000</td>
+      <td>7.191484e-07</td>
+      <td>2.123567e+10</td>
+    </tr>
+    <tr>
+      <th>54</th>
+      <td>To</td>
+      <td>vortexline9</td>
+      <td>To9</td>
+      <td>5.000000</td>
+      <td>7.191484e-07</td>
+      <td>2.714532e+03</td>
+    </tr>
+    <tr>
+      <th>55</th>
+      <td>VE</td>
+      <td>volcano1</td>
+      <td>VE1</td>
+      <td>1.000000</td>
+      <td>7.303024e-07</td>
+      <td>2.086858e-03</td>
+    </tr>
+    <tr>
+      <th>56</th>
+      <td>VE</td>
+      <td>volcano1</td>
+      <td>VE2</td>
+      <td>3.162278</td>
+      <td>3.415881e-07</td>
+      <td>7.510737e+04</td>
+    </tr>
+    <tr>
+      <th>57</th>
+      <td>VE</td>
+      <td>volcano1</td>
+      <td>VE3</td>
+      <td>10.000000</td>
+      <td>1.597728e-07</td>
+      <td>1.795838e+09</td>
+    </tr>
+    <tr>
+      <th>58</th>
+      <td>WF</td>
+      <td>forest</td>
+      <td>WF1</td>
+      <td>10000.000000</td>
+      <td>1.062953e-02</td>
+      <td>2.616843e+10</td>
+    </tr>
+    <tr>
+      <th>59</th>
+      <td>WF</td>
+      <td>forest</td>
+      <td>WF2</td>
+      <td>10000.000000</td>
+      <td>1.062953e-02</td>
+      <td>1.926400e+06</td>
+    </tr>
+    <tr>
+      <th>60</th>
+      <td>WF</td>
+      <td>forest</td>
+      <td>WF3</td>
+      <td>10000.000000</td>
+      <td>1.062953e-02</td>
+      <td>0.000000e+00</td>
+    </tr>
+    <tr>
+      <th>61</th>
+      <td>WF</td>
+      <td>forest</td>
+      <td>WF4</td>
+      <td>10000.000000</td>
+      <td>1.062953e-02</td>
+      <td>0.000000e+00</td>
+    </tr>
+    <tr>
+      <th>62</th>
+      <td>WF</td>
+      <td>forest</td>
+      <td>WF5</td>
+      <td>10000.000000</td>
+      <td>1.062953e-02</td>
+      <td>0.000000e+00</td>
+    </tr>
+    <tr>
+      <th>63</th>
+      <td>WF</td>
+      <td>forest</td>
+      <td>WF6</td>
+      <td>10000.000000</td>
+      <td>1.062953e-02</td>
+      <td>0.000000e+00</td>
+    </tr>
+    <tr>
+      <th>64</th>
+      <td>WF</td>
+      <td>forest</td>
+      <td>WF7</td>
+      <td>31622.776602</td>
+      <td>5.158744e-03</td>
+      <td>9.511397e+09</td>
+    </tr>
+    <tr>
+      <th>65</th>
+      <td>WF</td>
+      <td>forest</td>
+      <td>WF8</td>
+      <td>31622.776602</td>
+      <td>5.158744e-03</td>
+      <td>7.442482e+09</td>
+    </tr>
+    <tr>
+      <th>66</th>
+      <td>WF</td>
+      <td>forest</td>
+      <td>WF9</td>
+      <td>31622.776602</td>
+      <td>5.158744e-03</td>
+      <td>8.181142e+09</td>
+    </tr>
+    <tr>
+      <th>67</th>
+      <td>WF</td>
+      <td>forest</td>
+      <td>WF10</td>
+      <td>100000.000000</td>
+      <td>3.755478e-03</td>
+      <td>1.504560e+08</td>
+    </tr>
+    <tr>
+      <th>68</th>
+      <td>WS</td>
+      <td>atmosphere</td>
+      <td>WS1</td>
+      <td>45.000000</td>
+      <td>2.741867e-03</td>
+      <td>5.622653e+10</td>
+    </tr>
+    <tr>
+      <th>69</th>
+      <td>WS</td>
+      <td>atmosphere</td>
+      <td>WS2</td>
+      <td>50.000000</td>
+      <td>1.746819e-05</td>
+      <td>1.061373e+11</td>
     </tr>
   </tbody>
 </table>
-<p>100 rows × 6 columns</p>
 </div></div></div>
 </div>
 <section id="time-series-modelling">
 <h2>1. Time-series modelling<a class="headerlink" href="#time-series-modelling" title="Link to this heading"></a></h2>
-<section id="year-event-table-yet-generation">
-<h3>1.1. Year event table (YET) generation<a class="headerlink" href="#year-event-table-yet-generation" title="Link to this heading"></a></h3>
+<section id="standard-year-loss-table-ylt-generation">
+<h3>1.1. Standard year loss table (YLT) generation<a class="headerlink" href="#standard-year-loss-table-ylt-generation" title="Link to this heading"></a></h3>
+<p>Dynamic catastrophe risk assessment requires modelling the temporal occurrence of events.</p>
+<p>The first step is to transform the Event Loss Table (ELT; introduced in Tutorial 2) into a standard Year Loss Table (YLT), which explicitly represents the sequence of events occurring within each simulated year. This transformation is performed using the <code class="docutils literal notranslate"><span class="pre">gen_YLT()</span></code> function. The term <em>standard</em> is used to distinguish a YLT derived directly from an ELT from the more sophisticated approaches described in Section 2, where events may interact with one another and with the environment.</p>
+<p>For each peril, an event count distribution must be specified. By default, event counts are assumed to follow a Poisson distribution, representing independent event occurrences. Alternatively, a negative binomial distribution can be used to model event clustering, as is observed for example for tropical cyclones (<code class="docutils literal notranslate"><span class="pre">TC</span></code>).</p>
+<p>As the number of simulated years (<code class="docutils literal notranslate"><span class="pre">Nsim</span></code>) increases, the Average Annual Loss (AAL) estimated from the YLT should converge to the AAL obtained from the ELT for both count distributions. This is because the negative binomial distribution preserves the expected annual event count, while allowing for greater variability in the number of events per year.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Nsim</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1e6</span><span class="p">)</span>            <span class="c1"># number of year-simulations, user-defined</span>
+
+
+<span class="n">AAL_ELT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ELT</span><span class="p">[</span><span class="s1">&#39;lbd&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">ELT</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="mf">1e-6</span>
+
+<span class="c1">## 1. Standard Poisson sampling</span>
+<span class="n">countDistr</span> <span class="o">=</span> <span class="p">{</span><span class="n">peril</span><span class="p">:</span> <span class="s1">&#39;Poisson&#39;</span> <span class="k">for</span> <span class="n">peril</span> <span class="ow">in</span> <span class="n">perils</span><span class="p">}</span>
+<span class="n">YLT_poi</span> <span class="o">=</span> <span class="n">GenMR_dyn</span><span class="o">.</span><span class="n">gen_YLT</span><span class="p">(</span><span class="n">ELT</span><span class="p">,</span> <span class="n">Nsim</span><span class="p">,</span> <span class="n">countDistr</span><span class="p">)</span>
+<span class="n">AAL_YLT_poi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">YLT_poi</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="n">Nsim</span> <span class="o">*</span> <span class="mf">1e-6</span>
+
+<span class="n">annual_loss_poi</span> <span class="o">=</span> <span class="n">YLT_poi</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;simID&#39;</span><span class="p">)[</span><span class="s1">&#39;loss&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Nsim</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># fill gaps</span>
+<span class="n">SE_poi</span> <span class="o">=</span> <span class="n">annual_loss_poi</span><span class="o">.</span><span class="n">std</span><span class="p">()</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">Nsim</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-6</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;AAL ELT (M. $): </span><span class="si">{</span><span class="n">AAL_ELT</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;** POISSON **&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;AAL YLT Poisson (M. $): </span><span class="si">{</span><span class="n">AAL_YLT_poi</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1"> ± </span><span class="si">{</span><span class="mi">2</span><span class="o">*</span><span class="n">SE_poi</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">  (95% CI)&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Within tolerance: </span><span class="si">{</span><span class="nb">abs</span><span class="p">(</span><span class="n">AAL_ELT</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">AAL_YLT_poi</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">SE_poi</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="c1">## 2. Incl. peril-based clustering option</span>
+<span class="n">countDistr</span> <span class="o">=</span> <span class="p">{</span><span class="n">peril</span><span class="p">:</span> <span class="s1">&#39;Poisson&#39;</span> <span class="k">for</span> <span class="n">peril</span> <span class="ow">in</span> <span class="n">perils</span><span class="p">}</span>
+<span class="n">countDistr</span><span class="p">[</span><span class="s1">&#39;TC&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;negative binomial&#39;</span>             <span class="c1"># clustering for specified perils</span>
+
+<span class="c1"># overdispersion parameter: phi = var/lbd - 1 </span>
+<span class="n">clustering_phi</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;TC&#39;</span><span class="p">:</span> <span class="mf">.91</span>                                      <span class="c1"># from Mignan (2025, CUP textbook)</span>
+<span class="p">}</span>
+
+<span class="n">YLT_nb</span> <span class="o">=</span> <span class="n">GenMR_dyn</span><span class="o">.</span><span class="n">gen_YLT</span><span class="p">(</span><span class="n">ELT</span><span class="p">,</span> <span class="n">Nsim</span><span class="p">,</span> <span class="n">countDistr</span><span class="p">,</span> <span class="n">clustering_phi</span><span class="p">)</span>
+<span class="n">AAL_YLT_nb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">YLT_nb</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="n">Nsim</span> <span class="o">*</span> <span class="mf">1e-6</span>
+
+<span class="n">annual_loss_nb</span> <span class="o">=</span> <span class="n">YLT_nb</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;simID&#39;</span><span class="p">)[</span><span class="s1">&#39;loss&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Nsim</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">SE_nb</span> <span class="o">=</span> <span class="n">annual_loss_nb</span><span class="o">.</span><span class="n">std</span><span class="p">()</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">Nsim</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-6</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;** NEGATIVE BINOMIAL (for selected perils) **&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;AAL YLT nb (M. $): </span><span class="si">{</span><span class="n">AAL_YLT_nb</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1"> ± </span><span class="si">{</span><span class="mi">2</span><span class="o">*</span><span class="n">SE_nb</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">  (95% CI)&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Within tolerance: </span><span class="si">{</span><span class="nb">abs</span><span class="p">(</span><span class="n">AAL_ELT</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">AAL_YLT_nb</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">2</span><span class="o">*</span><span class="n">SE_nb</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>AAL ELT (M. $): 759.92
+** POISSON **
+AAL YLT Poisson (M. $): 759.738 ± 11.67  (95% CI)
+Within tolerance: True
+** NEGATIVE BINOMIAL (for selected perils) **
+AAL YLT nb (M. $): 761.601 ± 12.167  (95% CI)
+Within tolerance: True
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">validation_sim_rates</span><span class="p">(</span><span class="n">ELT</span><span class="p">,</span> <span class="n">YLT</span><span class="p">,</span> <span class="n">Nsim</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">phi_dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="n">perils</span> <span class="o">=</span> <span class="n">ELT</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+    <span class="n">diff</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">tol</span>  <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">peril</span> <span class="ow">in</span> <span class="n">perils</span><span class="p">:</span>
+        <span class="n">indperil</span> <span class="o">=</span> <span class="n">ELT</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">peril</span>
+        <span class="n">lbd</span> <span class="o">=</span> <span class="n">ELT</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">indperil</span><span class="p">,</span> <span class="s1">&#39;lbd&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">rate_YLT</span> <span class="o">=</span> <span class="n">YLT</span><span class="p">[</span><span class="n">YLT</span><span class="p">[</span><span class="s1">&#39;evID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">ELT</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">indperil</span><span class="p">,</span> <span class="s1">&#39;evID&#39;</span><span class="p">])]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">Nsim</span>
+        <span class="n">diff</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">rate_YLT</span> <span class="o">-</span> <span class="n">lbd</span><span class="p">)</span> <span class="o">/</span> <span class="n">lbd</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+
+        <span class="n">phi</span> <span class="o">=</span> <span class="n">phi_dict</span><span class="p">[</span><span class="n">peril</span><span class="p">]</span> <span class="k">if</span> <span class="p">(</span><span class="n">phi_dict</span> <span class="ow">and</span> <span class="n">peril</span> <span class="ow">in</span> <span class="n">phi_dict</span><span class="p">)</span> <span class="k">else</span> <span class="mf">0.</span>
+        <span class="n">tol</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">lbd</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">phi</span><span class="p">)</span> <span class="o">/</span> <span class="n">Nsim</span><span class="p">)</span> <span class="o">/</span> <span class="n">lbd</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>          <span class="c1"># 2 * SE</span>
+
+    <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;tomato&#39;</span> <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">t</span> <span class="k">else</span> <span class="s1">&#39;green&#39;</span> <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="n">tol</span><span class="p">)]</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">perils</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.7</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">perils</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">perils</span><span class="p">),</span> <span class="n">yerr</span> <span class="o">=</span> <span class="n">tol</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">capsize</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;±95% CI&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span> <span class="o">=</span> <span class="s1">&#39;dotted&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Rate difference (%)&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;16&#39;</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">sharey</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">validation_sim_rates</span><span class="p">(</span><span class="n">ELT</span><span class="p">,</span> <span class="n">YLT_poi</span><span class="p">,</span> <span class="n">Nsim</span><span class="p">,</span> <span class="s1">&#39;Poisson&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">validation_sim_rates</span><span class="p">(</span><span class="n">ELT</span><span class="p">,</span> <span class="n">YLT_nb</span><span class="p">,</span>  <span class="n">Nsim</span><span class="p">,</span> <span class="s1">&#39;Negative binomial&#39;</span><span class="p">,</span>  <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s1">&#39;YLT vs ELT event rate validation by peril&#39;</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/3a7a7e712142fc730bd0d970209d4f83682507ccd3c4d7df24d162e16966f880.png" src="../_images/3a7a7e712142fc730bd0d970209d4f83682507ccd3c4d7df24d162e16966f880.png" />
+</div>
+</div>
 </section>
 <section id="seasonality-implementation">
 <h3>1.2. Seasonality implementation<a class="headerlink" href="#seasonality-implementation" title="Link to this heading"></a></h3>
+<p>ONGOING DEVELOPMENT…</p>
 </section>
 </section>
 <section id="event-interaction-modelling">
 <h2>2. Event interaction modelling<a class="headerlink" href="#event-interaction-modelling" title="Link to this heading"></a></h2>
-<section id="transition-matrix-encoding">
-<h3>2.1. Transition matrix encoding<a class="headerlink" href="#transition-matrix-encoding" title="Link to this heading"></a></h3>
-<p>Framework in construction with ad-hoc transition matrix for validation tests.</p>
-<p><strong>WARNING:</strong> Transition matrix encoding for the Digital Template’s environment and perils will take place in v.1.2.3 (Jan. 2027-Jun. 2027).</p>
+<p><strong>WARNING:</strong> Transition matrix encoding for the Digital Template environment and perils will be implemented in version 1.2.3 (Jan. 2027 – Jun. 2027).</p>
+<p>This framework is currently under construction, using an ad hoc transition matrix for validation testing.</p>
+<p>Note that the Year Event Table (YET), the simulated event sequence before event losses are assigned, is introduced in this section to model time series while initially avoiding the inclusion of losses that may be time-dependent or depend on previous events and environmental changes (addressed in a later section).</p>
+<section id="markov-process-integration">
+<h3>2.1. Markov process integration<a class="headerlink" href="#markov-process-integration" title="Link to this heading"></a></h3>
+<p>In a first step, a Markov process is introduced into the YET generation. Non-Markovian processes (i.e., processes with memory) will be considered in Section 2.2.</p>
 </section>
 </section>
 </section>
