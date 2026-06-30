@@ -2,16 +2,180 @@
 GenMR Dynamics Modelling
 ========================
 
-This module provides functions to quantify peril interactions and temporal dependencies - IN EARLY PHASE OF CONSTRUCTION.
+This module provides functions to quantify peril interactions and temporal dependencies - IN CONSTRUCTION.
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
-:Version: 1.1.2
-:Date: 2026-01-12
+:Version: 1.2.1
+:Date: 2026-06-30
 :License: AGPL-3
 """
 
 import numpy as np
 import pandas as pd
+
+
+###########################
+## TIME SERIES MODELLING ##
+###########################
+def gen_YLT_1block(ELT, Nsim, distr, phi = 0.):
+    '''
+    Generate a Year Loss Table (YLT) from an Event Loss Table (ELT) using a
+    single frequency distribution for all perils combined.
+
+    Parameters
+    ----------
+    ELT : pandas.DataFrame
+        Event Loss Table with columns:
+
+        - ``evID`` : unique event identifier
+        - ``lbd``  : annual occurrence rate of the event
+        - ``loss`` : mean loss associated with the event
+    Nsim : int
+        Number of simulated years.
+    distr : str
+        Count distribution. Either ``'Poisson'`` or ``'negative binomial'``.
+    phi : float, optional
+        Overdispersion parameter (Mailier et al., 2006), defined as
+        ``phi = var/lbd - 1``, where ``var`` is the variance of the annual
+        event count and ``lbd`` is its mean. Required when
+        ``distr='negative binomial'``; ignored otherwise.
+        ``phi=0`` recovers the Poisson process (default).
+
+    Returns
+    -------
+    YLT : pandas.DataFrame
+        Year Loss Table with columns:
+
+        - ``simID`` : simulated year identifier (1 to Nsim)
+        - ``evID``  : sampled event identifier
+        - ``loss``  : loss of the sampled event
+
+    Notes
+    -----
+    Event sampling uses inverse-CDF on the normalised cumulative occurrence
+    rate, implemented via ``np.searchsorted`` for O(n log m) complexity.
+    '''
+    # 1. Overall rate
+    lbd = np.sum(ELT['lbd'])
+
+    # 2. Simulate number of events per year
+    if distr == 'Poisson':
+        k = np.random.poisson(lbd, Nsim)
+    elif distr == 'negative binomial':
+        var = lbd * (1 + phi)
+        p = lbd / var
+        r = lbd * p / (1 - p)
+        k = np.random.negative_binomial(r, p, Nsim)
+
+    # 3. Simulation IDs
+    simIDs = np.repeat(np.arange(1, Nsim + 1), k)
+
+    # 4. Sample events — sort by lbd so EF is monotonically increasing
+    ELT_s = ELT.sort_values(by='lbd', ascending=True).reset_index(drop=True)
+    ELT_s['EF_cum'] = ELT_s['lbd'].cumsum()
+    EF_norm = ELT_s['EF_cum'].values / lbd
+
+    n = int(np.sum(k))
+    u = np.random.random(n)
+
+    # searchsorted is O(n log m) vs your O(n*m) list comprehension
+    idx = np.searchsorted(EF_norm, u, side='left')
+    idx = np.clip(idx, 0, len(ELT_s) - 1)
+    evIDs = ELT_s['evID'].values[idx]
+
+    # 5. Build YLT and attach losses
+    loss_map = ELT.set_index('evID')['loss']
+    YLT = pd.DataFrame({'simID': simIDs, 'evID': evIDs})
+    YLT['loss'] = YLT['evID'].map(loss_map)
+
+    return YLT
+
+
+def gen_YLT(ELT, Nsim, distr_dict, phi_dict = None):
+    '''
+    Generate a Year Loss Table (YLT) from a multi-peril Event Loss Table (ELT),
+    with a per-peril count distribution.
+
+    Parameters
+    ----------
+    ELT : pandas.DataFrame
+        Event Loss Table with columns:
+
+        - ``evID`` : unique event identifier
+        - ``lbd``  : annual occurrence rate of the event
+        - ``loss`` : mean loss associated with the event
+        - ``ID``   : peril identifier
+    Nsim : int
+        Number of simulated years.
+    distr_dict : dict
+        Mapping of peril identifier to count distribution
+        Accepted values are ``'Poisson'`` and ``'negative binomial'``.
+    phi_dict : dict, optional
+        Mapping of peril identifier to overdispersion parameter
+        ``phi = var/lbd - 1`` (Mailier et al., 2006). Required for perils
+        assigned ``'negative binomial'`` in ``distr_dict``; ignored for
+        Poisson perils. Default is ``None``.
+
+    Returns
+    -------
+    YLT : pandas.DataFrame
+        Year Loss Table with columns:
+
+        - ``simID`` : simulated year identifier (1 to Nsim)
+        - ``evID``  : sampled event identifier
+        - ``loss``  : loss of the sampled event
+
+    Notes
+    -----
+    Each peril is simulated independently. Annual event counts for peril
+    ``p`` follow either Poisson(lbd_p) or NegativeBinomial(lbd_p, phi_p),
+    where ``lbd_p = sum(ELT.loc[ELT.ID==p, 'lbd'])``. The sum of
+    independent Poisson variates is itself Poisson, so results are
+    statistically equivalent to ``gen_YLT_1block`` when all perils use
+    ``'Poisson'``.
+    '''
+    years = np.arange(1, Nsim + 1)
+    all_simIDs = []
+    all_evIDs = []
+
+    for peril, sub_ELT in ELT.groupby('ID'):
+        distr = distr_dict[peril]
+        lbd = sub_ELT['lbd'].sum()
+
+        if distr == 'Poisson':
+            k = np.random.poisson(lbd, Nsim)
+        elif distr == 'negative binomial':
+            var = lbd * (1 + phi_dict[peril])
+            p = lbd / var
+            r = lbd * p / (1 - p)
+            k = np.random.negative_binomial(r, p, Nsim)
+
+        simIDs = np.repeat(years, k)
+
+        sub_s = sub_ELT.sort_values('lbd').reset_index(drop=True)
+        EF_norm = sub_s['lbd'].cumsum().values / lbd
+        u = np.random.random(int(k.sum()))
+        idx = np.clip(np.searchsorted(EF_norm, u, side='left'), 0, len(sub_s) - 1)
+        evIDs = sub_s['evID'].values[idx]
+
+        all_simIDs.append(simIDs)
+        all_evIDs.append(evIDs)
+
+    loss_map = ELT.set_index('evID')['loss']
+    YLT = pd.DataFrame({
+        'simID': np.concatenate(all_simIDs),
+        'evID' : np.concatenate(all_evIDs),
+    })
+    YLT['loss'] = YLT['evID'].map(loss_map)
+
+    return YLT
+
+
+
+
+
+
+
 
 
 ###################################
