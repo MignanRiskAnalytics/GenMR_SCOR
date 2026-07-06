@@ -6,12 +6,16 @@ This module provides functions to quantify peril interactions and temporal depen
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.2.1
-:Date: 2026-06-30
+:Date: 2026-07-06
 :License: AGPL-3
 """
 
 import numpy as np
 import pandas as pd
+
+from GenMR import environment as GenMR_env
+from GenMR import perils as GenMR_perils
+from GenMR import utils as GenMR_utils
 
 
 ###########################
@@ -162,17 +166,130 @@ def gen_YLT(ELT, Nsim, distr_dict, phi_dict = None):
         all_evIDs.append(evIDs)
 
     loss_map = ELT.set_index('evID')['loss']
+    S_map = ELT.set_index('evID')['S']
     YLT = pd.DataFrame({
         'simID': np.concatenate(all_simIDs),
         'evID' : np.concatenate(all_evIDs),
     })
+    YLT['S'] = YLT['evID'].map(S_map)
     YLT['loss'] = YLT['evID'].map(loss_map)
 
     return YLT
 
 
+#################
+## SEASONALITY ##
+#################
+def gen_YET_HW(T0, T, par, Nsim):
+    '''
+    Generate a stochastic Year-Event Table (YET) of heatwave events with associated spatial footprints.
+
+    For each simulated year, this function draws inter-annual and advective temperature
+    offsets, generates a daily AR(1) temperature trajectory, detects heatwave events at a
+    coastal reference location, and reconstructs the spatial footprint of each detected
+    event over the full grid.
+
+    This implementation uses a simplified detection scheme: the heatwave time window
+    ``(start, end)`` for each event is determined once, at the coastal reference location
+    (``T0``, ``T_loc_daily_stoch``), via :func:`get_HW_atloc`. That same ``(start, end)``
+    window is then reused to slice the entire spatial field when computing the footprint,
+    rather than re-detecting the heatwave independently at every grid cell.
+
+    Why this works here: by construction, ``T0`` is the coastal/sea-level reference
+    temperature, and the spatial field ``T`` is built via a fixed lapse-rate correction,
+    decreasing monotonically with elevation ``z``. Since daily temperature variation is a
+    single scalar time series shared across the whole domain, every grid cell's daily
+    temperature is just ``T0``'s trajectory plus a constant spatial offset
+    (elevation-dependent, but time-invariant). Detecting the heatwave once at ``T0`` is
+    therefore equivalent to detecting it separately at each ``(x, y)`` location.
+
+    Limitation: this shortcut breaks down if daily fluctuations were made to vary
+    independently across space. In that more general case, different grid cells could
+    cross the heatwave threshold on different days.
+
+    Parameters
+    ----------
+    T0 : ndarray of shape (Ndays,)
+        Daily baseline temperature (°C) at the coastal/sea-level reference location,
+        before inter-annual, advective, or AR(1) stochastic perturbations are applied.
+    T : ndarray of shape (Ndays, nx, ny)
+        Daily baseline temperature field (°C) over the full spatial grid, built from
+        ``T0`` via a fixed lapse-rate correction as a function of elevation.
+    par : dict
+        Dictionary of heatwave model parameters, expected to contain:
+
+        - ``'sigmaT_yearly'`` : float, standard deviation of inter-annual temperature variability (°C).
+        - ``'T_AR1'`` : tuple of (phi, sigma), AR(1) persistence and innovation std. dev. (°C) for daily fluctuations.
+        - ``'T_th'`` : float, heatwave temperature threshold (°C).
+        - ``'Dt_da'`` : int, minimum number of consecutive days above threshold to qualify as a heatwave.
+    Nsim : int
+        Number of simulated years to generate.
+
+    Returns
+    -------
+    YET_HW : DataFrame
+        Year Event Table of simulated heatwave events, with one row per event and columns:
+
+        - ``'simID'`` : int, simulated year index (1-based).
+        - ``'evID'`` : str, unique event identifier (``'HW'`` + running integer counter across all sims).
+        - ``'ID'`` : str, peril code (``'HW'``).
+        - ``'t'`` : float, event start time as a decimal-year fraction within the simulated year.
+        - ``'S'`` : int, event duration in days (inclusive day count).
+    catalog_hazFp_HW : dict
+        Mapping from ``evID`` to the corresponding spatial footprint (ndarray of shape
+        ``(nx, ny)``), giving the maximum temperature (°C) reached during heatwave days
+        at each grid cell.
+    '''
+    Ndays = T.shape[0]
+
+    # inter-year variability
+    DT_peryr = np.random.normal(0, par['sigmaT_yearly'], Nsim)
+
+    ## advection model (3-Gaussian model) ##
+    # main change from Tutorial 2: one 3-Gaussian draw per calendar month
+    # introduces artificial discontinuities at month boundaries
+    days_per_mon = GenMR_utils.days_per_mon
+    DT_adv_daily = np.empty((Nsim, Ndays))
+    for sim in range(Nsim):
+        DT_adv_month = GenMR_perils.HazardFootprintGenerator.sample_T_advectivemodel(
+            np.zeros(12), par['lat_deg'])
+        DT_adv_daily[sim] = np.repeat(DT_adv_month, days_per_mon)
+    
+    DT_stoch = DT_peryr[:, None] + DT_adv_daily 
+
+    YET_list = []
+    catalog_hazFp_HW = {}
+    evID_counter = 0
+    for sim in range(Nsim):
+        simID = sim + 1
+        if sim % 1000 == 0:
+            print(f'{sim}/{Nsim}', end='\r', flush=True)
+
+        dT_daily_stoch = GenMR_perils.HazardFootprintGenerator.sample_T_AR1process(DT_stoch[sim], \
+                                                                Ndays, par['T_AR1'][0], par['T_AR1'][1])
+        T_loc_daily_stoch = T0 + dT_daily_stoch
+        T_map_daily_stoch = T + dT_daily_stoch[:, None, None]
+
+        HW_ti_stoch, _ = GenMR_perils.HazardFootprintGenerator.get_HW_atloc(T_loc_daily_stoch, \
+                                                        par['T_th'],  par['Dt_da'])
+        for (start, end) in HW_ti_stoch:
+            evID_counter += 1
+            evID = f'HW{evID_counter}'
+
+            t = start / Ndays           # decimal-year start time
+            duration = end - start + 1  # per-event duration in days
+
+            window = T_map_daily_stoch[start:end]
+            fp_HW, _ = GenMR_perils.HazardFootprintGenerator.get_HW_footprint(
+                window, Tth = par['T_th'], Dt = par['Dt_da'])
+
+            catalog_hazFp_HW[evID] = fp_HW
+
+            YET_list.append({'simID': simID, 'evID': evID, 'ID': 'HW', 't': t, 'S': duration})
 
 
+    YET_HW = pd.DataFrame(YET_list)
+    return YET_HW, catalog_hazFp_HW
 
 
 

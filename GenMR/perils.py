@@ -1802,7 +1802,7 @@ class HazardFootprintGenerator:
         return pdf, sigma_pdf, components
 
     @staticmethod
-    def sample_T_advectivemodel(mu0_stoch, lat, seed = None):
+    def sample_T_advectivemodel_OLD(mu0_stoch, lat, seed = None):
         '''
         Sample stochastic temperatures from the 3-Gaussian advective PDF.
 
@@ -1832,9 +1832,114 @@ class HazardFootprintGenerator:
             T_stoch[i] = np.random.choice(Ti, p = pdf)
         return T_stoch
 
+    @staticmethod
+    def sample_T_advectivemodel(mu0_stoch, lat, seed = None):
+        '''
+        Sample stochastic temperatures from the 3-Gaussian advective PDF according to Tamarin-Brodsky et al. (2022). 
+        see pdf_T_advectivemodel() for details.
+
+        Parameters
+        ----------
+        mu0_stoch : ndarray
+            Array of mean surface temperatures (°C) at the location(s). Each entry is
+            treated independently to generate a stochastic temperature sample.
+        lat : float
+            Latitude (°) of the region.
+        seed : int, optional
+            Random seed for reproducibility.
+
+        Returns
+        -------
+        T_stoch : ndarray
+            Array of length Nsim containing stochastic temperature realizations (°C).
+        '''
+        if seed is not None:
+            np.random.seed(seed)
+
+        if np.abs(lat) <= 40.:                  # WARNING: only defined down to 30° degree lat. in article
+            dT_warm, dT_cold = 3.3, 4.9         # pp. 395-396, fig.7d-f
+            w_warm, w_cold = .25, .17
+        elif np.abs(lat) >= 55:
+            dT_warm, dT_cold = 5.8, 2.5
+            w_warm, w_cold = .1, .24
+        else:  # 40-55° range
+            dT_warm, dT_cold = 4, 4.2
+            w_warm, w_cold = 1/3, 1/3
+
+        w_neutral = 1. - w_warm - w_cold
+        dT_neutral = 0.
+        sigma_hat = .25 * (dT_warm + dT_cold)
+
+        N = len(mu0_stoch)
+        w_neutral = 1 - w_cold - w_warm
+        component = np.random.choice(3, size = N, p = [w_cold, w_neutral, w_warm])
+
+        means = np.empty(N)
+        sigmas = np.empty(N)
+        means[component == 0] = mu0_stoch[component == 0] + dT_cold
+        means[component == 1] = mu0_stoch[component == 1] + dT_neutral
+        means[component == 2] = mu0_stoch[component == 2] + dT_warm
+        sigmas[component==0] = sigma_hat
+        sigmas[component==1] = sigma_hat
+        sigmas[component==2] = sigma_hat
+
+        return np.random.normal(means, sigmas)
+
+
 
     @staticmethod
-    def sample_T_AR1process(mu, N, phi, sigma, seed = None):
+    def sample_T_AR1process(mu, N, phi, sigma, seed=None):
+        '''
+        Generate a stationary AR(1) time series around a time-varying (or constant) mean.
+
+        This function simulates an autoregressive process of order 1 (AR(1))
+        with Gaussian innovations and mean reversion toward a time-varying (or constant) mean μ.
+
+        The process follows:
+
+        .. math::
+
+            T_t = \\mu_t + \\phi (T_{t-1} - \\mu_{t-1}) + \\epsilon_t,
+
+        where \\epsilon_t \\sim \\mathcal{N}(0, \\sigma^2). When mu is scalar, this reduces
+        to a constant-mean AR(1) process.
+
+        Parameters
+        ----------
+        mu : float or ndarray of shape (N,)
+            Equilibrium mean (long-term average state of the process). Can be a single
+            constant value, or an array giving a different mean at each timestep
+            (e.g. a monthly-varying advective offset).
+        N : int
+            Length of the time series to generate.
+        phi : float
+            AR(1) persistence parameter.
+        sigma : float
+            Standard deviation of the Gaussian innovation term.
+        seed : int, optional
+            Random seed for reproducibility.
+
+        Returns
+        -------
+        T : ndarray of shape (N,)
+            Simulated AR(1) time series.
+        '''
+        if seed is not None:
+            np.random.seed(seed)
+
+        mu = np.broadcast_to(mu, (N,)).astype(float)  # scalar -> constant array; array -> passthrough
+        eps = np.random.normal(0, sigma, N)
+        T = np.empty(N)
+
+        T[0] = mu[0]
+        for t in range(1, N):
+            T[t] = mu[t] + phi * (T[t-1] - mu[t-1]) + eps[t]
+
+        return T
+
+
+    @staticmethod
+    def sample_T_AR1process_DEPRECATED(mu, N, phi, sigma, seed = None):
         '''
         Generate a stationary AR(1) time series around a fixed mean.
 
@@ -1879,61 +1984,6 @@ class HazardFootprintGenerator:
         return T
 
 
-    @staticmethod
-    def sample_T_daily_DEPRECATED(T_adv_stoch, sigma_daily, Ndays=30, rho=0.7, seed=None):
-        '''
-        Generate a daily temperature time series for a month around a given stochastic monthly mean,
-        with temporal correlation.
-
-        The daily temperatures are generated using a first-order autoregressive
-        [AR(1)] process. This introduces temporal autocorrelation between consecutive
-        days, which is essential for representing multi-day heatwaves.
-
-        Autocorrelation means that temperature on a given day is statistically
-        dependent on the temperature of the previous day. A positive autocorrelation
-        (rho > 0) increases the persistence of warm or cold anomalies, allowing
-        sequences of consecutive hot days to occur.
-
-        Mathematically, the daily temperature evolves as:
-
-            T_d = rho * T_{d-1}
-                + (1 - rho) * T_adv_stoch
-                + sqrt(1 - rho^2) * ε_d
-
-        where:
-            - T_adv_stoch is the stochastic monthly temperature (equilibrium mean),
-            - rho is the lag-1 autocorrelation coefficient (0 ≤ rho < 1),
-            - ε_d is Gaussian white noise with standard deviation sigma_daily.
-
-        The scaling factor sqrt(1 - rho^2) ensures that the stationary daily
-        temperature variance is equal to sigma_daily², independently of rho.
-
-        Parameters
-        ----------
-        T_adv_stoch : float
-            Stochastic monthly temperature (°C) for the month.
-        sigma_daily : float
-            Standard deviation of daily fluctuations around T_adv_stoch (°C).
-        Ndays : int
-            Number of days in the month (default=30).
-        rho : float
-            Temporal correlation coefficient (0=independent, 1=perfectly correlated).
-        seed : int
-            Random seed for reproducibility.
-
-        Returns
-        -------
-        T_daily : ndarray
-            Array of length Ndays containing daily temperatures (°C) for the month.
-        '''
-        if seed is not None:
-            np.random.seed(seed)
-        T_daily = np.empty(Ndays)
-        T_daily[0] = T_adv_stoch
-        for d in range(1, Ndays):
-            epsilon = np.random.normal(0, sigma_daily)
-            T_daily[d] = rho*T_daily[d-1] + (1-rho)*T_adv_stoch + np.sqrt(1-rho**2)*epsilon
-        return T_daily
 
     @staticmethod
     def get_HW_atloc(T_daily, T_th, Dt_HW):
@@ -2123,13 +2173,12 @@ class HazardFootprintGenerator:
                 T_map_mean = atmoLayer.T[mon_i,:,:] + DTadv_sim[sim]
 
                 T_daily_stoch = HazardFootprintGenerator.sample_T_AR1process(Tadv_sim[sim], Ndays, src.par['HW']['T_AR1'][0], src.par['HW']['T_AR1'][1])
-#                T_daily_stoch = HazardFootprintGenerator.sample_T_daily(Tadv_sim[sim], src.par['HW']['sigmaT_daily'], \
-#                                            Ndays = Ndays, rho = src.par['HW']['corrT'])    
                 dT_daily_stoch = T_daily_stoch - Tadv_sim[sim]
 
-                T_map_daily_stoch = np.empty((Ndays, nx, ny))
-                for t in range(Ndays):
-                    T_map_daily_stoch[t] = T_map_mean + dT_daily_stoch[t]
+#                T_map_daily_stoch = np.empty((Ndays, nx, ny))
+#                for t in range(Ndays):
+#                    T_map_daily_stoch[t] = T_map_mean + dT_daily_stoch[t]
+                T_map_daily_stoch = T_map_mean[None, :, :] + dT_daily_stoch[:, None, None]
 
                 HW_ti_stoch, _ = HazardFootprintGenerator.get_HW_atloc(T_daily_stoch, T_th_HW, Dt_HW)
                 HW_fp_stoch, HW_S_stoch = HazardFootprintGenerator.get_HW_footprint(T_map_daily_stoch, Tth = T_th_HW, Dt = Dt_HW)
@@ -2541,7 +2590,7 @@ class HazardFootprintGenerator:
 
     def _run_HW(self, Nev_peril, atmoLayer_T):
         path_HW_stochset = 'figs/HW_stochset_tmp/'
-        Nsim = 100000   # WARNING: hard-coded, high enough to get reasonable estimates of rate(Si)
+        Nsim = 10000   # WARNING: hard-coded, high enough to get reasonable estimates of rate(Si)
 
         Si = self.src.par['HW']['Si_da']
         evIDi = [f"HW{i+1}" for i in range(len(Si))]
