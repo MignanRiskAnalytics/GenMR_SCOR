@@ -22,6 +22,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorial 3: Implementing risk dynamics in the GenMR digital template" href="Tutorial3_DigitalTemplate_dynamics.html" />
     <link rel="prev" title="Tutorial 1: Generating a virtual environment for the GenMR digital template" href="Tutorial1_DigitalTemplate_environment.html" /> 
 </head>
 
@@ -282,8 +283,9 @@
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.model_To_analytical"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.model_To_analytical()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.pdf_T_advectivemodel"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.pdf_T_advectivemodel()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.sample_T_AR1process"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.sample_T_AR1process()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.sample_T_AR1process_DEPRECATED"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.sample_T_AR1process_DEPRECATED()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.sample_T_advectivemodel"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.sample_T_advectivemodel()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.sample_T_daily_DEPRECATED"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.sample_T_daily_DEPRECATED()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.sample_T_advectivemodel_OLD"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.sample_T_advectivemodel_OLD()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.RiskFootprintGenerator"><code class="docutils literal notranslate"><span class="pre">RiskFootprintGenerator</span></code></a></li>
@@ -451,6 +453,18 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html">Tutorial 3: Dynamic risk modelling</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#time-series-modelling">1. Time-series modelling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#standard-year-loss-table-ylt-generation">1.1. Standard year loss table (YLT) generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#seasonality-implementation">1.2. Seasonality implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#event-interaction-modelling">2. Event interaction modelling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#markov-process-integration">2.1. Markov process integration</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -481,7 +495,7 @@
 <h1>Tutorial 2: Implementing perils in the GenMR digital template<a class="headerlink" href="#tutorial-2-implementing-perils-in-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 1.2.1<br />
-<strong>Last Updated:</strong> 2026-06-29<br />
+<strong>Last Updated:</strong> 2026-07-06<br />
 <strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
 <p>Once a virtual environment has been generated (see previous tutorial), stochastic events are modelled to populate it. Table 1 lists the perils included in version 1.1.2.</p>
 <br>
@@ -721,6 +735,7 @@
 <sup>†</sup> Most perils are considered primary perils in this tutorial for sake of simplicity. Several will be considered secondary perils in Tutorial 3.<br>
 <sup>‡</sup> Included in current version (<span style="color: green">✓</span>), planned for v.1.1.2 (<span style="color: orange">✗</span>).</small></p>
 <p>This tutorial is divided into two main sections. The first introduces the definition of peril sources, an event table (containing each event’s identifier and annual rate), and a corresponding catalogue of hazard-intensity footprints. The second section covers probabilistic risk assessment, in which damage and loss footprints are generated for each event identifier (Fig. 1) and risk metrics are calculated. Before beginning these sections, the digital-template environment created in the previous tutorial is loaded.</p>
+<p><strong>WARNING:</strong> This tutorial is intended solely to demonstrate how events and their footprints are generated. As such, only a very limited number of event sizes are considered for each peril as part of a model validation exercise. This is not sufficient for a robust risk assessment. For comprehensive risk analyses based on simulations spanning thousands to millions of years, see Tutorial 3 (currently under development).</p>
 <figure class="align-center" id="fig-digitaltemplate">
 <a class="reference internal image-reference" href="../_images/digitaltemplate_ev_rayshader.png"><img alt="../_images/digitaltemplate_ev_rayshader.png" src="../_images/digitaltemplate_ev_rayshader.png" style="width: 500px;" />
 </a>
@@ -808,8 +823,8 @@
                  <span class="s1">&#39;lat_deg&#39;</span><span class="p">:</span> <span class="n">grid</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;lat_deg&#39;</span><span class="p">]}</span>
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;HW&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;atmosphere&#39;</span><span class="p">,</span>
                  <span class="s1">&#39;T_th&#39;</span><span class="p">:</span> <span class="mf">35.</span><span class="p">,</span>                     <span class="c1"># Minimum temperature threshold (°C)</span>
-                 <span class="s1">&#39;Dt_da&#39;</span><span class="p">:</span> <span class="mf">3.</span><span class="p">,</span>                     <span class="c1"># Minimum duration (days)</span>
-                 <span class="s1">&#39;Si_da&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span>            <span class="c1"># Fixed event sizes (days) - for sake of illustration</span>
+                 <span class="s1">&#39;Dt_da&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>                      <span class="c1"># Minimum duration (days)</span>
+                 <span class="s1">&#39;Si_da&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">14</span><span class="p">],</span>                <span class="c1"># Fixed event sizes (days) - for sake of illustration</span>
                  <span class="s1">&#39;sigmaT_yearly&#39;</span><span class="p">:</span> <span class="mf">.55</span><span class="p">,</span>            <span class="c1"># Temp. std. dev. - value from Olonscheck et al. (2021)</span>
                  <span class="s1">&#39;T_AR1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">.9</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">],</span>              <span class="c1"># AR(1) process 0: corr. phi, 1: std dev (fitted west EU...)</span>
                  <span class="s1">&#39;Dt_max_da&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>                 <span class="c1"># for Tutorial 2: HW defined over a month max</span>
@@ -893,6 +908,7 @@
                                                   <span class="c1"># (if not faster by natural SU die-off)</span>
                  <span class="s1">&#39;plot_steps&#39;</span><span class="p">:</span> <span class="kc">True</span>
                 <span class="p">}</span>
+
 <span class="n">GenMR_perils</span><span class="o">.</span><span class="n">plot_src</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">hillshading_z</span> <span class="o">=</span> <span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">file_ext</span> <span class="o">=</span> <span class="s1">&#39;jpg&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1335,14 +1351,6 @@
     </tr>
     <tr>
       <th>35</th>
-      <td>HW</td>
-      <td>atmosphere</td>
-      <td>HW3</td>
-      <td>30.000000</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>36</th>
       <td>PI</td>
       <td>crops</td>
       <td>PI1</td>
@@ -1350,7 +1358,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>37</th>
+      <th>36</th>
       <td>PI</td>
       <td>crops</td>
       <td>PI2</td>
@@ -1358,7 +1366,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>38</th>
+      <th>37</th>
       <td>RS</td>
       <td>atmosphere</td>
       <td>RS1</td>
@@ -1366,7 +1374,7 @@
       <td>1.000793e-03</td>
     </tr>
     <tr>
-      <th>39</th>
+      <th>38</th>
       <td>RS</td>
       <td>atmosphere</td>
       <td>RS2</td>
@@ -1374,7 +1382,7 @@
       <td>8.172054e-05</td>
     </tr>
     <tr>
-      <th>40</th>
+      <th>39</th>
       <td>RS</td>
       <td>atmosphere</td>
       <td>RS3</td>
@@ -1382,7 +1390,7 @@
       <td>4.562873e-06</td>
     </tr>
     <tr>
-      <th>41</th>
+      <th>40</th>
       <td>TC</td>
       <td>stormtrack1</td>
       <td>TC1</td>
@@ -1390,7 +1398,7 @@
       <td>2.841439e-04</td>
     </tr>
     <tr>
-      <th>42</th>
+      <th>41</th>
       <td>TC</td>
       <td>stormtrack2</td>
       <td>TC2</td>
@@ -1398,7 +1406,7 @@
       <td>1.637893e-04</td>
     </tr>
     <tr>
-      <th>43</th>
+      <th>42</th>
       <td>TC</td>
       <td>stormtrack3</td>
       <td>TC3</td>
@@ -1406,7 +1414,7 @@
       <td>4.064719e-05</td>
     </tr>
     <tr>
-      <th>44</th>
+      <th>43</th>
       <td>TC</td>
       <td>stormtrack4</td>
       <td>TC4</td>
@@ -1414,7 +1422,7 @@
       <td>4.064719e-05</td>
     </tr>
     <tr>
-      <th>45</th>
+      <th>44</th>
       <td>TC</td>
       <td>stormtrack5</td>
       <td>TC5</td>
@@ -1422,7 +1430,7 @@
       <td>3.110718e-05</td>
     </tr>
     <tr>
-      <th>46</th>
+      <th>45</th>
       <td>To</td>
       <td>vortexline1</td>
       <td>To1</td>
@@ -1430,7 +1438,7 @@
       <td>4.537519e-05</td>
     </tr>
     <tr>
-      <th>47</th>
+      <th>46</th>
       <td>To</td>
       <td>vortexline2</td>
       <td>To2</td>
@@ -1438,7 +1446,7 @@
       <td>4.537519e-05</td>
     </tr>
     <tr>
-      <th>48</th>
+      <th>47</th>
       <td>To</td>
       <td>vortexline3</td>
       <td>To3</td>
@@ -1446,7 +1454,7 @@
       <td>4.537519e-05</td>
     </tr>
     <tr>
-      <th>49</th>
+      <th>48</th>
       <td>To</td>
       <td>vortexline4</td>
       <td>To4</td>
@@ -1454,7 +1462,7 @@
       <td>5.712399e-06</td>
     </tr>
     <tr>
-      <th>50</th>
+      <th>49</th>
       <td>To</td>
       <td>vortexline5</td>
       <td>To5</td>
@@ -1462,7 +1470,7 @@
       <td>5.712399e-06</td>
     </tr>
     <tr>
-      <th>51</th>
+      <th>50</th>
       <td>To</td>
       <td>vortexline6</td>
       <td>To6</td>
@@ -1470,7 +1478,7 @@
       <td>5.712399e-06</td>
     </tr>
     <tr>
-      <th>52</th>
+      <th>51</th>
       <td>To</td>
       <td>vortexline7</td>
       <td>To7</td>
@@ -1478,7 +1486,7 @@
       <td>7.191484e-07</td>
     </tr>
     <tr>
-      <th>53</th>
+      <th>52</th>
       <td>To</td>
       <td>vortexline8</td>
       <td>To8</td>
@@ -1486,7 +1494,7 @@
       <td>7.191484e-07</td>
     </tr>
     <tr>
-      <th>54</th>
+      <th>53</th>
       <td>To</td>
       <td>vortexline9</td>
       <td>To9</td>
@@ -1494,7 +1502,7 @@
       <td>7.191484e-07</td>
     </tr>
     <tr>
-      <th>55</th>
+      <th>54</th>
       <td>VE</td>
       <td>volcano1</td>
       <td>VE1</td>
@@ -1502,7 +1510,7 @@
       <td>7.303024e-07</td>
     </tr>
     <tr>
-      <th>56</th>
+      <th>55</th>
       <td>VE</td>
       <td>volcano1</td>
       <td>VE2</td>
@@ -1510,7 +1518,7 @@
       <td>3.415881e-07</td>
     </tr>
     <tr>
-      <th>57</th>
+      <th>56</th>
       <td>VE</td>
       <td>volcano1</td>
       <td>VE3</td>
@@ -1518,7 +1526,7 @@
       <td>1.597728e-07</td>
     </tr>
     <tr>
-      <th>58</th>
+      <th>57</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF1</td>
@@ -1526,7 +1534,7 @@
       <td>1.062953e-02</td>
     </tr>
     <tr>
-      <th>59</th>
+      <th>58</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF2</td>
@@ -1534,7 +1542,7 @@
       <td>1.062953e-02</td>
     </tr>
     <tr>
-      <th>60</th>
+      <th>59</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF3</td>
@@ -1542,7 +1550,7 @@
       <td>1.062953e-02</td>
     </tr>
     <tr>
-      <th>61</th>
+      <th>60</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF4</td>
@@ -1550,7 +1558,7 @@
       <td>1.062953e-02</td>
     </tr>
     <tr>
-      <th>62</th>
+      <th>61</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF5</td>
@@ -1558,7 +1566,7 @@
       <td>1.062953e-02</td>
     </tr>
     <tr>
-      <th>63</th>
+      <th>62</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF6</td>
@@ -1566,7 +1574,7 @@
       <td>1.062953e-02</td>
     </tr>
     <tr>
-      <th>64</th>
+      <th>63</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF7</td>
@@ -1574,7 +1582,7 @@
       <td>5.158744e-03</td>
     </tr>
     <tr>
-      <th>65</th>
+      <th>64</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF8</td>
@@ -1582,7 +1590,7 @@
       <td>5.158744e-03</td>
     </tr>
     <tr>
-      <th>66</th>
+      <th>65</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF9</td>
@@ -1590,7 +1598,7 @@
       <td>5.158744e-03</td>
     </tr>
     <tr>
-      <th>67</th>
+      <th>66</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF10</td>
@@ -1598,7 +1606,7 @@
       <td>3.755478e-03</td>
     </tr>
     <tr>
-      <th>68</th>
+      <th>67</th>
       <td>WS</td>
       <td>atmosphere</td>
       <td>WS1</td>
@@ -1606,7 +1614,7 @@
       <td>2.741867e-03</td>
     </tr>
     <tr>
-      <th>69</th>
+      <th>68</th>
       <td>WS</td>
       <td>atmosphere</td>
       <td>WS2</td>
@@ -1614,7 +1622,7 @@
       <td>1.746819e-05</td>
     </tr>
     <tr>
-      <th>70</th>
+      <th>69</th>
       <td>CS</td>
       <td>supercell</td>
       <td>CS_toTo1</td>
@@ -1622,7 +1630,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>71</th>
+      <th>70</th>
       <td>CS</td>
       <td>supercell</td>
       <td>CS_toTo2</td>
@@ -1630,7 +1638,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>72</th>
+      <th>71</th>
       <td>CS</td>
       <td>supercell</td>
       <td>CS_toTo3</td>
@@ -1638,7 +1646,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>73</th>
+      <th>72</th>
       <td>CS</td>
       <td>supercell</td>
       <td>CS_toTo4</td>
@@ -1646,7 +1654,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>74</th>
+      <th>73</th>
       <td>CS</td>
       <td>supercell</td>
       <td>CS_toTo5</td>
@@ -1654,7 +1662,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>75</th>
+      <th>74</th>
       <td>CS</td>
       <td>supercell</td>
       <td>CS_toTo6</td>
@@ -1662,7 +1670,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>76</th>
+      <th>75</th>
       <td>CS</td>
       <td>supercell</td>
       <td>CS_toTo7</td>
@@ -1670,7 +1678,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>77</th>
+      <th>76</th>
       <td>CS</td>
       <td>supercell</td>
       <td>CS_toTo8</td>
@@ -1678,7 +1686,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>78</th>
+      <th>77</th>
       <td>CS</td>
       <td>supercell</td>
       <td>CS_toTo9</td>
@@ -1686,7 +1694,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>79</th>
+      <th>78</th>
       <td>Ex</td>
       <td>refinery</td>
       <td>Ex_fromCIf</td>
@@ -1694,7 +1702,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>80</th>
+      <th>79</th>
       <td>FF</td>
       <td>river1</td>
       <td>FF_fromRS1</td>
@@ -1702,7 +1710,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>81</th>
+      <th>80</th>
       <td>FF</td>
       <td>river1</td>
       <td>FF_fromRS2</td>
@@ -1710,7 +1718,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>82</th>
+      <th>81</th>
       <td>FF</td>
       <td>river1</td>
       <td>FF_fromRS3</td>
@@ -1718,7 +1726,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>83</th>
+      <th>82</th>
       <td>Li</td>
       <td>supercell</td>
       <td>Li_fromCS1</td>
@@ -1726,7 +1734,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>84</th>
+      <th>83</th>
       <td>Li</td>
       <td>supercell</td>
       <td>Li_fromCS2</td>
@@ -1734,7 +1742,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>85</th>
+      <th>84</th>
       <td>Li</td>
       <td>supercell</td>
       <td>Li_fromCS3</td>
@@ -1742,7 +1750,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>86</th>
+      <th>85</th>
       <td>Li</td>
       <td>supercell</td>
       <td>Li_fromCS4</td>
@@ -1750,7 +1758,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>87</th>
+      <th>86</th>
       <td>Li</td>
       <td>supercell</td>
       <td>Li_fromCS5</td>
@@ -1758,7 +1766,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>88</th>
+      <th>87</th>
       <td>Li</td>
       <td>supercell</td>
       <td>Li_fromCS6</td>
@@ -1766,7 +1774,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>89</th>
+      <th>88</th>
       <td>Li</td>
       <td>supercell</td>
       <td>Li_fromCS7</td>
@@ -1774,7 +1782,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>90</th>
+      <th>89</th>
       <td>Li</td>
       <td>supercell</td>
       <td>Li_fromCS8</td>
@@ -1782,7 +1790,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>91</th>
+      <th>90</th>
       <td>Li</td>
       <td>supercell</td>
       <td>Li_fromCS9</td>
@@ -1790,7 +1798,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>92</th>
+      <th>91</th>
       <td>LS</td>
       <td>terrain</td>
       <td>LS_fromRS1</td>
@@ -1798,7 +1806,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>93</th>
+      <th>92</th>
       <td>LS</td>
       <td>terrain</td>
       <td>LS_fromRS2</td>
@@ -1806,7 +1814,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>94</th>
+      <th>93</th>
       <td>LS</td>
       <td>terrain</td>
       <td>LS_fromRS3</td>
@@ -1814,7 +1822,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>95</th>
+      <th>94</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC1</td>
@@ -1822,7 +1830,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>96</th>
+      <th>95</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC2</td>
@@ -1830,7 +1838,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>97</th>
+      <th>96</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC3</td>
@@ -1838,7 +1846,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>98</th>
+      <th>97</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC4</td>
@@ -1846,7 +1854,7 @@
       <td>NaN</td>
     </tr>
     <tr>
-      <th>99</th>
+      <th>98</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC5</td>
@@ -1869,7 +1877,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Simulating droughts: 100%|██████████| 1000000/1000000 [07:59&lt;00:00, 2087.64it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Simulating droughts: 100%|██████████| 1000000/1000000 [05:52&lt;00:00, 2835.94it/s]
 </pre></div>
 </div>
 </div>
@@ -2013,7 +2021,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>generating footprints for: AI... Dr... EQ... HW... (loading from cache)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>generating footprints for: AI... Dr... EQ... HW... (computing)
+Fetching footprints from potential footprints
 PI... (loading from cache)
 RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf... SS... SU... catalogue completed
 </pre></div>
@@ -2042,7 +2051,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5b3fc61e540cd51ce3a788452b3dfb5230cdc73240a295970f19044c29e015ea.png" src="../_images/5b3fc61e540cd51ce3a788452b3dfb5230cdc73240a295970f19044c29e015ea.png" />
+<img alt="../_images/9023a273b709aaf3cb2d59123f7fec876b517fc6937f1c0c0c65b915b9edda02.png" src="../_images/9023a273b709aaf3cb2d59123f7fec876b517fc6937f1c0c0c65b915b9edda02.png" />
 </div>
 </div>
 <p><strong>Note:</strong> Observe the <code class="docutils literal notranslate"><span class="pre">TC</span></code> footprint boundary effect (cyclonic eye), which is due to the track artificially starting at <code class="docutils literal notranslate"><span class="pre">grid.xmin</span></code>.</p>
@@ -2358,7 +2367,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>atmosphere</td>
       <td>HW1</td>
       <td>7.000000</td>
-      <td>1.560000e-03</td>
+      <td>5.100000e-03</td>
     </tr>
     <tr>
       <th>34</th>
@@ -2366,18 +2375,10 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>atmosphere</td>
       <td>HW2</td>
       <td>14.000000</td>
-      <td>6.500000e-04</td>
+      <td>1.700000e-03</td>
     </tr>
     <tr>
       <th>35</th>
-      <td>HW</td>
-      <td>atmosphere</td>
-      <td>HW3</td>
-      <td>30.000000</td>
-      <td>1.000000e-05</td>
-    </tr>
-    <tr>
-      <th>36</th>
       <td>PI</td>
       <td>crops</td>
       <td>PI1</td>
@@ -2385,7 +2386,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>3.950000e-03</td>
     </tr>
     <tr>
-      <th>37</th>
+      <th>36</th>
       <td>PI</td>
       <td>crops</td>
       <td>PI2</td>
@@ -2393,7 +2394,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>0.000000e+00</td>
     </tr>
     <tr>
-      <th>38</th>
+      <th>37</th>
       <td>RS</td>
       <td>atmosphere</td>
       <td>RS1</td>
@@ -2401,7 +2402,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>1.000793e-03</td>
     </tr>
     <tr>
-      <th>39</th>
+      <th>38</th>
       <td>RS</td>
       <td>atmosphere</td>
       <td>RS2</td>
@@ -2409,7 +2410,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>8.172054e-05</td>
     </tr>
     <tr>
-      <th>40</th>
+      <th>39</th>
       <td>RS</td>
       <td>atmosphere</td>
       <td>RS3</td>
@@ -2417,7 +2418,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>4.562873e-06</td>
     </tr>
     <tr>
-      <th>41</th>
+      <th>40</th>
       <td>TC</td>
       <td>stormtrack1</td>
       <td>TC1</td>
@@ -2425,7 +2426,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>2.841439e-04</td>
     </tr>
     <tr>
-      <th>42</th>
+      <th>41</th>
       <td>TC</td>
       <td>stormtrack2</td>
       <td>TC2</td>
@@ -2433,7 +2434,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>1.637893e-04</td>
     </tr>
     <tr>
-      <th>43</th>
+      <th>42</th>
       <td>TC</td>
       <td>stormtrack3</td>
       <td>TC3</td>
@@ -2441,7 +2442,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>4.064719e-05</td>
     </tr>
     <tr>
-      <th>44</th>
+      <th>43</th>
       <td>TC</td>
       <td>stormtrack4</td>
       <td>TC4</td>
@@ -2449,7 +2450,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>4.064719e-05</td>
     </tr>
     <tr>
-      <th>45</th>
+      <th>44</th>
       <td>TC</td>
       <td>stormtrack5</td>
       <td>TC5</td>
@@ -2457,7 +2458,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>3.110718e-05</td>
     </tr>
     <tr>
-      <th>46</th>
+      <th>45</th>
       <td>To</td>
       <td>vortexline1</td>
       <td>To1</td>
@@ -2465,7 +2466,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>4.537519e-05</td>
     </tr>
     <tr>
-      <th>47</th>
+      <th>46</th>
       <td>To</td>
       <td>vortexline2</td>
       <td>To2</td>
@@ -2473,7 +2474,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>4.537519e-05</td>
     </tr>
     <tr>
-      <th>48</th>
+      <th>47</th>
       <td>To</td>
       <td>vortexline3</td>
       <td>To3</td>
@@ -2481,7 +2482,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>4.537519e-05</td>
     </tr>
     <tr>
-      <th>49</th>
+      <th>48</th>
       <td>To</td>
       <td>vortexline4</td>
       <td>To4</td>
@@ -2489,7 +2490,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>5.712399e-06</td>
     </tr>
     <tr>
-      <th>50</th>
+      <th>49</th>
       <td>To</td>
       <td>vortexline5</td>
       <td>To5</td>
@@ -2497,7 +2498,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>5.712399e-06</td>
     </tr>
     <tr>
-      <th>51</th>
+      <th>50</th>
       <td>To</td>
       <td>vortexline6</td>
       <td>To6</td>
@@ -2505,7 +2506,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>5.712399e-06</td>
     </tr>
     <tr>
-      <th>52</th>
+      <th>51</th>
       <td>To</td>
       <td>vortexline7</td>
       <td>To7</td>
@@ -2513,7 +2514,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>7.191484e-07</td>
     </tr>
     <tr>
-      <th>53</th>
+      <th>52</th>
       <td>To</td>
       <td>vortexline8</td>
       <td>To8</td>
@@ -2521,7 +2522,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>7.191484e-07</td>
     </tr>
     <tr>
-      <th>54</th>
+      <th>53</th>
       <td>To</td>
       <td>vortexline9</td>
       <td>To9</td>
@@ -2529,7 +2530,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>7.191484e-07</td>
     </tr>
     <tr>
-      <th>55</th>
+      <th>54</th>
       <td>VE</td>
       <td>volcano1</td>
       <td>VE1</td>
@@ -2537,7 +2538,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>7.303024e-07</td>
     </tr>
     <tr>
-      <th>56</th>
+      <th>55</th>
       <td>VE</td>
       <td>volcano1</td>
       <td>VE2</td>
@@ -2545,7 +2546,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>3.415881e-07</td>
     </tr>
     <tr>
-      <th>57</th>
+      <th>56</th>
       <td>VE</td>
       <td>volcano1</td>
       <td>VE3</td>
@@ -2553,7 +2554,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>1.597728e-07</td>
     </tr>
     <tr>
-      <th>58</th>
+      <th>57</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF1</td>
@@ -2561,7 +2562,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>1.062953e-02</td>
     </tr>
     <tr>
-      <th>59</th>
+      <th>58</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF2</td>
@@ -2569,7 +2570,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>1.062953e-02</td>
     </tr>
     <tr>
-      <th>60</th>
+      <th>59</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF3</td>
@@ -2577,7 +2578,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>1.062953e-02</td>
     </tr>
     <tr>
-      <th>61</th>
+      <th>60</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF4</td>
@@ -2585,7 +2586,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>1.062953e-02</td>
     </tr>
     <tr>
-      <th>62</th>
+      <th>61</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF5</td>
@@ -2593,7 +2594,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>1.062953e-02</td>
     </tr>
     <tr>
-      <th>63</th>
+      <th>62</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF6</td>
@@ -2601,7 +2602,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>1.062953e-02</td>
     </tr>
     <tr>
-      <th>64</th>
+      <th>63</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF7</td>
@@ -2609,7 +2610,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>5.158744e-03</td>
     </tr>
     <tr>
-      <th>65</th>
+      <th>64</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF8</td>
@@ -2617,7 +2618,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>5.158744e-03</td>
     </tr>
     <tr>
-      <th>66</th>
+      <th>65</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF9</td>
@@ -2625,7 +2626,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>5.158744e-03</td>
     </tr>
     <tr>
-      <th>67</th>
+      <th>66</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF10</td>
@@ -2633,7 +2634,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>3.755478e-03</td>
     </tr>
     <tr>
-      <th>68</th>
+      <th>67</th>
       <td>WS</td>
       <td>atmosphere</td>
       <td>WS1</td>
@@ -2641,7 +2642,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>2.741867e-03</td>
     </tr>
     <tr>
-      <th>69</th>
+      <th>68</th>
       <td>WS</td>
       <td>atmosphere</td>
       <td>WS2</td>
@@ -2649,7 +2650,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>1.746819e-05</td>
     </tr>
     <tr>
-      <th>70</th>
+      <th>69</th>
       <td>CS</td>
       <td>supercell</td>
       <td>CS_toTo1</td>
@@ -2657,7 +2658,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>71</th>
+      <th>70</th>
       <td>CS</td>
       <td>supercell</td>
       <td>CS_toTo2</td>
@@ -2665,7 +2666,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>72</th>
+      <th>71</th>
       <td>CS</td>
       <td>supercell</td>
       <td>CS_toTo3</td>
@@ -2673,7 +2674,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>73</th>
+      <th>72</th>
       <td>CS</td>
       <td>supercell</td>
       <td>CS_toTo4</td>
@@ -2681,7 +2682,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>74</th>
+      <th>73</th>
       <td>CS</td>
       <td>supercell</td>
       <td>CS_toTo5</td>
@@ -2689,7 +2690,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>75</th>
+      <th>74</th>
       <td>CS</td>
       <td>supercell</td>
       <td>CS_toTo6</td>
@@ -2697,7 +2698,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>76</th>
+      <th>75</th>
       <td>CS</td>
       <td>supercell</td>
       <td>CS_toTo7</td>
@@ -2705,7 +2706,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>77</th>
+      <th>76</th>
       <td>CS</td>
       <td>supercell</td>
       <td>CS_toTo8</td>
@@ -2713,7 +2714,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>78</th>
+      <th>77</th>
       <td>CS</td>
       <td>supercell</td>
       <td>CS_toTo9</td>
@@ -2721,7 +2722,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>79</th>
+      <th>78</th>
       <td>Ex</td>
       <td>refinery</td>
       <td>Ex_fromCIf</td>
@@ -2729,7 +2730,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>80</th>
+      <th>79</th>
       <td>FF</td>
       <td>river1</td>
       <td>FF_fromRS1</td>
@@ -2737,7 +2738,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>81</th>
+      <th>80</th>
       <td>FF</td>
       <td>river1</td>
       <td>FF_fromRS2</td>
@@ -2745,7 +2746,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>82</th>
+      <th>81</th>
       <td>FF</td>
       <td>river1</td>
       <td>FF_fromRS3</td>
@@ -2753,7 +2754,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>83</th>
+      <th>82</th>
       <td>Li</td>
       <td>supercell</td>
       <td>Li_fromCS1</td>
@@ -2761,7 +2762,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>84</th>
+      <th>83</th>
       <td>Li</td>
       <td>supercell</td>
       <td>Li_fromCS2</td>
@@ -2769,7 +2770,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>85</th>
+      <th>84</th>
       <td>Li</td>
       <td>supercell</td>
       <td>Li_fromCS3</td>
@@ -2777,7 +2778,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>86</th>
+      <th>85</th>
       <td>Li</td>
       <td>supercell</td>
       <td>Li_fromCS4</td>
@@ -2785,7 +2786,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>87</th>
+      <th>86</th>
       <td>Li</td>
       <td>supercell</td>
       <td>Li_fromCS5</td>
@@ -2793,7 +2794,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>88</th>
+      <th>87</th>
       <td>Li</td>
       <td>supercell</td>
       <td>Li_fromCS6</td>
@@ -2801,7 +2802,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>89</th>
+      <th>88</th>
       <td>Li</td>
       <td>supercell</td>
       <td>Li_fromCS7</td>
@@ -2809,7 +2810,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>90</th>
+      <th>89</th>
       <td>Li</td>
       <td>supercell</td>
       <td>Li_fromCS8</td>
@@ -2817,7 +2818,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>91</th>
+      <th>90</th>
       <td>Li</td>
       <td>supercell</td>
       <td>Li_fromCS9</td>
@@ -2825,7 +2826,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>92</th>
+      <th>91</th>
       <td>LS</td>
       <td>terrain</td>
       <td>LS_fromRS1</td>
@@ -2833,7 +2834,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>93</th>
+      <th>92</th>
       <td>LS</td>
       <td>terrain</td>
       <td>LS_fromRS2</td>
@@ -2841,7 +2842,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>94</th>
+      <th>93</th>
       <td>LS</td>
       <td>terrain</td>
       <td>LS_fromRS3</td>
@@ -2849,7 +2850,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>95</th>
+      <th>94</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC1</td>
@@ -2857,7 +2858,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>96</th>
+      <th>95</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC2</td>
@@ -2865,7 +2866,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>97</th>
+      <th>96</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC3</td>
@@ -2873,7 +2874,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>98</th>
+      <th>97</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC4</td>
@@ -2881,7 +2882,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
       <td>NaN</td>
     </tr>
     <tr>
-      <th>99</th>
+      <th>98</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC5</td>
@@ -2973,7 +2974,7 @@ Loading from cache potential footprints
 Fetching footprints from potential footprints
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Fetching WF footprints from cache: 100%|████████| 10/10 [00:00&lt;00:00, 49.09it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Fetching WF footprints from cache: 100%|████████| 10/10 [00:00&lt;00:00, 47.29it/s]
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>FF_fromRS1 (loaded from cache)
@@ -3008,13 +3009,16 @@ LS_fromRS3 (loaded from cache)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/b202c2dd88a0ae7d24edda83bc79691d7862098c0ef51c8b974768a22a206114.png" src="../_images/b202c2dd88a0ae7d24edda83bc79691d7862098c0ef51c8b974768a22a206114.png" />
+<img alt="../_images/219587ffa06ddd3e6594c42e9595f5a294fbd383c8be2d03ba2f639ef33d5aa1.png" src="../_images/219587ffa06ddd3e6594c42e9595f5a294fbd383c8be2d03ba2f639ef33d5aa1.png" />
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># merge the two catalogues</span>
 <span class="n">catalog_allhazFootprints</span> <span class="o">=</span> <span class="n">catalog_hazFootprints</span> <span class="o">|</span> <span class="n">catalog_dynhazFootprints</span>
+
+<span class="c1"># update src class file for tutorial 3</span>
+<span class="n">GenMR_utils</span><span class="o">.</span><span class="n">save_class2pickle</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;src&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4592,12 +4596,13 @@ In anticyclone regime, drought duration = 7 months in stressed soil water condit
 <h4>C.3. Heatwave case (threshold model)<a class="headerlink" href="#c-3-heatwave-case-threshold-model" title="Link to this heading"></a></h4>
 <p>Heatwave <code class="docutils literal notranslate"><span class="pre">HW</span></code> temperature footprints are generated using a threshold-based model, in which an event is declared when the temperature equals or exceeds <code class="docutils literal notranslate"><span class="pre">T_th</span></code> for at least <code class="docutils literal notranslate"><span class="pre">Dt_da</span></code> consecutive days. Temperature extremes in the digital template arise from the combination of large-scale advective temperature anomalies and temporally correlated daily temperature variability.</p>
 <p>The parameter <code class="docutils literal notranslate"><span class="pre">nsig</span></code> can be adjusted to explore different levels of heatwave extremity within the digital template.</p>
+<p><strong>NOTE:</strong> <code class="docutils literal notranslate"><span class="pre">Tadv</span></code> (synoptic advective regime) is drawn once per simulation, hence held constant over the 4-week window considered (with <code class="docutils literal notranslate"><span class="pre">Dt_max_da</span> <span class="pre">=</span> <span class="pre">30</span></code>). This is a deliberate simplification of a regime-switching (semi-Markov) advection process, justified as follows: (i) synoptic advective regimes (persistent warm/cold air-mass intrusions) typically persist on the order of 1–4 weeks, consistent with a monthly-block approximation; (ii) it  reproduces the skewed, heavy-tailed character of advective bursts responsible for heatwave onset, which the unimodal AR(1) alone cannot capture. See Tutorial 3 for the full-year treatment, where <code class="docutils literal notranslate"><span class="pre">Tadv</span></code> is sampled as a regime-switching (semi-Markov) process over the full simulation period rather than fixed to a single 30-day window.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">norm</span>
 
 <span class="n">nsig</span> <span class="o">=</span> <span class="mi">3</span>                                       <span class="c1"># mean temperature extreme observed at nsigma</span>
-<span class="n">rdm_seed</span> <span class="o">=</span> <span class="mi">1</span>                                   <span class="c1"># None or integer - to test different daily fluctuations</span>
+<span class="n">rdm_seed</span> <span class="o">=</span> <span class="mi">4</span>                                   <span class="c1"># None or integer - to test different daily fluctuations</span>
 <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">40</span>                            <span class="c1"># range considered</span>
 <span class="n">month</span> <span class="o">=</span> <span class="mi">7</span>
 
@@ -4720,7 +4725,7 @@ In anticyclone regime, drought duration = 7 months in stressed soil water condit
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/2646bc7ca7c90edf2fbebaf700c1000947e635b3deed11ee5e3b57b3fba46e0a.png" src="../_images/2646bc7ca7c90edf2fbebaf700c1000947e635b3deed11ee5e3b57b3fba46e0a.png" />
+<img alt="../_images/166f2eaf2467c9a58d5f21221fe6efd9c9dcdacfb19f30f74cf9341f4661de3d.png" src="../_images/166f2eaf2467c9a58d5f21221fe6efd9c9dcdacfb19f30f74cf9341f4661de3d.png" />
 </div>
 </div>
 </section>
@@ -5512,6 +5517,7 @@ Total SU BI (M. EUR): 600.9
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="Tutorial1_DigitalTemplate_environment.html" class="btn btn-neutral float-left" title="Tutorial 1: Generating a virtual environment for the GenMR digital template" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Tutorial3_DigitalTemplate_dynamics.html" class="btn btn-neutral float-right" title="Tutorial 3: Implementing risk dynamics in the GenMR digital template" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
