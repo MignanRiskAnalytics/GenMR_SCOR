@@ -1078,6 +1078,10 @@ def gen_precipitation(Ti, w, par):
     z_tropopause_m = np.round(par['zmax_km'], decimals = 1) * 1e3
     zi_m = np.arange(0,z_tropopause_m,100)    # atmosphere profile
 
+    w = np.atleast_1d(w)
+    if w.size == 1:
+        w = np.full(len(Ti), w[0])
+
     nT, nz = len(Ti), len(zi_m)
     pz = np.zeros((nT,nz))
     qsat = np.zeros((nT,nz))
@@ -1087,7 +1091,7 @@ def gen_precipitation(Ti, w, par):
         Tz = GenMR_env.EnvLayer_atmo.calc_T_z(zi_m * 1e-3, Ti[i], lapse_rate = par['lapse_rate'])
         qsat[i,:] = calc_qsat(Tz, pz[i,:])
         dqsdz = np.gradient(qsat[i,:], zi_m)
-        C = np.maximum(0., -w * dqsdz)                                   # condensation rate kg/kg/s
+        C = np.maximum(0., -w[i] * dqsdz)                                # condensation rate kg/kg/s
         rho = (pz[i,:] * 1e3)/(287.05 * (Tz + 273.15))                   # air density from ideal gas law
         rain[i] = par['eta_rain'] * np.trapz(rho * C, zi_m) *86400       # precipitation mass flux (mm/day)
     return rain
@@ -1115,10 +1119,10 @@ def calc_PET(T_monthly, lat_deg, cloudy = False):  # WARNING: replace with FAO 5
     Geographical Review, 38(1), 55–94.
     '''
     # Cloud impact
-    if cloudy:
-        corr_cloud = .5
+    if np.isscalar(cloudy):
+        corr_cloud = .5 if cloudy else 0.
     else:
-        corr_cloud = 0.
+        corr_cloud = np.where(np.asarray(cloudy), .5, 0.)   # per-month cloud correction
     
     # Heat index
     I = np.sum((T_monthly / 5.) ** 1.514)                          # p.89, just before eq.9
