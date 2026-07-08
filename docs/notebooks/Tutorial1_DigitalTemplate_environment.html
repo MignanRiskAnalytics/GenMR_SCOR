@@ -283,8 +283,9 @@
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.model_To_analytical"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.model_To_analytical()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.pdf_T_advectivemodel"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.pdf_T_advectivemodel()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.sample_T_AR1process"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.sample_T_AR1process()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.sample_T_AR1process_DEPRECATED"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.sample_T_AR1process_DEPRECATED()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.sample_T_advectivemodel"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.sample_T_advectivemodel()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.sample_T_daily_DEPRECATED"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.sample_T_daily_DEPRECATED()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.perils.HazardFootprintGenerator.sample_T_advectivemodel_OLD"><code class="docutils literal notranslate"><span class="pre">HazardFootprintGenerator.sample_T_advectivemodel_OLD()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.RiskFootprintGenerator"><code class="docutils literal notranslate"><span class="pre">RiskFootprintGenerator</span></code></a></li>
@@ -316,6 +317,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.gen_BO_cascade_betweenness"><code class="docutils literal notranslate"><span class="pre">gen_BO_cascade_betweenness()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.gen_precipitation"><code class="docutils literal notranslate"><span class="pre">gen_precipitation()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.get_Dr"><code class="docutils literal notranslate"><span class="pre">get_Dr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.get_HR"><code class="docutils literal notranslate"><span class="pre">get_HR()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.get_damaged_and_tripped"><code class="docutils literal notranslate"><span class="pre">get_damaged_and_tripped()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.get_peril_evID"><code class="docutils literal notranslate"><span class="pre">get_peril_evID()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.get_reachable_targets"><code class="docutils literal notranslate"><span class="pre">get_reachable_targets()</span></code></a></li>
@@ -334,6 +336,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../manual.html#module-GenMR.utils">GenMR.utils module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#genmr-utility-functions">GenMR Utility Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.calc_EP"><code class="docutils literal notranslate"><span class="pre">calc_EP()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.calc_Sdistr_empirical"><code class="docutils literal notranslate"><span class="pre">calc_Sdistr_empirical()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.calc_riskmetrics_fromELT"><code class="docutils literal notranslate"><span class="pre">calc_riskmetrics_fromELT()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.cmap_peril"><code class="docutils literal notranslate"><span class="pre">cmap_peril()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.col_peril"><code class="docutils literal notranslate"><span class="pre">col_peril()</span></code></a></li>
@@ -452,6 +455,18 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html">Tutorial 3: Dynamic risk modelling</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#time-series-modelling">1. Time-series modelling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#standard-year-loss-table-ylt-generation">1.1. Standard year loss table (YLT) generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#seasonality-implementation">1.2. Seasonality implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#event-interaction-modelling">2. Event interaction modelling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#markov-process-integration">2.1. Markov process integration</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -481,8 +496,8 @@
   <section class="tex2jax_ignore mathjax_ignore" id="tutorial-1-generating-a-virtual-environment-for-the-genmr-digital-template">
 <h1>Tutorial 1: Generating a virtual environment for the GenMR digital template<a class="headerlink" href="#tutorial-1-generating-a-virtual-environment-for-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
-<strong>Version:</strong> 1.1.2<br />
-<strong>Last Updated:</strong> 2026-05-29<br />
+<strong>Version:</strong> 1.2.1<br />
+<strong>Last Updated:</strong> 2026-07-07<br />
 <strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
 <p>The <em>digital template</em>, first described in <a class="reference external" href="https://www.mdpi.com/1660-4601/19/23/16097">Mignan (2022)</a> and used in the CAT Risk Modelling Sandbox (<a class="reference external" href="https://github.com/amignan/Intro2CATriskModelling/blob/main/CATRiskModellingSandbox_tutorial.ipynb">Mignan, 2024</a>), is a microcosm simulation of the complex Earth system for catastrophe dynamics R&amp;D, multi-risk prototyping in the Generic Multi-Risk (GenMR) framework, and catastrophe risk eduction. It is defined as a virtual environment populated by loss-generating events that interact with each other and with the environment. The virtual environment, built in this tutorial, is composed of <em>environmental layers</em> that consist of sets of variables <span class="math notranslate nohighlight">\(\theta(x,y)\)</span> defined in a spatial grid of coordinates <span class="math notranslate nohighlight">\((x,y)\)</span>. Each layer may be altered by <em>environmental objects</em> located within the layer. The parsimonious complex Earth system finally consists of a stack of interacting environmental layers defined in the natural, technological and socio-economic systems. The loss-generating events that populate the virtual environment will be defined in the next tutorial, and their interactions potentially leading to compound catastrophes in a third and final tutorial.</p>
 <p>The modelled environmental layers and associated objects as listed in Table 1 (see also Fig. 1). This tutorial provides a concise overview of these layers using a default parameterisation, with alternative scenarios to be introduced later in How-To Guides. The outputs generated here will serve as input for hazard and risk assessment in the subsequent tutorials.</p>
@@ -732,7 +747,7 @@ The environmental layers are generated as follows:
     <span class="s1">&#39;lat_deg&#39;</span><span class="p">:</span> <span class="n">gridPar</span><span class="p">[</span><span class="s1">&#39;lat_deg&#39;</span><span class="p">],</span>
     <span class="s1">&#39;lapse_rate_degC/km&#39;</span><span class="p">:</span> <span class="mf">6.5</span><span class="p">,</span>   <span class="c1"># rate at which temperature falls with altitude z</span>
     <span class="s1">&#39;p0_kPa&#39;</span><span class="p">:</span> <span class="mf">101.3</span><span class="p">,</span>             <span class="c1"># standard mean sea-level atmospheric pressure (International Standard Atmosphere)</span>
-    <span class="s1">&#39;vz_subs_asc&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">1e-3</span><span class="p">,</span> <span class="mf">1.</span><span class="p">],</span>  <span class="c1"># large-scale vertical velocity (m/s), w &lt; 0: subside (anticyclone)</span>
+    <span class="s1">&#39;vz_subs_asc&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">.001</span><span class="p">,</span> <span class="mf">.02</span><span class="p">],</span> <span class="c1"># large-scale vertical velocity (m/s), w &lt; 0: subside (anticyclone)</span>
                                  <span class="c1">#                           w &gt; 0: ascent (cyclone), high in strong convection</span>
     <span class="s1">&#39;eta_rain&#39;</span><span class="p">:</span> <span class="mf">.5</span>               <span class="c1"># rain efficiency factor (NB: increase to .8 for organized systems?)</span>
 <span class="p">}</span>

@@ -317,6 +317,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.gen_BO_cascade_betweenness"><code class="docutils literal notranslate"><span class="pre">gen_BO_cascade_betweenness()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.gen_precipitation"><code class="docutils literal notranslate"><span class="pre">gen_precipitation()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.get_Dr"><code class="docutils literal notranslate"><span class="pre">get_Dr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.get_HR"><code class="docutils literal notranslate"><span class="pre">get_HR()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.get_damaged_and_tripped"><code class="docutils literal notranslate"><span class="pre">get_damaged_and_tripped()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.get_peril_evID"><code class="docutils literal notranslate"><span class="pre">get_peril_evID()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.get_reachable_targets"><code class="docutils literal notranslate"><span class="pre">get_reachable_targets()</span></code></a></li>
@@ -335,6 +336,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-GenMR.utils">GenMR.utils module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#genmr-utility-functions">GenMR Utility Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.calc_EP"><code class="docutils literal notranslate"><span class="pre">calc_EP()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.calc_Sdistr_empirical"><code class="docutils literal notranslate"><span class="pre">calc_Sdistr_empirical()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.calc_riskmetrics_fromELT"><code class="docutils literal notranslate"><span class="pre">calc_riskmetrics_fromELT()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.cmap_peril"><code class="docutils literal notranslate"><span class="pre">cmap_peril()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.utils.col_peril"><code class="docutils literal notranslate"><span class="pre">col_peril()</span></code></a></li>
@@ -4377,6 +4379,29 @@ where indices are inclusive and zero-based.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="GenMR.perils.get_HR">
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">get_HR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">I_rain_mo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">HR_th</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.get_HR" title="Link to this definition"></a></dt>
+<dd><p>Identify heavy-rain events and extract their durations and indices.</p>
+<p>A heavy-rain event is defined as a contiguous sequence of months with I_rain_mo &gt; HR_th
+(opposite tail from get_Dr(), which flags below-threshold soil moisture).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>I_rain_mo</strong> (<em>ndarray</em>) – Monthly-accumulated precipitation (mm/month), length = 12</p></li>
+<li><p><strong>HR_th</strong> (<em>float</em>) – Precipitation threshold to define a rainstorm (mm/month)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>events</strong> (<em>list of tuple</em>) – (start_index, end_index) pairs, inclusive, zero-based.</p></li>
+<li><p><strong>durations</strong> (<em>list of int</em>) – Durations (in months) of all detected rainstorms.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="GenMR.perils.get_damaged_and_tripped">
 <span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">get_damaged_and_tripped</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">g_intact</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_dmg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_BO</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.get_damaged_and_tripped" title="Link to this definition"></a></dt>
 <dd><p>Extract damaged (from previous event) and tripped (from blackout cascade) components
@@ -4699,10 +4724,10 @@ core GenMR workflows by streamlining data handling, computation, and visualisati
 <dd class="field-odd"><p>Arnaud Mignan, Mignan Risk Analytics GmbH</p>
 </dd>
 <dt class="field-even">Version<span class="colon">:</span></dt>
-<dd class="field-even"><p>1.1.2</p>
+<dd class="field-even"><p>1.2.1</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2026-04-14</p>
+<dd class="field-odd"><p>2026-07-08</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -4728,6 +4753,11 @@ for a series of event rates.</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GenMR.utils.calc_Sdistr_empirical">
+<span class="sig-prename descclassname"><span class="pre">GenMR.utils.</span></span><span class="sig-name descname"><span class="pre">calc_Sdistr_empirical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evTable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S_column</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.utils.calc_Sdistr_empirical" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="GenMR.utils.calc_riskmetrics_fromELT">
@@ -4790,10 +4820,13 @@ Passed to <cite>col_peril(peril)</cite> to get the corresponding color.</p>
 - ‘VE’  : Volcanic eruption
 - ‘FF’  : Fluvial flood
 - ‘SS’  : Storm surge
-- ‘RS’  : Rainstorm
+- ‘RS’  : Rainstorm (also ‘HR’ for heavy rain episode)
 - ‘TC’  : Tropical cyclone
 - ‘To’  : Tornado
 - ‘WS’  : Windstorm
+- ‘Dr’  : Drought
+- ‘HW’  : Heatwave
+- ‘WF’  : Wildfire
 - ‘Ex’  : Explosion</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

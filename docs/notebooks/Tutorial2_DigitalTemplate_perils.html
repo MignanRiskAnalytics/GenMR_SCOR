@@ -317,6 +317,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.gen_BO_cascade_betweenness"><code class="docutils literal notranslate"><span class="pre">gen_BO_cascade_betweenness()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.gen_precipitation"><code class="docutils literal notranslate"><span class="pre">gen_precipitation()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.get_Dr"><code class="docutils literal notranslate"><span class="pre">get_Dr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.get_HR"><code class="docutils literal notranslate"><span class="pre">get_HR()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.get_damaged_and_tripped"><code class="docutils literal notranslate"><span class="pre">get_damaged_and_tripped()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.get_peril_evID"><code class="docutils literal notranslate"><span class="pre">get_peril_evID()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.get_reachable_targets"><code class="docutils literal notranslate"><span class="pre">get_reachable_targets()</span></code></a></li>
@@ -335,6 +336,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../manual.html#module-GenMR.utils">GenMR.utils module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#genmr-utility-functions">GenMR Utility Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.calc_EP"><code class="docutils literal notranslate"><span class="pre">calc_EP()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.calc_Sdistr_empirical"><code class="docutils literal notranslate"><span class="pre">calc_Sdistr_empirical()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.calc_riskmetrics_fromELT"><code class="docutils literal notranslate"><span class="pre">calc_riskmetrics_fromELT()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.cmap_peril"><code class="docutils literal notranslate"><span class="pre">cmap_peril()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.utils.col_peril"><code class="docutils literal notranslate"><span class="pre">col_peril()</span></code></a></li>
@@ -495,7 +497,7 @@
 <h1>Tutorial 2: Implementing perils in the GenMR digital template<a class="headerlink" href="#tutorial-2-implementing-perils-in-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 1.2.1<br />
-<strong>Last Updated:</strong> 2026-07-06<br />
+<strong>Last Updated:</strong> 2026-07-07<br />
 <strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
 <p>Once a virtual environment has been generated (see previous tutorial), stochastic events are modelled to populate it. Table 1 lists the perils included in version 1.1.2.</p>
 <br>
@@ -841,7 +843,7 @@
                  <span class="s1">&#39;landuse&#39;</span><span class="p">:</span> <span class="n">urbLandLayer</span><span class="o">.</span><span class="n">S</span><span class="o">.</span><span class="n">copy</span><span class="p">()}</span>
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;RS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;atmosphere&#39;</span><span class="p">,</span>          <span class="c1"># as trigger of landslides</span>
                  <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">24</span><span class="p">}</span>                  <span class="c1"># (hr) to calc. soil wetness that triggers LS &amp; FF discharge</span>
-                                                  <span class="c1"># WARNING: constant for now, to be improved</span>
+                                                  <span class="c1"># somewhat ad-hoc, see Tutorial 3 for heavy rain (HR) model</span>
 
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;SS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s1">&#39;coastline&#39;</span><span class="p">}</span>
 <span class="n">SS_src_xi</span><span class="p">,</span> <span class="n">SS_src_yi</span> <span class="o">=</span> <span class="n">topoLayer</span><span class="o">.</span><span class="n">coastline_coord</span>
@@ -1869,7 +1871,7 @@
 <p><strong>Note:</strong> The correlation between <code class="docutils literal notranslate"><span class="pre">Dr</span></code>, <code class="docutils literal notranslate"><span class="pre">HW</span></code>, <code class="docutils literal notranslate"><span class="pre">PI</span></code>, and the anticorrelation with <code class="docutils literal notranslate"><span class="pre">RS</span></code>, will be examined in Tutorial 3.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## optional cell ##</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## optional cell / better constrained in Tutorial 3 ##</span>
 
 <span class="n">rates_Dr</span> <span class="o">=</span> <span class="n">GenMR_perils</span><span class="o">.</span><span class="n">calc_lbd_Dr</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;Dr&#39;</span><span class="p">],</span> <span class="n">atmoLayer</span><span class="o">.</span><span class="n">par</span><span class="p">,</span> <span class="n">soilLayer</span><span class="o">.</span><span class="n">par</span><span class="p">)</span>
 <span class="n">evtable</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">evtable</span><span class="p">[</span><span class="s1">&#39;evID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Dr&#39;</span><span class="p">,</span> <span class="s1">&#39;lbd&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rates_Dr</span>
@@ -2021,8 +2023,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>generating footprints for: AI... Dr... EQ... HW... (computing)
-Fetching footprints from potential footprints
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>generating footprints for: AI... Dr... EQ... HW... (loading from cache)
 PI... (loading from cache)
 RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf... SS... SU... catalogue completed
 </pre></div>
@@ -2974,7 +2975,7 @@ Loading from cache potential footprints
 Fetching footprints from potential footprints
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Fetching WF footprints from cache: 100%|████████| 10/10 [00:00&lt;00:00, 47.29it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Fetching WF footprints from cache: 100%|████████| 10/10 [00:00&lt;00:00, 35.50it/s]
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>FF_fromRS1 (loaded from cache)
@@ -2984,9 +2985,6 @@ LS_fromRS1 (loaded from cache)
 LS_fromRS2 (loaded from cache)
 LS_fromRS3 (loaded from cache)
 ... catalogue completed
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>dict_keys([&#39;WF1&#39;, &#39;WF2&#39;, &#39;WF3&#39;, &#39;WF4&#39;, &#39;WF5&#39;, &#39;WF6&#39;, &#39;WF7&#39;, &#39;WF8&#39;, &#39;WF9&#39;, &#39;WF10&#39;, &#39;FF_fromRS1&#39;, &#39;FF_fromRS2&#39;, &#39;FF_fromRS3&#39;, &#39;LS_fromRS1&#39;, &#39;LS_fromRS2&#39;, &#39;LS_fromRS3&#39;])
@@ -4219,8 +4217,6 @@ TVaR_q [$ B.]: 158.26920692828907
 <span class="n">I_rain_cycl</span> <span class="o">=</span> <span class="n">GenMR_perils</span><span class="o">.</span><span class="n">gen_precipitation</span><span class="p">(</span><span class="n">T_mo_cycl</span><span class="p">,</span> <span class="n">w_cycl</span><span class="p">,</span> <span class="n">par_rain</span><span class="p">)</span>
 
 <span class="c1">## soil water storage ##</span>
-<span class="n">Dr_th</span> <span class="o">=</span> <span class="mf">.1</span>                   <span class="c1"># 10% of standard storage</span>
-
 <span class="n">hw_max</span> <span class="o">=</span> <span class="n">soilLayer</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;hw_max_m&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1000.</span>            <span class="c1"># (mm)</span>
 <span class="n">hw0_normal</span> <span class="o">=</span> <span class="mf">.7</span> <span class="o">*</span> <span class="n">soilLayer</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;hw_fc_m&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1000.</span>     <span class="c1"># well-watered soil</span>
 <span class="n">hw0_stress</span> <span class="o">=</span> <span class="mf">.3</span> <span class="o">*</span> <span class="n">soilLayer</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;hw_fc_m&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1000.</span>     <span class="c1"># drought-prone initial state</span>
@@ -4319,7 +4315,7 @@ TVaR_q [$ B.]: 158.26920692828907
 In anticyclone regime, drought duration = 7 months in stressed soil water conditions
 </pre></div>
 </div>
-<img alt="../_images/93bfcb1eb8c7b074ad6de144aa67f87bf29a873f2fe7cbfb8954df44be94cc65.png" src="../_images/93bfcb1eb8c7b074ad6de144aa67f87bf29a873f2fe7cbfb8954df44be94cc65.png" />
+<img alt="../_images/5c1d077a32e2fbc423a1cbc15b988dd9ef358664b1c6a8b10a0bc0a71c1b346b.png" src="../_images/5c1d077a32e2fbc423a1cbc15b988dd9ef358664b1c6a8b10a0bc0a71c1b346b.png" />
 </div>
 </div>
 </section>
