@@ -816,10 +816,13 @@ def col_peril(peril):
         - 'VE'  : Volcanic eruption
         - 'FF'  : Fluvial flood
         - 'SS'  : Storm surge
-        - 'RS'  : Rainstorm
+        - 'RS'  : Rainstorm (also 'HR' for heavy rain episode)
         - 'TC'  : Tropical cyclone
         - 'To'  : Tornado
         - 'WS'  : Windstorm
+        - 'Dr'  : Drought
+        - 'HW'  : Heatwave
+        - 'WF'  : Wildfire
         - 'Ex'  : Explosion
 
     Returns
@@ -836,6 +839,7 @@ def col_peril(peril):
     col_peril_geophys = "#CD853F"  #Peru
     col_peril_hydro = "#20B2AA"    #MediumSeaGreen
     col_peril_meteo = "#4169E1"    #RoyalBlue
+    col_peril_clim = '#DC143C'     #Crimson
     col_peril_tech = "#FF8C00"     #'Safety Orange'
     if peril == 'AI':
         col = col_peril_extra
@@ -843,11 +847,15 @@ def col_peril(peril):
         col = col_peril_geophys
     if peril == 'FF' or peril == 'SS':
         col = col_peril_hydro
-    if peril == 'CS' or peril == 'RS' or peril == 'TC' or peril == 'To' or peril == 'WS':
+    if peril == 'CS' or peril == 'RS' or peril == 'HR' or peril == 'TC' or peril == 'To' or peril == 'WS':
         col = col_peril_meteo
+    if peril == 'HW':
+        col = col_peril_clim
+    if peril == 'Dr':
+        col = '#E9967A'            #DarkSalmon
     if peril == 'Ex':
         col = col_peril_tech
-    if peril == 'Ex' or peril == 'Li':
+    if peril == 'Ex' or peril == 'Li' or peril == 'WF':  # explosion overwrite
         col = 'red'
     return col
 

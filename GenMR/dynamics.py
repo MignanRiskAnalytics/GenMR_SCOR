@@ -180,14 +180,41 @@ def gen_YLT(ELT, Nsim, distr_dict, phi_dict = None):
 #################
 ## SEASONALITY ##
 #################
-def gen_YET_HW(T0, T, par, Nsim):
+def sample_DT_stoch(par, Nsim, Ndays):
+    '''
+    Draw the shared inter-annual + monthly advective temperature anomaly
+    used to drive all thermodynamically-coupled perils (HW, Dr, HR).
+
+    Returns
+    -------
+    DT_peryr : ndarray (Nsim,)
+    DT_adv_month : ndarray (Nsim, 12)
+        Monthly advective anomaly (°C). Sign gives the synoptic regime:
+        > 0 anticyclonic (subsidence, clear sky) -> HW / Dr potential
+        < 0 cyclonic (ascent, cloudy)            -> HR potential
+    DT_adv_daily : ndarray (Nsim, Ndays)
+        DT_adv_month repeated to daily resolution, for gen_YET_HW.
+    '''
+    days_per_mon = GenMR_utils.days_per_mon
+    DT_peryr = np.random.normal(0, par['sigmaT_yearly'], Nsim)
+    DT_adv_month = np.empty((Nsim, 12))
+    DT_adv_daily = np.empty((Nsim, Ndays))
+    for sim in range(Nsim):
+        DT_adv_month[sim] = GenMR_perils.HazardFootprintGenerator.sample_T_advectivemodel(
+            np.zeros(12), par['lat_deg'])
+        DT_adv_daily[sim] = np.repeat(DT_adv_month[sim], days_per_mon)
+    return DT_peryr, DT_adv_month, DT_adv_daily
+
+
+## HEATWAVE ##
+def gen_YET_HW(T0, T, par, DT_peryr, DT_adv_daily, Nsim):
     '''
     Generate a stochastic Year-Event Table (YET) of heatwave events with associated spatial footprints.
 
-    For each simulated year, this function draws inter-annual and advective temperature
-    offsets, generates a daily AR(1) temperature trajectory, detects heatwave events at a
-    coastal reference location, and reconstructs the spatial footprint of each detected
-    event over the full grid.
+    For each simulated year, this function applies a precomputed inter-annual and
+    advective temperature offset, generates a daily AR(1) temperature trajectory,
+    detects heatwave events at a coastal reference location, and reconstructs the
+    spatial footprint of each detected event over the full grid.
 
     This implementation uses a simplified detection scheme: the heatwave time window
     ``(start, end)`` for each event is determined once, at the coastal reference location
@@ -218,10 +245,14 @@ def gen_YET_HW(T0, T, par, Nsim):
     par : dict
         Dictionary of heatwave model parameters, expected to contain:
 
-        - ``'sigmaT_yearly'`` : float, standard deviation of inter-annual temperature variability (°C).
         - ``'T_AR1'`` : tuple of (phi, sigma), AR(1) persistence and innovation std. dev. (°C) for daily fluctuations.
         - ``'T_th'`` : float, heatwave temperature threshold (°C).
         - ``'Dt_da'`` : int, minimum number of consecutive days above threshold to qualify as a heatwave.
+    DT_peryr : ndarray of shape (Nsim,)
+        Precomputed inter-annual temperature offset (°C) for each simulated year.
+    DT_adv_daily : ndarray of shape (Nsim, Ndays)
+        Precomputed advective temperature offset (°C), resolved at daily resolution,
+        for each simulated year.
     Nsim : int
         Number of simulated years to generate.
 
@@ -242,19 +273,6 @@ def gen_YET_HW(T0, T, par, Nsim):
     '''
     Ndays = T.shape[0]
 
-    # inter-year variability
-    DT_peryr = np.random.normal(0, par['sigmaT_yearly'], Nsim)
-
-    ## advection model (3-Gaussian model) ##
-    # main change from Tutorial 2: one 3-Gaussian draw per calendar month
-    # introduces artificial discontinuities at month boundaries
-    days_per_mon = GenMR_utils.days_per_mon
-    DT_adv_daily = np.empty((Nsim, Ndays))
-    for sim in range(Nsim):
-        DT_adv_month = GenMR_perils.HazardFootprintGenerator.sample_T_advectivemodel(
-            np.zeros(12), par['lat_deg'])
-        DT_adv_daily[sim] = np.repeat(DT_adv_month, days_per_mon)
-    
     DT_stoch = DT_peryr[:, None] + DT_adv_daily 
 
     YET_list = []
@@ -262,8 +280,8 @@ def gen_YET_HW(T0, T, par, Nsim):
     evID_counter = 0
     for sim in range(Nsim):
         simID = sim + 1
-        if sim % 1000 == 0:
-            print(f'{sim}/{Nsim}', end='\r', flush=True)
+        if simID % 1000 == 0:
+            print(f'{simID}/{Nsim}', end='\r', flush=True)
 
         dT_daily_stoch = GenMR_perils.HazardFootprintGenerator.sample_T_AR1process(DT_stoch[sim], \
                                                                 Ndays, par['T_AR1'][0], par['T_AR1'][1])
@@ -291,6 +309,69 @@ def gen_YET_HW(T0, T, par, Nsim):
     YET_HW = pd.DataFrame(YET_list)
     return YET_HW, catalog_hazFp_HW
 
+
+## DROUGHT & RAINSTORM ##
+def sample_Dr_stress(par, Nsim):
+    '''
+    Draw a stochastic antecedent soil-moisture stress fraction per simulated year.
+
+    Parameters
+    ----------
+    par : dict
+        Expected keys:
+        - 'Dr_stress_mean' : float, mean stress fraction in [0,1]
+        - 'Dr_stress_k'    : float, Beta concentration (higher = tighter around mean)
+    Nsim : int
+
+    Returns
+    -------
+    Dr_stress : ndarray of shape (Nsim,)
+        Fraction of stable max soil-water content depleted before the year starts.
+    '''
+    m, k = par['Dr_stress_mean'], par['Dr_stress_k']
+    a, b = m * k, (1 - m) * k
+    return np.random.beta(a, b, Nsim)
+
+
+def gen_YET_Dr_HR(T0_mo, par, atmo_par, soil_par, DT_peryr, DT_adv_month, Dr_stress, Nsim):
+    w_subs, w_asc = atmo_par['vz_subs_asc']
+    z_tropo = GenMR_env.EnvLayer_atmo.calc_z_tropopause(par['lat_deg'])
+    par_rain = {'p0': atmo_par['p0_kPa'], 'lapse_rate': atmo_par['lapse_rate_degC/km'],
+                'eta_rain': atmo_par['eta_rain'], 'zmax_km': z_tropo}
+    Smax = soil_par['hw_max_m'] * 1e3
+    Dr_th = soil_par['hw_fc_m'] * 1e3 * par['hw_th']
+
+    YET_Dr_list, YET_HR_list = [], []
+    evID_Dr, evID_HR = 0, 0
+    for sim in range(Nsim):
+        simID = sim + 1
+        if simID % 1000 == 0:
+            print(f'{simID}/{Nsim}', end='\r', flush=True)
+
+        T_mo_stoch = T0_mo + DT_peryr[sim] + DT_adv_month[sim]
+
+        cyclonic = DT_adv_month[sim] < 0        # (12,) bool: True = ascent/cloudy/wet
+        w_mo = np.where(cyclonic, w_asc, w_subs)
+
+        ET0 = GenMR_perils.calc_PET(T_mo_stoch, par['lat_deg'], cloudy = cyclonic)
+        I_rain = GenMR_perils.gen_precipitation(T_mo_stoch, w_mo, par_rain)    # mm/day
+        I_rain_mon = I_rain * GenMR_utils.days_per_mon 
+        hw0 = (1. - Dr_stress[sim]) * soil_par['hw_fc_m'] * 1000. 
+                                        # fraction of stable maximum water content (mm)
+        S_t = GenMR_perils.update_soil_moisture(I_rain_mon, ET0, hw0, Smax)
+
+        Dr_events, Dr_dur = GenMR_perils.get_Dr(S_t, Dr_th)
+        for (start, end), dur in zip(Dr_events, Dr_dur):
+            evID_Dr += 1
+            YET_Dr_list.append({'simID': simID, 'evID': f'Dr{evID_Dr}', 'ID': 'Dr',
+                                 't': start/12, 'S': dur})
+
+        HR_events, HR_dur = GenMR_perils.get_HR(I_rain_mon, par['HR_th'])
+        for (start, end), dur in zip(HR_events, HR_dur):
+            evID_HR += 1
+            YET_HR_list.append({'simID': simID, 'evID': f'HR{evID_HR}', 'ID': 'HR', 't': start/12, 'S': dur})
+
+    return pd.DataFrame(YET_Dr_list), pd.DataFrame(YET_HR_list)
 
 
 

@@ -1009,6 +1009,7 @@ def calc_e0(T):
     e0_kPa = e0_hPa / 10
     return e0_kPa
 
+
 def calc_qsat(T_degC, p_kPa):
     '''
     Compute the saturation specific humidity as a function of air temperature
@@ -1039,6 +1040,7 @@ def calc_qsat(T_degC, p_kPa):
     w_s = Rd_Rv * e_s / (p_kPa - e_s)   # saturation mixing ratio (eq.3.63)
     q_s = w_s / (1. + w_s)              # just after eq.3.57
     return q_s
+
 
 def gen_precipitation(Ti, w, par):
     '''
@@ -1096,6 +1098,7 @@ def gen_precipitation(Ti, w, par):
         rain[i] = par['eta_rain'] * np.trapz(rho * C, zi_m) *86400       # precipitation mass flux (mm/day)
     return rain
 
+
 def calc_PET(T_monthly, lat_deg, cloudy = False):  # WARNING: replace with FAO 56 Penman-Monteith equation?
     '''
     Estimate the monthly potential evapotranspiration (PET) according to Thornthwaite (1948),
@@ -1144,6 +1147,7 @@ def calc_PET(T_monthly, lat_deg, cloudy = False):  # WARNING: replace with FAO 5
     PET = (1 - corr_cloud) * PET_nocloud
     return PET
 
+
 def update_soil_moisture(P, ET, S0, Smax):
     '''
     Monthly soil water balance.
@@ -1174,6 +1178,7 @@ def update_soil_moisture(P, ET, S0, Smax):
         elif S[t] < 0:
             S[t] = 0
     return S
+
 
 def get_Dr(S_t, Dr_th):
     '''
@@ -1213,6 +1218,7 @@ def get_Dr(S_t, Dr_th):
         durations.append(length)
         events.append((start, len(S_t) - 1))
     return events, durations
+
 
 def calc_lbd_Dr(par, atmo_par, soil_par, Nsim = int(1e6)):
     '''
@@ -1278,6 +1284,45 @@ def calc_lbd_Dr(par, atmo_par, soil_par, Nsim = int(1e6)):
     for i in range(nS):
         lbdi[i] = np.sum(S_map['S'] == Si[i]) / Nsim
     return lbdi
+
+
+# only used in Tutorial 3 when HR (heavy rain) is modelled alongside HW and Dr
+def get_HR(I_rain_mo, HR_th):
+    '''
+    Identify heavy-rain events and extract their durations and indices.
+
+    A heavy-rain event is defined as a contiguous sequence of months with I_rain_mo > HR_th
+    (opposite tail from get_Dr(), which flags below-threshold soil moisture).
+
+    Parameters
+    ----------
+    I_rain_mo : ndarray
+        Monthly-accumulated precipitation (mm/month), length = 12
+    HR_th : float
+        Precipitation threshold to define a rainstorm (mm/month)
+
+    Returns
+    -------
+    events : list of tuple
+        (start_index, end_index) pairs, inclusive, zero-based.
+    durations : list of int
+        Durations (in months) of all detected rainstorms.
+    '''
+    ind_HR = I_rain_mo > HR_th
+    durations, events = [], []
+    start = None
+    for i, wet in enumerate(ind_HR):
+        if wet and start is None:
+            start = i
+        elif not wet and start is not None:
+            durations.append(i - start)
+            events.append((start, i - 1))
+            start = None
+    if start is not None:
+        durations.append(len(I_rain_mo) - start)
+        events.append((start, len(I_rain_mo) - 1))
+    return events, durations
+
 
 
 
