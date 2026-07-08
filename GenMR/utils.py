@@ -7,8 +7,8 @@ computing, and plotting within the GenMR package. These functions support
 core GenMR workflows by streamlining data handling, computation, and visualisation tasks.
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
-:Version: 1.1.2
-:Date: 2026-04-14
+:Version: 1.2.1
+:Date: 2026-07-08
 :License: AGPL-3
 """
 
@@ -666,6 +666,24 @@ map_EF2vmax = {
 }
 
 
+
+
+
+####################
+## HAZARD METRICS ##
+####################
+
+def calc_Sdistr_empirical(evTable, S_column):
+    if 'year' in evTable.columns:
+        yrmin, yrmax = int(evTable['year'].min()), int(evTable['year'].max())
+    elif 'year' not in evTable.columns and 'simID' in evTable.columns:
+        yrmin, yrmax = int(evTable['simID'].min()), int(evTable['simID'].max())
+    S = np.array(sorted(evTable[S_column]), dtype = float)
+    ecdf = np.linspace(0, 1-1/len(S), len(S))
+    ccdf = 1. - ecdf
+    ratio_annual = len(evTable) / (yrmax - yrmin + 1)
+    Sdistr = ccdf * ratio_annual
+    return S, Sdistr
 
 
 ##################
