@@ -455,11 +455,16 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial 3: Dynamic risk modelling</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#time-series-modelling">1. Time-series modelling</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#standard-year-loss-table-ylt-generation">1.1. Standard year loss table (YLT) generation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#seasonality-implementation">1.2. Seasonality implementation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#time-occurrence-implementation">1.2. Time occurrence implementation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#event-interaction-modelling">2. Event interaction modelling</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#markov-process-integration">2.1. Markov process integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compound-event-modelling">2. Compound event modelling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#common-driver-temperature-as-external-forcing-factor">2.1. Common driver: Temperature as external forcing factor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#heatwaves-droughts-and-heavy-rains">2.1.1. Heatwaves, droughts and heavy rains</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#wildfires">2.1.2. Wildfires</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#event-interaction-modelling-markov-process-integration">2.2. Event interaction modelling (Markov process integration)</a></li>
 </ul>
 </li>
 </ul>
@@ -494,7 +499,7 @@
 <h1>Tutorial 3: Implementing risk dynamics in the GenMR digital template<a class="headerlink" href="#tutorial-3-implementing-risk-dynamics-in-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 1.2.1<br />
-<strong>Last Updated:</strong> 2026-07-09<br />
+<strong>Last Updated:</strong> 2026-07-13<br />
 <strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
 <p>IN CONSTRUCTION - Please check back in late September 2026 for the official release.</p>
 <p>A tutorial on catastrophe dynamics, demonstrating how to model chains-of-events and their cascading impacts.</p>
@@ -1172,10 +1177,10 @@
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>AAL ELT (M. $): 759.92
 ** POISSON **
-AAL YLT Poisson (M. $): 744.806 ± 50.41  (99.7% CI)
+AAL YLT Poisson (M. $): 795.672 ± 60.40  (99.7% CI)
 Within tolerance: True
 ** NEGATIVE BINOMIAL (for selected perils) **
-AAL YLT nb (M. $): 768.785 ± 60.857  (99.7% CI)
+AAL YLT nb (M. $): 748.563 ± 55.032  (99.7% CI)
 Within tolerance: True
 </pre></div>
 </div>
@@ -1217,18 +1222,51 @@ Within tolerance: True
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/fc8ef7fe4e64789a1ce27d8dc9e007eb08ac47e51ae6d7bd03ac06a5fee27c3b.png" src="../_images/fc8ef7fe4e64789a1ce27d8dc9e007eb08ac47e51ae6d7bd03ac06a5fee27c3b.png" />
+<img alt="../_images/f4dfbab5dbe655371e9b01e538962d919605ceaf8c57211e30dfadd37b5dbd45.png" src="../_images/f4dfbab5dbe655371e9b01e538962d919605ceaf8c57211e30dfadd37b5dbd45.png" />
 </div>
 </div>
 </section>
-<section id="seasonality-implementation">
-<h3>1.2. Seasonality implementation<a class="headerlink" href="#seasonality-implementation" title="Link to this heading"></a></h3>
-<p>In the context of dynamic catastrophe risk modelling, the occurrence time of simulated events must be specified. It is defined as <code class="docutils literal notranslate"><span class="pre">t</span></code> in the Year Event Table (YET) and expressed as a decimal year in the interval (0, 1). Prior to the implementation of event interactions (see Section 2), event occurrences may either be sampled from a uniform distribution or follow a prescribed seasonal cycle. Here, seasonality is driven by the Energy Balance Climate Model (EBCM) introduced in Tutorial 1 on environmental layers. The same EBCM framework was also used in Tutorial 2 to illustrate the emergence of heatwaves (<code class="docutils literal notranslate"><span class="pre">HW</span></code>) and droughts (<code class="docutils literal notranslate"><span class="pre">Dr</span></code>).</p>
-<p>In this tutorial, the EBCM is used to generate seasonality over the entire year, from which the occurrence times of <code class="docutils literal notranslate"><span class="pre">HW</span></code> and <code class="docutils literal notranslate"><span class="pre">Dr</span></code> events are derived. Primary heavy rainfall (<code class="docutils literal notranslate"><span class="pre">HR</span></code>) events, introduced ad hoc in Tutorial 2, are now modelled explicitly to illustrate their relationship with heatwaves and droughts through alternating atmospheric circulation regimes. Additional <code class="docutils literal notranslate"><span class="pre">HR</span></code> events triggered by individual storms may be incorporated later in Section 2. The term heavy rainfall is used instead of rainstorm because <code class="docutils literal notranslate"><span class="pre">HR</span></code> is represented here as a prolonged, month-scale meteorological forcing rather than as an individual multi-day storm event. Such storm-related rainfall events will be considered separately, as rainfall components associated with windstorms (<code class="docutils literal notranslate"><span class="pre">WS</span></code>) or tropical cyclones (<code class="docutils literal notranslate"><span class="pre">TC</span></code>).</p>
-<p>ONGOING DEVELOPMENT…</p>
+<section id="time-occurrence-implementation">
+<h3>1.2. Time occurrence implementation<a class="headerlink" href="#time-occurrence-implementation" title="Link to this heading"></a></h3>
+<p>In dynamic catastrophe risk modelling, each simulated event must be assigned an occurrence time. This is specified by the variable <code class="docutils literal notranslate"><span class="pre">t</span></code> in the YLT and expressed as a decimal year in the interval (0, 1). Before introducing physically based compound-event modelling (Section 2), event occurrence times can be sampled either from a uniform distribution or from a von Mises distribution using <code class="docutils literal notranslate"><span class="pre">sample_seasonal_t()</span></code>. The von Mises distribution provides a phenomenological representation of seasonality based on empirical observations, and is intended here for meteorological perils (<code class="docutils literal notranslate"><span class="pre">Li</span></code>, <code class="docutils literal notranslate"><span class="pre">TC</span></code>, <code class="docutils literal notranslate"><span class="pre">To</span></code>, <code class="docutils literal notranslate"><span class="pre">WS</span></code>). In contrast, Section 2.1 introduces seasonality that emerges from explicit physical constraints, enabling the modelling of climatic perils.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># consider only one YLT: poisson or incl. negative binomial</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">####################################</span>
+<span class="c1">## Seasonal meteorological perils ##</span>
+<span class="c1">####################################</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">sample_seasonal_t</span><span class="p">(</span><span class="n">peak_day</span><span class="p">,</span> <span class="n">kappa</span><span class="p">,</span> <span class="n">Nevents</span><span class="p">,</span> <span class="n">Ndays</span> <span class="o">=</span> <span class="mi">365</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Sample event occurrence times (decimal-year fraction) from a von Mises</span>
+<span class="sd">    seasonal distribution, for perils without a direct thermodynamic driver</span>
+<span class="sd">    in the present framework (TC, WS, CS, To).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    peak_day : float</span>
+<span class="sd">        Day of year (1-365) of peak seasonal occurrence.</span>
+<span class="sd">    kappa : float</span>
+<span class="sd">        Concentration parameter. kappa=0 -&gt; uniform (no seasonality).</span>
+<span class="sd">        Higher kappa -&gt; more sharply peaked season.</span>
+<span class="sd">    Nevents : int</span>
+<span class="sd">        Number of event times to draw.</span>
+<span class="sd">    Ndays : int</span>
+<span class="sd">        Days per year, for angle conversion.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    t : ndarray of shape (Nevents,)</span>
+<span class="sd">        Decimal-year fraction in [0, 1).</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">peak_day</span> <span class="o">/</span> <span class="n">Ndays</span><span class="p">)</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">vonmises</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">kappa</span><span class="p">,</span> <span class="n">Nevents</span><span class="p">)</span>   <span class="c1"># in (-pi, pi]</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>                   <span class="c1"># wrap to [0, 2pi)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">theta</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">t</span>
+
+
+
+<span class="c1"># consider only one YLT: poisson or incl. negative binomial for illustration</span>
 <span class="n">YLT</span> <span class="o">=</span> <span class="n">YLT_poi</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 <span class="n">YLT</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">YLT</span><span class="p">[</span><span class="s1">&#39;evID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
 
@@ -1236,16 +1274,72 @@ Within tolerance: True
              <span class="c1"># (see long-term trend section for year relevance)</span>
 
 
-<span class="c1">## random uniform time (if not seasonal peril) ##</span>
-
-<span class="c1"># WARNING: all perils attributed random uniform time in first step - some to be overwritten in the next cell</span>
-<span class="n">YLT</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">year</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">YLT</span><span class="p">))</span>
-
+    
+<span class="c1">## random uniform time (default) ##</span>
+<span class="n">YLT</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">year</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">YLT</span><span class="p">))</span>   <span class="c1"># some to be overwritten below</span>
 <span class="n">YLT</span> <span class="o">=</span> <span class="n">YLT</span><span class="p">[[</span><span class="s1">&#39;simID&#39;</span><span class="p">,</span> <span class="s1">&#39;evID&#39;</span><span class="p">,</span> <span class="s1">&#39;ID&#39;</span><span class="p">,</span> <span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">]]</span>
+
+
+
+<span class="c1">## seasonal (for meteorological perils) ##</span>
+<span class="n">seasonal_par</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;WS&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;peak_day&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>  <span class="s1">&#39;kappa&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">},</span>   <span class="c1"># mid-January</span>
+    <span class="s1">&#39;To&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;peak_day&#39;</span><span class="p">:</span> <span class="mi">130</span><span class="p">,</span> <span class="s1">&#39;kappa&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span>   <span class="c1"># early May, narrower season</span>
+    <span class="s1">&#39;Li&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;peak_day&#39;</span><span class="p">:</span> <span class="mi">130</span><span class="p">,</span> <span class="s1">&#39;kappa&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span>   <span class="c1"># same as Li since CS -&gt; (To, Li), see Tutorial 2</span>
+    <span class="s1">&#39;TC&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;peak_day&#39;</span><span class="p">:</span> <span class="mi">260</span><span class="p">,</span> <span class="s1">&#39;kappa&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>   <span class="c1"># mid-September</span>
+<span class="p">}</span>
+
+<span class="k">for</span> <span class="n">ID</span><span class="p">,</span> <span class="n">par</span> <span class="ow">in</span> <span class="n">seasonal_par</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">YLT</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">ID</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">ind</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">continue</span>
+    <span class="n">YLT</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ind</span><span class="p">,</span> <span class="s1">&#39;t&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sample_seasonal_t</span><span class="p">(</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;peak_day&#39;</span><span class="p">],</span> <span class="n">par</span><span class="p">[</span><span class="s1">&#39;kappa&#39;</span><span class="p">],</span> <span class="n">n</span><span class="p">)</span>
+    
+    
+<span class="c1"># time series plot</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+
+<span class="n">perils</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">YLT</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
+<span class="n">colors</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="p">:</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">col_peril</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">perils</span><span class="p">}</span>
+
+<span class="n">nmax</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ID</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">perils</span><span class="p">):</span>
+    <span class="n">subset</span> <span class="o">=</span> <span class="n">YLT</span><span class="p">[</span><span class="n">YLT</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">ID</span><span class="p">]</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">subset</span><span class="p">),</span><span class="n">nmax</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">subset</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[:</span><span class="n">nmax</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span>
+               <span class="n">color</span> <span class="o">=</span> <span class="n">colors</span><span class="p">[</span><span class="n">ID</span><span class="p">],</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.1</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="n">ID</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">perils</span><span class="p">)))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="n">perils</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Decimal year (t)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;right&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Simulated event occurrence by peril&#39;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../_images/89a6d26e5579bbd16ac545180aa9199e4e5d80df9290a4b8797fa6fc741f47f9.png" src="../_images/89a6d26e5579bbd16ac545180aa9199e4e5d80df9290a4b8797fa6fc741f47f9.png" />
 </div>
+</div>
+</section>
+</section>
+<section id="compound-event-modelling">
+<h2>2. Compound event modelling<a class="headerlink" href="#compound-event-modelling" title="Link to this heading"></a></h2>
+<p>ONGOING DEVELOPMENT…</p>
+<p>A compound event is defined as an extreme event resulting from the interplay of multiple physical processes. It encompasses various forms of interconnected phenomena, including simple one-to-one chains of events (i.e., domino effects), external forcing factors simultaneously affecting multiple perils, combinations of events triggering subsequent events, feedback loops, and more complex scenarios that integrate all of these mechanisms.</p>
+<p>Section 2.1 first considers temperature as a common external forcing influencing the climatic perils <code class="docutils literal notranslate"><span class="pre">HW</span></code>, <code class="docutils literal notranslate"><span class="pre">Dr</span></code>, and <code class="docutils literal notranslate"><span class="pre">WF</span></code> (incl. anticorrelated heavy rain episodes <code class="docutils literal notranslate"><span class="pre">HR</span></code>). This framework naturally produces physically based seasonality and a concentration of extreme events during stochastic temperature anomalies. It also provides a direct pathway for incorporating the effects of global warming, which will be explored in the future Section 3.</p>
+<p>Section 2.2 will introduce one-to-one event chains and cascading events. UNDER CONSTRUCTION.</p>
+<p>Note that coincident events (i.e., perfect storms) are already represented through the event-time sampling introduced in Section 1.2.</p>
+<p>At this stage, the focus is on the dynamics of event occurrence through the Year Event Table (YET), independently of the Year Loss Table (YLT). This separation allows the physical mechanisms governing compound events to be developed before extending the framework to loss assessment. The integration of losses will be addressed in the future Section 3.</p>
+<section id="common-driver-temperature-as-external-forcing-factor">
+<h3>2.1. Common driver: Temperature as external forcing factor<a class="headerlink" href="#common-driver-temperature-as-external-forcing-factor" title="Link to this heading"></a></h3>
+<p>Intra-annual temperature variations are simulated using the Energy Balance Climate Model (EBCM) introduced in Tutorial 1 on environmental layers. The same EBCM framework was also used in Tutorial 2 to demonstrate the emergence of heatwaves (<code class="docutils literal notranslate"><span class="pre">HW</span></code>) and droughts (<code class="docutils literal notranslate"><span class="pre">Dr</span></code>). Primary heavy rainfall (<code class="docutils literal notranslate"><span class="pre">HR</span></code>) events, introduced ad hoc in Tutorial 2, are now modelled explicitly to illustrate their relationship with heatwaves and droughts (and later with wildfires) through alternating atmospheric circulation regimes. Additional <code class="docutils literal notranslate"><span class="pre">HR</span></code> events triggered by individual storms may be incorporated later in Section 2.2. The term heavy rainfall is used instead of rainstorm because <code class="docutils literal notranslate"><span class="pre">HR</span></code> is represented here as a prolonged, month-scale meteorological forcing rather than as an individual multi-day storm event. Such storm-related rainfall events will be considered separately, as rainfall components associated with windstorms (<code class="docutils literal notranslate"><span class="pre">WS</span></code>) or tropical cyclones (<code class="docutils literal notranslate"><span class="pre">TC</span></code>).</p>
+<section id="heatwaves-droughts-and-heavy-rains">
+<h4>2.1.1. Heatwaves, droughts and heavy rains<a class="headerlink" href="#heatwaves-droughts-and-heavy-rains" title="Link to this heading"></a></h4>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## EBCM seasonal driver (climatical &amp; meteorological perils) ##</span>
@@ -1344,8 +1438,8 @@ Dr/HR modelling
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## plots ##</span>
 <span class="n">n_sample</span> <span class="o">=</span> <span class="mi">20</span>        <span class="c1"># number of plotted time series (simulation years)</span>
-<span class="n">seed</span> <span class="o">=</span> <span class="mi">5</span>             <span class="c1"># for time series sampling</span>
-<span class="n">sample_ID</span> <span class="o">=</span> <span class="mi">1</span>        <span class="c1"># which one of the sampled time series to explore (index)</span>
+<span class="n">seed</span> <span class="o">=</span> <span class="mi">9</span>             <span class="c1"># for time series sampling</span>
+<span class="n">sample_ID</span> <span class="o">=</span> <span class="mi">9</span>        <span class="c1"># which one of the sampled time series to explore (index)</span>
 
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
 <span class="n">all_simIDs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span>
@@ -1482,178 +1576,59 @@ Dr/HR modelling
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9d3454356bfc122ea2349535ec334783efd3cf32e5f7363bafd2b67e6ae28a3d.png" src="../_images/9d3454356bfc122ea2349535ec334783efd3cf32e5f7363bafd2b67e6ae28a3d.png" />
+<img alt="../_images/08bf6b6eec8039565b4688c72fc67ed9f114816b3d86cd3ee368d88003b40bb5.png" src="../_images/08bf6b6eec8039565b4688c72fc67ed9f114816b3d86cd3ee368d88003b40bb5.png" />
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># add HW, Dr and HR to original YLT</span>
 
-<span class="k">for</span> <span class="n">YET</span> <span class="ow">in</span> <span class="p">[</span><span class="n">YET_HW</span><span class="p">,</span> <span class="n">YET_Dr</span><span class="p">,</span> <span class="n">YET_HR</span><span class="p">]:</span>
-    <span class="n">YET</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+<span class="c1">#for YET in [YET_HW, YET_Dr, YET_HR]:</span>
+<span class="c1">#    YET[&#39;loss&#39;] = np.nan</span>
 
-<span class="n">YLT</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">YLT</span><span class="p">,</span> <span class="n">YET_HW</span><span class="p">,</span> <span class="n">YET_Dr</span><span class="p">,</span> <span class="n">YET_HR</span><span class="p">],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">YLT</span> <span class="o">=</span> <span class="n">YLT</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s1">&#39;simID&#39;</span><span class="p">,</span> <span class="s1">&#39;t&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1">#YLT = pd.concat([YLT, YET_HW, YET_Dr, YET_HR], ignore_index=True)</span>
+<span class="c1">#YLT = YLT.sort_values([&#39;simID&#39;, &#39;t&#39;]).reset_index(drop=True)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">####################################</span>
-<span class="c1">## Seasonal meteorological perils ##</span>
-<span class="c1">####################################</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># tmp - explore rain intensity distribution to select src.par[&#39;Dr&#39;][&#39;HR_th&#39;]</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">sample_seasonal_t</span><span class="p">(</span><span class="n">peak_day</span><span class="p">,</span> <span class="n">kappa</span><span class="p">,</span> <span class="n">Nevents</span><span class="p">,</span> <span class="n">Ndays</span> <span class="o">=</span> <span class="mi">365</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Sample event occurrence times (decimal-year fraction) from a von Mises</span>
-<span class="sd">    seasonal distribution, for perils without a direct thermodynamic driver</span>
-<span class="sd">    in the present framework (TC, WS, CS, To).</span>
+<span class="n">all_rain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">Nsim</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">sim</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nsim</span><span class="p">):</span>
+    <span class="n">T_mo_stoch</span> <span class="o">=</span> <span class="n">T0_mo</span> <span class="o">+</span> <span class="n">DT_peryr</span><span class="p">[</span><span class="n">sim</span><span class="p">]</span> <span class="o">+</span> <span class="n">DT_adv_month</span><span class="p">[</span><span class="n">sim</span><span class="p">]</span>
+    <span class="n">cyclonic</span> <span class="o">=</span> <span class="n">DT_adv_month</span><span class="p">[</span><span class="n">sim</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span>
+    <span class="n">w_mo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cyclonic</span><span class="p">,</span> <span class="n">w_asc</span><span class="p">,</span> <span class="n">w_subs</span><span class="p">)</span>
+    <span class="n">I_rain</span> <span class="o">=</span> <span class="n">GenMR_perils</span><span class="o">.</span><span class="n">gen_precipitation</span><span class="p">(</span><span class="n">T_mo_stoch</span><span class="p">,</span> <span class="n">w_mo</span><span class="p">,</span> <span class="n">par_rain</span><span class="p">)</span>
+    <span class="n">all_rain</span><span class="p">[</span><span class="n">sim</span><span class="p">]</span> <span class="o">=</span> <span class="n">I_rain</span> <span class="o">*</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">days_per_mon</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    peak_day : float</span>
-<span class="sd">        Day of year (1-365) of peak seasonal occurrence.</span>
-<span class="sd">    kappa : float</span>
-<span class="sd">        Concentration parameter. kappa=0 -&gt; uniform (no seasonality).</span>
-<span class="sd">        Higher kappa -&gt; more sharply peaked season.</span>
-<span class="sd">    Nevents : int</span>
-<span class="sd">        Number of event times to draw.</span>
-<span class="sd">    Ndays : int</span>
-<span class="sd">        Days per year, for angle conversion.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    t : ndarray of shape (Nevents,)</span>
-<span class="sd">        Decimal-year fraction in [0, 1).</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">mu</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">peak_day</span> <span class="o">/</span> <span class="n">Ndays</span><span class="p">)</span>
-    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">vonmises</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">kappa</span><span class="p">,</span> <span class="n">Nevents</span><span class="p">)</span>   <span class="c1"># in (-pi, pi]</span>
-    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>                   <span class="c1"># wrap to [0, 2pi)</span>
-    <span class="n">t</span> <span class="o">=</span> <span class="n">theta</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">t</span>
-
-
-<span class="c1"># user-defined - phenomenological definition. NB: applies only to loss-generating events here (to be changed)</span>
-<span class="n">seasonal_par</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;WS&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;peak_day&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>  <span class="s1">&#39;kappa&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">},</span>   <span class="c1"># mid-January</span>
-    <span class="s1">&#39;To&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;peak_day&#39;</span><span class="p">:</span> <span class="mi">130</span><span class="p">,</span> <span class="s1">&#39;kappa&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span>   <span class="c1"># early May, narrower season</span>
-    <span class="s1">&#39;Li&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;peak_day&#39;</span><span class="p">:</span> <span class="mi">130</span><span class="p">,</span> <span class="s1">&#39;kappa&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span>   <span class="c1"># same as Li since CS -&gt; (To, Li), see Tutorial 2</span>
-    <span class="s1">&#39;TC&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;peak_day&#39;</span><span class="p">:</span> <span class="mi">260</span><span class="p">,</span> <span class="s1">&#39;kappa&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>   <span class="c1"># mid-September</span>
-<span class="p">}</span>
-
-
-<span class="k">for</span> <span class="n">ID</span><span class="p">,</span> <span class="n">par</span> <span class="ow">in</span> <span class="n">seasonal_par</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-    <span class="n">ind</span> <span class="o">=</span> <span class="n">YLT</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">ID</span>
-    <span class="n">n</span> <span class="o">=</span> <span class="n">ind</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">continue</span>
-    <span class="n">YLT</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ind</span><span class="p">,</span> <span class="s1">&#39;t&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sample_seasonal_t</span><span class="p">(</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;peak_day&#39;</span><span class="p">],</span> <span class="n">par</span><span class="p">[</span><span class="s1">&#39;kappa&#39;</span><span class="p">],</span> <span class="n">n</span><span class="p">)</span>
-    
-    
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
-
-<span class="n">perils</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">YLT</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
-<span class="n">colors</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="p">:</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">col_peril</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">perils</span><span class="p">}</span>
-
-<span class="n">nmax</span> <span class="o">=</span> <span class="mi">1000</span>
-<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ID</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">perils</span><span class="p">):</span>
-    <span class="n">subset</span> <span class="o">=</span> <span class="n">YLT</span><span class="p">[</span><span class="n">YLT</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">ID</span><span class="p">]</span>
-    <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">subset</span><span class="p">),</span><span class="n">nmax</span><span class="p">])</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">subset</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[:</span><span class="n">nmax</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span>
-               <span class="n">color</span> <span class="o">=</span> <span class="n">colors</span><span class="p">[</span><span class="n">ID</span><span class="p">],</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.1</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="n">ID</span><span class="p">)</span>
-
-<span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">perils</span><span class="p">)))</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="n">perils</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Decimal year (t)&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;right&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Simulated event occurrence by peril&#39;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">all_rain</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;tab:blue&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.7</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">95</span><span class="p">,</span> <span class="mi">99</span><span class="p">]:</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">all_rain</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">q</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;p</span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">val</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1"> mm/month&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Monthly precipitation (mm/month)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Year-simulation count&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/be8aa9e4f8943c6e444a2c24ebb5e73f8253ebac33ca46a360532fc257a1573a.png" src="../_images/be8aa9e4f8943c6e444a2c24ebb5e73f8253ebac33ca46a360532fc257a1573a.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>p50: 0.0 mm/month
+p90: 333.5 mm/month
+p95: 397.6 mm/month
+p99: 441.5 mm/month
+</pre></div>
+</div>
+<img alt="../_images/89ae600d6b4c02a990e9d832430dbb8d19d46090e98601733b142385a964a8e6.png" src="../_images/89ae600d6b4c02a990e9d832430dbb8d19d46090e98601733b142385a964a8e6.png" />
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">plot_Irain_distribution</span><span class="p">(</span><span class="n">T0_mo</span><span class="p">,</span> <span class="n">par</span><span class="p">,</span> <span class="n">atmo_par</span><span class="p">,</span> <span class="n">DT_peryr</span><span class="p">,</span> <span class="n">DT_adv_month</span><span class="p">,</span> <span class="n">Nsim</span><span class="p">,</span> <span class="n">RS_th</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Histogram of monthly precipitation (mm/month) pooled across all simulated</span>
-<span class="sd">    years and months, to calibrate RS_th against the actual model output.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">w_subs</span><span class="p">,</span> <span class="n">w_asc</span> <span class="o">=</span> <span class="n">atmo_par</span><span class="p">[</span><span class="s1">&#39;vz_subs_asc&#39;</span><span class="p">]</span>
-    <span class="n">z_tropo</span> <span class="o">=</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">EnvLayer_atmo</span><span class="o">.</span><span class="n">calc_z_tropopause</span><span class="p">(</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;lat_deg&#39;</span><span class="p">])</span>
-    <span class="n">par_rain</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;p0&#39;</span><span class="p">:</span> <span class="n">atmo_par</span><span class="p">[</span><span class="s1">&#39;p0_kPa&#39;</span><span class="p">],</span> <span class="s1">&#39;lapse_rate&#39;</span><span class="p">:</span> <span class="n">atmo_par</span><span class="p">[</span><span class="s1">&#39;lapse_rate_degC/km&#39;</span><span class="p">],</span>
-                <span class="s1">&#39;eta_rain&#39;</span><span class="p">:</span> <span class="n">atmo_par</span><span class="p">[</span><span class="s1">&#39;eta_rain&#39;</span><span class="p">],</span> <span class="s1">&#39;zmax_km&#39;</span><span class="p">:</span> <span class="n">z_tropo</span><span class="p">}</span>
-
-    <span class="n">all_rain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">Nsim</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
-    <span class="k">for</span> <span class="n">sim</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nsim</span><span class="p">):</span>
-        <span class="n">T_mo_stoch</span> <span class="o">=</span> <span class="n">T0_mo</span> <span class="o">+</span> <span class="n">DT_peryr</span><span class="p">[</span><span class="n">sim</span><span class="p">]</span> <span class="o">+</span> <span class="n">DT_adv_month</span><span class="p">[</span><span class="n">sim</span><span class="p">]</span>
-        <span class="n">cyclonic</span> <span class="o">=</span> <span class="n">DT_adv_month</span><span class="p">[</span><span class="n">sim</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span>
-        <span class="n">w_mo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cyclonic</span><span class="p">,</span> <span class="n">w_asc</span><span class="p">,</span> <span class="n">w_subs</span><span class="p">)</span>
-        <span class="n">I_rain</span> <span class="o">=</span> <span class="n">GenMR_perils</span><span class="o">.</span><span class="n">gen_precipitation</span><span class="p">(</span><span class="n">T_mo_stoch</span><span class="p">,</span> <span class="n">w_mo</span><span class="p">,</span> <span class="n">par_rain</span><span class="p">)</span>
-        <span class="n">all_rain</span><span class="p">[</span><span class="n">sim</span><span class="p">]</span> <span class="o">=</span> <span class="n">I_rain</span> <span class="o">*</span> <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">days_per_mon</span>
-
-    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">all_rain</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;tab:blue&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.7</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">RS_th</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">RS_th</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;RS_th = </span><span class="si">{</span><span class="n">RS_th</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">95</span><span class="p">,</span> <span class="mi">99</span><span class="p">]:</span>
-        <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">all_rain</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">q</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;p</span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">val</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1"> mm/month&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Monthly precipitation (mm/month)&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Count (all sim-months)&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-
-<span class="n">plot_Irain_distribution</span><span class="p">(</span><span class="n">T0_mo</span><span class="p">,</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;Dr&#39;</span><span class="p">],</span> <span class="n">atmoLayer</span><span class="o">.</span><span class="n">par</span><span class="p">,</span> <span class="n">DT_peryr</span><span class="p">,</span> <span class="n">DT_adv_month</span><span class="p">,</span> <span class="n">Nsim</span><span class="p">,</span>
-                         <span class="n">RS_th</span><span class="o">=</span><span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;Dr&#39;</span><span class="p">][</span><span class="s1">&#39;RS_th&#39;</span><span class="p">])</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>p50: 0.00 mm/day
-p90: 10.96 mm/day
-p95: 13.09 mm/day
-p99: 16.18 mm/day
-</pre></div>
-</div>
-<img alt="../_images/b2f21760efb2c082bfa8dc26a8ec94a0dcb646ef3a0e1a6016ee7b3a3af1808a.png" src="../_images/b2f21760efb2c082bfa8dc26a8ec94a0dcb646ef3a0e1a6016ee7b3a3af1808a.png" />
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">day_bounds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">days_per_mon</span><span class="p">)])</span>  <span class="c1"># [0, 31, 59, ..., 365]</span>
-<span class="n">month_edges</span> <span class="o">=</span> <span class="n">day_bounds</span> <span class="o">/</span> <span class="mi">365</span>    
-
-<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">YET_HW</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">],</span> <span class="n">bins</span> <span class="o">=</span> <span class="n">month_edges</span><span class="p">);</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<img alt="../_images/4e825a9cf7a3ad82e087bab4028232509b50a3c7fdbaf6ee14baee6ca2b9f566.png" src="../_images/4e825a9cf7a3ad82e087bab4028232509b50a3c7fdbaf6ee14baee6ca2b9f566.png" />
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">YET_HW</span><span class="p">[</span><span class="s1">&#39;S&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.int64(42)
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">par</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;HW&#39;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># tmp plot</span>
+<span class="n">par</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;HW&#39;</span><span class="p">]</span>
 <span class="n">Ndays</span> <span class="o">=</span> <span class="mi">365</span>
 <span class="k">if</span> <span class="kc">True</span><span class="p">:</span>
     <span class="n">DT_peryr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">par</span><span class="p">[</span><span class="s1">&#39;sigmaT_yearly&#39;</span><span class="p">],</span> <span class="n">Nsim</span><span class="p">)</span>
@@ -1677,36 +1652,42 @@ p99: 16.18 mm/day
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x16e1452d0&gt;]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x372d39550&gt;]
 </pre></div>
 </div>
-<img alt="../_images/3b619897936d8cd0a51fd7ea860823c5b1f2fcdc64cf08fdd487e47951eb91e3.png" src="../_images/3b619897936d8cd0a51fd7ea860823c5b1f2fcdc64cf08fdd487e47951eb91e3.png" />
+<img alt="../_images/d315d5b25302debad9afde71d2afe53f850366f1fefbbf12b9630379a9d99b51.png" src="../_images/d315d5b25302debad9afde71d2afe53f850366f1fefbbf12b9630379a9d99b51.png" />
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># tmp plot</span>
+<span class="n">HWid_max</span> <span class="o">=</span> <span class="n">YET_HW</span><span class="p">[</span><span class="n">YET_HW</span><span class="p">[</span><span class="s1">&#39;S&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">YET_HW</span><span class="p">[</span><span class="s1">&#39;S&#39;</span><span class="p">])][</span><span class="s1">&#39;evID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">ls</span><span class="o">.</span><span class="n">hillshade</span><span class="p">(</span><span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">vert_exag</span><span class="o">=</span><span class="mf">.1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid_downscaled</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid_downscaled</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">catalog_hazFp_HW</span><span class="p">[</span><span class="s1">&#39;HW3&#39;</span><span class="p">],</span> <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;Reds&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.5</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">=</span> <span class="mi">45</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid_downscaled</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid_downscaled</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">catalog_hazFp_HW</span><span class="p">[</span><span class="n">HWid_max</span><span class="p">],</span> <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;Reds&#39;</span><span class="p">,</span> \
+            <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.5</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">=</span> <span class="mi">40</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/393af198d45e47c12d13b5aa1c737c211551a3d93de100748486494157a94175.png" src="../_images/393af198d45e47c12d13b5aa1c737c211551a3d93de100748486494157a94175.png" />
+<img alt="../_images/6b07d9b95c67e58e733663f2ebe97a0fa88f2209900b3ffb990475190e15f039.png" src="../_images/6b07d9b95c67e58e733663f2ebe97a0fa88f2209900b3ffb990475190e15f039.png" />
 </div>
 </div>
 </section>
+<section id="wildfires">
+<h4>2.1.2. Wildfires<a class="headerlink" href="#wildfires" title="Link to this heading"></a></h4>
+<p>IN CONSTRUCTION</p>
 </section>
-<section id="event-interaction-modelling">
-<h2>2. Event interaction modelling<a class="headerlink" href="#event-interaction-modelling" title="Link to this heading"></a></h2>
+</section>
+<section id="event-interaction-modelling-markov-process-integration">
+<h3>2.2. Event interaction modelling (Markov process integration)<a class="headerlink" href="#event-interaction-modelling-markov-process-integration" title="Link to this heading"></a></h3>
 <p><strong>WARNING:</strong> Transition matrix encoding for the Digital Template environment and perils will be implemented in version 1.2.3 (Jan. 2027 – Jun. 2027).</p>
 <p>This framework is currently under construction, using an ad hoc transition matrix for validation testing.</p>
 <p>Note that the Year Event Table (YET), the simulated event sequence before event losses are assigned, is introduced in this section to model time series while initially avoiding the inclusion of losses that may be time-dependent or depend on previous events and environmental changes (addressed in a later section).</p>
-<section id="markov-process-integration">
-<h3>2.1. Markov process integration<a class="headerlink" href="#markov-process-integration" title="Link to this heading"></a></h3>
 <p>In a first step, a Markov process is introduced into the YET generation. Non-Markovian processes (i.e., processes with memory) will be considered in Section 2.2.</p>
 </section>
 </section>
