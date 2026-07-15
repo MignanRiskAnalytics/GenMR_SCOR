@@ -270,6 +270,8 @@ def gen_YET_HW(T0, T, par, DT_peryr, DT_adv_daily, Nsim):
         Mapping from ``evID`` to the corresponding spatial footprint (ndarray of shape
         ``(nx, ny)``), giving the maximum temperature (°C) reached during heatwave days
         at each grid cell.
+    T_sav_daily_stoch : ndarray of shape (Nsim,Ndays)
+        Saved temperature time series
     '''
     Ndays = T.shape[0]
 
@@ -278,6 +280,7 @@ def gen_YET_HW(T0, T, par, DT_peryr, DT_adv_daily, Nsim):
     YET_list = []
     catalog_hazFp_HW = {}
     evID_counter = 0
+    T_sav_daily_stoch = np.full((Nsim, Ndays), np.nan, dtype=np.float32)
     for sim in range(Nsim):
         simID = sim + 1
         if simID % 1000 == 0:
@@ -287,6 +290,7 @@ def gen_YET_HW(T0, T, par, DT_peryr, DT_adv_daily, Nsim):
                                                                 Ndays, par['T_AR1'][0], par['T_AR1'][1])
         T_loc_daily_stoch = T0 + dT_daily_stoch
         T_map_daily_stoch = T + dT_daily_stoch[:, None, None]
+        T_sav_daily_stoch[sim,:] = T_loc_daily_stoch    # saved for other climatic perils
 
         HW_ti_stoch, _ = GenMR_perils.HazardFootprintGenerator.get_HW_atloc(T_loc_daily_stoch, \
                                                         par['T_th'],  par['Dt_da'])
@@ -307,7 +311,7 @@ def gen_YET_HW(T0, T, par, DT_peryr, DT_adv_daily, Nsim):
 
 
     YET_HW = pd.DataFrame(YET_list)
-    return YET_HW, catalog_hazFp_HW
+    return YET_HW, catalog_hazFp_HW, T_sav_daily_stoch
 
 
 ## DROUGHT & RAINSTORM ##
@@ -343,6 +347,8 @@ def gen_YET_Dr_HR(T0_mo, par, atmo_par, soil_par, DT_peryr, DT_adv_month, Dr_str
 
     YET_Dr_list, YET_HR_list = [], []
     evID_Dr, evID_HR = 0, 0
+    I_rain_saved = np.full((Nsim, 12), np.nan, dtype=np.float32)
+    S_t_saved = np.full((Nsim, 12), np.nan, dtype=np.float32)
     for sim in range(Nsim):
         simID = sim + 1
         if simID % 1000 == 0:
@@ -359,6 +365,8 @@ def gen_YET_Dr_HR(T0_mo, par, atmo_par, soil_par, DT_peryr, DT_adv_month, Dr_str
         hw0 = (1. - Dr_stress[sim]) * soil_par['hw_fc_m'] * 1000. 
                                         # fraction of stable maximum water content (mm)
         S_t = GenMR_perils.update_soil_moisture(I_rain_mon, ET0, hw0, Smax)
+        I_rain_saved[sim,:] = I_rain_mon
+        S_t_saved[sim,:] = S_t
 
         Dr_events, Dr_dur = GenMR_perils.get_Dr(S_t, Dr_th)
         for (start, end), dur in zip(Dr_events, Dr_dur):
@@ -371,7 +379,7 @@ def gen_YET_Dr_HR(T0_mo, par, atmo_par, soil_par, DT_peryr, DT_adv_month, Dr_str
             evID_HR += 1
             YET_HR_list.append({'simID': simID, 'evID': f'HR{evID_HR}', 'ID': 'HR', 't': start/12, 'S': dur})
 
-    return pd.DataFrame(YET_Dr_list), pd.DataFrame(YET_HR_list)
+    return pd.DataFrame(YET_Dr_list), pd.DataFrame(YET_HR_list), S_t_saved, I_rain_saved
 
 
 
