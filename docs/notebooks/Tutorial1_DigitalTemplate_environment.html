@@ -458,11 +458,16 @@
 <li class="toctree-l1"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html">Tutorial 3: Dynamic risk modelling</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#time-series-modelling">1. Time-series modelling</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#standard-year-loss-table-ylt-generation">1.1. Standard year loss table (YLT) generation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#seasonality-implementation">1.2. Seasonality implementation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#time-occurrence-implementation">1.2. Time occurrence implementation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#event-interaction-modelling">2. Event interaction modelling</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#markov-process-integration">2.1. Markov process integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#compound-event-modelling">2. Compound event modelling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#common-driver-temperature-as-external-forcing-factor">2.1. Common driver: Temperature as external forcing factor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#heatwaves-droughts-and-heavy-rains">2.1.1. Heatwaves, droughts and heavy rains</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#wildfires">2.1.2. Wildfires</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#event-interaction-modelling-markov-process-integration">2.2. Event interaction modelling (Markov process integration)</a></li>
 </ul>
 </li>
 </ul>
@@ -747,7 +752,7 @@ The environmental layers are generated as follows:
     <span class="s1">&#39;lat_deg&#39;</span><span class="p">:</span> <span class="n">gridPar</span><span class="p">[</span><span class="s1">&#39;lat_deg&#39;</span><span class="p">],</span>
     <span class="s1">&#39;lapse_rate_degC/km&#39;</span><span class="p">:</span> <span class="mf">6.5</span><span class="p">,</span>   <span class="c1"># rate at which temperature falls with altitude z</span>
     <span class="s1">&#39;p0_kPa&#39;</span><span class="p">:</span> <span class="mf">101.3</span><span class="p">,</span>             <span class="c1"># standard mean sea-level atmospheric pressure (International Standard Atmosphere)</span>
-    <span class="s1">&#39;vz_subs_asc&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">.001</span><span class="p">,</span> <span class="mf">.02</span><span class="p">],</span> <span class="c1"># large-scale vertical velocity (m/s), w &lt; 0: subside (anticyclone)</span>
+    <span class="s1">&#39;vz_subs_asc&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">.001</span><span class="p">,</span> <span class="mf">.01</span><span class="p">],</span> <span class="c1"># large-scale vertical velocity (m/s), w &lt; 0: subside (anticyclone)</span>
                                  <span class="c1">#                           w &gt; 0: ascent (cyclone), high in strong convection</span>
     <span class="s1">&#39;eta_rain&#39;</span><span class="p">:</span> <span class="mf">.5</span>               <span class="c1"># rain efficiency factor (NB: increase to .8 for organized systems?)</span>
 <span class="p">}</span>
