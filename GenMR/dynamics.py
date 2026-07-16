@@ -6,12 +6,15 @@ This module provides functions to quantify peril interactions and temporal depen
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.2.1
-:Date: 2026-07-06
+:Date: 2026-07-15
 :License: AGPL-3
 """
 
 import numpy as np
 import pandas as pd
+import copy
+
+from skimage import measure
 
 from GenMR import environment as GenMR_env
 from GenMR import perils as GenMR_perils
@@ -177,9 +180,10 @@ def gen_YLT(ELT, Nsim, distr_dict, phi_dict = None):
     return YLT
 
 
-#################
-## SEASONALITY ##
-#################
+
+#################################
+## T-COMPOUNDING (SEASONALITY) ##
+#################################
 def sample_DT_stoch(par, Nsim, Ndays):
     '''
     Draw the shared inter-annual + monthly advective temperature anomaly
@@ -380,6 +384,137 @@ def gen_YET_Dr_HR(T0_mo, par, atmo_par, soil_par, DT_peryr, DT_adv_month, Dr_str
             YET_HR_list.append({'simID': simID, 'evID': f'HR{evID_HR}', 'ID': 'HR', 't': start/12, 'S': dur})
 
     return pd.DataFrame(YET_Dr_list), pd.DataFrame(YET_HR_list), S_t_saved, I_rain_saved
+
+
+## WILDFIRE ##
+def sample_WF_t(D_t_1sim, lbd0):
+    '''
+    D_t_1sim : daily dryness index for one simulated year (0-1), shape (Ndays,)
+    lbd0 : calibrated scale so that lambda(t) = lbd0 * D_t is a daily ignition rate
+    '''
+    lbd_t = lbd0 * D_t_1sim
+    lbd_max = lbd_t.max()
+    if lbd_max <= 0:
+        return np.array([], dtype=int)
+
+    Ndays = len(D_t_1sim)
+    # homogeneous proposal process at rate lbd_max
+    n_candidates = np.random.poisson(lbd_max * Ndays)
+    candidate_days = np.random.randint(0, Ndays, size=n_candidates)
+
+    # thinning step
+    accept_prob = lbd_t[candidate_days] / lbd_max
+    accept = np.random.random(n_candidates) < accept_prob
+    occurrence_days = np.sort(candidate_days[accept])
+    return occurrence_days
+
+def percolate_cluster(seed_idx, p_edge_grid):
+    '''
+    NOT YET FULLY TESTED - so far not used
+    '''
+    ny, nx = p_edge_grid.shape
+    visited = np.zeros_like(p_edge_grid, dtype=bool)
+    sy, sx = np.unravel_index(seed_idx, p_edge_grid.shape)
+    stack = [(sy, sx)]
+    visited[sy, sx] = True
+    while stack:
+        y, x = stack.pop()
+        for dy, dx in ((1,0), (-1,0), (0,1), (0,-1)):
+            ny_, nx_ = y+dy, x+dx
+            if 0 <= ny_ < ny and 0 <= nx_ < nx and not visited[ny_, nx_] and S[ny_, nx_] == 1:
+                if np.random.random() < p_edge_grid[ny_, nx_]:
+                    visited[ny_, nx_] = True
+                    stack.append((ny_, nx_))
+    return visited
+
+def gen_YET_WF(src, urbLandLayer, D_t, method = 'deterministic'):
+    '''
+    '''
+    Nsim = D_t.shape[0]    # use same number as HW and Dr
+    landuse_S = copy.copy(urbLandLayer.S)
+
+    # Fuel includes forest (S=1), later updated with wood building
+    FuelClass = [1]
+
+    # only used if method = 'probabilistic' (to move to env. layer):
+    FuelCoef_by_class = {
+                -1: 0.,   # water
+                0: 0.,    # grassland
+                1: 1.,    # forest
+                2: 0.,    # urban - residential
+                3: 0.,    # urban - industrial
+                4: 0.,    # urban - commercial
+                5: .6,    # wheat
+                6: .6,    # maize
+    }
+    FuelCoef = np.vectorize(FuelCoef_by_class.get)(landuse_S)
+    
+
+    YET_WF_list = []
+    catalog_hazFp_WF = {}
+    evID_counter = 0
+    for sim in range(Nsim):
+        # stochastic fuel to grass distribution
+        indFuel = np.where(np.isin(landuse_S.flatten(), FuelClass))[0]
+        indFuel2Grass = np.random.choice(indFuel, size = int(len(indFuel) * src.par['WF']['ratio_grass']),
+                        replace = False)    
+        landuse_S4WF_flat = landuse_S.flatten()
+        landuse_S4WF_flat[indFuel2Grass] = 0                           # grassland
+        indFuel = np.where(np.isin(landuse_S4WF_flat, FuelClass))[0]   # updated
+        # add wood buildings to fuel state:
+        indwoodBldg = np.where(urbLandLayer.bldg_type.flatten() == 'W')[0]
+        landuse_S4WF_flat[indwoodBldg] = 1                             # forest-like
+        landuse_S4WF0 = landuse_S4WF_flat.reshape(landuse_S.shape)
+        # connectivity
+        indconnect = np.where(np.isin(landuse_S4WF_flat, FuelClass))[0]
+        grid_connect_flat = np.zeros_like(landuse_S4WF_flat)
+        grid_connect_flat[indconnect] = 1
+        grid_connect0 = grid_connect_flat.reshape(landuse_S.shape)
+        
+        # can be updated within a year
+        grid_connect = grid_connect0.copy()
+        landuse_S4WF = landuse_S4WF0.copy()
+        
+        simID = sim + 1
+        if simID % 1000 == 0:
+            print(f'{simID}/{Nsim}', end='\r', flush=True)
+
+        WF_days = sample_WF_t(D_t[sim, :], src.par['WF']['lbd0'])
+
+        for ev_i in range(len(WF_days)):
+            ignition_xy = np.random.choice(indFuel)
+            fp_WF = np.full(grid_connect.shape, np.nan)
+
+            if grid_connect.flat[ignition_xy] == 1:
+                if method == 'deterministic':
+                    S_clumps = measure.label(grid_connect, connectivity = 1)
+                    clump_WF = S_clumps.flatten()[ignition_xy]
+                    indWF = S_clumps == clump_WF
+                elif method == 'probabilistic':
+                    pmax = .5   # critical regime
+                    p_edge = pmax * D_t[sim, WF_days[ev_i]] * FuelCoef
+                    indWF = percolate_cluster(ignition_xy[0], p_edge)
+                
+                fp_WF[indWF] = 1
+                grid_connect[indWF] = 0
+                landuse_S4WF[indWF] = 0
+
+                burntArea_cells = np.sum(fp_WF == 1)
+                area_ha = burntArea_cells * (urbLandLayer.grid.w ** 2) * 100
+
+                #burntBldgBlocks_cells = np.sum(indWF.flatten()[indwoodBldg])   # to use later for loss calc...
+
+                if area_ha >= src.par['WF']['Smin_ha']:
+                    evID_counter += 1
+                    evID = f'WF{evID_counter}'
+                    
+                    catalog_hazFp_WF[evID] = indWF   #fp_WF
+
+                    t = WF_days[ev_i] / 365.
+                    YET_WF_list.append({'simID': simID, 'evID': evID, 'ID': 'WF', 't': t, 'S': area_ha})
+
+
+    return pd.DataFrame(YET_WF_list), catalog_hazFp_WF
 
 
 
