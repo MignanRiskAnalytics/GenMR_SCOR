@@ -460,7 +460,10 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#compound-event-modelling">2. Compound event modelling</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#common-driver-temperature-as-external-forcing-factor">2.1. Common driver: Temperature as external forcing factor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#event-interaction-modelling-markov-process-integration">2.2. Event interaction modelling (Markov process integration)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#event-interaction-modelling-markov-process-integration">2.2. Event interaction modelling (Markov process integration)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#adjacency-matrix-encoding-peril-resolution">2.2.1. Adjacency matrix encoding (peril resolution)</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#long-term-drivers-coming-later">3. Long-term drivers (Coming later)</a></li>
@@ -496,7 +499,7 @@
 <h1>Tutorial 3: Implementing risk dynamics in the GenMR digital template<a class="headerlink" href="#tutorial-3-implementing-risk-dynamics-in-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 1.2.1<br />
-<strong>Last Updated:</strong> 2026-07-16<br />
+<strong>Last Updated:</strong> 2026-07-20<br />
 <strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
 <p>IN CONSTRUCTION - Please check back in late September 2026 for the official release.</p>
 <p>A tutorial on catastrophe dynamics, demonstrating how to model chains-of-events and their cascading impacts.</p>
@@ -512,6 +515,8 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span> 
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>   <span class="c1"># commented, try to remove all warnings</span>
 
@@ -520,6 +525,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">GenMR</span><span class="w"> </span><span class="kn">import</span> <span class="n">dynamics</span> <span class="k">as</span> <span class="n">GenMR_dyn</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">GenMR</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span> <span class="k">as</span> <span class="n">GenMR_utils</span>
 
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.max_columns&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
 <span class="c1"># load inputs (i.e., outputs from Tutorial 1)</span>
 <span class="n">file_src</span> <span class="o">=</span> <span class="s1">&#39;src.pkl&#39;</span>
@@ -546,7 +552,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/db37f898fb9ae286a9f5093813a131f945fd0e0ec36291c178df6c7a8c7ec81e.png" src="../_images/db37f898fb9ae286a9f5093813a131f945fd0e0ec36291c178df6c7a8c7ec81e.png" />
+<img alt="../_images/b711fb57abb6a5a087cf830cfead2e2bf65165e28a410475eedd95001a8caafe.png" src="../_images/b711fb57abb6a5a087cf830cfead2e2bf65165e28a410475eedd95001a8caafe.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1174,10 +1180,10 @@
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>AAL ELT (M. $): 759.92
 ** POISSON **
-AAL YLT Poisson (M. $): 776.949 ± 56.79  (99.7% CI)
+AAL YLT Poisson (M. $): 780.552 ± 57.35  (99.7% CI)
 Within tolerance: True
 ** NEGATIVE BINOMIAL (for selected perils) **
-AAL YLT nb (M. $): 817.035 ± 73.734  (99.7% CI)
+AAL YLT nb (M. $): 744.365 ± 55.677  (99.7% CI)
 Within tolerance: True
 </pre></div>
 </div>
@@ -1219,7 +1225,7 @@ Within tolerance: True
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/6bb36f7a36b8337aba353e9b9c2e260234f8b82869b95adf3f8853bc98e3bd01.png" src="../_images/6bb36f7a36b8337aba353e9b9c2e260234f8b82869b95adf3f8853bc98e3bd01.png" />
+<img alt="../_images/6440a698a31c1b7ff73ba5efb711ae9c5a43039d3e1038f8b18b9935846feb3e.png" src="../_images/6440a698a31c1b7ff73ba5efb711ae9c5a43039d3e1038f8b18b9935846feb3e.png" />
 </div>
 </div>
 </section>
@@ -1319,7 +1325,7 @@ Within tolerance: True
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/399a4a7f8d2290770e35305d71e97b8fed76048ef517aa1e9989c9d45c8a5eab.png" src="../_images/399a4a7f8d2290770e35305d71e97b8fed76048ef517aa1e9989c9d45c8a5eab.png" />
+<img alt="../_images/c3d4ede4490a35f4bba39b4552b6c003c3f86ca795ddd4479a386b5c00dfd6fc.png" src="../_images/c3d4ede4490a35f4bba39b4552b6c003c3f86ca795ddd4479a386b5c00dfd6fc.png" />
 </div>
 </div>
 </section>
@@ -1933,6 +1939,855 @@ WF modelling
 <p><strong>WARNING:</strong> Transition matrix encoding for the Digital Template environment and perils will be implemented in version 1.2.3 (Jan. 2027 – Jun. 2027).</p>
 <p>This framework is currently under construction, using an ad hoc transition matrix for validation testing.</p>
 <p>In a first step, a Markov process is introduced into the YET generation. Non-Markovian processes (i.e., processes with memory) will be considered in Section 2.2.</p>
+<section id="adjacency-matrix-encoding-peril-resolution">
+<h4>2.2.1. Adjacency matrix encoding (peril resolution)<a class="headerlink" href="#adjacency-matrix-encoding-peril-resolution" title="Link to this heading"></a></h4>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">peril_IDs</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;perils&#39;</span><span class="p">]</span>             <span class="c1"># see tutorial 2 tab. 1</span>
+<span class="n">n_perils</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">peril_IDs</span><span class="p">)</span>
+
+<span class="n">envVar_IDs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;water&#39;</span><span class="p">,</span> <span class="s1">&#39;crop&#39;</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">]</span>  <span class="c1"># temperature, water level, crop stress, grievance</span>
+<span class="n">n_envVar</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">envVar_IDs</span><span class="p">)</span>
+
+<span class="n">node_IDs</span> <span class="o">=</span> <span class="n">peril_IDs</span> <span class="o">+</span> <span class="n">envVar_IDs</span>
+<span class="n">n_nodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_IDs</span><span class="p">)</span>
+
+<span class="c1"># adjacency matrix (to define general peril interaction graph)</span>
+<span class="n">Aij</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">)),</span> <span class="n">index</span> <span class="o">=</span> <span class="n">node_IDs</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="n">node_IDs</span><span class="p">)</span>
+
+<span class="c1"># interaction encoding: physically plausible - occurrence or not function of spatiotemporal configuration</span>
+<span class="n">interactions</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># common driver (underlying process with memory)</span>
+    <span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;Dr&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;HW&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;WF&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;PI&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;water&#39;</span><span class="p">,</span> <span class="s1">&#39;Dr&#39;</span><span class="p">),</span>   <span class="c1"># inhibition</span>
+    <span class="p">(</span><span class="s1">&#39;crop&#39;</span><span class="p">,</span> <span class="s1">&#39;BI&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;G&#39;</span><span class="p">,</span> <span class="s1">&#39;SU&#39;</span><span class="p">),</span>
+    
+    <span class="c1"># 1-to-1 interactions (NATURAL trigger)</span>
+    <span class="p">(</span><span class="s1">&#39;CS&#39;</span><span class="p">,</span> <span class="s1">&#39;Li&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;CS&#39;</span><span class="p">,</span> <span class="s1">&#39;To&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;Dr&#39;</span><span class="p">,</span> <span class="s1">&#39;crop&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;EQ&#39;</span><span class="p">,</span> <span class="s1">&#39;LS&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;HW&#39;</span><span class="p">,</span> <span class="s1">&#39;BO&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;Li&#39;</span><span class="p">,</span> <span class="s1">&#39;WF&#39;</span><span class="p">),</span>      <span class="c1"># conditional on &#39;water&#39;</span>
+    <span class="p">(</span><span class="s1">&#39;LS&#39;</span><span class="p">,</span> <span class="s1">&#39;FF&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;PI&#39;</span><span class="p">,</span> <span class="s1">&#39;crop&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;RS&#39;</span><span class="p">,</span> <span class="s1">&#39;water&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;RS&#39;</span><span class="p">,</span> <span class="s1">&#39;FF&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;TC&#39;</span><span class="p">,</span> <span class="s1">&#39;SS&#39;</span><span class="p">),</span>
+    <span class="c1"># 1-to-1 interactions (TECH trigger)</span>
+    <span class="p">(</span><span class="s1">&#39;BO&#39;</span><span class="p">,</span> <span class="s1">&#39;BI&#39;</span><span class="p">),</span>
+    <span class="c1"># 1-to-1 interactions (TECH trigger)</span>
+    <span class="p">(</span><span class="s1">&#39;BI&#39;</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;Sf&#39;</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;SU&#39;</span><span class="p">,</span> <span class="s1">&#39;BI&#39;</span><span class="p">),</span>
+    <span class="c1">#(&#39;SU&#39;, &#39;Fi&#39;)     # add urban fire?</span>
+    
+    <span class="c1"># cum. damage on power grid -&gt; &#39;BO&#39; (damage process with memory)</span>
+    <span class="c1"># any peril damage on refinery -&gt; &#39;Ex&#39;, on public service facilities -&gt; &#39;Sf&#39; (damage process)</span>
+    
+    <span class="c1"># v.1.2.2: placeholder for hydropower dam interacting system</span>
+<span class="p">}</span>
+
+<span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="ow">in</span> <span class="n">interactions</span><span class="p">:</span>
+    <span class="n">Aij</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">Aij_array</span> <span class="o">=</span> <span class="n">Aij</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+
+<span class="n">Aij</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>AI</th>
+      <th>Dr</th>
+      <th>EQ</th>
+      <th>HW</th>
+      <th>PI</th>
+      <th>RS</th>
+      <th>TC</th>
+      <th>To</th>
+      <th>VE</th>
+      <th>WF</th>
+      <th>WS</th>
+      <th>CS</th>
+      <th>BI</th>
+      <th>BO</th>
+      <th>Ex</th>
+      <th>FF</th>
+      <th>Li</th>
+      <th>LS</th>
+      <th>Sf</th>
+      <th>SS</th>
+      <th>SU</th>
+      <th>T</th>
+      <th>water</th>
+      <th>crop</th>
+      <th>G</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>AI</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>Dr</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>EQ</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>HW</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>PI</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>RS</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>TC</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>To</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>VE</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>WF</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>WS</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>CS</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>BI</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>BO</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>Ex</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>FF</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>Li</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>LS</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>Sf</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>SS</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>SU</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>T</th>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>water</th>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>crop</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>G</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## plot graph ##</span>
+
+<span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">from_pandas_adjacency</span><span class="p">(</span><span class="n">Aij</span><span class="p">,</span> <span class="n">create_using</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">)</span>
+
+<span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">spring_layout</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">seed</span> <span class="o">=</span> <span class="mi">42</span><span class="p">,</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="mf">2.</span><span class="p">,</span>             <span class="c1"># increase spacing (default ~1/sqrt(N))</span>
+    <span class="n">iterations</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>   <span class="c1"># higher to spread nodes</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="p">)</span>
+
+<span class="n">node_colors</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;orange&#39;</span> <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">peril_IDs</span> <span class="k">else</span> <span class="s1">&#39;red&#39;</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()]</span>
+<span class="n">edge_colors</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="s1">&#39;water&#39;</span><span class="p">,</span> <span class="s1">&#39;Dr&#39;</span><span class="p">):</span>
+        <span class="n">edge_colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span>   <span class="c1"># inhibition</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">edge_colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+
+<span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_nodes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">node_color</span> <span class="o">=</span> <span class="n">node_colors</span><span class="p">,</span> <span class="n">node_size</span> <span class="o">=</span> <span class="mi">800</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.9</span><span class="p">)</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">edge_color</span> <span class="o">=</span> <span class="n">edge_colors</span><span class="p">,</span> <span class="n">arrows</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">arrowsize</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> 
+                       <span class="n">connectionstyle</span> <span class="o">=</span> <span class="s1">&#39;arc3,rad=0.3&#39;</span><span class="p">)</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_labels</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">font_size</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">font_color</span> <span class="o">=</span> <span class="s1">&#39;white&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/cac83344b9efd9dc1bdfb8f374a7114e49b8d1c7882bab5f28291596d0154c40.png" src="../_images/cac83344b9efd9dc1bdfb8f374a7114e49b8d1c7882bab5f28291596d0154c40.png" />
+</div>
+</div>
+</section>
 </section>
 </section>
 <section id="long-term-drivers-coming-later">
