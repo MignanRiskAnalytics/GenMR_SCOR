@@ -458,13 +458,24 @@
 <li class="toctree-l1"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html">Tutorial 3: Dynamic risk modelling</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#time-series-modelling">1. Time-series modelling</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#standard-year-loss-table-ylt-generation">1.1. Standard year loss table (YLT) generation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#seasonality-implementation">1.2. Seasonality implementation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#time-occurrence-implementation">1.2. Time occurrence implementation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#event-interaction-modelling">2. Event interaction modelling</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#markov-process-integration">2.1. Markov process integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#compound-event-modelling">2. Compound event modelling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#common-environmental-drivers">2.1. Common environmental drivers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#temperature-water-content-as-external-forcing-factor">2.1.1. Temperature (&amp; water content) as external forcing factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#other-external-forcing-factors">2.1.2. Other external forcing factors</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#event-interaction-modelling-markov-process-integration">2.2. Event interaction modelling (Markov process integration)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#adjacency-matrix-encoding-peril-resolution">2.2.1. Adjacency matrix encoding (peril resolution)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#transition-matrix-encoding-event-resolution">2.2.2. Transition matrix encoding (event resolution)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#event-interaction-modelling-non-markovian-process-integration">2.3. Event interaction modelling (Non-Markovian process integration)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#long-term-drivers-coming-later">3. Long-term drivers (Coming later)</a></li>
 </ul>
 </li>
 </ul>
@@ -1037,6 +1048,7 @@
 <span class="n">eventSet</span> <span class="o">=</span> <span class="n">GenMR_perils</span><span class="o">.</span><span class="n">EventSetGenerator</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">sizeDistr</span><span class="p">,</span> <span class="n">GenMR_utils</span><span class="p">)</span>
 <span class="n">evtable</span><span class="p">,</span> <span class="n">evchar</span> <span class="o">=</span> <span class="n">eventSet</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
 
+<span class="n">evchar</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;io/evchar.csv&#39;</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
 <span class="c1">#evtable</span>
 <span class="k">with</span> <span class="n">pd</span><span class="o">.</span><span class="n">option_context</span><span class="p">(</span><span class="s1">&#39;display.max_rows&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span>
                        <span class="s1">&#39;display.max_columns&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>

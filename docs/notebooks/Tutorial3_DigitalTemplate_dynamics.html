@@ -459,11 +459,17 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#compound-event-modelling">2. Compound event modelling</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#common-driver-temperature-as-external-forcing-factor">2.1. Common driver: Temperature as external forcing factor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#event-interaction-modelling-markov-process-integration">2.2. Event interaction modelling (Markov process integration)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#adjacency-matrix-encoding-peril-resolution">2.2.1. Adjacency matrix encoding (peril resolution)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#common-environmental-drivers">2.1. Common environmental drivers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#temperature-water-content-as-external-forcing-factor">2.1.1. Temperature (&amp; water content) as external forcing factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#other-external-forcing-factors">2.1.2. Other external forcing factors</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#event-interaction-modelling-markov-process-integration">2.2. Event interaction modelling (Markov process integration)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#adjacency-matrix-encoding-peril-resolution">2.2.1. Adjacency matrix encoding (peril resolution)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transition-matrix-encoding-event-resolution">2.2.2. Transition matrix encoding (event resolution)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#event-interaction-modelling-non-markovian-process-integration">2.3. Event interaction modelling (Non-Markovian process integration)</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#long-term-drivers-coming-later">3. Long-term drivers (Coming later)</a></li>
@@ -561,6 +567,8 @@
 <span class="n">ELT</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="s1">&#39;io/ELT.parquet&#39;</span><span class="p">)</span>
 <span class="n">ELT</span> <span class="o">=</span> <span class="n">ELT</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;lbd&#39;</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">])</span>
 <span class="n">perils</span> <span class="o">=</span> <span class="n">ELT</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+<span class="n">evchar</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;io/evchar.csv&#39;</span><span class="p">)</span>
 
 <span class="n">ELT</span>
 </pre></div>
@@ -1340,8 +1348,10 @@ Within tolerance: True
 <p>Section 2.2 will introduce one-to-one event chains and cascading events. UNDER CONSTRUCTION.</p>
 <p>Note that coincident events (i.e., perfect storms) are already represented through the event-time sampling introduced in Section 1.2.</p>
 <p>At this stage, the focus is on the dynamics of event occurrence through the Year Event Table (YET), independently of the Year Loss Table (YLT). This separation allows the physical mechanisms governing compound events to be developed before extending the framework to loss assessment. The integration of losses will be addressed in the future Section 3.</p>
-<section id="common-driver-temperature-as-external-forcing-factor">
-<h3>2.1. Common driver: Temperature as external forcing factor<a class="headerlink" href="#common-driver-temperature-as-external-forcing-factor" title="Link to this heading"></a></h3>
+<section id="common-environmental-drivers">
+<h3>2.1. Common environmental drivers<a class="headerlink" href="#common-environmental-drivers" title="Link to this heading"></a></h3>
+<section id="temperature-water-content-as-external-forcing-factor">
+<h4>2.1.1. Temperature (&amp; water content) as external forcing factor<a class="headerlink" href="#temperature-water-content-as-external-forcing-factor" title="Link to this heading"></a></h4>
 <p>Intra-annual temperature variations are simulated using the Energy Balance Climate Model (EBCM) introduced in Tutorial 1 on environmental layers. The same EBCM framework was also used in Tutorial 2 to demonstrate the emergence of heatwaves (<code class="docutils literal notranslate"><span class="pre">HW</span></code>) and droughts (<code class="docutils literal notranslate"><span class="pre">Dr</span></code>).</p>
 <p>Primary heavy rainfall (<code class="docutils literal notranslate"><span class="pre">HR</span></code>) events, introduced ad hoc in Tutorial 2, are now modelled explicitly to illustrate their relationship with heatwaves, droughts, and wildfires through alternating atmospheric circulation regimes.</p>
 <p>Wildfire (<code class="docutils literal notranslate"><span class="pre">WF</span></code>) occurrence times are here defined by introducing a dryness index, which combines the effects of high temperature and lack of soil moisture, hence relating <code class="docutils literal notranslate"><span class="pre">WF</span></code> to <code class="docutils literal notranslate"><span class="pre">HW</span></code>, <code class="docutils literal notranslate"><span class="pre">Dr</span></code> (correlated) and <code class="docutils literal notranslate"><span class="pre">HR</span></code> (anti-correlated).</p>
@@ -1934,13 +1944,22 @@ WF modelling
 </div>
 </div>
 </section>
+<section id="other-external-forcing-factors">
+<h4>2.1.2. Other external forcing factors<a class="headerlink" href="#other-external-forcing-factors" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>crop stress</p></li>
+<li><p>grievance level</p></li>
+</ul>
+</section>
+</section>
 <section id="event-interaction-modelling-markov-process-integration">
 <h3>2.2. Event interaction modelling (Markov process integration)<a class="headerlink" href="#event-interaction-modelling-markov-process-integration" title="Link to this heading"></a></h3>
 <p><strong>WARNING:</strong> Transition matrix encoding for the Digital Template environment and perils will be implemented in version 1.2.3 (Jan. 2027 – Jun. 2027).</p>
 <p>This framework is currently under construction, using an ad hoc transition matrix for validation testing.</p>
-<p>In a first step, a Markov process is introduced into the YET generation. Non-Markovian processes (i.e., processes with memory) will be considered in Section 2.2.</p>
+<p>In a first step, a Markov process is introduced into the YET generation. Non-Markovian processes (i.e., processes with memory) will be considered in Section 2.3.</p>
 <section id="adjacency-matrix-encoding-peril-resolution">
 <h4>2.2.1. Adjacency matrix encoding (peril resolution)<a class="headerlink" href="#adjacency-matrix-encoding-peril-resolution" title="Link to this heading"></a></h4>
+<p>The adjacency matrix defines the topology of the coupled peril–environment system by encoding physically plausible interactions among nodes. These include both direct peril–peril cascading relationships and environmental variable–peril drivers. The resulting graph represents the admissible interaction structure, which can subsequently be complemented with weights or transition probabilities to describe the system dynamics.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">peril_IDs</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;perils&#39;</span><span class="p">]</span>             <span class="c1"># see tutorial 2 tab. 1</span>
@@ -1970,6 +1989,7 @@ WF modelling
     <span class="p">(</span><span class="s1">&#39;CS&#39;</span><span class="p">,</span> <span class="s1">&#39;Li&#39;</span><span class="p">),</span>
     <span class="p">(</span><span class="s1">&#39;CS&#39;</span><span class="p">,</span> <span class="s1">&#39;To&#39;</span><span class="p">),</span>
     <span class="p">(</span><span class="s1">&#39;Dr&#39;</span><span class="p">,</span> <span class="s1">&#39;crop&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;EQ&#39;</span><span class="p">,</span> <span class="s1">&#39;EQ&#39;</span><span class="p">),</span>
     <span class="p">(</span><span class="s1">&#39;EQ&#39;</span><span class="p">,</span> <span class="s1">&#39;LS&#39;</span><span class="p">),</span>
     <span class="p">(</span><span class="s1">&#39;HW&#39;</span><span class="p">,</span> <span class="s1">&#39;BO&#39;</span><span class="p">),</span>
     <span class="p">(</span><span class="s1">&#39;Li&#39;</span><span class="p">,</span> <span class="s1">&#39;WF&#39;</span><span class="p">),</span>      <span class="c1"># conditional on &#39;water&#39;</span>
@@ -2787,7 +2807,268 @@ WF modelling
 <img alt="../_images/cac83344b9efd9dc1bdfb8f374a7114e49b8d1c7882bab5f28291596d0154c40.png" src="../_images/cac83344b9efd9dc1bdfb8f374a7114e49b8d1c7882bab5f28291596d0154c40.png" />
 </div>
 </div>
+<p>Interacting processes with memory effects are addressed in Section 2.3. These include environment-driven dependencies (such as interactions involving <code class="docutils literal notranslate"><span class="pre">crop</span></code> and grievance <code class="docutils literal notranslate"><span class="pre">G</span></code>, while selected interactions involving <code class="docutils literal notranslate"><span class="pre">T</span></code> and <code class="docutils literal notranslate"><span class="pre">water</span></code> were already defined in Section 2.1) and damage-mediated cascading effects, where previous impacts modify subsequent system states (e.g., incremental power grid damage resulting in blackout <code class="docutils literal notranslate"><span class="pre">BO</span></code>).</p>
 </section>
+<section id="transition-matrix-encoding-event-resolution">
+<h4>2.2.2. Transition matrix encoding (event resolution)<a class="headerlink" href="#transition-matrix-encoding-event-resolution" title="Link to this heading"></a></h4>
+<p>IN CONSTRUCTION</p>
+<p>For v.1.2.1, only the earthquake <code class="docutils literal notranslate"><span class="pre">EQ</span></code> trigger case is considered to develop and demonstrate the computational framework. This case illustrates two types of one-to-one interactions, for which conditional probabilities are derived either from analytical formulations or from stochastic processes.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">EQ</span></code> → <code class="docutils literal notranslate"><span class="pre">EQ</span></code>: Physical modelling of earthquake clustering is beyond the scope of the present project, as it would require dedicated Coulomb stress-transfer modelling tools. Instead, given the simplified geometry and the common reverse-faulting mechanism adopted in the model (see Tutorial 1 fault configuration), earthquake clusters are represented by allowing successive events to occur on the same fault, provided that their rupture areas do not overlap.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EQ</span></code> → <code class="docutils literal notranslate"><span class="pre">LS</span></code>: …</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ELT_EQ</span> <span class="o">=</span> <span class="n">ELT</span><span class="p">[</span><span class="n">ELT</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;EQ&#39;</span><span class="p">]</span>
+<span class="n">ELT_EQ</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>ID</th>
+      <th>srcID</th>
+      <th>evID</th>
+      <th>S</th>
+      <th>lbd</th>
+      <th>loss</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>13</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ1</td>
+      <td>6.0</td>
+      <td>0.006856</td>
+      <td>8.407242e+06</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>EQ</td>
+      <td>fault2</td>
+      <td>EQ2</td>
+      <td>6.0</td>
+      <td>0.006856</td>
+      <td>7.353930e+09</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ3</td>
+      <td>6.0</td>
+      <td>0.006856</td>
+      <td>1.735134e+05</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ4</td>
+      <td>6.1</td>
+      <td>0.005446</td>
+      <td>3.612260e+05</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ5</td>
+      <td>6.1</td>
+      <td>0.005446</td>
+      <td>1.032197e+05</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ6</td>
+      <td>6.1</td>
+      <td>0.005446</td>
+      <td>5.868966e+06</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ7</td>
+      <td>6.2</td>
+      <td>0.006489</td>
+      <td>1.866050e+07</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ8</td>
+      <td>6.2</td>
+      <td>0.006489</td>
+      <td>2.331507e+05</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ9</td>
+      <td>6.3</td>
+      <td>0.003436</td>
+      <td>2.595636e+07</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ10</td>
+      <td>6.3</td>
+      <td>0.003436</td>
+      <td>6.388565e+05</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ11</td>
+      <td>6.3</td>
+      <td>0.003436</td>
+      <td>6.388565e+05</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ12</td>
+      <td>6.4</td>
+      <td>0.004094</td>
+      <td>2.420586e+06</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ13</td>
+      <td>6.4</td>
+      <td>0.004094</td>
+      <td>1.922223e+07</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>EQ</td>
+      <td>fault2</td>
+      <td>EQ14</td>
+      <td>6.5</td>
+      <td>0.003252</td>
+      <td>2.608644e+10</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ15</td>
+      <td>6.5</td>
+      <td>0.003252</td>
+      <td>1.576180e+06</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ16</td>
+      <td>6.6</td>
+      <td>0.005166</td>
+      <td>3.719422e+07</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ17</td>
+      <td>6.7</td>
+      <td>0.004104</td>
+      <td>6.402894e+07</td>
+    </tr>
+    <tr>
+      <th>30</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ18</td>
+      <td>6.8</td>
+      <td>0.003260</td>
+      <td>7.158208e+06</td>
+    </tr>
+    <tr>
+      <th>31</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ19</td>
+      <td>6.9</td>
+      <td>0.002589</td>
+      <td>5.777673e+07</td>
+    </tr>
+    <tr>
+      <th>32</th>
+      <td>EQ</td>
+      <td>fault1</td>
+      <td>EQ20</td>
+      <td>7.0</td>
+      <td>0.002057</td>
+      <td>2.195578e+08</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">EQcoord</span> <span class="o">=</span> <span class="n">evchar</span><span class="p">[</span><span class="n">GenMR_perils</span><span class="o">.</span><span class="n">get_peril_evID</span><span class="p">(</span><span class="n">evchar</span><span class="p">[</span><span class="s1">&#39;evID&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="s1">&#39;EQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">EQi</span> <span class="o">=</span> <span class="n">ELT_EQ</span><span class="p">[</span><span class="s1">&#39;evID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">n_EQ</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">EQi</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;18&#39;</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">16</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_EQ</span><span class="p">):</span>
+    <span class="n">EQcoord_evID</span> <span class="o">=</span> <span class="n">EQcoord</span><span class="p">[</span><span class="n">EQcoord</span><span class="p">[</span><span class="s1">&#39;evID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">EQi</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">ls</span><span class="o">.</span><span class="n">hillshade</span><span class="p">(</span><span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">vert_exag</span><span class="o">=</span><span class="mf">.1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.1</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">EQcoord_evID</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="n">EQcoord_evID</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;darkred&#39;</span><span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xmin</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">xmax</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">ymin</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">ymax</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">EQi</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/c2a1ce7196e063a968043b10ab8fbc8dcc030151a4201080482ef69a6d9c3f25.png" src="../_images/c2a1ce7196e063a968043b10ab8fbc8dcc030151a4201080482ef69a6d9c3f25.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="event-interaction-modelling-non-markovian-process-integration">
+<h3>2.3. Event interaction modelling (Non-Markovian process integration)<a class="headerlink" href="#event-interaction-modelling-non-markovian-process-integration" title="Link to this heading"></a></h3>
+<p>Role of memory to be added…</p>
 </section>
 </section>
 <section id="long-term-drivers-coming-later">
