@@ -672,6 +672,9 @@ def get_evPairs_EQ(EQrup, EQfault):
             d = cdist(rup1, rup2).min()
             pairs.append({'trigger': ev1, 'target': ev2, 'fault': EQfault[ev1], 'distance': d})
     EQcluster = pd.DataFrame(pairs)
+    # make symmetric
+    EQcluster_rev = EQcluster.rename(columns={'trigger': 'target', 'target': 'trigger'})
+    EQcluster = pd.concat([EQcluster, EQcluster_rev], ignore_index=True)
     return EQcluster
 
 
