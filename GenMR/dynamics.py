@@ -805,3 +805,132 @@ def fill_transitionMatrix_EQ(EQi, EQcluster, evTable_EQ, EQdyn_par, verbose=Fals
             )
 
     return p_ij
+
+
+def gen_YET_dyn_EQ(YET_poi, EQcluster, p_ij, eps_t = .01, seed = None):
+    '''
+    Generate dynamic earthquake clusters by cascading conditional triggering.
+
+    Each simulation year is initialized from the first earthquake event in the
+    corresponding YET realization. This seed event may trigger one or more
+    secondary ruptures according to the conditional probability matrix `p_ij`.
+    Newly triggered events can themselves trigger further generations,
+    producing cascading earthquake clusters.
+
+    Candidate triggered events are accepted only if they satisfy two
+    conditions:
+
+    (1) A Bernoulli trial with probability given by `p_ij`.
+    (2) Physical compatibility with every rupture already present in the
+        cluster, as defined by `EQcluster`. This prevents overlapping ruptures
+        and repeated occurrence of the same event.
+
+    Triggered events are assigned a small time increment (`eps_t`) relative to
+    their parent event to preserve the triggering sequence within each
+    simulation year.
+
+    Parameters
+    ----------
+    YET_poi : pandas.DataFrame
+        Year Event Table containing at least:
+
+        - simID : int
+            Simulation year identifier.
+        - evID : str
+            Earthquake event identifier.
+        - t : float
+            Event occurrence time within the simulated year.
+
+        If multiple events are present within one simulation year, only the
+        earliest event is retained and used as the cluster seed.
+
+    EQcluster : pandas.DataFrame
+        Admissible earthquake interaction pairs with columns:
+        ['trigger', 'target', 'distance'].
+
+    p_ij : pandas.DataFrame
+        Square conditional probability matrix whose rows correspond to
+        triggering events and columns to candidate triggered events:
+
+            p_ij.loc[i, j] = P(event j | event i)
+
+        Multiple candidate events may be triggered independently from the same
+        parent event.
+
+    eps_t : float, default=0.01
+        Time increment added between a parent event and its triggered
+        offspring.
+
+    seed : int or None, default=None
+        Random seed for reproducible stochastic sampling.
+
+    Returns
+    -------
+    YET_dyn : pandas.DataFrame
+        Dynamic Year Event Table containing:
+
+        - simID : int
+            Simulation year identifier.
+        - evID : str
+            Earthquake event identifier.
+        - t : float
+            Occurrence time.
+        - child : int
+            Triggering generation:
+                0 = initial sampled event,
+                1 = directly triggered event,
+                2 = second-generation trigger,
+                etc.
+        - parent : str or None
+            Event identifier of the triggering parent. The initial event has
+            parent = None.
+    '''
+    rng = np.random.default_rng(seed)
+
+    # lookup table: allowed[target] = set of events that can coexist with target
+    allowed = {}
+    for _, row in EQcluster.iterrows():
+        allowed.setdefault(row['trigger'], set()).add(row['target'])
+
+    results = []
+    for simID, sim in YET_poi.groupby('simID'):
+        # WARNING: only keep the first event of each sim. to generate clustering
+        first = sim.sort_values('t').iloc[0]
+        first_event = {'simID': simID, 'evID': first["evID"], 't': first['t'], 'child': 0, 'parent': None}
+
+        cluster = [first_event]
+        occurred = {first['evID']}
+        queue = [first_event]     # events that can trigger offspring
+        while queue:
+            parent = queue.pop(0)
+            source = parent['evID']
+            probs = p_ij.loc[source].copy()
+            for child_ev, prob in probs.items():
+                if prob <= 0:
+                    continue
+
+                ## Physical compatibility check ##
+                # child must be compatible with EVERY event already in the cluster
+                admissible = True
+                for old_ev in occurred:
+                    if child_ev not in allowed.get(old_ev, set()):
+                        admissible = False
+                        break
+
+                if not admissible:
+                    continue
+
+                # stochastic triggering
+                if rng.random() < prob:
+                    child = {'simID': simID, 'evID': child_ev, 't': parent['t'] + eps_t,
+                             'child': parent['child'] + 1, 'parent': parent['evID']}
+
+                    cluster.append(child)
+                    occurred.add(child_ev)
+                    # allow this event to trigger future generations
+                    queue.append(child)
+
+        results.extend(cluster)
+
+    YET_dyn = pd.DataFrame(results).reset_index(drop=True)
+    return YET_dyn
