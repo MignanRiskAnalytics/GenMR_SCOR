@@ -2932,66 +2932,7 @@ dtype: float64
 <span class="n">YET_poi_EQ</span> <span class="o">=</span> <span class="n">YLT_poi_EQ</span><span class="p">[[</span><span class="s1">&#39;simID&#39;</span><span class="p">,</span> <span class="s1">&#39;evID&#39;</span><span class="p">,</span> <span class="s1">&#39;t&#39;</span><span class="p">]]</span>  <span class="c1"># remove loss for now...</span>
                                                  <span class="c1"># sampling reservoir of initial events, only 1st event to be kept</span>
 
-
-<span class="k">def</span><span class="w"> </span><span class="nf">gen_YET_dyn_EQ</span><span class="p">(</span><span class="n">YET_poi</span><span class="p">,</span> <span class="n">p_ij</span><span class="p">,</span> <span class="n">eps_t</span> <span class="o">=</span> <span class="mf">.01</span><span class="p">,</span> <span class="n">seed</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-
-    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
-
-    <span class="c1"># lookup table: allowed[target] = set of events that can coexist with target</span>
-    <span class="n">allowed</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">EQcluster</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
-        <span class="n">allowed</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;trigger&#39;</span><span class="p">],</span> <span class="nb">set</span><span class="p">())</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">])</span>
-
-    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">simID</span><span class="p">,</span> <span class="n">sim</span> <span class="ow">in</span> <span class="n">YET_poi</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;simID&#39;</span><span class="p">):</span>
-        <span class="c1"># WARNING: only keep the first event of each sim. to generate clustering</span>
-        <span class="n">first</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;t&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">first_event</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;simID&#39;</span><span class="p">:</span> <span class="n">simID</span><span class="p">,</span> <span class="s1">&#39;evID&#39;</span><span class="p">:</span> <span class="n">first</span><span class="p">[</span><span class="s2">&quot;evID&quot;</span><span class="p">],</span> <span class="s1">&#39;t&#39;</span><span class="p">:</span> <span class="n">first</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">],</span> <span class="s1">&#39;child&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;parent&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
-
-        <span class="n">cluster</span> <span class="o">=</span> <span class="p">[</span><span class="n">first_event</span><span class="p">]</span>
-        <span class="n">occurred</span> <span class="o">=</span> <span class="p">{</span><span class="n">first</span><span class="p">[</span><span class="s1">&#39;evID&#39;</span><span class="p">]}</span>
-        <span class="n">queue</span> <span class="o">=</span> <span class="p">[</span><span class="n">first_event</span><span class="p">]</span>     <span class="c1"># events that can trigger offspring</span>
-        <span class="k">while</span> <span class="n">queue</span><span class="p">:</span>
-            <span class="n">parent</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-            <span class="n">source</span> <span class="o">=</span> <span class="n">parent</span><span class="p">[</span><span class="s1">&#39;evID&#39;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">source</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">p_ij</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
-                <span class="k">continue</span>
-
-            <span class="n">probs</span> <span class="o">=</span> <span class="n">p_ij</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">source</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-            <span class="c1"># remove events already present</span>
-            <span class="n">probs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">occurred</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
-
-            <span class="k">for</span> <span class="n">child_ev</span><span class="p">,</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">probs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">prob</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="k">continue</span>
-
-                <span class="c1">## Physical compatibility check ##</span>
-                <span class="c1"># child must be compatible with EVERY event already in the cluster</span>
-                <span class="n">admissible</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="k">for</span> <span class="n">old_ev</span> <span class="ow">in</span> <span class="n">occurred</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">child_ev</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">old_ev</span><span class="p">,</span> <span class="nb">set</span><span class="p">()):</span>
-                        <span class="n">admissible</span> <span class="o">=</span> <span class="kc">False</span>
-                        <span class="k">break</span>
-
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">admissible</span><span class="p">:</span>
-                    <span class="k">continue</span>
-
-                <span class="c1"># stochastic triggering</span>
-                <span class="k">if</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">prob</span><span class="p">:</span>
-                    <span class="n">child</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;simID&#39;</span><span class="p">:</span> <span class="n">simID</span><span class="p">,</span> <span class="s1">&#39;evID&#39;</span><span class="p">:</span> <span class="n">child_ev</span><span class="p">,</span> <span class="s1">&#39;t&#39;</span><span class="p">:</span> <span class="n">parent</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">eps_t</span><span class="p">,</span>
-                             <span class="s1">&#39;child&#39;</span><span class="p">:</span> <span class="n">parent</span><span class="p">[</span><span class="s1">&#39;child&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;parent&#39;</span><span class="p">:</span> <span class="n">parent</span><span class="p">[</span><span class="s1">&#39;evID&#39;</span><span class="p">]}</span>
-
-                    <span class="n">cluster</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
-                    <span class="n">occurred</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">child_ev</span><span class="p">)</span>
-                    <span class="c1"># allow this event to trigger future generations</span>
-                    <span class="n">queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
-
-        <span class="n">results</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">cluster</span><span class="p">)</span>
-
-    <span class="n">YET_dyn</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">YET_dyn</span>
-
-<span class="n">YET_dyn_EQ</span> <span class="o">=</span> <span class="n">gen_YET_dyn_EQ</span><span class="p">(</span><span class="n">YET_poi_EQ</span><span class="p">,</span> <span class="n">EQ_p_ij</span><span class="p">)</span>
+<span class="n">YET_dyn_EQ</span> <span class="o">=</span> <span class="n">GenMR_dyn</span><span class="o">.</span><span class="n">gen_YET_dyn_EQ</span><span class="p">(</span><span class="n">YET_poi_EQ</span><span class="p">,</span> <span class="n">EQcluster</span><span class="p">,</span> <span class="n">EQ_p_ij</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -3001,7 +2942,7 @@ dtype: float64
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cluster_size</span> <span class="o">=</span> <span class="n">YET_dyn_EQ</span> <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;simID&quot;</span><span class="p">)</span> <span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 <span class="n">nrow</span><span class="p">,</span> <span class="n">ncol</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span>
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrow</span><span class="p">,</span> <span class="n">ncol</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">18</span><span class="p">))</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrow</span><span class="p">,</span> <span class="n">ncol</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">16</span><span class="p">))</span>
 <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 
 <span class="n">colors</span> <span class="o">=</span> <span class="p">{</span>
@@ -3027,14 +2968,10 @@ dtype: float64
     <span class="n">axi</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xmin</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">xmax</span><span class="p">)</span>
     <span class="n">axi</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">ymin</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">ymax</span><span class="p">)</span>
     <span class="n">axi</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
-<span class="c1">#    chain = &#39;→&#39;.join(cluster[&#39;evID&#39;].astype(str))</span>
-<span class="c1">#    axi.set_title(f&quot;simID = {simID}\n&quot; f&quot;{chain}&quot;, pad=20)</span>
     
     <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cluster</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;parent&#39;</span><span class="p">]):</span>
-            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;evID&#39;</span><span class="p">]))</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;parent&#39;</span><span class="p">]):</span>
             <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;parent&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> → </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;evID&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">chain</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
     <span class="n">axi</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;simID = </span><span class="si">{</span><span class="n">simID</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">chain</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span>
@@ -3043,7 +2980,7 @@ dtype: float64
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/fa0e18921c863384a0b3707e35da22c4215dc189fbaa520f8c60ccc6e811881d.png" src="../_images/fa0e18921c863384a0b3707e35da22c4215dc189fbaa520f8c60ccc6e811881d.png" />
+<img alt="../_images/4f6c4b719dd899f2904f2f17fa58983d9f36349a160ed1a024c7593046f7b822.png" src="../_images/4f6c4b719dd899f2904f2f17fa58983d9f36349a160ed1a024c7593046f7b822.png" />
 </div>
 </div>
 <div class="cell docutils container">
