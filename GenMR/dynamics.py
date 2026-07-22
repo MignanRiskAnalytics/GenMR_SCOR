@@ -6,7 +6,7 @@ This module provides functions to quantify peril interactions and temporal depen
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.2.1
-:Date: 2026-07-15
+:Date: 2026-07-22
 :License: AGPL-3
 """
 
@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 import copy
 
+from scipy.spatial.distance import cdist
 from skimage import measure
 
 from GenMR import environment as GenMR_env
@@ -522,6 +523,8 @@ def gen_YET_WF(src, urbLandLayer, D_t, method = 'deterministic'):
 ###################################
 ## PERIL ONE-TO-ONE INTERACTIONS ##
 ###################################
+
+## BASIC RELATIONSHIPS ##
 def calc_lbd_CS2Li(h_km_CS, lat):
     '''
     Calculate the cloud-to-ground (CG) lightning rate per convective storm based on 
@@ -578,14 +581,12 @@ def calc_lbd_CS2Li(h_km_CS, lat):
     
     return lbd_Li_strike, rate_CG
 
-
 def calc_S_RS2FF(S_RS, par):
     '''
     # flow Q [m3/s] = RS [m/s] * A catchment [m2]
     '''
     S_FF = S_RS * 1e-3 / 3600 * par['A_km2'] * 1e6
     return np.round(S_FF)
-
 
 def calc_S_TC2SS(v_max, relationship = 'generic'):
     '''
@@ -600,7 +601,6 @@ def calc_S_TC2SS(v_max, relationship = 'generic'):
         S_SS = .031641 * v_max - .00075537 * v_max**2 + 3.1941e-5 * v_max**3
     return np.round(S_SS, decimals = 3)
 
-
 def calc_S_WS2SS(v_max):
     '''
     Empirical relationship from Lin et al. (2010) - New York
@@ -608,3 +608,197 @@ def calc_S_WS2SS(v_max):
     '''
     S_SS = .031641 * v_max - .00075537 * v_max**2 + 3.1941e-5 * v_max**3
     return np.round(S_SS, decimals = 3)
+
+
+
+## EQ CLUSTERING ##
+def rupture_overlap(rup1, rup2):
+    s1 = set(map(tuple, rup1))
+    s2 = set(map(tuple, rup2))
+    return len(s1 & s2) > 0
+
+
+def get_evPairs_EQ(EQrup, EQfault):
+    '''
+    Identify physically admissible earthquake rupture pairs for clustering
+    interactions.
+
+    Potential earthquake clustering interactions are defined by rupture pairs
+    that satisfy two geometric constraints:
+    (1) both events occur on the same fault;
+    (2) the rupture segments do not overlap.
+
+    For each admissible pair, the minimum Euclidean distance between rupture
+    meshes is calculated. This distance is later used to estimate the static
+    stress perturbation and conditional triggering probability.
+
+    Parameters
+    ----------
+    EQrup : dict
+        Dictionary containing rupture coordinates for each earthquake event.
+        Keys are earthquake event IDs and values are arrays of rupture points
+        with shape (n, 2), containing x and y coordinates (km).
+
+    EQfault : dict
+        Dictionary assigning each earthquake event ID to its hosting fault
+        segment/source.
+
+    Returns
+    -------
+    EQcluster : pandas.DataFrame
+        Table of potential earthquake clustering interactions with columns:
+
+        - trigger : str
+            Earthquake event ID considered as the potential triggering event.
+        - target : str
+            Earthquake event ID considered as the potentially triggered event.
+        - fault : str
+            Common fault identifier shared by the two events.
+        - distance : float
+            Minimum rupture-to-rupture separation distance (km).
+    '''
+    pairs = []
+    evIDs = list(EQrup.keys())
+    for i, ev1 in enumerate(evIDs):
+        for ev2 in evIDs[i+1:]:
+            # same fault?
+            if EQfault[ev1] != EQfault[ev2]:
+                continue
+            rup1 = EQrup[ev1]
+            rup2 = EQrup[ev2]
+            # overlapping rupture?
+            if rupture_overlap(rup1, rup2):
+                continue
+            d = cdist(rup1, rup2).min()
+            pairs.append({'trigger': ev1, 'target': ev2, 'fault': EQfault[ev1], 'distance': d})
+    EQcluster = pd.DataFrame(pairs)
+    return EQcluster
+
+
+def calc_EQ_Dsigma(d_ij, Li, Dsigma0):
+    '''
+    Calculate the positive static stress perturbation induced by an earthquake
+    on a potential target rupture.
+
+    The stress-transfer kernel follows the analytical approximation proposed
+    by Mignan (2018, Eq. 6), which reproduces the square-root singularity at
+    the crack tip and the 1/r³ decay of the static stress field away from the
+    rupture. Here, the interaction is restricted to positive tip-lobe
+    stress transfer between non-overlapping ruptures of identical focal
+    mechanism on the same fault.
+
+    Parameters
+    ----------
+    d_ij : float or ndarray
+        Minimum rupture separation (km).
+    Li : float or ndarray
+        Trigger rupture length (km).
+    Dsigma0 : float
+        Static stress drop (MPa), positive by convention.
+
+    Returns
+    -------
+    Dsigma : float or ndarray
+        Positive Coulomb stress change (MPa).
+
+    References
+    ----------
+    Dieterich, J.H. (1994).
+        A constitutive law for rate of earthquake production and its
+        application to earthquake clustering.
+        Journal of Geophysical Research, 99(B2), 2601-2618.
+
+    Mignan, A. (2018).
+        Utsu aftershock productivity law explained from geometric operations
+        on the permanent static stress field of mainshocks.
+        Nonlinear Processes in Geophysics, 25, 241-250.
+        Eq. (6).
+    '''
+    c = Li / 2.     # crack radius
+    Dsigma = Dsigma0 * ((1. - (c / (d_ij + c))**3)**(-.5) - 1.)
+    return Dsigma
+
+
+def fill_transitionMatrix_EQ(EQi, EQcluster, evTable_EQ, EQdyn_par, verbose=False):
+    '''
+    Build the earthquake-to-earthquake transition matrix from static stress
+    transfer and clock-advance triggering.
+
+    The interaction graph is defined by EQcluster, which contains all
+    physically admissible rupture associations (same fault, non-overlapping
+    ruptures). Static stress transfer follows the geometric approximation of
+    Mignan (2018, Eq. 6). The resulting stress perturbation is converted into
+    the clock advance concept,
+    and then into a conditional triggering probability assuming a Poisson
+    background occurrence rate.
+
+    Parameters
+    ----------
+    EQi : list
+        Ordered list of earthquake event IDs.
+    EQcluster : pandas.DataFrame
+        Admissible earthquake interaction pairs with columns:
+        ['trigger', 'target', 'distance'].
+    evTable_EQ : pandas.DataFrame
+        Earthquake event table containing:
+        ['evID', 'S', 'lbd'].
+    EQdyn_par : dict
+        Dynamic parameters:
+        - Dsig0_MPa : characteristic static stress drop (MPa)
+        - dtau_dt_MPa_yz : tectonic stressing rate (MPa/yr)
+    verbose : bool
+        Print intermediate stress transfer and clock-change values.
+
+    Returns
+    -------
+    p_ij : pandas.DataFrame
+        EQ-to-EQ transition probability matrix.
+
+    References
+    ----------
+    Mignan, A., Danciu, L., & Giardini, D. (2018).
+        Considering large earthquake clustering in seismic risk analysis.
+        Natural Hazards, 91(Suppl 1), S149-S172.
+        https://doi.org/10.1007/s11069-016-2549-9
+    '''
+
+    p_ij = pd.DataFrame(0., index = EQi, columns = EQi)
+
+    lbd = evTable_EQ.set_index('evID')['lbd']
+    M = evTable_EQ.set_index('evID')['S']
+    L = GenMR_perils.calc_EQ_magnitude2length(M)
+
+    for _, row in EQcluster.iterrows():
+        eq_i = row['trigger']
+        eq_j = row['target']
+        d_ij = row['distance']
+
+        # stress transfer
+        Dsigma = calc_EQ_Dsigma(d_ij, L.loc[eq_i], EQdyn_par['Dsig0_MPa'])
+        # clock advance
+        dt = Dsigma / EQdyn_par['dtau_dt_MPa_yr']
+
+        # probability gained from Poisson clock shift
+        RP_j = 1 / lbd.loc[eq_j]     # original return period on target segment
+        RP_new = RP_j - dt           # time shift on target segment
+
+        if RP_new <= 0:
+            lbd_j = np.inf
+            p = 1.0
+        else:
+            lbd_j = 1. / RP_new           # new rate according to clock change
+            p = 1. - np.exp(-lbd_j * 1.)  # annualised
+
+        p_ij.loc[eq_i, eq_j] = p
+
+        if verbose:
+            print(
+                f"{eq_i} -> {eq_j} | "
+                f"d={d_ij:.2f} km | "
+                f"Δσ={Dsigma:.4e} MPa | "
+                f"Δt={dt:.2f} yr | "
+                f"RP={RP_j:.2f} yr -> {RP_new:.2f} yr | "
+                f"P={p:.4e}"
+            )
+
+    return p_ij
