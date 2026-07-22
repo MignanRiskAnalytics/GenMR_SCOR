@@ -35,8 +35,8 @@ Peril models (v1.1.2)
 
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
-:Version: 1.1.2
-:Date: 2026-06-12
+:Version: 1.2.1
+:Date: 2026-07-22
 :License: AGPL-3
 """
 
@@ -3712,7 +3712,7 @@ class CellularAutomaton_LS:
     kmax : int, optional
         Maximum number of CA iterations; default is 20.
     '''
-    def __init__(self, soilLayer, wetness, movie, kmax = 20):
+    def __init__(self, soilLayer, wetness, movie, kmax = 20, trigger = 'rain', PGA = None):
         self.soil = copy.deepcopy(soilLayer)
         self.grid = self.soil.grid
         self.z = self.soil.topo.z.copy()
@@ -3725,8 +3725,14 @@ class CellularAutomaton_LS:
 
         LS_footprint = np.zeros((self.grid.nx, self.grid.ny))
         FS = GenMR_env.calc_FS(self.soil.topo.slope, self.h, self.wetness, self.soil.par)
-        FS_state = GenMR_env.get_FS_state(FS)
-        LS_footprint[FS_state == 2] = 1     # initiates LS where slope is unstable
+
+        if trigger == 'rain':
+            FS_state = GenMR_env.get_FS_state(FS)
+            LS_footprint[FS_state == 2] = 1     # initiates LS where slope is unstable
+        elif trigger == 'EQ':
+            slope = np.radians(self.soil.topo.slope)
+            # to develop
+
         nx, ny = int(self.grid.xbuffer/self.grid.w), int(self.grid.ybuffer/self.grid.w)
         LS_footprint = GenMR_utils.zero_boundary_2d(LS_footprint, nx, ny)    # no LS in buffer zone
         self.LS_footprint = LS_footprint
