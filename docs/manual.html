@@ -458,13 +458,25 @@
 <li class="toctree-l1"><a class="reference internal" href="notebooks/Tutorial3_DigitalTemplate_dynamics.html">Tutorial 3: Dynamic risk modelling</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial3_DigitalTemplate_dynamics.html#time-series-modelling">1. Time-series modelling</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial3_DigitalTemplate_dynamics.html#standard-year-loss-table-ylt-generation">1.1. Standard year loss table (YLT) generation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial3_DigitalTemplate_dynamics.html#seasonality-implementation">1.2. Seasonality implementation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial3_DigitalTemplate_dynamics.html#time-occurrence-implementation">1.2. Time occurrence implementation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial3_DigitalTemplate_dynamics.html#event-interaction-modelling">2. Event interaction modelling</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial3_DigitalTemplate_dynamics.html#markov-process-integration">2.1. Markov process integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial3_DigitalTemplate_dynamics.html#compound-event-modelling">2. Compound event modelling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial3_DigitalTemplate_dynamics.html#common-environmental-drivers">2.1. Common environmental drivers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial3_DigitalTemplate_dynamics.html#temperature-water-content-as-external-forcing-factor">2.1.1. Temperature (&amp; water content) as external forcing factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial3_DigitalTemplate_dynamics.html#other-external-forcing-factors">2.1.2. Other external forcing factors</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial3_DigitalTemplate_dynamics.html#event-interaction-modelling-markov-process-integration">2.2. Event interaction modelling (Markov process integration)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial3_DigitalTemplate_dynamics.html#adjacency-matrix-encoding-peril-resolution">2.2.1. Adjacency matrix encoding (peril resolution)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial3_DigitalTemplate_dynamics.html#transition-matrix-encoding-event-resolution">2.2.2. Transition matrix encoding (event resolution)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/Tutorial3_DigitalTemplate_dynamics.html#event-interaction-modelling-non-markovian-process-integration">2.3. Event interaction modelling (Non-Markovian process integration)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial3_DigitalTemplate_dynamics.html#long-term-drivers-coming-later">3. Long-term drivers (coming later)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Tutorial3_DigitalTemplate_dynamics.html#references">References</a></li>
 </ul>
 </li>
 </ul>
@@ -2789,10 +2801,10 @@ as well as intensity and loss footprint calculations.</p>
 <dd class="field-odd"><p>Arnaud Mignan, Mignan Risk Analytics GmbH</p>
 </dd>
 <dt class="field-even">Version<span class="colon">:</span></dt>
-<dd class="field-even"><p>1.1.2</p>
+<dd class="field-even"><p>1.2.1</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2026-06-12</p>
+<dd class="field-odd"><p>2026-07-22</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -2842,7 +2854,7 @@ as well as intensity and loss footprint calculations.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="GenMR.perils.CellularAutomaton_LS">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">CellularAutomaton_LS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">soilLayer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wetness</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">movie</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.CellularAutomaton_LS" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">CellularAutomaton_LS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">soilLayer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wetness</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">movie</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trigger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rain'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.CellularAutomaton_LS" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Cellular Automaton model for landslide (LS) propagation.</p>
 <dl class="field-list simple">

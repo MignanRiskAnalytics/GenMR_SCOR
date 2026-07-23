@@ -475,7 +475,8 @@
 <li class="toctree-l3"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#event-interaction-modelling-non-markovian-process-integration">2.3. Event interaction modelling (Non-Markovian process integration)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#long-term-drivers-coming-later">3. Long-term drivers (Coming later)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#long-term-drivers-coming-later">3. Long-term drivers (coming later)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#references">References</a></li>
 </ul>
 </li>
 </ul>
@@ -508,7 +509,7 @@
 <h1>Tutorial 2: Implementing perils in the GenMR digital template<a class="headerlink" href="#tutorial-2-implementing-perils-in-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 1.2.1<br />
-<strong>Last Updated:</strong> 2026-07-07<br />
+<strong>Last Updated:</strong> 2026-07-22<br />
 <strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
 <p>Once a virtual environment has been generated (see previous tutorial), stochastic events are modelled to populate it. Table 1 lists the perils included in version 1.1.2.</p>
 <br>
@@ -760,8 +761,10 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span> 
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>   <span class="c1"># commented, try to remove all warnings</span>
@@ -2023,7 +2026,7 @@
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;SS&#39;</span><span class="p">][</span><span class="s1">&#39;bathy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;New York harbor&#39;</span>  <span class="c1"># &#39;generic&#39; (Saffir-Simpson, Mignan, 2024:eq. 2.16) </span>
                                             <span class="c1"># &#39;New York harbor&#39; (eq. in Mignan, 2024:fig. 2.7)</span>
 
-<span class="c1">## TO ADD: site-specific conditions ##</span>
+<span class="c1">## TO ADD in a future version: site-specific conditions ##</span>
 <span class="c1"># surface friction -&gt; reduce windspeed (TC, WS)</span>
 <span class="c1"># soil amplification -&gt; increase ground shaking (EQ)</span>
 <span class="c1"># urban heat island -&gt; increase temperature (HW)</span>
@@ -2987,7 +2990,7 @@ Loading from cache potential footprints
 Fetching footprints from potential footprints
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Fetching WF footprints from cache: 100%|████████| 10/10 [00:00&lt;00:00, 35.50it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Fetching WF footprints from cache: 100%|████████| 10/10 [00:00&lt;00:00, 35.33it/s]
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>FF_fromRS1 (loaded from cache)
@@ -2997,6 +3000,9 @@ LS_fromRS1 (loaded from cache)
 LS_fromRS2 (loaded from cache)
 LS_fromRS3 (loaded from cache)
 ... catalogue completed
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>dict_keys([&#39;WF1&#39;, &#39;WF2&#39;, &#39;WF3&#39;, &#39;WF4&#39;, &#39;WF5&#39;, &#39;WF6&#39;, &#39;WF7&#39;, &#39;WF8&#39;, &#39;WF9&#39;, &#39;WF10&#39;, &#39;FF_fromRS1&#39;, &#39;FF_fromRS2&#39;, &#39;FF_fromRS3&#39;, &#39;LS_fromRS1&#39;, &#39;LS_fromRS2&#39;, &#39;LS_fromRS3&#39;])
@@ -3026,6 +3032,10 @@ LS_fromRS3 (loaded from cache)
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># merge the two catalogues</span>
 <span class="n">catalog_allhazFootprints</span> <span class="o">=</span> <span class="n">catalog_hazFootprints</span> <span class="o">|</span> <span class="n">catalog_dynhazFootprints</span>
+
+<span class="c1"># save hazard footprints for tutorial 3</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;io/catalog_hazFootprints.pkl&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">catalog_allhazFootprints</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
 
 <span class="c1"># update src class file for tutorial 3</span>
 <span class="n">GenMR_utils</span><span class="o">.</span><span class="n">save_class2pickle</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;src&#39;</span><span class="p">)</span>
