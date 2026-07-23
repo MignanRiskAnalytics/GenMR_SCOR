@@ -181,6 +181,36 @@ def gen_YLT(ELT, Nsim, distr_dict, phi_dict = None):
     return YLT
 
 
+def sample_seasonal_t(peak_day, kappa, Nevents, Ndays = 365):
+    '''
+    Sample event occurrence times (decimal-year fraction) from a von Mises
+    seasonal distribution, for perils without a direct thermodynamic driver
+    in the present framework (TC, WS, CS, To).
+
+    Parameters
+    ----------
+    peak_day : float
+        Day of year (1-365) of peak seasonal occurrence.
+    kappa : float
+        Concentration parameter. kappa=0 -> uniform (no seasonality).
+        Higher kappa -> more sharply peaked season.
+    Nevents : int
+        Number of event times to draw.
+    Ndays : int
+        Days per year, for angle conversion.
+
+    Returns
+    -------
+    t : ndarray of shape (Nevents,)
+        Decimal-year fraction in [0, 1).
+    '''
+    mu = 2 * np.pi * (peak_day / Ndays)
+    theta = np.random.vonmises(mu, kappa, Nevents)   # in (-pi, pi]
+    theta = np.mod(theta, 2*np.pi)                   # wrap to [0, 2pi)
+    t = theta / (2 * np.pi)
+    return t
+
+
 
 #################################
 ## T-COMPOUNDING (SEASONALITY) ##

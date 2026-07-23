@@ -3712,7 +3712,7 @@ class CellularAutomaton_LS:
     kmax : int, optional
         Maximum number of CA iterations; default is 20.
     '''
-    def __init__(self, soilLayer, wetness, movie, kmax = 20, trigger = 'rain', PGA = None):
+    def __init__(self, soilLayer, wetness, movie, kmax = 20, trigger = 'rain', amax = None):
         self.soil = copy.deepcopy(soilLayer)
         self.grid = self.soil.grid
         self.z = self.soil.topo.z.copy()
@@ -3728,10 +3728,12 @@ class CellularAutomaton_LS:
 
         if trigger == 'rain':
             FS_state = GenMR_env.get_FS_state(FS)
-            LS_footprint[FS_state == 2] = 1     # initiates LS where slope is unstable
+            LS_footprint[FS_state == 2] = 1                       # initiates LS where slope is unstable
         elif trigger == 'EQ':
             slope = np.radians(self.soil.topo.slope)
-            # to develop
+            ac = np.maximum((FS - 1) * 9.81 * np.sin(slope), 0)   # e.g. Jibson (2007:eq.1)
+            Dn = self._calc_newmark_jibson2007(amax, ac)
+            LS_footprint[Dn > 5] = 1                              # 5 cm threshold (hardcoded for now) - initiates LS where slope is unstable
 
         nx, ny = int(self.grid.xbuffer/self.grid.w), int(self.grid.ybuffer/self.grid.w)
         LS_footprint = GenMR_utils.zero_boundary_2d(LS_footprint, nx, ny)    # no LS in buffer zone
@@ -3810,6 +3812,24 @@ class CellularAutomaton_LS:
         FS_i = GenMR_env.calc_FS(slope_i, h, w, par)
         slope_stable = slope_i[FS_i > 1.5][-1]
         return slope_stable
+
+    @staticmethod
+    def _calc_newmark_jibson2007(PGA, ac):
+        '''
+        Jibson (2007) Newmark displacement model.
+
+        PGA : peak ground acceleration
+        ac  : critical acceleration
+
+        returns:
+            Dn : permanent displacement (cm)
+        '''
+        ratio = ac / PGA
+        ratio = np.clip(ratio, 1e-4, .9999)
+        logDn = .215 + np.log10((1-ratio)**2.341 * ratio**(-1.438))     # eq.6
+        Dn = 10**logDn
+        Dn[PGA <= ac] = 0    # no displacement if shaking does not exceed resistance
+        return Dn
 
     def _save_frame(self):
         k = self.k
