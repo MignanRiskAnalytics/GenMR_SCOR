@@ -6,7 +6,7 @@ This module provides functions to quantify peril interactions and temporal depen
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.2.1
-:Date: 2026-07-22
+:Date: 2026-07-23
 :License: AGPL-3
 """
 
