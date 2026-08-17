@@ -258,20 +258,21 @@ class EnvLayer_topo:
         self.z = interp((self.grid.xx, self.grid.yy)) * 1e3
         delattr(self, 'gridlow')
         # intrude river channel
-        nriv = len(self.src.par['FF']['riv_y0'])
-        river_xi, river_yi, river_zi, river_id = self.river_coord
-        for riv in range(nriv):
-            Q = self.src.par['FF']['Q_m3/s'][riv]
-            river_h = Q / (2 * (self.grid.w * 1e3)**2)                       # 2 N-S pixels to facilitate CA flow
-            indriv = np.where(river_id == riv)
-            river_x = river_xi[indriv]
-            river_y = river_yi[indriv]
-            for i in range(len(river_x)):
-                indx0 = np.where(self.grid.x > river_x[i] - 1e-6)[0]
-                y0 = self.grid.y[self.grid.y > river_y[i] - 1e-6][0]
-                indy0 = np.where(self.grid.y == y0)[0]
-                self.z[indx0[0],indy0] = self.z[indx0[0],indy0] - river_h * 2       # river ordinate
-                self.z[indx0[0],indy0-1] = self.z[indx0[0],indy0-1] - river_h * 2   # pixel below river ordinate
+        if self.par['rv']:
+            nriv = len(self.src.par['FF']['riv_y0'])
+            river_xi, river_yi, river_zi, river_id = self.river_coord
+            for riv in range(nriv):
+                Q = self.src.par['FF']['Q_m3/s'][riv]
+                river_h = Q / (2 * (self.grid.w * 1e3)**2)                       # 2 N-S pixels to facilitate CA flow
+                indriv = np.where(river_id == riv)
+                river_x = river_xi[indriv]
+                river_y = river_yi[indriv]
+                for i in range(len(river_x)):
+                    indx0 = np.where(self.grid.x > river_x[i] - 1e-6)[0]
+                    y0 = self.grid.y[self.grid.y > river_y[i] - 1e-6][0]
+                    indy0 = np.where(self.grid.y == y0)[0]
+                    self.z[indx0[0],indy0] = self.z[indx0[0],indy0] - river_h * 2       # river ordinate
+                    self.z[indx0[0],indy0-1] = self.z[indx0[0],indy0-1] - river_h * 2   # pixel below river ordinate
         if self.par['calc_d2coastline']:
             self.d2coastline = self.calc_d2coastline()
         if self.par['calc_d2river']:
@@ -2351,7 +2352,7 @@ class EnvLayer_energy:
     - Power flows are computed using a linear DC approximation.
     - Updated node supply reflects the effective redistribution of power across the network.
     '''
-    def __init__(self, urbLand, par, coords_Gs=None):
+    def __init__(self, urbLand, par, coords_Gs = None, coords_Ss = None):
         self.ID = 'energy'
         self.urbLand = copy.deepcopy(urbLand)
         self.grid = self.urbLand.grid
@@ -2359,7 +2360,8 @@ class EnvLayer_energy:
         self.industrialZones = urbLand.industrialZones
         self.par = par
 
-        self.coords_Gs = coords_Gs   # Optional user-defined generator coordinates
+        self.coords_Gs = coords_Gs   # Optional user-defined generator coordinates, generic (not necessarily dam, thermal, windfarm although same IDs kept)
+        self.coords_Ss = coords_Ss
 
         self.load_ID = None
         self.flows_day = None
@@ -2542,23 +2544,31 @@ class EnvLayer_energy:
     def powergrid_nlines_G2S(self):
         '''
         '''
-        N_INDzones = len(self.urbLand.industrialZones)
-        if N_INDzones == 0:
-            print('No industrial zone found (consider generating a larger city).')
-            return {}
-
-        coords_S_pot = [self.urbLand.industrialZones[i]['polygon'].centroid for i in range(N_INDzones)]
-        if self.coords_Gs is not None:
-            coords_Gs = self.coords_Gs                  # user-defined G nodes must follow dam-th-wf nomenclature but can be any type of generators
-        else:
+        if self.coords_Gs is None:
             coords_Gs = {
-                'Gdam': self.CI_hydrodam.centroid,      # hydropower dam
-                'Gth': self.CI_thermalplant.centroid,   # thermal plant
-                'Gwf': self.CI_windfarm.centroid        # wind farm
-            }
+                    'Gdam': self.CI_hydrodam.centroid,      # hydropower dam
+                    'Gth': self.CI_thermalplant.centroid,   # thermal plant
+                    'Gwf': self.CI_windfarm.centroid        # wind farm
+                }
+        else:
+            coords_Gs = self.coords_Gs
+
         x, y = coords_Gs['Gwf']
         dx, dy = self.par['windfarm_centroid_shift']
         coords_Gs['Gwf'] = (x + dx, y + dy)
+
+        if self.coords_Ss is None:
+            N_INDzones = len(self.urbLand.industrialZones)
+            if N_INDzones == 0:
+                print(
+                    'No industrial zone found: '
+                    'Consider generating a larger city or provide '
+                    'substation coords_Ss.'
+                )
+                return {}
+            coords_S_pot = [self.urbLand.industrialZones[i]['polygon'].centroid for i in range(N_INDzones)]
+        else:
+            coords_S_pot = [Point(x, y) for x, y in self.coords_Ss]
 
         pathLines = {}
         n_copies = self.par['powergrid_redundanciesGS']
@@ -2571,6 +2581,7 @@ class EnvLayer_energy:
                 sub_idx = sorted_idx[copy_idx % len(sorted_idx)]
                 coords_S = coords_S_pot[sub_idx]
                 coords_S = (coords_S.x, coords_S.y)
+
                 path_x, path_y = self.gen_powergrid_1line_G2S(coords_G, coords_S)
                 pathLines[gen_key] = (path_x, path_y)
         return pathLines
