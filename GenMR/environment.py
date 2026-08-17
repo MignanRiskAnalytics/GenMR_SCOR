@@ -28,7 +28,7 @@ Layers and Related Objects (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.2.1
-:Date: 2026-06-24
+:Date: 2026-08-17
 :License: AGPL-3
 """
 
@@ -2351,13 +2351,16 @@ class EnvLayer_energy:
     - Power flows are computed using a linear DC approximation.
     - Updated node supply reflects the effective redistribution of power across the network.
     '''
-    def __init__(self, urbLand, par):
+    def __init__(self, urbLand, par, coords_Gs=None):
         self.ID = 'energy'
         self.urbLand = copy.deepcopy(urbLand)
         self.grid = self.urbLand.grid
         self.topo = self.urbLand.topo
         self.industrialZones = urbLand.industrialZones
         self.par = par
+
+        self.coords_Gs = coords_Gs   # Optional user-defined generator coordinates
+
         self.load_ID = None
         self.flows_day = None
         self.flows_night = None
@@ -2545,11 +2548,14 @@ class EnvLayer_energy:
             return {}
 
         coords_S_pot = [self.urbLand.industrialZones[i]['polygon'].centroid for i in range(N_INDzones)]
-        coords_Gs = {
-            'Gdam': self.CI_hydrodam.centroid,      # hydropower dam
-            'Gth': self.CI_thermalplant.centroid,   # thermal plant
-            'Gwf': self.CI_windfarm.centroid        # wind farm
-        }
+        if self.coords_Gs is not None:
+            coords_Gs = self.coords_Gs                  # user-defined G nodes must follow dam-th-wf nomenclature but can be any type of generators
+        else:
+            coords_Gs = {
+                'Gdam': self.CI_hydrodam.centroid,      # hydropower dam
+                'Gth': self.CI_thermalplant.centroid,   # thermal plant
+                'Gwf': self.CI_windfarm.centroid        # wind farm
+            }
         x, y = coords_Gs['Gwf']
         dx, dy = self.par['windfarm_centroid_shift']
         coords_Gs['Gwf'] = (x + dx, y + dy)
