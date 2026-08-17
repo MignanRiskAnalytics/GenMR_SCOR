@@ -462,14 +462,21 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#compound-event-modelling">2. Compound event modelling</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#common-driver-temperature-as-external-forcing-factor">2.1. Common driver: Temperature as external forcing factor</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#heatwaves-droughts-and-heavy-rains">2.1.1. Heatwaves, droughts and heavy rains</a></li>
-<li class="toctree-l4"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#wildfires">2.1.2. Wildfires</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#common-environmental-drivers">2.1. Common environmental drivers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#temperature-water-content-as-external-forcing-factor">2.1.1. Temperature (&amp; water content) as external forcing factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#other-external-forcing-factors">2.1.2. Other external forcing factors</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#event-interaction-modelling-markov-process-integration">2.2. Event interaction modelling (Markov process integration)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#event-interaction-modelling-markov-process-integration">2.2. Event interaction modelling (Markov process integration)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#adjacency-matrix-encoding-peril-resolution">2.2.1. Adjacency matrix encoding (peril resolution)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#transition-matrix-encoding-event-resolution">2.2.2. Transition matrix encoding (event resolution)</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#event-interaction-modelling-non-markovian-process-integration">2.3. Event interaction modelling (Non-Markovian process integration)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#long-term-drivers-coming-later">3. Long-term drivers (coming later)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial3_DigitalTemplate_dynamics.html#references">References</a></li>
 </ul>
 </li>
 </ul>
@@ -502,7 +509,7 @@
 <h1>Tutorial 1: Generating a virtual environment for the GenMR digital template<a class="headerlink" href="#tutorial-1-generating-a-virtual-environment-for-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 1.2.1<br />
-<strong>Last Updated:</strong> 2026-07-07<br />
+<strong>Last Updated:</strong> 2026-08-17<br />
 <strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
 <p>The <em>digital template</em>, first described in <a class="reference external" href="https://www.mdpi.com/1660-4601/19/23/16097">Mignan (2022)</a> and used in the CAT Risk Modelling Sandbox (<a class="reference external" href="https://github.com/amignan/Intro2CATriskModelling/blob/main/CATRiskModellingSandbox_tutorial.ipynb">Mignan, 2024</a>), is a microcosm simulation of the complex Earth system for catastrophe dynamics R&amp;D, multi-risk prototyping in the Generic Multi-Risk (GenMR) framework, and catastrophe risk eduction. It is defined as a virtual environment populated by loss-generating events that interact with each other and with the environment. The virtual environment, built in this tutorial, is composed of <em>environmental layers</em> that consist of sets of variables <span class="math notranslate nohighlight">\(\theta(x,y)\)</span> defined in a spatial grid of coordinates <span class="math notranslate nohighlight">\((x,y)\)</span>. Each layer may be altered by <em>environmental objects</em> located within the layer. The parsimonious complex Earth system finally consists of a stack of interacting environmental layers defined in the natural, technological and socio-economic systems. The loss-generating events that populate the virtual environment will be defined in the next tutorial, and their interactions potentially leading to compound catastrophes in a third and final tutorial.</p>
 <p>The modelled environmental layers and associated objects as listed in Table 1 (see also Fig. 1). This tutorial provides a concise overview of these layers using a default parameterisation, with alternative scenarios to be introduced later in How-To Guides. The outputs generated here will serve as input for hazard and risk assessment in the subsequent tutorials.</p>
@@ -988,6 +995,26 @@ Total population: 19.83 million people
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Total power generation = 6.8999999999999995 GW
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## tmp test ##</span>
+<span class="c1"># user-defined generator (Gnode) coordinates</span>
+
+<span class="c1">#coords_Gs = {</span>
+<span class="c1">#    &#39;Gdam&#39;: (75, 20),</span>
+<span class="c1">#    &#39;Gth&#39;:  (30, 30),</span>
+<span class="c1">#    &#39;Gwf&#39;:  (60, 50)</span>
+<span class="c1">#}</span>
+<span class="c1">#</span>
+<span class="c1">#energyLayer = GenMR_env.EnvLayer_energy(urbLandLayer, energyPar, coords_Gs = coords_Gs)</span>
+<span class="c1">#</span>
+<span class="c1">#powergrid, node_names, node_coords, node_supply = energyLayer.powergrid</span>
+<span class="c1">#node_names_list = [node_names[i] for i in range(len(node_names))]</span>
+<span class="c1">#indL = [i for i, name in node_names.items() if name.startswith(&#39;L&#39;)]</span>
 </pre></div>
 </div>
 </div>
