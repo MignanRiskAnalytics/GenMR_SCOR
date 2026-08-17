@@ -2616,7 +2616,7 @@ class EnvLayer_energy:
         self.load_nodes = load_nodes
         return load_nodes, load_index
 
-    def gen_urbangrid(self, load_index):
+    def gen_urbangrid_OLD(self, load_index):
         '''
         Create a graph representing the urban power grid (load nodes only) and connect isolated
         components to the main grid.
@@ -2673,6 +2673,75 @@ class EnvLayer_energy:
                 urbangrid.add_edge(node_a, node_b)
                 edges_new.append((node_a, node_b))
         return urbangrid, edges_new
+
+
+
+    def gen_urbangrid(self, load_index):  # new version to get any number of islands to connect to main grid
+        '''
+        Create a graph representing the urban power grid (load nodes only) and connect isolated
+        components to the main grid.
+
+        Parameters
+        ----------
+        load_index : ndarray
+            2D array indicating load node indices (-1 if non-load).
+
+        Returns
+        -------
+        urbangrid : networkx.Graph
+            Graph of urban load nodes connected.
+        edges_new : list of tuples
+            List of edges added to connect isolated components.
+        '''
+        rows, cols = load_index.shape
+        edges = []
+        for i in range(rows):
+            for j in range(cols):
+                idx = load_index[i, j]
+                if idx == -1:
+                    continue
+                if j+1 < cols and load_index[i, j+1] != -1:
+                    edges.append((idx, load_index[i, j+1]))
+                if i+1 < rows and load_index[i+1, j] != -1:
+                    edges.append((idx, load_index[i+1, j]))
+
+        urbangrid = networkx.Graph()
+        urbangrid.add_nodes_from(range(len(self.load_nodes)))
+        urbangrid.add_edges_from(edges)
+
+        island_comps = list(networkx.connected_components(urbangrid))
+        comp_list = [list(c) for c in island_comps]
+
+        if len(comp_list) > 1:
+            centroids = [self.load_nodes[c].mean(axis=0) for c in comp_list]
+            n_comp = len(comp_list)
+
+            # closest pair of physical nodes between every component pair
+            trees = [cKDTree(self.load_nodes[c]) for c in comp_list]
+            comp_graph = networkx.Graph()
+            comp_graph.add_nodes_from(range(n_comp))
+            for i in range(n_comp):
+                for j in range(i+1, n_comp):
+                    dists_ij, idxs_ij = trees[j].query(self.load_nodes[comp_list[i]])
+                    k_min = np.argmin(dists_ij)
+                    node_a = comp_list[i][k_min]
+                    node_b = comp_list[j][idxs_ij[k_min]]
+                    comp_graph.add_edge(i, j, weight=dists_ij[k_min], pair=(node_a, node_b))
+
+            mst = networkx.minimum_spanning_tree(comp_graph, weight='weight')
+            edges_new = []
+            for i, j in mst.edges():
+                node_a, node_b = comp_graph[i][j]['pair']
+                urbangrid.add_edge(node_a, node_b)
+                edges_new.append((node_a, node_b))
+        else:
+            edges_new = []
+
+        return urbangrid, edges_new
+
+
+
+
 
     # connect generator nodes to urban network via substations
     def connect_generators_substations(self, urbangrid):
