@@ -3891,9 +3891,55 @@ class CellularAutomaton_LS:
 
 
 ## WILDFIRE CASE ##
+def percolate_cluster(seed_xy, p_edge_grid, fuel_mask, rng=None):
+    '''
+    Grow a stochastic fire footprint from an ignition cell via bond percolation.
+
+    Starting from `seed_xy`, the cluster spreads to 4-connected neighboring
+    cells that contain fuel, with each candidate cell added independently
+    at random with probability given by its entry in `p_edge_grid`.
+
+    Parameters
+    ----------
+    seed_xy : tuple of int
+        (row, col) grid indices of the ignition cell.
+    p_edge_grid : ndarray of float, shape (nx, ny)
+        Spread probability for each grid cell.
+    fuel_mask : ndarray of bool, shape (nx, ny)
+        True where a cell contains fuel and is eligible to burn.
+    rng : numpy.random.Generator, optional
+        Random number generator to draw spread outcomes from. Default is None.
+
+    Returns
+    -------
+    visited : ndarray of bool, shape (nx, ny)
+        Boolean mask of all cells reached by the percolation process,
+        including the seed cell.
+    '''
+    if rng is None:
+        rng = np.random.default_rng()
+    nx, ny = fuel_mask.shape
+    visited = np.zeros_like(fuel_mask, dtype=bool)
+    sx, sy = seed_xy
+    if not fuel_mask[sx, sy]:
+        return visited
+    visited[sx, sy] = True
+    stack = [(sx, sy)]
+    while stack:
+        x, y = stack.pop()
+        for dx, dy in ((1,0), (-1,0), (0,1), (0,-1)):
+            xx, yy = x+dx, y+dy
+            if 0 <= xx < nx and 0 <= yy < ny and not visited[xx, yy] and fuel_mask[xx, yy]:
+                if rng.random() < p_edge_grid[xx, yy]:
+                    visited[xx, yy] = True
+                    stack.append((xx, yy))
+    return visited
+
 class CellularAutomaton_WF:
     '''
     Cellular Automaton model for wildfire (WF) propagation.
+
+    Note: percolate_cluster() option added. To be described.
 
     Parameters
     ----------
@@ -3974,9 +4020,17 @@ class CellularAutomaton_WF:
                 self.S = S_flat.reshape(self.S.shape)
                 self.landuse_S4WF = landuse_S4WF_flat.reshape(self.S.shape)
 
-                S_clumps = measure.label(self.S, connectivity=1)
-                clump_WF = S_clumps.flatten()[lightning_xy]
-                indWF = S_clumps == clump_WF
+                if self.src.par['WF']['p_spread'] == None:
+                    # deterministic
+                    S_clumps = measure.label(self.S, connectivity=1)
+                    clump_WF = S_clumps.flatten()[lightning_xy]
+                    indWF = S_clumps == clump_WF
+                else:
+                    # probabilistic
+                    x0_ind, y0_ind = np.unravel_index(lightning_xy[0], self.S.shape)
+                    fuel_mask = self.S == 1
+                    p_edge_grid = np.full(self.S.shape, self.src.par['WF']['p_spread'])
+                    indWF = percolate_cluster((x0_ind, y0_ind), p_edge_grid, fuel_mask)
 
                 WF_fp[indWF] = 7
                 self.S[indWF] = 0
@@ -3986,8 +4040,7 @@ class CellularAutomaton_WF:
 
                 burntBldgBlocks_cells = np.sum(indWF.flatten()[self.indwoodBldg])
 
-                WF_Smin = 1e4   # hardcoded here, could be sizeDistr['WF']['Smin'] as additional input par.
-                if burntArea_cells >= WF_Smin:
+                if burntArea_cells >= self.src.par['WF']['Smin_plot']:
                     if self.frame_plot:
                         plt.rcParams['font.size'] = '14'
                         _, ax = plt.subplots(1, 1, figsize=(7, 7))
