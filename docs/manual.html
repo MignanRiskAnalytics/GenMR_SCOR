@@ -108,6 +108,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energy.gen_loadnodes"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.gen_loadnodes()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energy.gen_powergrid_1line_G2S"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.gen_powergrid_1line_G2S()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energy.gen_urbangrid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.gen_urbangrid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energy.gen_urbangrid_OLD"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.gen_urbangrid_OLD()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energy.get_windfarm_mask"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.get_windfarm_mask()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.powergrid</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#GenMR.environment.EnvLayer_energy.powergrid_nlines_G2S"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.powergrid_nlines_G2S</span></code></a></li>
@@ -322,6 +323,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.get_peril_evID"><code class="docutils literal notranslate"><span class="pre">get_peril_evID()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.get_reachable_targets"><code class="docutils literal notranslate"><span class="pre">get_reachable_targets()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.incrementing"><code class="docutils literal notranslate"><span class="pre">incrementing()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.percolate_cluster"><code class="docutils literal notranslate"><span class="pre">percolate_cluster()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.plot_hazFootprints"><code class="docutils literal notranslate"><span class="pre">plot_hazFootprints()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.plot_src"><code class="docutils literal notranslate"><span class="pre">plot_src()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#GenMR.perils.plot_vulnFunctions"><code class="docutils literal notranslate"><span class="pre">plot_vulnFunctions()</span></code></a></li>
@@ -444,11 +446,12 @@
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-1-tropical-cyclone-case">C.1. Tropical cyclone case</a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-2-tornado-case">C.2. Tornado case</a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-3-heatwave-case-threshold-model">C.3. Heatwave case (threshold model)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-4-pest-infestation-case">C.4. Pest infestation case</a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-5-blackout-case">C.5. Blackout case</a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-6-business-interruption-case">C.6. Business interruption case</a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-7-public-safety-service-case">C.7. Public safety service case</a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-8-social-unrest-case">C.8. Social unrest case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-4-wildfire-case">C.4. Wildfire case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-5-pest-infestation-case">C.5. Pest infestation case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-6-blackout-case">C.6. Blackout case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-7-business-interruption-case">C.7. Business interruption case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-8-public-safety-service-case">C.8. Public safety service case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/Tutorial2_DigitalTemplate_perils.html#c-9-social-unrest-case">C.9. Social unrest case</a></li>
 </ul>
 </li>
 </ul>
@@ -544,7 +547,7 @@ defined as classes or methods.</p>
 <dd class="field-even"><p>1.2.1</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2026-08-17</p>
+<dd class="field-odd"><p>2026-09-16</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -863,7 +866,7 @@ as its impact is negligible.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="GenMR.environment.EnvLayer_energy">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">EnvLayer_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urbLand</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coords_Gs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_energy" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenMR.environment.</span></span><span class="sig-name descname"><span class="pre">EnvLayer_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urbLand</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coords_Gs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coords_Ss</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_energy" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Energy infrastructure layer representing the spatial structure and operation of the power grid.
 It generates critical energy infrastructures (e.g., generators, substations), constructs the
@@ -1011,6 +1014,25 @@ and initial node supply (MW).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="GenMR.environment.EnvLayer_energy.gen_urbangrid">
 <span class="sig-name descname"><span class="pre">gen_urbangrid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">load_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_energy.gen_urbangrid" title="Link to this definition"></a></dt>
+<dd><p>Create a graph representing the urban power grid (load nodes only) and connect isolated
+components to the main grid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>load_index</strong> (<em>ndarray</em>) – 2D array indicating load node indices (-1 if non-load).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>urbangrid</strong> (<em>networkx.Graph</em>) – Graph of urban load nodes connected.</p></li>
+<li><p><strong>edges_new</strong> (<em>list of tuples</em>) – List of edges added to connect isolated components.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GenMR.environment.EnvLayer_energy.gen_urbangrid_OLD">
+<span class="sig-name descname"><span class="pre">gen_urbangrid_OLD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">load_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.environment.EnvLayer_energy.gen_urbangrid_OLD" title="Link to this definition"></a></dt>
 <dd><p>Create a graph representing the urban power grid (load nodes only) and connect isolated
 components to the main grid.</p>
 <dl class="field-list simple">
@@ -2804,7 +2826,7 @@ as well as intensity and loss footprint calculations.</p>
 <dd class="field-even"><p>1.2.1</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2026-07-22</p>
+<dd class="field-odd"><p>2026-09-16</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>
@@ -2896,6 +2918,7 @@ as well as intensity and loss footprint calculations.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">CellularAutomaton_WF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">urbLandLayer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_plot</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.CellularAutomaton_WF" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Cellular Automaton model for wildfire (WF) propagation.</p>
+<p>Note: percolate_cluster() option added. To be described.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -4515,6 +4538,32 @@ For logarithmic scale, this represents the step in log10 space.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="GenMR.perils.percolate_cluster">
+<span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">percolate_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed_xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_edge_grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuel_mask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.percolate_cluster" title="Link to this definition"></a></dt>
+<dd><p>Grow a stochastic fire footprint from an ignition cell via bond percolation.</p>
+<p>Starting from <cite>seed_xy</cite>, the cluster spreads to 4-connected neighboring
+cells that contain fuel, with each candidate cell added independently
+at random with probability given by its entry in <cite>p_edge_grid</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seed_xy</strong> (<em>tuple</em><em> of </em><em>int</em>) – (row, col) grid indices of the ignition cell.</p></li>
+<li><p><strong>p_edge_grid</strong> (<em>ndarray</em><em> of </em><em>float</em><em>, </em><em>shape</em><em> (</em><em>nx</em><em>, </em><em>ny</em><em>)</em>) – Spread probability for each grid cell.</p></li>
+<li><p><strong>fuel_mask</strong> (<em>ndarray</em><em> of </em><em>bool</em><em>, </em><em>shape</em><em> (</em><em>nx</em><em>, </em><em>ny</em><em>)</em>) – True where a cell contains fuel and is eligible to burn.</p></li>
+<li><p><strong>rng</strong> (<em>numpy.random.Generator</em><em>, </em><em>optional</em>) – Random number generator to draw spread outcomes from. Default is None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>visited</strong> – Boolean mask of all cells reached by the percolation process,
+including the seed cell.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray of bool, shape (nx, ny)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="GenMR.perils.plot_hazFootprints">
 <span class="sig-prename descclassname"><span class="pre">GenMR.perils.</span></span><span class="sig-name descname"><span class="pre">plot_hazFootprints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">catalog_hazFootprints</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">topoLayer_z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_Imin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_Imax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nstoch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenMR.perils.plot_hazFootprints" title="Link to this definition"></a></dt>
 <dd><p>Plot stochastic hazard footprints for multiple events and perils on a spatial grid.</p>
@@ -4739,7 +4788,7 @@ core GenMR workflows by streamlining data handling, computation, and visualisati
 <dd class="field-even"><p>1.2.1</p>
 </dd>
 <dt class="field-odd">Date<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2026-07-08</p>
+<dd class="field-odd"><p>2026-09-16</p>
 </dd>
 <dt class="field-even">License<span class="colon">:</span></dt>
 <dd class="field-even"><p>AGPL-3</p>

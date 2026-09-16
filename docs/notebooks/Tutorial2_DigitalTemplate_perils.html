@@ -108,6 +108,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.gen_loadnodes"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.gen_loadnodes()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.gen_powergrid_1line_G2S"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.gen_powergrid_1line_G2S()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.gen_urbangrid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.gen_urbangrid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.gen_urbangrid_OLD"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.gen_urbangrid_OLD()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.get_windfarm_mask"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.get_windfarm_mask()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#id0"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.powergrid</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.powergrid_nlines_G2S"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.powergrid_nlines_G2S</span></code></a></li>
@@ -322,6 +323,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.get_peril_evID"><code class="docutils literal notranslate"><span class="pre">get_peril_evID()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.get_reachable_targets"><code class="docutils literal notranslate"><span class="pre">get_reachable_targets()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.incrementing"><code class="docutils literal notranslate"><span class="pre">incrementing()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.percolate_cluster"><code class="docutils literal notranslate"><span class="pre">percolate_cluster()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.plot_hazFootprints"><code class="docutils literal notranslate"><span class="pre">plot_hazFootprints()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.plot_src"><code class="docutils literal notranslate"><span class="pre">plot_src()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.plot_vulnFunctions"><code class="docutils literal notranslate"><span class="pre">plot_vulnFunctions()</span></code></a></li>
@@ -444,11 +446,12 @@
 <li class="toctree-l4"><a class="reference internal" href="#c-1-tropical-cyclone-case">C.1. Tropical cyclone case</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c-2-tornado-case">C.2. Tornado case</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c-3-heatwave-case-threshold-model">C.3. Heatwave case (threshold model)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c-4-pest-infestation-case">C.4. Pest infestation case</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c-5-blackout-case">C.5. Blackout case</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c-6-business-interruption-case">C.6. Business interruption case</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c-7-public-safety-service-case">C.7. Public safety service case</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c-8-social-unrest-case">C.8. Social unrest case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c-4-wildfire-case">C.4. Wildfire case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c-5-pest-infestation-case">C.5. Pest infestation case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c-6-blackout-case">C.6. Blackout case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c-7-business-interruption-case">C.7. Business interruption case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c-8-public-safety-service-case">C.8. Public safety service case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c-9-social-unrest-case">C.9. Social unrest case</a></li>
 </ul>
 </li>
 </ul>
@@ -509,7 +512,7 @@
 <h1>Tutorial 2: Implementing perils in the GenMR digital template<a class="headerlink" href="#tutorial-2-implementing-perils-in-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 1.2.1<br />
-<strong>Last Updated:</strong> 2026-07-22<br />
+<strong>Last Updated:</strong> 2026-09-16<br />
 <strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
 <p>Once a virtual environment has been generated (see previous tutorial), stochastic events are modelled to populate it. Table 1 lists the perils included in version 1.1.2.</p>
 <br>
@@ -842,7 +845,7 @@
                  <span class="s1">&#39;Dt_da&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>                      <span class="c1"># Minimum duration (days)</span>
                  <span class="s1">&#39;Si_da&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">14</span><span class="p">],</span>                <span class="c1"># Fixed event sizes (days) - for sake of illustration</span>
                  <span class="s1">&#39;sigmaT_yearly&#39;</span><span class="p">:</span> <span class="mf">.55</span><span class="p">,</span>            <span class="c1"># Temp. std. dev. - value from Olonscheck et al. (2021)</span>
-                 <span class="s1">&#39;T_AR1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">.9</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">],</span>              <span class="c1"># AR(1) process 0: corr. phi, 1: std dev (fitted west EU...)</span>
+                 <span class="s1">&#39;T_AR1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">.8</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span>              <span class="c1"># AR(1) process 0: corr. phi, 1: std dev</span>
                  <span class="s1">&#39;Dt_max_da&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>                 <span class="c1"># for Tutorial 2: HW defined over a month max</span>
                  <span class="s1">&#39;month&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>                      <span class="c1"># Calendar month (July = 7) when heatwave occurrence explored</span>
                  <span class="s1">&#39;lat_deg&#39;</span><span class="p">:</span> <span class="n">grid</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;lat_deg&#39;</span><span class="p">]}</span>
@@ -2067,7 +2070,7 @@ RS... TC... To... VE... WF... WS... CS... BI... BO... Ex... FF... Li... LS... Sf
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9023a273b709aaf3cb2d59123f7fec876b517fc6937f1c0c0c65b915b9edda02.png" src="../_images/9023a273b709aaf3cb2d59123f7fec876b517fc6937f1c0c0c65b915b9edda02.png" />
+<img alt="../_images/51878c009d5c25aa331d8fd8aa022142430fbb5096c2bc1b6649b48b0e53116f.png" src="../_images/51878c009d5c25aa331d8fd8aa022142430fbb5096c2bc1b6649b48b0e53116f.png" />
 </div>
 </div>
 <p><strong>Note:</strong> Observe the <code class="docutils literal notranslate"><span class="pre">TC</span></code> footprint boundary effect (cyclonic eye), which is due to the track artificially starting at <code class="docutils literal notranslate"><span class="pre">grid.xmin</span></code>.</p>
@@ -2970,9 +2973,10 @@ No FF movie created.
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># additional WF source/landuse parameters</span>
 <span class="n">src</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="s1">&#39;WF&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ratio_grass&#39;</span><span class="p">:</span> <span class="mf">.6</span><span class="p">,</span>        <span class="c1"># ratio of forest cells to turn to grass at initial state</span>
              <span class="s1">&#39;p_lightning&#39;</span><span class="p">:</span> <span class="mf">.1</span><span class="p">,</span>            <span class="c1"># probability of lightning strike per iteration</span>
+             <span class="s1">&#39;p_spread&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>             <span class="c1"># probability of fire spreading to next cell (deterministic if None)</span>
              <span class="s1">&#39;rate_newtrees&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>        <span class="c1"># number of new trees to add per iteration</span>
              <span class="s1">&#39;nsim&#39;</span><span class="p">:</span> <span class="mi">100000</span><span class="p">,</span>               <span class="c1"># number of iterations</span>
-             <span class="s1">&#39;Smin_plot&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>            <span class="c1"># minimum WF footprint size to save in &#39;figs/WF_CA_frames&#39;</span>
+             <span class="s1">&#39;Smin_plot&#39;</span><span class="p">:</span> <span class="mf">1e4</span><span class="p">,</span>             <span class="c1"># minimum WF footprint size to save in &#39;figs/WF_stochset_tmp/&#39;</span>
             <span class="p">}</span>
 
 <span class="n">dynhazFootprints</span> <span class="o">=</span> <span class="n">GenMR_perils</span><span class="o">.</span><span class="n">DynamicHazardFootprintGenerator</span><span class="p">(</span><span class="n">evtable</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">soilLayer</span><span class="p">,</span> <span class="n">urbLandLayer</span><span class="p">)</span>
@@ -2985,12 +2989,12 @@ No FF movie created.
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>generating footprints for:
-Loading from cache potential footprints
-
+Computing potential footprints
+iteration 99000 / 100000
 Fetching footprints from potential footprints
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Fetching WF footprints from cache: 100%|████████| 10/10 [00:00&lt;00:00, 35.33it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Fetching WF footprints from cache: 100%|████████| 10/10 [00:00&lt;00:00, 59.49it/s]
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>FF_fromRS1 (loaded from cache)
@@ -3000,9 +3004,6 @@ LS_fromRS1 (loaded from cache)
 LS_fromRS2 (loaded from cache)
 LS_fromRS3 (loaded from cache)
 ... catalogue completed
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>dict_keys([&#39;WF1&#39;, &#39;WF2&#39;, &#39;WF3&#39;, &#39;WF4&#39;, &#39;WF5&#39;, &#39;WF6&#39;, &#39;WF7&#39;, &#39;WF8&#39;, &#39;WF9&#39;, &#39;WF10&#39;, &#39;FF_fromRS1&#39;, &#39;FF_fromRS2&#39;, &#39;FF_fromRS3&#39;, &#39;LS_fromRS1&#39;, &#39;LS_fromRS2&#39;, &#39;LS_fromRS3&#39;])
@@ -3025,7 +3026,7 @@ LS_fromRS3 (loaded from cache)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/219587ffa06ddd3e6594c42e9595f5a294fbd383c8be2d03ba2f639ef33d5aa1.png" src="../_images/219587ffa06ddd3e6594c42e9595f5a294fbd383c8be2d03ba2f639ef33d5aa1.png" />
+<img alt="../_images/b116d1b4f517f5be883c2a4b39432276060a3b921e837e9a2653ae703f262c26.png" src="../_images/b116d1b4f517f5be883c2a4b39432276060a3b921e837e9a2653ae703f262c26.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -3137,7 +3138,7 @@ LS_fromRS3 (loaded from cache)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Computing MDR &amp; Loss: 100%|█████████████████████| 76/76 [00:01&lt;00:00, 39.77it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Computing MDR &amp; Loss: 100%|█████████████████████| 75/75 [00:02&lt;00:00, 25.96it/s]
 </pre></div>
 </div>
 <div class="output text_html"><div>
@@ -3470,7 +3471,7 @@ LS_fromRS3 (loaded from cache)
       <td>atmosphere</td>
       <td>HW1</td>
       <td>7.000000</td>
-      <td>1.560000e-03</td>
+      <td>NaN</td>
       <td>NaN</td>
     </tr>
     <tr>
@@ -3479,38 +3480,29 @@ LS_fromRS3 (loaded from cache)
       <td>atmosphere</td>
       <td>HW2</td>
       <td>14.000000</td>
-      <td>6.500000e-04</td>
+      <td>NaN</td>
       <td>NaN</td>
     </tr>
     <tr>
       <th>35</th>
-      <td>HW</td>
-      <td>atmosphere</td>
-      <td>HW3</td>
-      <td>30.000000</td>
-      <td>1.000000e-05</td>
+      <td>PI</td>
+      <td>crops</td>
+      <td>PI1</td>
+      <td>50.000000</td>
+      <td>NaN</td>
       <td>NaN</td>
     </tr>
     <tr>
       <th>36</th>
       <td>PI</td>
       <td>crops</td>
-      <td>PI1</td>
-      <td>50.000000</td>
-      <td>3.950000e-03</td>
+      <td>PI2</td>
+      <td>65.000000</td>
+      <td>NaN</td>
       <td>NaN</td>
     </tr>
     <tr>
       <th>37</th>
-      <td>PI</td>
-      <td>crops</td>
-      <td>PI2</td>
-      <td>65.000000</td>
-      <td>0.000000e+00</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>38</th>
       <td>RS</td>
       <td>atmosphere</td>
       <td>RS1</td>
@@ -3519,7 +3511,7 @@ LS_fromRS3 (loaded from cache)
       <td>NaN</td>
     </tr>
     <tr>
-      <th>39</th>
+      <th>38</th>
       <td>RS</td>
       <td>atmosphere</td>
       <td>RS2</td>
@@ -3528,7 +3520,7 @@ LS_fromRS3 (loaded from cache)
       <td>NaN</td>
     </tr>
     <tr>
-      <th>40</th>
+      <th>39</th>
       <td>RS</td>
       <td>atmosphere</td>
       <td>RS3</td>
@@ -3537,7 +3529,7 @@ LS_fromRS3 (loaded from cache)
       <td>NaN</td>
     </tr>
     <tr>
-      <th>41</th>
+      <th>40</th>
       <td>TC</td>
       <td>stormtrack1</td>
       <td>TC1</td>
@@ -3546,7 +3538,7 @@ LS_fromRS3 (loaded from cache)
       <td>4.003226e+10</td>
     </tr>
     <tr>
-      <th>42</th>
+      <th>41</th>
       <td>TC</td>
       <td>stormtrack2</td>
       <td>TC2</td>
@@ -3555,7 +3547,7 @@ LS_fromRS3 (loaded from cache)
       <td>7.559231e+10</td>
     </tr>
     <tr>
-      <th>43</th>
+      <th>42</th>
       <td>TC</td>
       <td>stormtrack3</td>
       <td>TC3</td>
@@ -3564,7 +3556,7 @@ LS_fromRS3 (loaded from cache)
       <td>1.973294e+11</td>
     </tr>
     <tr>
-      <th>44</th>
+      <th>43</th>
       <td>TC</td>
       <td>stormtrack4</td>
       <td>TC4</td>
@@ -3573,7 +3565,7 @@ LS_fromRS3 (loaded from cache)
       <td>3.261860e+11</td>
     </tr>
     <tr>
-      <th>45</th>
+      <th>44</th>
       <td>TC</td>
       <td>stormtrack5</td>
       <td>TC5</td>
@@ -3582,7 +3574,7 @@ LS_fromRS3 (loaded from cache)
       <td>4.358703e+11</td>
     </tr>
     <tr>
-      <th>46</th>
+      <th>45</th>
       <td>To</td>
       <td>vortexline1</td>
       <td>To1</td>
@@ -3591,7 +3583,7 @@ LS_fromRS3 (loaded from cache)
       <td>0.000000e+00</td>
     </tr>
     <tr>
-      <th>47</th>
+      <th>46</th>
       <td>To</td>
       <td>vortexline2</td>
       <td>To2</td>
@@ -3600,7 +3592,7 @@ LS_fromRS3 (loaded from cache)
       <td>0.000000e+00</td>
     </tr>
     <tr>
-      <th>48</th>
+      <th>47</th>
       <td>To</td>
       <td>vortexline3</td>
       <td>To3</td>
@@ -3609,7 +3601,7 @@ LS_fromRS3 (loaded from cache)
       <td>0.000000e+00</td>
     </tr>
     <tr>
-      <th>49</th>
+      <th>48</th>
       <td>To</td>
       <td>vortexline4</td>
       <td>To4</td>
@@ -3618,7 +3610,7 @@ LS_fromRS3 (loaded from cache)
       <td>0.000000e+00</td>
     </tr>
     <tr>
-      <th>50</th>
+      <th>49</th>
       <td>To</td>
       <td>vortexline5</td>
       <td>To5</td>
@@ -3627,7 +3619,7 @@ LS_fromRS3 (loaded from cache)
       <td>1.416740e+10</td>
     </tr>
     <tr>
-      <th>51</th>
+      <th>50</th>
       <td>To</td>
       <td>vortexline6</td>
       <td>To6</td>
@@ -3636,7 +3628,7 @@ LS_fromRS3 (loaded from cache)
       <td>7.348262e+09</td>
     </tr>
     <tr>
-      <th>52</th>
+      <th>51</th>
       <td>To</td>
       <td>vortexline7</td>
       <td>To7</td>
@@ -3645,7 +3637,7 @@ LS_fromRS3 (loaded from cache)
       <td>2.466552e+10</td>
     </tr>
     <tr>
-      <th>53</th>
+      <th>52</th>
       <td>To</td>
       <td>vortexline8</td>
       <td>To8</td>
@@ -3654,7 +3646,7 @@ LS_fromRS3 (loaded from cache)
       <td>2.123567e+10</td>
     </tr>
     <tr>
-      <th>54</th>
+      <th>53</th>
       <td>To</td>
       <td>vortexline9</td>
       <td>To9</td>
@@ -3663,7 +3655,7 @@ LS_fromRS3 (loaded from cache)
       <td>2.714532e+03</td>
     </tr>
     <tr>
-      <th>55</th>
+      <th>54</th>
       <td>VE</td>
       <td>volcano1</td>
       <td>VE1</td>
@@ -3672,7 +3664,7 @@ LS_fromRS3 (loaded from cache)
       <td>2.086858e-03</td>
     </tr>
     <tr>
-      <th>56</th>
+      <th>55</th>
       <td>VE</td>
       <td>volcano1</td>
       <td>VE2</td>
@@ -3681,7 +3673,7 @@ LS_fromRS3 (loaded from cache)
       <td>7.510737e+04</td>
     </tr>
     <tr>
-      <th>57</th>
+      <th>56</th>
       <td>VE</td>
       <td>volcano1</td>
       <td>VE3</td>
@@ -3690,25 +3682,25 @@ LS_fromRS3 (loaded from cache)
       <td>1.795838e+09</td>
     </tr>
     <tr>
-      <th>58</th>
+      <th>57</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF1</td>
       <td>10000.000000</td>
       <td>1.062953e-02</td>
-      <td>2.616843e+10</td>
+      <td>0.000000e+00</td>
     </tr>
     <tr>
-      <th>59</th>
+      <th>58</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF2</td>
       <td>10000.000000</td>
       <td>1.062953e-02</td>
-      <td>1.926400e+06</td>
+      <td>0.000000e+00</td>
     </tr>
     <tr>
-      <th>60</th>
+      <th>59</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF3</td>
@@ -3717,16 +3709,16 @@ LS_fromRS3 (loaded from cache)
       <td>0.000000e+00</td>
     </tr>
     <tr>
-      <th>61</th>
+      <th>60</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF4</td>
       <td>10000.000000</td>
       <td>1.062953e-02</td>
-      <td>0.000000e+00</td>
+      <td>4.677477e+10</td>
     </tr>
     <tr>
-      <th>62</th>
+      <th>61</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF5</td>
@@ -3735,52 +3727,52 @@ LS_fromRS3 (loaded from cache)
       <td>0.000000e+00</td>
     </tr>
     <tr>
-      <th>63</th>
+      <th>62</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF6</td>
       <td>10000.000000</td>
       <td>1.062953e-02</td>
-      <td>0.000000e+00</td>
+      <td>3.047158e+10</td>
     </tr>
     <tr>
-      <th>64</th>
+      <th>63</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF7</td>
       <td>31622.776602</td>
       <td>5.158744e-03</td>
-      <td>9.511397e+09</td>
+      <td>1.732634e+10</td>
     </tr>
     <tr>
-      <th>65</th>
+      <th>64</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF8</td>
       <td>31622.776602</td>
       <td>5.158744e-03</td>
-      <td>7.442482e+09</td>
+      <td>0.000000e+00</td>
     </tr>
     <tr>
-      <th>66</th>
+      <th>65</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF9</td>
       <td>31622.776602</td>
       <td>5.158744e-03</td>
-      <td>8.181142e+09</td>
+      <td>4.685265e+09</td>
     </tr>
     <tr>
-      <th>67</th>
+      <th>66</th>
       <td>WF</td>
       <td>forest</td>
       <td>WF10</td>
       <td>100000.000000</td>
       <td>3.755478e-03</td>
-      <td>1.504560e+08</td>
+      <td>0.000000e+00</td>
     </tr>
     <tr>
-      <th>68</th>
+      <th>67</th>
       <td>WS</td>
       <td>atmosphere</td>
       <td>WS1</td>
@@ -3789,7 +3781,7 @@ LS_fromRS3 (loaded from cache)
       <td>5.622653e+10</td>
     </tr>
     <tr>
-      <th>69</th>
+      <th>68</th>
       <td>WS</td>
       <td>atmosphere</td>
       <td>WS2</td>
@@ -3798,7 +3790,7 @@ LS_fromRS3 (loaded from cache)
       <td>1.061373e+11</td>
     </tr>
     <tr>
-      <th>70</th>
+      <th>69</th>
       <td>CS</td>
       <td>supercell</td>
       <td>CS_toTo1</td>
@@ -3807,7 +3799,7 @@ LS_fromRS3 (loaded from cache)
       <td>NaN</td>
     </tr>
     <tr>
-      <th>71</th>
+      <th>70</th>
       <td>CS</td>
       <td>supercell</td>
       <td>CS_toTo2</td>
@@ -3816,7 +3808,7 @@ LS_fromRS3 (loaded from cache)
       <td>NaN</td>
     </tr>
     <tr>
-      <th>72</th>
+      <th>71</th>
       <td>CS</td>
       <td>supercell</td>
       <td>CS_toTo3</td>
@@ -3825,7 +3817,7 @@ LS_fromRS3 (loaded from cache)
       <td>NaN</td>
     </tr>
     <tr>
-      <th>73</th>
+      <th>72</th>
       <td>CS</td>
       <td>supercell</td>
       <td>CS_toTo4</td>
@@ -3834,7 +3826,7 @@ LS_fromRS3 (loaded from cache)
       <td>NaN</td>
     </tr>
     <tr>
-      <th>74</th>
+      <th>73</th>
       <td>CS</td>
       <td>supercell</td>
       <td>CS_toTo5</td>
@@ -3843,7 +3835,7 @@ LS_fromRS3 (loaded from cache)
       <td>NaN</td>
     </tr>
     <tr>
-      <th>75</th>
+      <th>74</th>
       <td>CS</td>
       <td>supercell</td>
       <td>CS_toTo6</td>
@@ -3852,7 +3844,7 @@ LS_fromRS3 (loaded from cache)
       <td>NaN</td>
     </tr>
     <tr>
-      <th>76</th>
+      <th>75</th>
       <td>CS</td>
       <td>supercell</td>
       <td>CS_toTo7</td>
@@ -3861,7 +3853,7 @@ LS_fromRS3 (loaded from cache)
       <td>NaN</td>
     </tr>
     <tr>
-      <th>77</th>
+      <th>76</th>
       <td>CS</td>
       <td>supercell</td>
       <td>CS_toTo8</td>
@@ -3870,7 +3862,7 @@ LS_fromRS3 (loaded from cache)
       <td>NaN</td>
     </tr>
     <tr>
-      <th>78</th>
+      <th>77</th>
       <td>CS</td>
       <td>supercell</td>
       <td>CS_toTo9</td>
@@ -3879,7 +3871,7 @@ LS_fromRS3 (loaded from cache)
       <td>NaN</td>
     </tr>
     <tr>
-      <th>79</th>
+      <th>78</th>
       <td>Ex</td>
       <td>refinery</td>
       <td>Ex_fromCIf</td>
@@ -3888,7 +3880,7 @@ LS_fromRS3 (loaded from cache)
       <td>8.849726e+08</td>
     </tr>
     <tr>
-      <th>80</th>
+      <th>79</th>
       <td>FF</td>
       <td>river1</td>
       <td>FF_fromRS1</td>
@@ -3897,7 +3889,7 @@ LS_fromRS3 (loaded from cache)
       <td>2.108908e+10</td>
     </tr>
     <tr>
-      <th>81</th>
+      <th>80</th>
       <td>FF</td>
       <td>river1</td>
       <td>FF_fromRS2</td>
@@ -3906,7 +3898,7 @@ LS_fromRS3 (loaded from cache)
       <td>5.662246e+10</td>
     </tr>
     <tr>
-      <th>82</th>
+      <th>81</th>
       <td>FF</td>
       <td>river1</td>
       <td>FF_fromRS3</td>
@@ -3915,7 +3907,7 @@ LS_fromRS3 (loaded from cache)
       <td>6.309880e+10</td>
     </tr>
     <tr>
-      <th>83</th>
+      <th>82</th>
       <td>Li</td>
       <td>supercell</td>
       <td>Li_fromCS1</td>
@@ -3924,7 +3916,7 @@ LS_fromRS3 (loaded from cache)
       <td>NaN</td>
     </tr>
     <tr>
-      <th>84</th>
+      <th>83</th>
       <td>Li</td>
       <td>supercell</td>
       <td>Li_fromCS2</td>
@@ -3933,7 +3925,7 @@ LS_fromRS3 (loaded from cache)
       <td>NaN</td>
     </tr>
     <tr>
-      <th>85</th>
+      <th>84</th>
       <td>Li</td>
       <td>supercell</td>
       <td>Li_fromCS3</td>
@@ -3942,7 +3934,7 @@ LS_fromRS3 (loaded from cache)
       <td>NaN</td>
     </tr>
     <tr>
-      <th>86</th>
+      <th>85</th>
       <td>Li</td>
       <td>supercell</td>
       <td>Li_fromCS4</td>
@@ -3951,7 +3943,7 @@ LS_fromRS3 (loaded from cache)
       <td>NaN</td>
     </tr>
     <tr>
-      <th>87</th>
+      <th>86</th>
       <td>Li</td>
       <td>supercell</td>
       <td>Li_fromCS5</td>
@@ -3960,7 +3952,7 @@ LS_fromRS3 (loaded from cache)
       <td>NaN</td>
     </tr>
     <tr>
-      <th>88</th>
+      <th>87</th>
       <td>Li</td>
       <td>supercell</td>
       <td>Li_fromCS6</td>
@@ -3969,7 +3961,7 @@ LS_fromRS3 (loaded from cache)
       <td>NaN</td>
     </tr>
     <tr>
-      <th>89</th>
+      <th>88</th>
       <td>Li</td>
       <td>supercell</td>
       <td>Li_fromCS7</td>
@@ -3978,7 +3970,7 @@ LS_fromRS3 (loaded from cache)
       <td>NaN</td>
     </tr>
     <tr>
-      <th>90</th>
+      <th>89</th>
       <td>Li</td>
       <td>supercell</td>
       <td>Li_fromCS8</td>
@@ -3987,7 +3979,7 @@ LS_fromRS3 (loaded from cache)
       <td>NaN</td>
     </tr>
     <tr>
-      <th>91</th>
+      <th>90</th>
       <td>Li</td>
       <td>supercell</td>
       <td>Li_fromCS9</td>
@@ -3996,7 +3988,7 @@ LS_fromRS3 (loaded from cache)
       <td>NaN</td>
     </tr>
     <tr>
-      <th>92</th>
+      <th>91</th>
       <td>LS</td>
       <td>terrain</td>
       <td>LS_fromRS1</td>
@@ -4005,7 +3997,7 @@ LS_fromRS3 (loaded from cache)
       <td>0.000000e+00</td>
     </tr>
     <tr>
-      <th>93</th>
+      <th>92</th>
       <td>LS</td>
       <td>terrain</td>
       <td>LS_fromRS2</td>
@@ -4014,7 +4006,7 @@ LS_fromRS3 (loaded from cache)
       <td>3.496611e+08</td>
     </tr>
     <tr>
-      <th>94</th>
+      <th>93</th>
       <td>LS</td>
       <td>terrain</td>
       <td>LS_fromRS3</td>
@@ -4023,7 +4015,7 @@ LS_fromRS3 (loaded from cache)
       <td>1.469010e+09</td>
     </tr>
     <tr>
-      <th>95</th>
+      <th>94</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC1</td>
@@ -4032,7 +4024,7 @@ LS_fromRS3 (loaded from cache)
       <td>1.612134e+09</td>
     </tr>
     <tr>
-      <th>96</th>
+      <th>95</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC2</td>
@@ -4041,7 +4033,7 @@ LS_fromRS3 (loaded from cache)
       <td>5.392059e+09</td>
     </tr>
     <tr>
-      <th>97</th>
+      <th>96</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC3</td>
@@ -4050,7 +4042,7 @@ LS_fromRS3 (loaded from cache)
       <td>1.264042e+10</td>
     </tr>
     <tr>
-      <th>98</th>
+      <th>97</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC4</td>
@@ -4059,7 +4051,7 @@ LS_fromRS3 (loaded from cache)
       <td>2.948587e+10</td>
     </tr>
     <tr>
-      <th>99</th>
+      <th>98</th>
       <td>SS</td>
       <td>coastline</td>
       <td>SS_fromTC5</td>
@@ -4106,7 +4098,7 @@ LS_fromRS3 (loaded from cache)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5e81ddcdf119d6932bb6985a8341340d0c1c381c36ed74541914c7d4614d7b96.png" src="../_images/5e81ddcdf119d6932bb6985a8341340d0c1c381c36ed74541914c7d4614d7b96.png" />
+<img alt="../_images/1fcdf1cfc14f5f1c1f4aedef98d856404441e66bd4fae4c8d845941c7d9970cb.png" src="../_images/1fcdf1cfc14f5f1c1f4aedef98d856404441e66bd4fae4c8d845941c7d9970cb.png" />
 </div>
 </div>
 </section>
@@ -4143,12 +4135,12 @@ LS_fromRS3 (loaded from cache)
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>** from ELT **
-AAL [$ M.]: 759.9209458847671
-VaR_q [$ B.]: 32.30787522381343
-TVaR_q [$ B.]: 158.26920692828907
+AAL [$ M.]: 1286.1566429718662
+VaR_q [$ B.]: 50.52840095064355
+TVaR_q [$ B.]: 182.4887275479712
 </pre></div>
 </div>
-<img alt="../_images/4fb3604ba3b8e0b0c5fed68b72616cfd3842f467ed1ff0ab936a5e5b38b85d13.png" src="../_images/4fb3604ba3b8e0b0c5fed68b72616cfd3842f467ed1ff0ab936a5e5b38b85d13.png" />
+<img alt="../_images/495de9baf4c97fce3418014900946bcd658ce6e4dedc0b6a2727f84c6338d125.png" src="../_images/495de9baf4c97fce3418014900946bcd658ce6e4dedc0b6a2727f84c6338d125.png" />
 </div>
 </div>
 </section>
@@ -4743,12 +4735,105 @@ In anticyclone regime, drought duration = 7 months in stressed soil water condit
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/166f2eaf2467c9a58d5f21221fe6efd9c9dcdacfb19f30f74cf9341f4661de3d.png" src="../_images/166f2eaf2467c9a58d5f21221fe6efd9c9dcdacfb19f30f74cf9341f4661de3d.png" />
+<img alt="../_images/15e0c3dc1783bbf311ef6281ec970726ffcd35971e193821fd0c937810c5a73b.png" src="../_images/15e0c3dc1783bbf311ef6281ec970726ffcd35971e193821fd0c937810c5a73b.png" />
 </div>
 </div>
 </section>
-<section id="c-4-pest-infestation-case">
-<h4>C.4. Pest infestation case<a class="headerlink" href="#c-4-pest-infestation-case" title="Link to this heading"></a></h4>
+<section id="c-4-wildfire-case">
+<h4>C.4. Wildfire case<a class="headerlink" href="#c-4-wildfire-case" title="Link to this heading"></a></h4>
+<p>The wildfire model in v1.1.2 follows a standard deterministic forest-fire cellular automaton: once ignited, a fire burns the entire connected cluster of fuel cells reachable from the ignition point. We propose for v.1.2.1 an improved, stochastic formulation in which fire spreads from a burning cell to each neighboring fuel cell independently with probability <span class="math notranslate nohighlight">\(p_s\)</span> (<code class="docutils literal notranslate"><span class="pre">p_spread</span></code>), rather than deterministically consuming the whole cluster. This recasts fire-footprint generation as a bond-percolation process on the fuel lattice, allowing burnt-area size distributions to emerge from the spread dynamics rather than being fixed by the underlying land-use clustering alone.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">skimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">measure</span>
+
+<span class="n">p_spread</span> <span class="o">=</span> <span class="mf">.9</span>         <span class="c1"># choose value to see the impact on fire spread</span>
+
+<span class="n">rdm_seed</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">ratio_grass</span> <span class="o">=</span> <span class="mf">.4</span>      <span class="c1"># was .6, here reduced since no trees added through loading</span>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">rdm_seed</span><span class="p">)</span>
+
+<span class="n">landuse_S</span> <span class="o">=</span> <span class="n">urbLandLayer</span><span class="o">.</span><span class="n">S</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="c1"># Fuel includes forest (S=1) and crops (wheat: S=5, maize: S=6)</span>
+<span class="n">indFuel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">landuse_S</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]))[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">indFuel2Grass</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">indFuel</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">indFuel</span><span class="p">)</span> <span class="o">*</span> <span class="n">ratio_grass</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">landuse_S4WF_flat</span> <span class="o">=</span> <span class="n">landuse_S</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+<span class="n">landuse_S4WF_flat</span><span class="p">[</span><span class="n">indFuel2Grass</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># add wood buildings to fuel state:</span>
+<span class="n">indwoodBldg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">urbLandLayer</span><span class="o">.</span><span class="n">bldg_type</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;W&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">landuse_S4WF_flat</span><span class="p">[</span><span class="n">indwoodBldg</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">landuse_S4WF</span> <span class="o">=</span> <span class="n">landuse_S4WF_flat</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">landuse_S</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="n">S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">landuse_S4WF</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">S</span><span class="p">[</span><span class="n">landuse_S4WF</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>           <span class="c1"># fuel map</span>
+
+<span class="n">S_flat</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+<span class="n">landuse_S4WF_flat</span> <span class="o">=</span> <span class="n">landuse_S4WF</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+<span class="c1">#indFuel = np.where(landuse_S.flatten() == 1)[0]</span>
+<span class="n">indFuel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">landuse_S4WF</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1">#lightning_xy = rng.choice(indFuel, size=1)</span>
+<span class="n">lightning_xy</span> <span class="o">=</span> <span class="p">[</span><span class="mi">908370</span><span class="p">]</span>
+<span class="n">WF_fp_det</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">WF_fp_det</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+
+<span class="c1">## deterministic ##</span>
+<span class="n">S_clumps</span> <span class="o">=</span> <span class="n">measure</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">connectivity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">clump_WF</span> <span class="o">=</span> <span class="n">S_clumps</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="n">lightning_xy</span><span class="p">]</span>
+<span class="n">indWF</span> <span class="o">=</span> <span class="n">S_clumps</span> <span class="o">==</span> <span class="n">clump_WF</span>
+<span class="n">WF_fp_det</span><span class="p">[</span><span class="n">indWF</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="c1">## probabilistic ##</span>
+<span class="n">x0_ind</span><span class="p">,</span> <span class="n">y0_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">lightning_xy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">S</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">fuel_mask</span> <span class="o">=</span> <span class="n">S</span> <span class="o">==</span> <span class="mi">1</span>
+<span class="n">p_edge_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">p_spread</span><span class="p">)</span>
+<span class="n">indWF</span> <span class="o">=</span> <span class="n">GenMR_perils</span><span class="o">.</span><span class="n">percolate_cluster</span><span class="p">((</span><span class="n">x0_ind</span><span class="p">,</span> <span class="n">y0_ind</span><span class="p">),</span> <span class="n">p_edge_grid</span><span class="p">,</span> <span class="n">fuel_mask</span><span class="p">)</span>
+<span class="n">WF_fp_prb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">WF_fp_prb</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+<span class="n">WF_fp_prb</span><span class="p">[</span><span class="n">indWF</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+
+
+<span class="n">x0</span><span class="p">,</span> <span class="n">y0</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="n">lightning_xy</span><span class="p">],</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="n">lightning_xy</span><span class="p">]</span>
+<span class="n">dxy</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;16&#39;</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">ls</span><span class="o">.</span><span class="n">hillshade</span><span class="p">(</span><span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">vert_exag</span><span class="o">=</span><span class="mf">.1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">landuse_S4WF</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">GenMR_utils</span><span class="o">.</span><span class="n">col_S</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">WF_fp_det</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Reds&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">facecolors</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span> <span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">linewidths</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="n">dxy</span><span class="p">,</span> <span class="n">x0</span><span class="o">+</span><span class="n">dxy</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">y0</span><span class="o">-</span><span class="n">dxy</span><span class="p">,</span> <span class="n">y0</span><span class="o">+</span><span class="n">dxy</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Deterministic WF&#39;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">GenMR_env</span><span class="o">.</span><span class="n">ls</span><span class="o">.</span><span class="n">hillshade</span><span class="p">(</span><span class="n">topoLayer</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">vert_exag</span><span class="o">=</span><span class="mf">.1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">landuse_S4WF</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">GenMR_utils</span><span class="o">.</span><span class="n">col_S</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="n">WF_fp_prb</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Reds&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">facecolors</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span> <span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">linewidths</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$ (km)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="n">dxy</span><span class="p">,</span> <span class="n">x0</span><span class="o">+</span><span class="n">dxy</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">y0</span><span class="o">-</span><span class="n">dxy</span><span class="p">,</span> <span class="n">y0</span><span class="o">+</span><span class="n">dxy</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Probabilistic WF&#39;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/c0c3700e8f60069749408691b881bf14bbe8b699a1611e77a471f2f9d6a7aaba.png" src="../_images/c0c3700e8f60069749408691b881bf14bbe8b699a1611e77a471f2f9d6a7aaba.png" />
+</div>
+</div>
+</section>
+<section id="c-5-pest-infestation-case">
+<h4>C.5. Pest infestation case<a class="headerlink" href="#c-5-pest-infestation-case" title="Link to this heading"></a></h4>
 <p>Pest infestation (<code class="docutils literal notranslate"><span class="pre">PI</span></code>) intensity is modelled analytically. Based on the temperature-dependent development rate of the pest (here Spodoptera frugiperda, see <code class="docutils literal notranslate"><span class="pre">calc_PI_growthrate()</span></code>), the hazard intensity is defined as a unitless index representing the expected number of pest larvae after one month (on the fixed time scale considered in Tutorial 2), normalised by the corresponding number at the optimal growth temperature <span class="math notranslate nohighlight">\(T_{opt}\)</span> (see <code class="docutils literal notranslate"><span class="pre">calc_PI_I()</span></code>). Consequently, at the optimal temperature the intensity equals 1, corresponding to 100% yield loss for crops located at <span class="math notranslate nohighlight">\(T(x,y) = T_{opt}\)</span>. The resulting footprint is defined only over crop locations.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -4807,8 +4892,8 @@ In anticyclone regime, drought duration = 7 months in stressed soil water condit
 </div>
 </div>
 </section>
-<section id="c-5-blackout-case">
-<h4>C.5. Blackout case<a class="headerlink" href="#c-5-blackout-case" title="Link to this heading"></a></h4>
+<section id="c-6-blackout-case">
+<h4>C.6. Blackout case<a class="headerlink" href="#c-6-blackout-case" title="Link to this heading"></a></h4>
 <p>Since blackouts (<code class="docutils literal notranslate"><span class="pre">BO</span></code>) are an invisible secondary peril, they do not enter the simple hazard-to-damage footprint process developed in this tutorial. The model is therefore demonstrated in this appendix for various damage scenarios and will be appied in Tutorial 3 where damage to the power grid will be due by other perils. Consequences are business interruption and public service failure (see Sections C.6 and C.7).</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -5046,15 +5131,15 @@ During blackout - Power supply (MW) per load node:
 </div>
 </div>
 </section>
-<section id="c-6-business-interruption-case">
-<h4>C.6. Business interruption case<a class="headerlink" href="#c-6-business-interruption-case" title="Link to this heading"></a></h4>
+<section id="c-7-business-interruption-case">
+<h4>C.7. Business interruption case<a class="headerlink" href="#c-7-business-interruption-case" title="Link to this heading"></a></h4>
 <p>Similarly to BO, BI will be studied in detail in Tutorial 3 in the context of compound event modelling. As a proof-of-concept, two BI triggering scenarios are considered below:</p>
 <ul class="simple">
 <li><p>BI triggered by building damage caused by another peril (e.g., FF here).</p></li>
 <li><p>BI triggered by BO</p></li>
 </ul>
-<section id="c-6-1-ff-to-business-building-damage-to-bi">
-<h5>C.6.1. FF to business building damage to BI<a class="headerlink" href="#c-6-1-ff-to-business-building-damage-to-bi" title="Link to this heading"></a></h5>
+<section id="c-7-1-ff-to-business-building-damage-to-bi">
+<h5>C.7.1. FF to business building damage to BI<a class="headerlink" href="#c-7-1-ff-to-business-building-damage-to-bi" title="Link to this heading"></a></h5>
 <p>An example of BI footprint is shown given a FF footprint previously modelled.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -5123,8 +5208,8 @@ Mean BI duration (da): 141.0
 </div>
 </div>
 </section>
-<section id="c-6-2-bo-to-bi">
-<h5>C.6.2. BO to BI<a class="headerlink" href="#c-6-2-bo-to-bi" title="Link to this heading"></a></h5>
+<section id="c-7-2-bo-to-bi">
+<h5>C.7.2. BO to BI<a class="headerlink" href="#c-7-2-bo-to-bi" title="Link to this heading"></a></h5>
 <p>The next code cell calculates BI from the previously defined BO footprint (see Section C.5, must already be run). This is to be considered a proof-of-concept where BI is caused by lack of served power.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -5219,8 +5304,8 @@ Total BI duration (da): 5.0
 </div>
 </section>
 </section>
-<section id="c-7-public-safety-service-case">
-<h4>C.7. Public safety service case<a class="headerlink" href="#c-7-public-safety-service-case" title="Link to this heading"></a></h4>
+<section id="c-8-public-safety-service-case">
+<h4>C.8. Public safety service case<a class="headerlink" href="#c-8-public-safety-service-case" title="Link to this heading"></a></h4>
 <p>A footprint is computed given the fluvial flood event FF2_fromRS2. The approach is identical to <code class="docutils literal notranslate"><span class="pre">BI</span></code> modelling (see section C.6.1) but with a different damage threshold. The final value, i.e. the percentage of service lost, will be used as input parameter for social unrest (SU) modelling (see Section C.8).</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -5300,8 +5385,8 @@ Fire service loss percentage: 2.53
 </div>
 </div>
 </section>
-<section id="c-8-social-unrest-case">
-<h4>C.8. Social unrest case<a class="headerlink" href="#c-8-social-unrest-case" title="Link to this heading"></a></h4>
+<section id="c-9-social-unrest-case">
+<h4>C.9. Social unrest case<a class="headerlink" href="#c-9-social-unrest-case" title="Link to this heading"></a></h4>
 <p>Social unrest (<code class="docutils literal notranslate"><span class="pre">SU</span></code>) is a secondary peril defined as follows:</p>
 <ul class="simple">
 <li><p>Source: Triggered by a high level of grievance <span class="math notranslate nohighlight">\(G\)</span>, which increases according to Maslow’s Hierarchy of Needs. The following components are amplified for lower wealth levels:</p>
@@ -5319,8 +5404,8 @@ Fire service loss percentage: 2.53
 </li>
 <li><p>Damage footprints: Damage occurs by fire (arson) to commercial (COM) blocks at the vicinity of unrest areas.</p></li>
 </ul>
-<section id="c-8-1-generate-seed-event">
-<h5>C.8.1. Generate seed event<a class="headerlink" href="#c-8-1-generate-seed-event" title="Link to this heading"></a></h5>
+<section id="c-9-1-generate-seed-event">
+<h5>C.9.1. Generate seed event<a class="headerlink" href="#c-9-1-generate-seed-event" title="Link to this heading"></a></h5>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scenario</span> <span class="o">=</span> <span class="s1">&#39;BOtrigger&#39;</span>  <span class="c1"># &#39;FFtrigger&#39; or &#39;BOtrigger&#39; for testing</span>
@@ -5428,8 +5513,8 @@ Fire service loss percentage: 2.53
 </div>
 </div>
 </section>
-<section id="c-8-2-generate-cascading-event">
-<h5>C.8.2. Generate cascading event<a class="headerlink" href="#c-8-2-generate-cascading-event" title="Link to this heading"></a></h5>
+<section id="c-9-2-generate-cascading-event">
+<h5>C.9.2. Generate cascading event<a class="headerlink" href="#c-9-2-generate-cascading-event" title="Link to this heading"></a></h5>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">scenario</span> <span class="o">==</span> <span class="s1">&#39;FFtrigger&#39;</span><span class="p">:</span>

@@ -105,6 +105,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.gen_loadnodes"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.gen_loadnodes()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.gen_powergrid_1line_G2S"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.gen_powergrid_1line_G2S()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.gen_urbangrid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.gen_urbangrid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.gen_urbangrid_OLD"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.gen_urbangrid_OLD()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.get_windfarm_mask"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.get_windfarm_mask()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#id0"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.powergrid</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.powergrid_nlines_G2S"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.powergrid_nlines_G2S</span></code></a></li>
@@ -319,6 +320,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.get_peril_evID"><code class="docutils literal notranslate"><span class="pre">get_peril_evID()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.get_reachable_targets"><code class="docutils literal notranslate"><span class="pre">get_reachable_targets()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.incrementing"><code class="docutils literal notranslate"><span class="pre">incrementing()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.percolate_cluster"><code class="docutils literal notranslate"><span class="pre">percolate_cluster()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.plot_hazFootprints"><code class="docutils literal notranslate"><span class="pre">plot_hazFootprints()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.plot_src"><code class="docutils literal notranslate"><span class="pre">plot_src()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.plot_vulnFunctions"><code class="docutils literal notranslate"><span class="pre">plot_vulnFunctions()</span></code></a></li>
@@ -441,11 +443,12 @@
 <li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-1-tropical-cyclone-case">C.1. Tropical cyclone case</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-2-tornado-case">C.2. Tornado case</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-3-heatwave-case-threshold-model">C.3. Heatwave case (threshold model)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-4-pest-infestation-case">C.4. Pest infestation case</a></li>
-<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-5-blackout-case">C.5. Blackout case</a></li>
-<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-6-business-interruption-case">C.6. Business interruption case</a></li>
-<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-7-public-safety-service-case">C.7. Public safety service case</a></li>
-<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-8-social-unrest-case">C.8. Social unrest case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-4-wildfire-case">C.4. Wildfire case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-5-pest-infestation-case">C.5. Pest infestation case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-6-blackout-case">C.6. Blackout case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-7-business-interruption-case">C.7. Business interruption case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-8-public-safety-service-case">C.8. Public safety service case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-9-social-unrest-case">C.9. Social unrest case</a></li>
 </ul>
 </li>
 </ul>
@@ -564,7 +567,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/db37f898fb9ae286a9f5093813a131f945fd0e0ec36291c178df6c7a8c7ec81e.png" src="../_images/db37f898fb9ae286a9f5093813a131f945fd0e0ec36291c178df6c7a8c7ec81e.png" />
+<img alt="../_images/b711fb57abb6a5a087cf830cfead2e2bf65165e28a410475eedd95001a8caafe.png" src="../_images/b711fb57abb6a5a087cf830cfead2e2bf65165e28a410475eedd95001a8caafe.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1194,10 +1197,10 @@
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>AAL ELT (M. $): 759.92
 ** POISSON **
-AAL YLT Poisson (M. $): 780.552 ± 57.35  (99.7% CI)
+AAL YLT Poisson (M. $): 750.780 ± 54.16  (99.7% CI)
 Within tolerance: True
 ** NEGATIVE BINOMIAL (for selected perils) **
-AAL YLT nb (M. $): 744.365 ± 55.677  (99.7% CI)
+AAL YLT nb (M. $): 781.992 ± 62.357  (99.7% CI)
 Within tolerance: True
 </pre></div>
 </div>
@@ -1308,7 +1311,7 @@ Within tolerance: True
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c3d4ede4490a35f4bba39b4552b6c003c3f86ca795ddd4479a386b5c00dfd6fc.png" src="../_images/c3d4ede4490a35f4bba39b4552b6c003c3f86ca795ddd4479a386b5c00dfd6fc.png" />
+<img alt="../_images/b74426bef8b10fd196bb2d6d0868b89039b30e1f22e7799dd0c4d3a136b1999c.png" src="../_images/b74426bef8b10fd196bb2d6d0868b89039b30e1f22e7799dd0c4d3a136b1999c.png" />
 </div>
 </div>
 </section>
@@ -1454,6 +1457,18 @@ Within tolerance: True
 Dr/HR modelling
 WF modelling
 10000/10000
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">DT_peryr</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">DT_adv_month</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">DT_adv_daily</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>((10000,), (10000, 12), (10000, 365))
 </pre></div>
 </div>
 </div>

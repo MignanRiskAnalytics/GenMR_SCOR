@@ -108,6 +108,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.gen_loadnodes"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.gen_loadnodes()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.gen_powergrid_1line_G2S"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.gen_powergrid_1line_G2S()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.gen_urbangrid"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.gen_urbangrid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.gen_urbangrid_OLD"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.gen_urbangrid_OLD()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.get_windfarm_mask"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.get_windfarm_mask()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#id0"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.powergrid</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manual.html#GenMR.environment.EnvLayer_energy.powergrid_nlines_G2S"><code class="docutils literal notranslate"><span class="pre">EnvLayer_energy.powergrid_nlines_G2S</span></code></a></li>
@@ -322,6 +323,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.get_peril_evID"><code class="docutils literal notranslate"><span class="pre">get_peril_evID()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.get_reachable_targets"><code class="docutils literal notranslate"><span class="pre">get_reachable_targets()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.incrementing"><code class="docutils literal notranslate"><span class="pre">incrementing()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.percolate_cluster"><code class="docutils literal notranslate"><span class="pre">percolate_cluster()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.plot_hazFootprints"><code class="docutils literal notranslate"><span class="pre">plot_hazFootprints()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.plot_src"><code class="docutils literal notranslate"><span class="pre">plot_src()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manual.html#GenMR.perils.plot_vulnFunctions"><code class="docutils literal notranslate"><span class="pre">plot_vulnFunctions()</span></code></a></li>
@@ -444,11 +446,12 @@
 <li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-1-tropical-cyclone-case">C.1. Tropical cyclone case</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-2-tornado-case">C.2. Tornado case</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-3-heatwave-case-threshold-model">C.3. Heatwave case (threshold model)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-4-pest-infestation-case">C.4. Pest infestation case</a></li>
-<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-5-blackout-case">C.5. Blackout case</a></li>
-<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-6-business-interruption-case">C.6. Business interruption case</a></li>
-<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-7-public-safety-service-case">C.7. Public safety service case</a></li>
-<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-8-social-unrest-case">C.8. Social unrest case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-4-wildfire-case">C.4. Wildfire case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-5-pest-infestation-case">C.5. Pest infestation case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-6-blackout-case">C.6. Blackout case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-7-business-interruption-case">C.7. Business interruption case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-8-public-safety-service-case">C.8. Public safety service case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tutorial2_DigitalTemplate_perils.html#c-9-social-unrest-case">C.9. Social unrest case</a></li>
 </ul>
 </li>
 </ul>
@@ -509,7 +512,7 @@
 <h1>Tutorial 1: Generating a virtual environment for the GenMR digital template<a class="headerlink" href="#tutorial-1-generating-a-virtual-environment-for-the-genmr-digital-template" title="Link to this heading"></a></h1>
 <p><strong>Author:</strong> Arnaud Mignan, Mignan Risk Analytics GmbH<br />
 <strong>Version:</strong> 1.2.1<br />
-<strong>Last Updated:</strong> 2026-08-17<br />
+<strong>Last Updated:</strong> 2026-09-16<br />
 <strong>License:</strong> <a class="reference external" href="https://opensource.org/license/agpl-v3">AGPL-3</a></p>
 <p>The <em>digital template</em>, first described in <a class="reference external" href="https://www.mdpi.com/1660-4601/19/23/16097">Mignan (2022)</a> and used in the CAT Risk Modelling Sandbox (<a class="reference external" href="https://github.com/amignan/Intro2CATriskModelling/blob/main/CATRiskModellingSandbox_tutorial.ipynb">Mignan, 2024</a>), is a microcosm simulation of the complex Earth system for catastrophe dynamics R&amp;D, multi-risk prototyping in the Generic Multi-Risk (GenMR) framework, and catastrophe risk eduction. It is defined as a virtual environment populated by loss-generating events that interact with each other and with the environment. The virtual environment, built in this tutorial, is composed of <em>environmental layers</em> that consist of sets of variables <span class="math notranslate nohighlight">\(\theta(x,y)\)</span> defined in a spatial grid of coordinates <span class="math notranslate nohighlight">\((x,y)\)</span>. Each layer may be altered by <em>environmental objects</em> located within the layer. The parsimonious complex Earth system finally consists of a stack of interacting environmental layers defined in the natural, technological and socio-economic systems. The loss-generating events that populate the virtual environment will be defined in the next tutorial, and their interactions potentially leading to compound catastrophes in a third and final tutorial.</p>
 <p>The modelled environmental layers and associated objects as listed in Table 1 (see also Fig. 1). This tutorial provides a concise overview of these layers using a default parameterisation, with alternative scenarios to be introduced later in How-To Guides. The outputs generated here will serve as input for hazard and risk assessment in the subsequent tutorials.</p>
@@ -963,7 +966,6 @@ Total population: 19.83 million people
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">energyPar</span> <span class="o">=</span> <span class="p">{</span>
-<span class="c1">#    &#39;rdm_seed&#39;: None,</span>
     <span class="s1">&#39;hydrodam_coords&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">20</span><span class="p">),</span>  <span class="c1"># placeholder until hydropower dam model add-on implemented (future v.1.2.2)</span>
     <span class="s1">&#39;refinery_loc&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>                             <span class="c1"># harbor zone loc. ranked by size, refinery in largest zone</span>
     <span class="s1">&#39;thermalplant_loc&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>                         <span class="c1"># harbor zone loc. ranked by size, thermal plant in 2nd largest</span>
@@ -1003,14 +1005,16 @@ Total population: 19.83 million people
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## tmp test ##</span>
 <span class="c1"># user-defined generator (Gnode) coordinates</span>
-
 <span class="c1">#coords_Gs = {</span>
 <span class="c1">#    &#39;Gdam&#39;: (75, 20),</span>
-<span class="c1">#    &#39;Gth&#39;:  (30, 30),</span>
-<span class="c1">#    &#39;Gwf&#39;:  (60, 50)</span>
+<span class="c1">#    &#39;Gth&#39;: (30, 30),</span>
+<span class="c1">#    &#39;Gwf&#39;: (60, 50)</span>
 <span class="c1">#}</span>
-<span class="c1">#</span>
-<span class="c1">#energyLayer = GenMR_env.EnvLayer_energy(urbLandLayer, energyPar, coords_Gs = coords_Gs)</span>
+<span class="c1">#coords_Ss = [(80, 20), (80, 25), (80, 10),</span>
+<span class="c1">#             (40, 55), (42, 55), (48, 55),</span>
+<span class="c1">#             (65, 55), (62, 52), (68, 58)]</span>
+
+<span class="c1">#energyLayer = GenMR_env.EnvLayer_energy(urbLandLayer, energyPar, coords_Gs = coords_Gs, coords_Ss = coords_Ss)</span>
 <span class="c1">#</span>
 <span class="c1">#powergrid, node_names, node_coords, node_supply = energyLayer.powergrid</span>
 <span class="c1">#node_names_list = [node_names[i] for i in range(len(node_names))]</span>
@@ -1255,7 +1259,7 @@ Estimated silo footprint: ~2 grid cells
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/488a88bc83742117724bcf3ed579dcfac41de608ff51549ad486c43111188a3c.png" src="../_images/488a88bc83742117724bcf3ed579dcfac41de608ff51549ad486c43111188a3c.png" />
+<img alt="../_images/aa94e0a5702fa2a77d753f48d2c0ae5be552d1eea11d1e7498d0e7e48fc0d5df.png" src="../_images/aa94e0a5702fa2a77d753f48d2c0ae5be552d1eea11d1e7498d0e7e48fc0d5df.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1638,7 +1642,7 @@ Estimated silo footprint: ~2 grid cells
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/d6380136d12e4a3296f8895ad945ae388e2ecf141632ca8498f284cc7991cf94.png" src="../_images/d6380136d12e4a3296f8895ad945ae388e2ecf141632ca8498f284cc7991cf94.png" />
+<img alt="../_images/f797891ff24961791c07bf86852faae0e66f4981e1544abe31204a81ca687242.png" src="../_images/f797891ff24961791c07bf86852faae0e66f4981e1544abe31204a81ca687242.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1845,11 +1849,11 @@ Average zonal temperature = 14.76365750942746°C (= GMST, validation value)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/lib/python3.11/site-packages/IPython/core/events.py:82: UserWarning: Creating legend with loc=&quot;best&quot; can be slow with large amounts of data.
-  func(*args, **kwargs)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/var/folders/zv/vv2thhnd79743qzwyfg6fhqm0000gn/T/ipykernel_33806/4291219014.py:101: UserWarning: Creating legend with loc=&quot;best&quot; can be slow with large amounts of data.
+  fig.tight_layout();
 </pre></div>
 </div>
-<img alt="../_images/1cc3d4a919d3fc056621243b58e6b64d1389d3ca7406e8d6e7bed211e009f83b.png" src="../_images/1cc3d4a919d3fc056621243b58e6b64d1389d3ca7406e8d6e7bed211e009f83b.png" />
+<img alt="../_images/e6871b64eacb84181454c1608de6fd0d0f632d2423b620ae79d24b8e33db91f5.png" src="../_images/e6871b64eacb84181454c1608de6fd0d0f632d2423b620ae79d24b8e33db91f5.png" />
 </div>
 </div>
 </section>
@@ -1986,7 +1990,7 @@ Average zonal temperature = 14.76365750942746°C (= GMST, validation value)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/8abfc4c98725e3e52f82943e7942a35dc7e3e5f0e5468e441dec7c85b0a5f24b.png" src="../_images/8abfc4c98725e3e52f82943e7942a35dc7e3e5f0e5468e441dec7c85b0a5f24b.png" />
+<img alt="../_images/92a26d3c9ace6ac8c67428fc42920b6c3f97198ca00b494d61582f02c9ff2d8d.png" src="../_images/92a26d3c9ace6ac8c67428fc42920b6c3f97198ca00b494d61582f02c9ff2d8d.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -2000,12 +2004,12 @@ Average zonal temperature = 14.76365750942746°C (= GMST, validation value)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Daytime supply-demand (MW): [ 0. -0.  0. -0. -0.  0. -0.  0. -0. -0.  0. -0. -0.  0.  0.  0.  0. -0.
- -0.  0. -0. -0. -0.  0. -0. -0.  0.  0. -0.  0. -0. -0.  0.  0. -0. -0.
- -0. -0. -0.  0. -0.]
-Nighttime supply-demand (MW): [ 0. -0.  0. -0.  0.  0.  0.  0. -0. -0.  0. -0. -0.  0.  0. -0. -0. -0.
-  0.  0.  0. -0.  0.  0. -0.  0.  0. -0. -0.  0.  0.  0.  0. -0. -0.  0.
-  0. -0. -0. -0.  0.]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Daytime supply-demand (MW): [ 0. -0.  0.  0. -0.  0.  0.  0. -0.  0. -0. -0. -0.  0.  0.  0. -0. -0.
+ -0.  0.  0. -0. -0. -0. -0. -0.  0.  0.  0. -0.  0. -0. -0. -0. -0.  0.
+  0.  0. -0. -0.  0.]
+Nighttime supply-demand (MW): [ 0. -0.  0.  0.  0. -0.  0. -0.  0.  0. -0. -0. -0.  0.  0.  0. -0.  0.
+ -0. -0. -0.  0.  0. -0. -0. -0. -0. -0. -0.  0.  0.  0. -0. -0.  0. -0.
+ -0.  0.  0.  0. -0.]
 </pre></div>
 </div>
 </div>
