@@ -1,3 +1,19 @@
+# Copyright (C) 2025-2026 Mignan Risk Analytics GmbH
+#
+# GenMR_SCOR is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Affero General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# GenMR_SCOR is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with GenMR_SCOR. If not, see <http://www.gnu.org/licenses/>.
+
+
 """
 GenMR Peril Implementation
 ==========================
@@ -36,7 +52,7 @@ Peril models (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.2.1
-:Date: 2026-07-22
+:Date: 2026-09-16
 :License: AGPL-3
 """
 
@@ -121,12 +137,15 @@ class Src:
             grid (class): A class instance of RasterGrid
         '''
         par['grid_A_km2'] = (grid.xmax_nobuffer - grid.xmin_nobuffer) * (grid.ymax_nobuffer - grid.ymin_nobuffer)    # active domain
-        par['EQ']['N'] = len(par['EQ']['x'])
-        par['FF']['N'] = len(par['FF']['riv_A_km'])
-        par['VE']['N'] = len(par['VE']['x'])
-        par['EQ']['ID'] = np.char.add(par['EQ']['object'], (np.arange(par['EQ']['N'])+1).astype(str))
-        par['FF']['ID'] = np.char.add(par['FF']['object'], (np.arange(par['FF']['N'])+1).astype(str))
-        par['VE']['ID'] = np.char.add(par['VE']['object'], (np.arange(par['VE']['N'])+1).astype(str))
+        if 'EQ' in par['perils']:
+            par['EQ']['N'] = len(par['EQ']['x'])
+            par['EQ']['ID'] = np.char.add(par['EQ']['object'], (np.arange(par['EQ']['N'])+1).astype(str))
+        if 'FF' in par['perils']:
+            par['FF']['N'] = len(par['FF']['riv_A_km'])
+            par['FF']['ID'] = np.char.add(par['FF']['object'], (np.arange(par['FF']['N'])+1).astype(str))
+        if 'VE' in par['perils']:
+            par['VE']['N'] = len(par['VE']['x'])
+            par['VE']['ID'] = np.char.add(par['VE']['object'], (np.arange(par['VE']['N'])+1).astype(str))
         self.par = par
         self.grid = copy.copy(grid)
         self.SS_char = None

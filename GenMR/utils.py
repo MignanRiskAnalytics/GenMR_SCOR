@@ -1,3 +1,19 @@
+# Copyright (C) 2025-2026 Mignan Risk Analytics GmbH
+#
+# GenMR_SCOR is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Affero General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# GenMR_SCOR is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with GenMR_SCOR. If not, see <http://www.gnu.org/licenses/>.
+
+
 """
 GenMR Utility Functions
 =======================
@@ -8,7 +24,7 @@ core GenMR workflows by streamlining data handling, computation, and visualisati
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.2.1
-:Date: 2026-07-08
+:Date: 2026-09-16
 :License: AGPL-3
 """
 
