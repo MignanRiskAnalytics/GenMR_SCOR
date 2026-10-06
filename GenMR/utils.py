@@ -23,8 +23,8 @@ computing, and plotting within the GenMR package. These functions support
 core GenMR workflows by streamlining data handling, computation, and visualisation tasks.
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
-:Version: 1.2.1
-:Date: 2026-09-16
+:Version: 1.2.3
+:Date: 2026-10-06
 :License: AGPL-3
 """
 
@@ -42,6 +42,7 @@ from matplotlib.colors import ListedColormap
 from shapely.geometry import Point
 
 import networkx as netx
+import powerlaw
 from scipy.spatial import cKDTree
 from scipy.signal import fftconvolve
 
@@ -602,6 +603,193 @@ def graph_to_full_adjacency(g, n_nodes):
     return A
 
 
+
+#######################
+# STATISTICAL METHODS #
+#######################
+# EXPONENTIAL
+def LL_exponential(x, xmin, lbd):
+    x = np.asarray(x)
+    x = x[x >= xmin]
+    ll = len(x) * np.log(lbd) - lbd * np.sum(x - xmin)
+    return ll
+
+def MLE_lambda(x, xmin):
+    ind = x >= xmin
+    lbd = 1. / (np.mean(x[ind]) - xmin)
+    return lbd
+
+def calc_Sdistr_exponential(evTable, S_column, Si, Smin):
+    yrmin, yrmax = int(evTable['year'].min()), int(evTable['year'].max())
+    S = np.array(sorted(evTable[S_column]), dtype=float)
+    lbd_MLE = MLE_lambda(S, Smin)
+    Lbd_min = len(S) / (yrmax - yrmin + 1)
+    Sdistr_pred = Lbd_min * np.exp(-lbd_MLE * (Si - Smin))
+    return Sdistr_pred, lbd_MLE, Lbd_min
+
+def ccdf_exponential(Si, Smin, lbd):
+    ccdf = np.exp(-lbd * (Si - Smin))
+    return ccdf
+
+def sample_exponential(Smin, lbd, n):
+    '''
+    '''
+    u = np.random.uniform(0, 1, n)
+    S_samples = Smin - np.log(u) / lbd
+    return S_samples
+
+# POWER-LAW
+def LL_powerlaw(x, xmin, alpha):
+    x = np.asarray(x)
+    x = x[x >= xmin]
+    n = len(x)
+    ll = n * np.log(alpha - 1) - n * np.log(xmin) - alpha * np.sum(np.log(x / xmin))
+    return ll
+
+def MLE_alpha(x, xmin):
+    ind = x >= xmin
+    alpha = 1 + len(x[ind])/np.sum(np.log(x[ind]/xmin))
+    return alpha
+
+def calc_Sdistr_powerlaw(evTable, S_column, Si, Smin):
+    yrmin, yrmax = int(evTable['year'].min()), int(evTable['year'].max())
+    S = np.array(sorted(evTable[S_column]), dtype = float)
+    alpha_MLE = MLE_alpha(S, Smin)
+    Lbd_min = len(S) / (yrmax - yrmin + 1)
+    Sdistr_pred = Lbd_min * (Si/Smin)**(1 - alpha_MLE)
+    return Sdistr_pred, alpha_MLE
+
+# BOUNDED POWER-LAW
+def LL_powerlaw_bounded(x, xmin, xmax, alpha):
+    x = np.asarray(x)
+    x = x[(x >= xmin) & (x <= xmax)]
+    n = len(x)
+    C = (alpha - 1) / (xmin**(1 - alpha) - xmax**(1 - alpha))
+    ll = n * np.log(C) - alpha * np.sum(np.log(x))
+    return ll
+
+def fit_powerlaw_bounded(S, xmin, xmax):
+    S = np.array(S)
+    S = S[~np.isnan(S)]
+    fit = powerlaw.Fit(S, xmin=xmin, xmax=xmax, discrete=False, verbose=False)
+    alpha = fit.power_law.alpha
+    return fit, alpha
+
+def ccdf_powerlaw_bounded(Si, Smin, Smax, alpha):
+    ccdf = (Smax**(1 - alpha) - Si**(1 - alpha)) / (Smax**(1 - alpha) - Smin**(1 - alpha))
+    return ccdf
+
+def calc_Sdistr_powerlaw_bounded(evTable, S_column, Si, Smin):
+    yrmin, yrmax = int(evTable['year'].min()), int(evTable['year'].max())
+    S = np.array(sorted(evTable[S_column]), dtype = float)
+    Smax = evTable[S_column].max()
+    _, alpha = fit_powerlaw_bounded(S, Smin, Smax)
+    ccdf_bounded = ccdf_powerlaw_bounded(Si, Smin, Smax, alpha)
+    Lbd_min = len(S) / (yrmax - yrmin + 1)
+    Sdistr_pred = Lbd_min * ccdf_bounded
+    return Sdistr_pred, alpha, Smax, Lbd_min
+
+def sample_powerlaw_bounded(Smin, Smax, alpha, n):
+    '''
+    Inverse Transform Sampling
+    '''
+    U = np.random.uniform(0, 1, n)
+    one_minus_alpha = 1. - alpha
+    A = Smax**one_minus_alpha
+    B = Smin**one_minus_alpha
+    S_samples = (A - U * (A - B))**(1.0 / one_minus_alpha)
+    return S_samples
+
+# EXPONENTIALLY TRUNCATED POWER-LAW
+def LL_truncated_powerlaw(fit, x):
+    x = np.asarray(x)
+    ll_i = fit.truncated_power_law.loglikelihoods(x)
+    return np.sum(ll_i)
+
+def fit_powerlaw_expoTruncation(S, xmin):
+    S = np.array(S)
+    S = S[~np.isnan(S)]
+    fit = powerlaw.Fit(S, xmin=xmin, discrete=False, verbose=False, power_law_distribution=False, truncated=True)
+    alpha = fit.truncated_power_law.alpha
+    xmin = fit.truncated_power_law.xmin
+    Lambda = fit.truncated_power_law.Lambda
+    return fit, alpha, Lambda
+
+def calc_Sdistr_powerlaw_expoTruncation(evTable, S_column, Si, Smin):
+    yrmin, yrmax = int(evTable['year'].min()), int(evTable['year'].max())
+    S = np.array(sorted(evTable[S_column]), dtype = float)
+    fit, alpha, Lambda = fit_powerlaw_expoTruncation(S, Smin)
+
+#    ccdf_expotail = fit.truncated_power_law.ccdf(Si)
+    # make sure ccdf_expotail of length Si
+    Si = np.asarray(Si, dtype=float)
+    ccdf_expotail = np.full(Si.shape, np.nan)
+    mask = Si >= fit.xmin
+    if fit.xmax is not None:
+        mask &= Si <= fit.xmax
+    ccdf_expotail[mask] = fit.truncated_power_law.ccdf(Si[mask])
+
+    Lbd_min = len(S) / (yrmax - yrmin + 1)
+    Sdistr_pred = Lbd_min * ccdf_expotail
+    return Sdistr_pred, alpha, Lambda, Lbd_min, fit
+
+
+def calc_Smin_KStest(evTable2fit, Sname, distr = 'powerlaw'):
+    Smin_i = np.unique(np.percentile(evTable2fit[Sname], np.linspace(5, 70, 50)))
+    n_Smin = len(Smin_i)
+    Nmin_fit = 50
+
+    ks_val = np.full(n_Smin, np.nan)
+    for i in range(n_Smin):
+        Smin_fit = Smin_i[i]
+        data4fit = evTable2fit[evTable2fit[Sname] >= Smin_fit]
+        S = np.array(data4fit[Sname], dtype = float)
+        if len(S) < Nmin_fit:
+            continue
+        try:
+            x_sorted = np.sort(S)
+            ecdf = np.arange(1, len(x_sorted)+1) / len(x_sorted)    # correct ecdf for KS test
+
+            if distr == 'exponential':
+                lambda_exp = MLE_lambda(S, Smin_fit)
+                model_cdf_exp = 1 - np.exp(-lambda_exp * (x_sorted - Smin_fit))
+                ks_val[i] = np.max(np.abs(ecdf - model_cdf_exp))
+            if distr == 'powerlaw':
+                alpha_pow = MLE_alpha(S, Smin_fit)
+                model_cdf_pow = 1 - (x_sorted / Smin_fit)**(1 - alpha_pow)
+                ks_val[i] = np.max(np.abs(ecdf - model_cdf_pow))
+            if distr == 'bounded powerlaw':
+                xmax = np.max(S)
+                _, alpha_bound = fit_powerlaw_bounded(S, Smin_fit, xmax)
+                model_cdf_bound = ((x_sorted**(1-alpha_bound) - Smin_fit**(1-alpha_bound))
+                    / (xmax**(1-alpha_bound) - Smin_fit**(1-alpha_bound)))
+                ks_val[i] = np.max(np.abs(ecdf - model_cdf_bound))
+            if distr == 'exp-truncated powerlaw':
+                fit_trunc, alpha_trunc, lambda_trunc = fit_powerlaw_expoTruncation(S, Smin_fit)
+                model_ccdf_trunc = fit_trunc.truncated_power_law.ccdf(x_sorted)
+                model_cdf_trunc = 1 - model_ccdf_trunc
+                ks_val[i] = np.max(np.abs(ecdf - model_cdf_trunc))
+
+        except Exception as e:
+            np.nan
+            #print(f'Smin={Smin_fit:.3f} failed: {e}')
+ 
+    indbest = ks_val == np.nanmin(ks_val)
+    Smin_best = Smin_i[indbest][0]
+
+    return Smin_best
+
+
+# OTHER FUNCTIONS
+def seasonal_harmonic(x):
+    X = np.column_stack([
+        np.ones(len(x)),
+        np.cos(2 * np.pi * x / 12),
+        np.sin(2 * np.pi * x / 12)
+    ])
+    return X
+
+
 #######################
 # PHYSICAL PARAMETERS #
 #######################
@@ -680,9 +868,6 @@ map_EF2vmax = {
     4: np.round(166 * mph2ms),
     5: np.round(201 * mph2ms)
 }
-
-
-
 
 
 ####################
@@ -1018,28 +1203,3 @@ def get_edge_width(edge_bw, wmin = .5, wmax = 5.):
 
 
 
-
-
-
-
-## DEPRECATED ## - to remove in future revision
-
-#_ROOT = os.path.abspath(os.path.dirname(__file__))
-#def get_data(filename):
-#    '''
-#    DEPRECATED - Return path to package data file.
-#    '''
-#    return os.path.join(_ROOT, 'data', filename)
-
-#def add0s_iter(i):
-#    if i < 10:
-#        i_str = '0000' + str(i)
-#    elif i < 100:
-#        i_str = '000' + str(i)
-#    elif i < 1000:
-#        i_str = '00' + str(i)
-#    elif i < 10000:
-#        i_str = '0' + str(i)
-#    else:
-#        i_str = str(i)
-#    return i_str
