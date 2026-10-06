@@ -874,15 +874,19 @@ map_EF2vmax = {
 ## HAZARD METRICS ##
 ####################
 
-def calc_Sdistr_empirical(evTable, S_column):
-    if 'year' in evTable.columns:
-        yrmin, yrmax = int(evTable['year'].min()), int(evTable['year'].max())
-    elif 'year' not in evTable.columns and 'simID' in evTable.columns:
-        yrmin, yrmax = int(evTable['simID'].min()), int(evTable['simID'].max())
-    S = np.array(sorted(evTable[S_column]), dtype = float)
-    ecdf = np.linspace(0, 1-1/len(S), len(S))
+def calc_Sdistr_empirical(evTable, S_column, n_years=None):
+    if n_years is None:
+        if 'year' in evTable.columns:
+            yrmin, yrmax = int(evTable['year'].min()), int(evTable['year'].max())
+        elif 'simID' in evTable.columns:
+            yrmin, yrmax = int(evTable['simID'].min()), int(evTable['simID'].max())
+        else:
+            raise ValueError("evTable needs a 'year' or 'simID' column, or pass n_years")
+        n_years = yrmax - yrmin + 1
+    S = np.array(sorted(evTable[S_column]), dtype=float)
+    ecdf = np.linspace(0, 1 - 1/len(S), len(S))
     ccdf = 1. - ecdf
-    ratio_annual = len(evTable) / (yrmax - yrmin + 1)
+    ratio_annual = len(evTable) / n_years
     Sdistr = ccdf * ratio_annual
     return S, Sdistr
 

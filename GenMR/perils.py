@@ -51,8 +51,8 @@ Peril models (v1.1.2)
 
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
-:Version: 1.2.1
-:Date: 2026-09-16
+:Version: 1.2.3
+:Date: 2026-10-06
 :License: AGPL-3
 """
 
@@ -2764,6 +2764,8 @@ class HazardFootprintGenerator:
                     print(f'WARNING: No footprint of size {Si[i]} generated (consider increasing Nsim)')
                 cache_file = self._cache_path(evIDi[i])
                 np.save(cache_file, PI_footprints[indmax]['PI_fp'])
+
+
 
 
 
