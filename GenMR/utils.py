@@ -431,6 +431,13 @@ def get_S_floor(size, Si):
     return Si[idx]
 
 
+def nearest_cell(lat, lon, lat_grid, lon_grid):
+    i = np.argmin(np.abs(lat_grid - lat))
+    j = np.argmin(np.abs(lon_grid - lon))
+    return i, j
+
+
+
 def get_val_grid2loc(loc_coords, fp, grid):
     '''
     Estimate the values at loc_coords given meshed values in grid.
