@@ -24,7 +24,7 @@ core GenMR workflows by streamlining data handling, computation, and visualisati
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.2.3
-:Date: 2026-10-06
+:Date: 2026-10-08
 :License: AGPL-3
 """
 
@@ -43,6 +43,7 @@ from shapely.geometry import Point
 
 import networkx as netx
 import powerlaw
+from scipy.optimize import minimize_scalar
 from scipy.spatial import cKDTree
 from scipy.signal import fftconvolve
 
@@ -644,6 +645,48 @@ def sample_exponential(Smin, lbd, n):
     u = np.random.uniform(0, 1, n)
     S_samples = Smin - np.log(u) / lbd
     return S_samples
+
+# STRETCHED EXPONENTIAL
+def LL_stretched(x, xmin, lbd, beta):
+    x = np.asarray(x, dtype=float)
+    x = x[x >= xmin]
+    ll = (len(x) * (np.log(lbd) + np.log(beta))
+          + (beta - 1) * np.sum(np.log(x))
+          - lbd * np.sum(x**beta - xmin**beta))
+    return ll
+
+def MLE_lambda_stretched(x, xmin, beta):
+    # closed-form lambda for a given beta
+    x = np.asarray(x, dtype=float)
+    x = x[x >= xmin]
+    return len(x) / np.sum(x**beta - xmin**beta)
+
+def MLE_stretched(x, xmin, beta_bounds=(0.1, 3.)):
+    # profile likelihood: lambda(beta) is analytic, so only beta is optimised
+    x = np.asarray(x, dtype=float)
+    x = x[x >= xmin]
+    def negLL(beta):
+        lbd = MLE_lambda_stretched(x, xmin, beta)
+        return -LL_stretched(x, xmin, lbd, beta)
+    res = minimize_scalar(negLL, bounds=beta_bounds, method='bounded')
+    beta = res.x
+    lbd = MLE_lambda_stretched(x, xmin, beta)
+    return lbd, beta
+
+def calc_Sdistr_stretched(evTable, S_column, Si, Smin):
+    yrmin, yrmax = int(evTable['year'].min()), int(evTable['year'].max())
+    S = np.array(sorted(evTable[S_column]), dtype=float)
+    lbd_MLE, beta_MLE = MLE_stretched(S, Smin)
+    Lbd_min = len(S) / (yrmax - yrmin + 1)
+    Sdistr_pred = Lbd_min * np.exp(-lbd_MLE * (Si**beta_MLE - Smin**beta_MLE))
+    return Sdistr_pred, lbd_MLE, beta_MLE, Lbd_min
+
+def ccdf_stretched(Si, Smin, lbd, beta):
+    return np.exp(-lbd * (Si**beta - Smin**beta))
+
+def sample_stretched(Smin, lbd, beta, n):
+    u = np.random.uniform(0, 1, n)
+    return (Smin**beta - np.log(u) / lbd) ** (1. / beta)
 
 # POWER-LAW
 def LL_powerlaw(x, xmin, alpha):
