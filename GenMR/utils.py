@@ -804,6 +804,10 @@ def calc_Smin_KStest(evTable2fit, Sname, distr = 'powerlaw'):
                 lambda_exp = MLE_lambda(S, Smin_fit)
                 model_cdf_exp = 1 - np.exp(-lambda_exp * (x_sorted - Smin_fit))
                 ks_val[i] = np.max(np.abs(ecdf - model_cdf_exp))
+            if distr == 'stretched exponential':
+                lambda_str, beta_str = MLE_stretched(S, Smin_fit)
+                model_cdf_str = 1 - np.exp(-lambda_str * (x_sorted**beta_str - Smin_fit**beta_str))
+                ks_val[i] = np.max(np.abs(ecdf - model_cdf_str))
             if distr == 'powerlaw':
                 alpha_pow = MLE_alpha(S, Smin_fit)
                 model_cdf_pow = 1 - (x_sorted / Smin_fit)**(1 - alpha_pow)
