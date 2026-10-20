@@ -43,8 +43,8 @@ Layers and Related Objects (v1.1.2)
 
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
-:Version: 1.2.1
-:Date: 2026-09-16
+:Version: 1.2.3
+:Date: 2026-10-20
 :License: AGPL-3
 """
 
@@ -703,6 +703,10 @@ class EnvLayer_atmo:
         Reference near-surface air temperature at z=0.
     T : ndarray, shape (grid.nx, grid.ny)
         Near-surface air temperature at z(x,y).
+    p0 : float
+        Reference surface pressure at z=0 (kPa).
+    p : ndarray, shape (12, grid.ny, grid.nx)
+        Surface pressure (kPa) at z(x,y), hydrostatic from (T0, p0) at z=0.
     '''
     def __init__(self, topo, par):
         self.ID = 'atmo'
@@ -713,9 +717,12 @@ class EnvLayer_atmo:
         self.T0, _, _ = self.calc_T0_EBCM(self.par['lat_deg'], moni, phase = np.pi) # phase hardcoded
         topo_z_corr = self.topo.z.copy() * 1e-3  # m to km
         topo_z_corr[topo_z_corr < 0.] = 0        # water surface at z=0
-#        self.T = self.calc_T_z(topo_z_corr, self.T0, lapse_rate = self.par['lapse_rate_degC/km'])
         self.T = self.calc_T_z(topo_z_corr[None, :, :], self.T0[:, None, None], lapse_rate=self.par['lapse_rate_degC/km'])
-
+        self.p0 = self.par['p0_kPa']
+        self.p = self.calc_p_hydrostatic(topo_z_corr[None, :, :] * 1e3,              # height above sea level (m)
+                                         self.par['lapse_rate_degC/km'] * 1e-3,      # K/m
+                                         self.T0[:, None, None],                     # sea-level T (°C), per month
+                                         self.p0)
     @property
     def z_tropopause(self):
         return self.calc_z_tropopause(self.par['lat_deg'])
