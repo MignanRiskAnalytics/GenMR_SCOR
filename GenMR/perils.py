@@ -52,7 +52,7 @@ Peril models (v1.1.2)
 
 :Author: Arnaud Mignan, Mignan Risk Analytics GmbH
 :Version: 1.2.3
-:Date: 2026-10-06
+:Date: 2026-10-20
 :License: AGPL-3
 """
 
@@ -1096,6 +1096,7 @@ def gen_precipitation(Ti, w, par):
     rain : ndarray
         Daily precipitation rate for each temperature profile (mm/day).
     '''
+    Ti = np.atleast_1d(np.asarray(Ti, dtype=float)) 
     z_tropopause_m = np.round(par['zmax_km'], decimals = 1) * 1e3
     zi_m = np.arange(0,z_tropopause_m,100)    # atmosphere profile
 
@@ -1107,6 +1108,7 @@ def gen_precipitation(Ti, w, par):
     pz = np.zeros((nT,nz))
     qsat = np.zeros((nT,nz))
     rain = np.zeros(nT)
+    trapz = getattr(np, 'trapezoid', None) or np.trapz     # np.trapz is deprecated in NumPy 2.x
     for i in range(nT):
         pz[i,:] = GenMR_env.EnvLayer_atmo.calc_p_hydrostatic(zi_m, par['lapse_rate'] * 1e-3, Ti[i], par['p0'])
         Tz = GenMR_env.EnvLayer_atmo.calc_T_z(zi_m * 1e-3, Ti[i], lapse_rate = par['lapse_rate'])
@@ -1114,11 +1116,64 @@ def gen_precipitation(Ti, w, par):
         dqsdz = np.gradient(qsat[i,:], zi_m)
         C = np.maximum(0., -w[i] * dqsdz)                                # condensation rate kg/kg/s
         rho = (pz[i,:] * 1e3)/(287.05 * (Tz + 273.15))                   # air density from ideal gas law
-        rain[i] = par['eta_rain'] * np.trapz(rho * C, zi_m) *86400       # precipitation mass flux (mm/day)
+        rain[i] = par['eta_rain'] * trapz(rho * C, zi_m) * 86400         # precipitation mass flux (mm/day)
     return rain
 
 
-def calc_PET(T_monthly, lat_deg, cloudy = False):  # WARNING: replace with FAO 56 Penman-Monteith equation?
+
+
+def calc_PET(T_monthly, lat_deg, cloudy = False):
+    '''
+    Estimate the monthly potential evapotranspiration (PET) according to Thornthwaite (1948),
+    which assumes a clear sky. When cloudy = True, 
+
+    Parameters
+    ----------
+    T_monthly : array_like
+        Mean monthly air temperature (°C), length = 12
+    lat_deg : float
+        Latitude (°)
+
+    Returns
+    -------
+    PET : ndarray
+        Monthly potential evapotranspiration (mm/month)
+
+    References
+    ----------
+    Thornthwaite (1948), An approach toward a rational classification of climate.
+    Geographical Review, 38(1), 55–94.
+    '''
+    # Cloud impact
+    if np.isscalar(cloudy):
+        corr_cloud = .5 if cloudy else 0.
+    else:
+        corr_cloud = np.where(np.asarray(cloudy), .5, 0.)   # per-month cloud correction
+
+    T_d = np.maximum(np.asarray(T_monthly, dtype=float), 0.)
+
+    # Heat index
+    I = np.sum((T_d / 5.) ** 1.514)                                # p.89, just before eq.9
+    if I <= 0.:                                                    # all months <= 0 °C
+        return np.zeros_like(T_d)                                  # -> PET = 0, no division by zero
+
+    # Exponent
+    a = 6.75e-7 * I**3 - 7.71e-5 * I**2 + 1.792e-2 * I + .49239    # eq.9
+
+    # Day length factor
+    lat = np.radians(lat_deg)
+    ndays_inMonth = GenMR_utils.get_ndays_inMonth()
+    J = np.cumsum(ndays_inMonth) - ndays_inMonth / 2               # Julian day
+    decl = .409 * np.sin(2. * np.pi * J / 365. - 1.39)             # solar declination (Allen et al., 1998:24)
+    ws = np.arccos(np.clip(-np.tan(lat) * np.tan(decl), -1., 1.))  # solar hour angle (sunrise eq.) - clipped to avoid NaN at polar day/night
+    L = 24. / np.pi * ws
+
+    PET_nocloud = 16. * (L / 12.) * (ndays_inMonth / 30.) * (10. * T_d / I) ** a   # eq.10: 16.*(10. * T_d / I) ** a
+    PET = (1 - corr_cloud) * PET_nocloud
+    return PET
+
+
+def calc_PET_old(T_monthly, lat_deg, cloudy = False):  # WARNING: replace with FAO 56 Penman-Monteith equation?
     '''
     Estimate the monthly potential evapotranspiration (PET) according to Thornthwaite (1948),
     which assumes a clear sky. When cloudy = True, 
